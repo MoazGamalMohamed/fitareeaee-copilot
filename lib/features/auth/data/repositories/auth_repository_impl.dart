@@ -222,6 +222,66 @@ class AuthRepositoryImpl {
     }
   }
 
+  /// Sign in with Google
+  /// Note: Google Sign-In v7.x requires platform-specific setup.
+  /// For now, this is a placeholder that uses Firebase Auth directly.
+  Future<AppUser> signInWithGoogle() async {
+    try {
+      // For web, use Firebase Auth's Google provider directly
+      final googleProvider = firebase_auth.GoogleAuthProvider();
+      final userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
+      final firebaseUser = userCredential.user;
+
+      if (firebaseUser == null) {
+        throw AuthException(message: 'Failed to sign in with Google');
+      }
+
+      // Check if user exists in Firestore
+      final userDoc = await _userService.getUserById(firebaseUser.uid);
+
+      if (userDoc != null && userDoc.exists) {
+        return AppUser.fromJson(userDoc.data()!);
+      }
+
+      // Create new user in Firestore
+      final appUser = AppUser(
+        id: firebaseUser.uid,
+        email: firebaseUser.email ?? '',
+        name: firebaseUser.displayName ?? 'User',
+        phone: firebaseUser.phoneNumber ?? '',
+        photoUrl: firebaseUser.photoURL,
+        roles: ['rider'], // Default role
+        isEmailVerified: firebaseUser.emailVerified,
+        isPhoneVerified: false,
+        rating: 5.0,
+        totalTrips: 0,
+        isVerified: false,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      await _userService.createUser(
+        userId: firebaseUser.uid,
+        userData: appUser.toJson(),
+      );
+
+      return appUser;
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sign out from Google
+  Future<void> signOutFromGoogle() async {
+    try {
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      throw AuthException(message: 'Failed to sign out from Google');
+    }
+  }
+
   /// Handle Firebase Auth exceptions
   Exception _handleFirebaseAuthException(firebase_auth.FirebaseAuthException e) {
     switch (e.code) {

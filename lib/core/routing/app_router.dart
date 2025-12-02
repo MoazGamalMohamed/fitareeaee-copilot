@@ -18,6 +18,13 @@ import 'package:fitareeaee/features/trips/domain/entities/trip.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
+import 'package:fitareeaee/features/wallet/presentation/pages/wallet_screen.dart';
+import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
+import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:fitareeaee/features/tracking/presentation/pages/tracking_screen.dart';
+import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
+import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
+import 'package:fitareeaee/features/ai/presentation/pages/ai_assistant_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,6 +46,14 @@ class AppRoutes {
   static const booking = '/booking';
   static const payment = '/payment';
   static const rating = '/rating';
+  // New routes
+  static const wallet = '/wallet';
+  static const verification = '/verification';
+  static const notifications = '/notifications';
+  static const tracking = '/tracking';
+  static const sos = '/sos';
+  static const helpCenter = '/help';
+  static const aiAssistant = '/ai-assistant';
 }
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -181,6 +196,61 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ratedUserName: data['ratedUserName'] as String,
           );
         },
+      ),
+
+      // Wallet Route
+      GoRoute(
+        path: AppRoutes.wallet,
+        name: 'wallet',
+        builder: (context, state) => const WalletScreen(),
+      ),
+
+      // Verification Route
+      GoRoute(
+        path: AppRoutes.verification,
+        name: 'verification',
+        builder: (context, state) => const VerificationScreen(),
+      ),
+
+      // Notifications Route
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+
+      // Tracking Route
+      GoRoute(
+        path: '${AppRoutes.tracking}/:tripId',
+        name: 'tracking',
+        builder: (context, state) {
+          final tripId = state.pathParameters['tripId'] ?? '';
+          return TrackingScreen(tripId: tripId);
+        },
+      ),
+
+      // SOS Route
+      GoRoute(
+        path: AppRoutes.sos,
+        name: 'sos',
+        builder: (context, state) {
+          final tripId = state.extra as String?;
+          return SOSScreen(tripId: tripId);
+        },
+      ),
+
+      // Help Center Route
+      GoRoute(
+        path: AppRoutes.helpCenter,
+        name: 'help-center',
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+
+      // AI Assistant Route
+      GoRoute(
+        path: AppRoutes.aiAssistant,
+        name: 'ai-assistant',
+        builder: (context, state) => const AIAssistantScreen(),
       ),
     ],
     redirect: (context, state) {

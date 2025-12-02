@@ -144,3 +144,28 @@ class PasswordResetStateNotifier extends StateNotifier<AsyncValue<void>> {
     }
   }
 }
+
+/// Google Sign In state notifier
+final googleSignInProvider = StateNotifierProvider.autoDispose<
+    GoogleSignInStateNotifier,
+    AsyncValue<AppUser?>>((ref) {
+  final repo = ref.watch(authRepositoryProvider);
+  return GoogleSignInStateNotifier(repo);
+});
+
+class GoogleSignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
+  final AuthRepositoryImpl _repository;
+
+  GoogleSignInStateNotifier(this._repository) : super(const AsyncValue.data(null));
+
+  Future<void> signInWithGoogle() async {
+    state = const AsyncValue.loading();
+
+    try {
+      final user = await _repository.signInWithGoogle();
+      state = AsyncValue.data(user);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error.toString(), stackTrace);
+    }
+  }
+}
