@@ -39,6 +39,15 @@ _$TripImpl _$$TripImplFromJson(Map<String, dynamic> json) => _$TripImpl(
   metadata: json['metadata'] as Map<String, dynamic>? ?? const {},
   createdAt: DateTime.parse(json['created_at'] as String),
   updatedAt: DateTime.parse(json['updated_at'] as String),
+  includesPerson: json['includes_person'] as bool? ?? true,
+  includesPackage: json['includes_package'] as bool? ?? false,
+  packageWeight: (json['package_weight'] as num?)?.toDouble(),
+  packageDescription: json['package_description'] as String?,
+  packagePhotoUrls:
+      (json['package_photo_urls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$$TripImplToJson(_$TripImpl instance) =>
@@ -69,4 +78,9 @@ Map<String, dynamic> _$$TripImplToJson(_$TripImpl instance) =>
       'metadata': instance.metadata,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
+      'includes_person': instance.includesPerson,
+      'includes_package': instance.includesPackage,
+      'package_weight': instance.packageWeight,
+      'package_description': instance.packageDescription,
+      'package_photo_urls': instance.packagePhotoUrls,
     };

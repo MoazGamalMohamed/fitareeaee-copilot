@@ -23,7 +23,7 @@ Trip _$TripFromJson(Map<String, dynamic> json) {
 mixin _$Trip {
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'type')
-  String get type => throw _privateConstructorUsedError; // 'person' or 'package'
+  String get type => throw _privateConstructorUsedError; // 'person', 'package', or 'both'
   @JsonKey(name: 'direction')
   String get direction => throw _privateConstructorUsedError; // 'offer' or 'request'
   String get driverId => throw _privateConstructorUsedError;
@@ -62,7 +62,17 @@ mixin _$Trip {
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime get updatedAt => throw _privateConstructorUsedError; // Combined trip support
+  @JsonKey(name: 'includes_person')
+  bool get includesPerson => throw _privateConstructorUsedError;
+  @JsonKey(name: 'includes_package')
+  bool get includesPackage => throw _privateConstructorUsedError; // Package-specific fields
+  @JsonKey(name: 'package_weight')
+  double? get packageWeight => throw _privateConstructorUsedError; // kg
+  @JsonKey(name: 'package_description')
+  String? get packageDescription => throw _privateConstructorUsedError;
+  @JsonKey(name: 'package_photo_urls')
+  List<String> get packagePhotoUrls => throw _privateConstructorUsedError;
 
   /// Serializes this Trip to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -105,6 +115,11 @@ abstract class $TripCopyWith<$Res> {
     Map<String, dynamic> metadata,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
+    @JsonKey(name: 'includes_person') bool includesPerson,
+    @JsonKey(name: 'includes_package') bool includesPackage,
+    @JsonKey(name: 'package_weight') double? packageWeight,
+    @JsonKey(name: 'package_description') String? packageDescription,
+    @JsonKey(name: 'package_photo_urls') List<String> packagePhotoUrls,
   });
 }
 
@@ -149,6 +164,11 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
     Object? metadata = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? includesPerson = null,
+    Object? includesPackage = null,
+    Object? packageWeight = freezed,
+    Object? packageDescription = freezed,
+    Object? packagePhotoUrls = null,
   }) {
     return _then(
       _value.copyWith(
@@ -256,6 +276,26 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            includesPerson: null == includesPerson
+                ? _value.includesPerson
+                : includesPerson // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            includesPackage: null == includesPackage
+                ? _value.includesPackage
+                : includesPackage // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            packageWeight: freezed == packageWeight
+                ? _value.packageWeight
+                : packageWeight // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            packageDescription: freezed == packageDescription
+                ? _value.packageDescription
+                : packageDescription // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            packagePhotoUrls: null == packagePhotoUrls
+                ? _value.packagePhotoUrls
+                : packagePhotoUrls // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
           )
           as $Val,
     );
@@ -297,6 +337,11 @@ abstract class _$$TripImplCopyWith<$Res> implements $TripCopyWith<$Res> {
     Map<String, dynamic> metadata,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
+    @JsonKey(name: 'includes_person') bool includesPerson,
+    @JsonKey(name: 'includes_package') bool includesPackage,
+    @JsonKey(name: 'package_weight') double? packageWeight,
+    @JsonKey(name: 'package_description') String? packageDescription,
+    @JsonKey(name: 'package_photo_urls') List<String> packagePhotoUrls,
   });
 }
 
@@ -338,6 +383,11 @@ class __$$TripImplCopyWithImpl<$Res>
     Object? metadata = null,
     Object? createdAt = null,
     Object? updatedAt = null,
+    Object? includesPerson = null,
+    Object? includesPackage = null,
+    Object? packageWeight = freezed,
+    Object? packageDescription = freezed,
+    Object? packagePhotoUrls = null,
   }) {
     return _then(
       _$TripImpl(
@@ -445,6 +495,26 @@ class __$$TripImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        includesPerson: null == includesPerson
+            ? _value.includesPerson
+            : includesPerson // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        includesPackage: null == includesPackage
+            ? _value.includesPackage
+            : includesPackage // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        packageWeight: freezed == packageWeight
+            ? _value.packageWeight
+            : packageWeight // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        packageDescription: freezed == packageDescription
+            ? _value.packageDescription
+            : packageDescription // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        packagePhotoUrls: null == packagePhotoUrls
+            ? _value._packagePhotoUrls
+            : packagePhotoUrls // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
       ),
     );
   }
@@ -480,9 +550,16 @@ class _$TripImpl implements _Trip {
     final Map<String, dynamic> metadata = const {},
     @JsonKey(name: 'created_at') required this.createdAt,
     @JsonKey(name: 'updated_at') required this.updatedAt,
+    @JsonKey(name: 'includes_person') this.includesPerson = true,
+    @JsonKey(name: 'includes_package') this.includesPackage = false,
+    @JsonKey(name: 'package_weight') this.packageWeight,
+    @JsonKey(name: 'package_description') this.packageDescription,
+    @JsonKey(name: 'package_photo_urls')
+    final List<String> packagePhotoUrls = const [],
   }) : _passengerIds = passengerIds,
        _amenities = amenities,
-       _metadata = metadata;
+       _metadata = metadata,
+       _packagePhotoUrls = packagePhotoUrls;
 
   factory _$TripImpl.fromJson(Map<String, dynamic> json) =>
       _$$TripImplFromJson(json);
@@ -492,7 +569,7 @@ class _$TripImpl implements _Trip {
   @override
   @JsonKey(name: 'type')
   final String type;
-  // 'person' or 'package'
+  // 'person', 'package', or 'both'
   @override
   @JsonKey(name: 'direction')
   final String direction;
@@ -582,10 +659,34 @@ class _$TripImpl implements _Trip {
   @override
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
+  // Combined trip support
+  @override
+  @JsonKey(name: 'includes_person')
+  final bool includesPerson;
+  @override
+  @JsonKey(name: 'includes_package')
+  final bool includesPackage;
+  // Package-specific fields
+  @override
+  @JsonKey(name: 'package_weight')
+  final double? packageWeight;
+  // kg
+  @override
+  @JsonKey(name: 'package_description')
+  final String? packageDescription;
+  final List<String> _packagePhotoUrls;
+  @override
+  @JsonKey(name: 'package_photo_urls')
+  List<String> get packagePhotoUrls {
+    if (_packagePhotoUrls is EqualUnmodifiableListView)
+      return _packagePhotoUrls;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_packagePhotoUrls);
+  }
 
   @override
   String toString() {
-    return 'Trip(id: $id, type: $type, direction: $direction, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Trip(id: $id, type: $type, direction: $direction, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt, includesPerson: $includesPerson, includesPackage: $includesPackage, packageWeight: $packageWeight, packageDescription: $packageDescription, packagePhotoUrls: $packagePhotoUrls)';
   }
 
   @override
@@ -644,7 +745,19 @@ class _$TripImpl implements _Trip {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.includesPerson, includesPerson) ||
+                other.includesPerson == includesPerson) &&
+            (identical(other.includesPackage, includesPackage) ||
+                other.includesPackage == includesPackage) &&
+            (identical(other.packageWeight, packageWeight) ||
+                other.packageWeight == packageWeight) &&
+            (identical(other.packageDescription, packageDescription) ||
+                other.packageDescription == packageDescription) &&
+            const DeepCollectionEquality().equals(
+              other._packagePhotoUrls,
+              _packagePhotoUrls,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -677,6 +790,11 @@ class _$TripImpl implements _Trip {
     const DeepCollectionEquality().hash(_metadata),
     createdAt,
     updatedAt,
+    includesPerson,
+    includesPackage,
+    packageWeight,
+    packageDescription,
+    const DeepCollectionEquality().hash(_packagePhotoUrls),
   ]);
 
   /// Create a copy of Trip
@@ -722,6 +840,11 @@ abstract class _Trip implements Trip {
     final Map<String, dynamic> metadata,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
     @JsonKey(name: 'updated_at') required final DateTime updatedAt,
+    @JsonKey(name: 'includes_person') final bool includesPerson,
+    @JsonKey(name: 'includes_package') final bool includesPackage,
+    @JsonKey(name: 'package_weight') final double? packageWeight,
+    @JsonKey(name: 'package_description') final String? packageDescription,
+    @JsonKey(name: 'package_photo_urls') final List<String> packagePhotoUrls,
   }) = _$TripImpl;
 
   factory _Trip.fromJson(Map<String, dynamic> json) = _$TripImpl.fromJson;
@@ -730,7 +853,7 @@ abstract class _Trip implements Trip {
   String get id;
   @override
   @JsonKey(name: 'type')
-  String get type; // 'person' or 'package'
+  String get type; // 'person', 'package', or 'both'
   @override
   @JsonKey(name: 'direction')
   String get direction; // 'offer' or 'request'
@@ -793,7 +916,22 @@ abstract class _Trip implements Trip {
   DateTime get createdAt;
   @override
   @JsonKey(name: 'updated_at')
-  DateTime get updatedAt;
+  DateTime get updatedAt; // Combined trip support
+  @override
+  @JsonKey(name: 'includes_person')
+  bool get includesPerson;
+  @override
+  @JsonKey(name: 'includes_package')
+  bool get includesPackage; // Package-specific fields
+  @override
+  @JsonKey(name: 'package_weight')
+  double? get packageWeight; // kg
+  @override
+  @JsonKey(name: 'package_description')
+  String? get packageDescription;
+  @override
+  @JsonKey(name: 'package_photo_urls')
+  List<String> get packagePhotoUrls;
 
   /// Create a copy of Trip
   /// with the given fields replaced by the non-null parameter values.

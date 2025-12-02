@@ -28,12 +28,27 @@ mixin _$PaymentModel {
   double get amount => throw _privateConstructorUsedError;
   String get currency => throw _privateConstructorUsedError;
   String get paymentMethod =>
-      throw _privateConstructorUsedError; // 'card', 'wallet', 'bank_transfer'
+      throw _privateConstructorUsedError; // 'card', 'wallet', 'bank_transfer', 'stripe'
   String get status =>
-      throw _privateConstructorUsedError; // 'pending', 'processing', 'completed', 'failed', 'refunded'
+      throw _privateConstructorUsedError; // PaymentStatus values
   String? get transactionId => throw _privateConstructorUsedError;
+  String? get stripePaymentIntentId => throw _privateConstructorUsedError;
+  String? get stripeTransferId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
-  DateTime? get completedAt => throw _privateConstructorUsedError;
+  DateTime? get completedAt =>
+      throw _privateConstructorUsedError; // Escrow fields
+  String get escrowStatus =>
+      throw _privateConstructorUsedError; // EscrowStatus values
+  DateTime? get escrowHeldAt => throw _privateConstructorUsedError;
+  DateTime? get escrowReleasedAt =>
+      throw _privateConstructorUsedError; // Fee breakdown
+  double get platformFee => throw _privateConstructorUsedError;
+  double get processingFee => throw _privateConstructorUsedError;
+  double get netAmount =>
+      throw _privateConstructorUsedError; // Amount after fees
+  // Refund info
+  String? get refundReason => throw _privateConstructorUsedError;
+  DateTime? get refundedAt => throw _privateConstructorUsedError;
 
   /// Serializes this PaymentModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -62,8 +77,18 @@ abstract class $PaymentModelCopyWith<$Res> {
     String paymentMethod,
     String status,
     String? transactionId,
+    String? stripePaymentIntentId,
+    String? stripeTransferId,
     DateTime createdAt,
     DateTime? completedAt,
+    String escrowStatus,
+    DateTime? escrowHeldAt,
+    DateTime? escrowReleasedAt,
+    double platformFee,
+    double processingFee,
+    double netAmount,
+    String? refundReason,
+    DateTime? refundedAt,
   });
 }
 
@@ -91,8 +116,18 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
     Object? paymentMethod = null,
     Object? status = null,
     Object? transactionId = freezed,
+    Object? stripePaymentIntentId = freezed,
+    Object? stripeTransferId = freezed,
     Object? createdAt = null,
     Object? completedAt = freezed,
+    Object? escrowStatus = null,
+    Object? escrowHeldAt = freezed,
+    Object? escrowReleasedAt = freezed,
+    Object? platformFee = null,
+    Object? processingFee = null,
+    Object? netAmount = null,
+    Object? refundReason = freezed,
+    Object? refundedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -132,6 +167,14 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
                 ? _value.transactionId
                 : transactionId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            stripePaymentIntentId: freezed == stripePaymentIntentId
+                ? _value.stripePaymentIntentId
+                : stripePaymentIntentId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            stripeTransferId: freezed == stripeTransferId
+                ? _value.stripeTransferId
+                : stripeTransferId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -139,6 +182,38 @@ class _$PaymentModelCopyWithImpl<$Res, $Val extends PaymentModel>
             completedAt: freezed == completedAt
                 ? _value.completedAt
                 : completedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            escrowStatus: null == escrowStatus
+                ? _value.escrowStatus
+                : escrowStatus // ignore: cast_nullable_to_non_nullable
+                      as String,
+            escrowHeldAt: freezed == escrowHeldAt
+                ? _value.escrowHeldAt
+                : escrowHeldAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            escrowReleasedAt: freezed == escrowReleasedAt
+                ? _value.escrowReleasedAt
+                : escrowReleasedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            platformFee: null == platformFee
+                ? _value.platformFee
+                : platformFee // ignore: cast_nullable_to_non_nullable
+                      as double,
+            processingFee: null == processingFee
+                ? _value.processingFee
+                : processingFee // ignore: cast_nullable_to_non_nullable
+                      as double,
+            netAmount: null == netAmount
+                ? _value.netAmount
+                : netAmount // ignore: cast_nullable_to_non_nullable
+                      as double,
+            refundReason: freezed == refundReason
+                ? _value.refundReason
+                : refundReason // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            refundedAt: freezed == refundedAt
+                ? _value.refundedAt
+                : refundedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
           )
           as $Val,
@@ -165,8 +240,18 @@ abstract class _$$PaymentModelImplCopyWith<$Res>
     String paymentMethod,
     String status,
     String? transactionId,
+    String? stripePaymentIntentId,
+    String? stripeTransferId,
     DateTime createdAt,
     DateTime? completedAt,
+    String escrowStatus,
+    DateTime? escrowHeldAt,
+    DateTime? escrowReleasedAt,
+    double platformFee,
+    double processingFee,
+    double netAmount,
+    String? refundReason,
+    DateTime? refundedAt,
   });
 }
 
@@ -193,8 +278,18 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
     Object? paymentMethod = null,
     Object? status = null,
     Object? transactionId = freezed,
+    Object? stripePaymentIntentId = freezed,
+    Object? stripeTransferId = freezed,
     Object? createdAt = null,
     Object? completedAt = freezed,
+    Object? escrowStatus = null,
+    Object? escrowHeldAt = freezed,
+    Object? escrowReleasedAt = freezed,
+    Object? platformFee = null,
+    Object? processingFee = null,
+    Object? netAmount = null,
+    Object? refundReason = freezed,
+    Object? refundedAt = freezed,
   }) {
     return _then(
       _$PaymentModelImpl(
@@ -234,6 +329,14 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
             ? _value.transactionId
             : transactionId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        stripePaymentIntentId: freezed == stripePaymentIntentId
+            ? _value.stripePaymentIntentId
+            : stripePaymentIntentId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        stripeTransferId: freezed == stripeTransferId
+            ? _value.stripeTransferId
+            : stripeTransferId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -241,6 +344,38 @@ class __$$PaymentModelImplCopyWithImpl<$Res>
         completedAt: freezed == completedAt
             ? _value.completedAt
             : completedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        escrowStatus: null == escrowStatus
+            ? _value.escrowStatus
+            : escrowStatus // ignore: cast_nullable_to_non_nullable
+                  as String,
+        escrowHeldAt: freezed == escrowHeldAt
+            ? _value.escrowHeldAt
+            : escrowHeldAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        escrowReleasedAt: freezed == escrowReleasedAt
+            ? _value.escrowReleasedAt
+            : escrowReleasedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        platformFee: null == platformFee
+            ? _value.platformFee
+            : platformFee // ignore: cast_nullable_to_non_nullable
+                  as double,
+        processingFee: null == processingFee
+            ? _value.processingFee
+            : processingFee // ignore: cast_nullable_to_non_nullable
+                  as double,
+        netAmount: null == netAmount
+            ? _value.netAmount
+            : netAmount // ignore: cast_nullable_to_non_nullable
+                  as double,
+        refundReason: freezed == refundReason
+            ? _value.refundReason
+            : refundReason // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        refundedAt: freezed == refundedAt
+            ? _value.refundedAt
+            : refundedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
       ),
     );
@@ -259,9 +394,19 @@ class _$PaymentModelImpl implements _PaymentModel {
     required this.currency,
     required this.paymentMethod,
     required this.status,
-    required this.transactionId,
+    this.transactionId,
+    this.stripePaymentIntentId,
+    this.stripeTransferId,
     required this.createdAt,
-    required this.completedAt,
+    this.completedAt,
+    this.escrowStatus = 'none',
+    this.escrowHeldAt,
+    this.escrowReleasedAt,
+    this.platformFee = 0.0,
+    this.processingFee = 0.0,
+    this.netAmount = 0.0,
+    this.refundReason,
+    this.refundedAt,
   });
 
   factory _$PaymentModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -281,20 +426,49 @@ class _$PaymentModelImpl implements _PaymentModel {
   final String currency;
   @override
   final String paymentMethod;
-  // 'card', 'wallet', 'bank_transfer'
+  // 'card', 'wallet', 'bank_transfer', 'stripe'
   @override
   final String status;
-  // 'pending', 'processing', 'completed', 'failed', 'refunded'
+  // PaymentStatus values
   @override
   final String? transactionId;
+  @override
+  final String? stripePaymentIntentId;
+  @override
+  final String? stripeTransferId;
   @override
   final DateTime createdAt;
   @override
   final DateTime? completedAt;
+  // Escrow fields
+  @override
+  @JsonKey()
+  final String escrowStatus;
+  // EscrowStatus values
+  @override
+  final DateTime? escrowHeldAt;
+  @override
+  final DateTime? escrowReleasedAt;
+  // Fee breakdown
+  @override
+  @JsonKey()
+  final double platformFee;
+  @override
+  @JsonKey()
+  final double processingFee;
+  @override
+  @JsonKey()
+  final double netAmount;
+  // Amount after fees
+  // Refund info
+  @override
+  final String? refundReason;
+  @override
+  final DateTime? refundedAt;
 
   @override
   String toString() {
-    return 'PaymentModel(id: $id, bookingId: $bookingId, payerId: $payerId, payeeId: $payeeId, amount: $amount, currency: $currency, paymentMethod: $paymentMethod, status: $status, transactionId: $transactionId, createdAt: $createdAt, completedAt: $completedAt)';
+    return 'PaymentModel(id: $id, bookingId: $bookingId, payerId: $payerId, payeeId: $payeeId, amount: $amount, currency: $currency, paymentMethod: $paymentMethod, status: $status, transactionId: $transactionId, stripePaymentIntentId: $stripePaymentIntentId, stripeTransferId: $stripeTransferId, createdAt: $createdAt, completedAt: $completedAt, escrowStatus: $escrowStatus, escrowHeldAt: $escrowHeldAt, escrowReleasedAt: $escrowReleasedAt, platformFee: $platformFee, processingFee: $processingFee, netAmount: $netAmount, refundReason: $refundReason, refundedAt: $refundedAt)';
   }
 
   @override
@@ -315,15 +489,35 @@ class _$PaymentModelImpl implements _PaymentModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.transactionId, transactionId) ||
                 other.transactionId == transactionId) &&
+            (identical(other.stripePaymentIntentId, stripePaymentIntentId) ||
+                other.stripePaymentIntentId == stripePaymentIntentId) &&
+            (identical(other.stripeTransferId, stripeTransferId) ||
+                other.stripeTransferId == stripeTransferId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.completedAt, completedAt) ||
-                other.completedAt == completedAt));
+                other.completedAt == completedAt) &&
+            (identical(other.escrowStatus, escrowStatus) ||
+                other.escrowStatus == escrowStatus) &&
+            (identical(other.escrowHeldAt, escrowHeldAt) ||
+                other.escrowHeldAt == escrowHeldAt) &&
+            (identical(other.escrowReleasedAt, escrowReleasedAt) ||
+                other.escrowReleasedAt == escrowReleasedAt) &&
+            (identical(other.platformFee, platformFee) ||
+                other.platformFee == platformFee) &&
+            (identical(other.processingFee, processingFee) ||
+                other.processingFee == processingFee) &&
+            (identical(other.netAmount, netAmount) ||
+                other.netAmount == netAmount) &&
+            (identical(other.refundReason, refundReason) ||
+                other.refundReason == refundReason) &&
+            (identical(other.refundedAt, refundedAt) ||
+                other.refundedAt == refundedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     bookingId,
@@ -334,9 +528,19 @@ class _$PaymentModelImpl implements _PaymentModel {
     paymentMethod,
     status,
     transactionId,
+    stripePaymentIntentId,
+    stripeTransferId,
     createdAt,
     completedAt,
-  );
+    escrowStatus,
+    escrowHeldAt,
+    escrowReleasedAt,
+    platformFee,
+    processingFee,
+    netAmount,
+    refundReason,
+    refundedAt,
+  ]);
 
   /// Create a copy of PaymentModel
   /// with the given fields replaced by the non-null parameter values.
@@ -362,9 +566,19 @@ abstract class _PaymentModel implements PaymentModel {
     required final String currency,
     required final String paymentMethod,
     required final String status,
-    required final String? transactionId,
+    final String? transactionId,
+    final String? stripePaymentIntentId,
+    final String? stripeTransferId,
     required final DateTime createdAt,
-    required final DateTime? completedAt,
+    final DateTime? completedAt,
+    final String escrowStatus,
+    final DateTime? escrowHeldAt,
+    final DateTime? escrowReleasedAt,
+    final double platformFee,
+    final double processingFee,
+    final double netAmount,
+    final String? refundReason,
+    final DateTime? refundedAt,
   }) = _$PaymentModelImpl;
 
   factory _PaymentModel.fromJson(Map<String, dynamic> json) =
@@ -383,15 +597,36 @@ abstract class _PaymentModel implements PaymentModel {
   @override
   String get currency;
   @override
-  String get paymentMethod; // 'card', 'wallet', 'bank_transfer'
+  String get paymentMethod; // 'card', 'wallet', 'bank_transfer', 'stripe'
   @override
-  String get status; // 'pending', 'processing', 'completed', 'failed', 'refunded'
+  String get status; // PaymentStatus values
   @override
   String? get transactionId;
   @override
+  String? get stripePaymentIntentId;
+  @override
+  String? get stripeTransferId;
+  @override
   DateTime get createdAt;
   @override
-  DateTime? get completedAt;
+  DateTime? get completedAt; // Escrow fields
+  @override
+  String get escrowStatus; // EscrowStatus values
+  @override
+  DateTime? get escrowHeldAt;
+  @override
+  DateTime? get escrowReleasedAt; // Fee breakdown
+  @override
+  double get platformFee;
+  @override
+  double get processingFee;
+  @override
+  double get netAmount; // Amount after fees
+  // Refund info
+  @override
+  String? get refundReason;
+  @override
+  DateTime? get refundedAt;
 
   /// Create a copy of PaymentModel
   /// with the given fields replaced by the non-null parameter values.

@@ -7,11 +7,23 @@ import '../providers/tracking_provider.dart';
 class TrackingScreen extends ConsumerStatefulWidget {
   final String tripId;
   final bool isDriver;
+  final double? originLat;
+  final double? originLng;
+  final double? destLat;
+  final double? destLng;
+  final String? originName;
+  final String? destName;
 
   const TrackingScreen({
     super.key,
     required this.tripId,
     this.isDriver = false,
+    this.originLat,
+    this.originLng,
+    this.destLat,
+    this.destLng,
+    this.originName,
+    this.destName,
   });
 
   @override
@@ -60,7 +72,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
             Switch(
               value: _isTracking,
               onChanged: (value) => _toggleTracking(value),
-              activeColor: Colors.green,
+              activeTrackColor: Colors.green.withValues(alpha: 0.5),
+              activeThumbColor: Colors.green,
             ),
         ],
       ),
@@ -97,11 +110,40 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
   }
 
   Widget _buildMap(LiveLocation? location) {
-    final initialPosition = location != null
-        ? LatLng(location.latitude, location.longitude)
-        : const LatLng(0, 0);
+    // Determine initial position
+    LatLng initialPosition;
+    if (location != null) {
+      initialPosition = LatLng(location.latitude, location.longitude);
+    } else if (widget.originLat != null && widget.originLng != null) {
+      initialPosition = LatLng(widget.originLat!, widget.originLng!);
+    } else {
+      initialPosition = const LatLng(0, 0);
+    }
 
+    // Build markers
     final markers = <Marker>{};
+
+    // Origin marker
+    if (widget.originLat != null && widget.originLng != null) {
+      markers.add(Marker(
+        markerId: const MarkerId('origin'),
+        position: LatLng(widget.originLat!, widget.originLng!),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        infoWindow: InfoWindow(title: 'Pickup', snippet: widget.originName ?? 'Origin'),
+      ));
+    }
+
+    // Destination marker
+    if (widget.destLat != null && widget.destLng != null) {
+      markers.add(Marker(
+        markerId: const MarkerId('destination'),
+        position: LatLng(widget.destLat!, widget.destLng!),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        infoWindow: InfoWindow(title: 'Dropoff', snippet: widget.destName ?? 'Destination'),
+      ));
+    }
+
+    // Driver location marker
     if (location != null) {
       markers.add(Marker(
         markerId: const MarkerId('driver'),
@@ -111,23 +153,59 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       ));
     }
 
+    // Build route polyline
+    final polylines = <Polyline>{};
+    if (widget.originLat != null && widget.originLng != null &&
+        widget.destLat != null && widget.destLng != null) {
+      polylines.add(Polyline(
+        polylineId: const PolylineId('route'),
+        points: [
+          LatLng(widget.originLat!, widget.originLng!),
+          LatLng(widget.destLat!, widget.destLng!),
+        ],
+        color: Colors.blue,
+        width: 4,
+        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+      ));
+    }
+
     return GoogleMap(
-      initialCameraPosition: CameraPosition(target: initialPosition, zoom: 15),
+      initialCameraPosition: CameraPosition(target: initialPosition, zoom: 12),
       markers: markers,
+      polylines: polylines,
       myLocationEnabled: true,
       myLocationButtonEnabled: true,
       onMapCreated: (controller) {
         _mapController = controller;
-        if (location != null) {
-          controller.animateCamera(
-            CameraUpdate.newLatLngZoom(
-              LatLng(location.latitude, location.longitude),
-              15,
-            ),
-          );
-        }
+        _fitMapToBounds();
       },
     );
+  }
+
+  void _fitMapToBounds() {
+    if (_mapController == null) return;
+
+    final points = <LatLng>[];
+    if (widget.originLat != null && widget.originLng != null) {
+      points.add(LatLng(widget.originLat!, widget.originLng!));
+    }
+    if (widget.destLat != null && widget.destLng != null) {
+      points.add(LatLng(widget.destLat!, widget.destLng!));
+    }
+
+    if (points.length >= 2) {
+      final bounds = LatLngBounds(
+        southwest: LatLng(
+          points.map((p) => p.latitude).reduce((a, b) => a < b ? a : b),
+          points.map((p) => p.longitude).reduce((a, b) => a < b ? a : b),
+        ),
+        northeast: LatLng(
+          points.map((p) => p.latitude).reduce((a, b) => a > b ? a : b),
+          points.map((p) => p.longitude).reduce((a, b) => a > b ? a : b),
+        ),
+      );
+      _mapController!.animateCamera(CameraUpdate.newLatLngBounds(bounds, 80));
+    }
   }
 
   Widget _buildInfoPanel(TripTracking? tracking, LiveLocation? location) {
@@ -138,7 +216,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -2)),
         ],
       ),
       child: Column(

@@ -25,6 +25,8 @@ import 'package:fitareeaee/features/tracking/presentation/pages/tracking_screen.
 import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
 import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
 import 'package:fitareeaee/features/ai/presentation/pages/ai_assistant_screen.dart';
+import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/package_photos_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,8 +51,10 @@ class AppRoutes {
   // New routes
   static const wallet = '/wallet';
   static const verification = '/verification';
+  static const driverProfile = '/driver-profile';
   static const notifications = '/notifications';
   static const tracking = '/tracking';
+  static const packagePhotos = '/package-photos';
   static const sos = '/sos';
   static const helpCenter = '/help';
   static const aiAssistant = '/ai-assistant';
@@ -108,7 +112,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '${AppRoutes.trips}/create',
         name: 'create-trip',
-        builder: (context, state) => const CreateTripScreen(),
+        builder: (context, state) {
+          // Get role from query parameter (driver or rider)
+          final role = state.uri.queryParameters['role'];
+          return CreateTripScreen(role: role);
+        },
       ),
       GoRoute(
         path: '${AppRoutes.trips}/:id',
@@ -212,6 +220,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const VerificationScreen(),
       ),
 
+      // Driver Profile Route
+      GoRoute(
+        path: AppRoutes.driverProfile,
+        name: 'driver-profile',
+        builder: (context, state) {
+          final isRequired = state.uri.queryParameters['required'] == 'true';
+          return DriverProfileScreen(isRequired: isRequired);
+        },
+      ),
+
       // Notifications Route
       GoRoute(
         path: AppRoutes.notifications,
@@ -225,7 +243,36 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'tracking',
         builder: (context, state) {
           final tripId = state.pathParameters['tripId'] ?? '';
-          return TrackingScreen(tripId: tripId);
+          final params = state.uri.queryParameters;
+          return TrackingScreen(
+            tripId: tripId,
+            isDriver: params['isDriver'] == 'true',
+            originLat: double.tryParse(params['originLat'] ?? ''),
+            originLng: double.tryParse(params['originLng'] ?? ''),
+            destLat: double.tryParse(params['destLat'] ?? ''),
+            destLng: double.tryParse(params['destLng'] ?? ''),
+            originName: params['originName'],
+            destName: params['destName'],
+          );
+        },
+      ),
+
+      // Package Photos Route
+      GoRoute(
+        path: '${AppRoutes.packagePhotos}/:bookingId',
+        name: 'package-photos',
+        builder: (context, state) {
+          final bookingId = state.pathParameters['bookingId'] ?? '';
+          final tripId = state.uri.queryParameters['tripId'] ?? '';
+          final typeStr = state.uri.queryParameters['type'] ?? 'pickup';
+          final photoType = typeStr == 'dropoff'
+              ? PackagePhotoType.dropoff
+              : PackagePhotoType.pickup;
+          return PackagePhotosScreen(
+            bookingId: bookingId,
+            tripId: tripId,
+            photoType: photoType,
+          );
         },
       ),
 

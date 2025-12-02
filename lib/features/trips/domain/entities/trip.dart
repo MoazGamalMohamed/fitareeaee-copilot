@@ -1,4 +1,3 @@
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'trip.freezed.dart';
@@ -13,12 +12,12 @@ enum TripDirection { offer, request }
 /// Trip status
 enum TripStatus { pending, accepted, inProgress, completed, cancelled }
 
-/// Trip entity
+/// Trip entity - supports combined person + package trips
 @freezed
 class Trip with _$Trip {
   const factory Trip({
     required String id,
-    @JsonKey(name: 'type') required String type, // 'person' or 'package'
+    @JsonKey(name: 'type') required String type, // 'person', 'package', or 'both'
     @JsonKey(name: 'direction') required String direction, // 'offer' or 'request'
     required String driverId,
     String? passengerId,
@@ -43,6 +42,15 @@ class Trip with _$Trip {
     @Default({}) Map<String, dynamic> metadata,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
+
+    // Combined trip support
+    @JsonKey(name: 'includes_person') @Default(true) bool includesPerson,
+    @JsonKey(name: 'includes_package') @Default(false) bool includesPackage,
+
+    // Package-specific fields
+    @JsonKey(name: 'package_weight') double? packageWeight, // kg
+    @JsonKey(name: 'package_description') String? packageDescription,
+    @JsonKey(name: 'package_photo_urls') @Default([]) List<String> packagePhotoUrls,
   }) = _Trip;
 
   factory Trip.fromJson(Map<String, dynamic> json) => _$TripFromJson(json);

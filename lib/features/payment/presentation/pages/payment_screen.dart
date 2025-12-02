@@ -62,6 +62,29 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Escrow Info Banner
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.security, color: Colors.blue, size: 20),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Your payment is protected. Funds are held securely until the trip is completed.',
+                    style: TextStyle(fontSize: 12, color: Colors.blue),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           // Payment Summary
           Card(
             child: Padding(
@@ -72,9 +95,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   Text('Payment Summary', style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 12),
                   _buildSummaryRow('Trip Booking', '\$${widget.booking.totalPrice.toStringAsFixed(2)}'),
-                  _buildSummaryRow('Service Fee', '\$0.00'),
+                  _buildSummaryRow('Service Fee (10%)', '\$${(widget.booking.totalPrice * 0.10).toStringAsFixed(2)}'),
+                  _buildSummaryRow('Processing Fee', '\$${((widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}'),
                   const Divider(),
-                  _buildSummaryRow('Total', '\$${widget.booking.totalPrice.toStringAsFixed(2)}', isBold: true),
+                  _buildSummaryRow('Total', '\$${(widget.booking.totalPrice + (widget.booking.totalPrice * 0.10) + (widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}', isBold: true),
                 ],
               ),
             ),
