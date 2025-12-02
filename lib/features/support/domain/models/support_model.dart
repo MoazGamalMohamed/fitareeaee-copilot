@@ -25,7 +25,7 @@ class SupportTicket with _$SupportTicket {
 
   const factory SupportTicket({
     required String id,
-    required String oderId,
+    required String userId,
     String? tripId,
     required TicketCategory category,
     required TicketStatus status,

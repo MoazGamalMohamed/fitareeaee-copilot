@@ -122,6 +122,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Expanded(
                     child: _buildQuickLink(
                       context,
+                      icon: Icons.map,
+                      label: 'Map',
+                      onTap: () => context.push('/trips/map'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildQuickLink(
+                      context,
                       icon: Icons.history,
                       label: 'My Trips',
                       onTap: () => context.push('/trips'),
@@ -308,7 +317,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // Show loading and proceed - will check on create trip screen
         context.push('/trips/create?role=driver');
       },
-      error: (_, __) {
+      error: (e, _) {
         // On error, proceed anyway - will check on create trip screen
         context.push('/trips/create?role=driver');
       },

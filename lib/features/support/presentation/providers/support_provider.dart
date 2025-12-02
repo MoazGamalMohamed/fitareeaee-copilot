@@ -75,7 +75,7 @@ Future<SupportTicket> createTicket({
 
   return SupportTicket(
     id: ticketRef.id,
-    oderId: user.uid,
+    userId: user.uid,
     tripId: tripId,
     category: category,
     status: TicketStatus.open,

@@ -2,11 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/services/openrouter_service.dart';
 
 /// Provider for OpenRouter AI service
-/// Note: Replace 'YOUR_API_KEY' with actual API key from environment/config
+/// Note: Set OPENROUTER_API_KEY environment variable or use --dart-define
 final openRouterServiceProvider = Provider<OpenRouterService>((ref) {
-  // TODO: Get API key from environment config
   const apiKey = String.fromEnvironment('OPENROUTER_API_KEY', defaultValue: '');
   return OpenRouterService(apiKey: apiKey);
+});
+
+/// Check if AI service is available (has API key)
+final isAIAvailableProvider = Provider<bool>((ref) {
+  const apiKey = String.fromEnvironment('OPENROUTER_API_KEY', defaultValue: '');
+  return apiKey.isNotEmpty;
 });
 
 /// Provider for generating trip description
@@ -40,12 +45,25 @@ final faqAnswerProvider = FutureProvider.family<String, String>((ref, question) 
 /// State notifier for AI chat assistant
 class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
   final OpenRouterService _service;
+  final bool _isAvailable;
 
-  AIChatNotifier(this._service) : super([]);
+  AIChatNotifier(this._service, this._isAvailable) : super([]);
 
   Future<void> sendMessage(String message) async {
     // Add user message
     state = [...state, ChatMessage(role: 'user', content: message)];
+
+    // Check if AI is available
+    if (!_isAvailable) {
+      state = [
+        ...state,
+        ChatMessage(
+          role: 'assistant',
+          content: _getOfflineResponse(message),
+        ),
+      ];
+      return;
+    }
 
     try {
       final response = await _service.answerFAQ(message);
@@ -55,9 +73,30 @@ class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
         ...state,
         ChatMessage(
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again later.',
+          content: 'Sorry, I encountered an error. Please try again later or contact support.',
         ),
       ];
+    }
+  }
+
+  /// Provide basic offline responses for common questions
+  String _getOfflineResponse(String question) {
+    final q = question.toLowerCase();
+
+    if (q.contains('book') || q.contains('ride')) {
+      return 'To book a ride, go to the home screen and tap "Find a Ride". Enter your pickup and destination locations, select a trip, and confirm your booking.';
+    } else if (q.contains('payment') || q.contains('pay')) {
+      return 'We accept credit/debit cards and digital wallets. You can manage your payment methods in Settings > Payment Methods.';
+    } else if (q.contains('cancel')) {
+      return 'To cancel a booking, go to My Trips, select the trip, and tap "Cancel Booking". Note that cancellation fees may apply depending on timing.';
+    } else if (q.contains('rating') || q.contains('review')) {
+      return 'After each trip, you can rate your driver/rider from 1-5 stars. Ratings help maintain quality in our community.';
+    } else if (q.contains('safety') || q.contains('emergency')) {
+      return 'For emergencies, use the SOS button in the app. You can also share your trip with trusted contacts. Your safety is our priority!';
+    } else if (q.contains('package') || q.contains('delivery')) {
+      return 'To send a package, select "Offer a Ride" and choose "Package" as the trip type. Add package details and photos for verification.';
+    } else {
+      return 'I\'m currently in offline mode. For detailed assistance, please contact our support team through Help Center > Contact Support.';
     }
   }
 
@@ -68,7 +107,8 @@ class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
 
 final aiChatProvider = StateNotifierProvider<AIChatNotifier, List<ChatMessage>>((ref) {
   final service = ref.read(openRouterServiceProvider);
-  return AIChatNotifier(service);
+  final isAvailable = ref.read(isAIAvailableProvider);
+  return AIChatNotifier(service, isAvailable);
 });
 
 // Parameter classes

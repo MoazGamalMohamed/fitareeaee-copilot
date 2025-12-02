@@ -184,7 +184,7 @@ class _CreateTicketSheetState extends State<_CreateTicketSheet> {
           const Text('Create Support Ticket', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           DropdownButtonFormField<TicketCategory>(
-            value: _category,
+            initialValue: _category,
             decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
             items: TicketCategory.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name.toUpperCase()))).toList(),
             onChanged: (v) => setState(() => _category = v!),

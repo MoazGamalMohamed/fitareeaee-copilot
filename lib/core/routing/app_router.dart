@@ -27,6 +27,7 @@ import 'package:fitareeaee/features/support/presentation/pages/help_center_scree
 import 'package:fitareeaee/features/ai/presentation/pages/ai_assistant_screen.dart';
 import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/package_photos_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/nearby_trips_map_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -58,6 +59,7 @@ class AppRoutes {
   static const sos = '/sos';
   static const helpCenter = '/help';
   static const aiAssistant = '/ai-assistant';
+  static const nearbyTripsMap = '/trips/map';
 }
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -108,6 +110,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.trips,
         name: 'trips',
         builder: (context, state) => const TripsListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.nearbyTripsMap,
+        name: 'nearby-trips-map',
+        builder: (context, state) => const NearbyTripsMapScreen(),
       ),
       GoRoute(
         path: '${AppRoutes.trips}/create',

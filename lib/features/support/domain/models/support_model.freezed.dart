@@ -22,7 +22,7 @@ SupportTicket _$SupportTicketFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SupportTicket {
   String get id => throw _privateConstructorUsedError;
-  String get oderId => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String? get tripId => throw _privateConstructorUsedError;
   TicketCategory get category => throw _privateConstructorUsedError;
   TicketStatus get status => throw _privateConstructorUsedError;
@@ -53,7 +53,7 @@ abstract class $SupportTicketCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String oderId,
+    String userId,
     String? tripId,
     TicketCategory category,
     TicketStatus status,
@@ -83,7 +83,7 @@ class _$SupportTicketCopyWithImpl<$Res, $Val extends SupportTicket>
   @override
   $Res call({
     Object? id = null,
-    Object? oderId = null,
+    Object? userId = null,
     Object? tripId = freezed,
     Object? category = null,
     Object? status = null,
@@ -101,9 +101,9 @@ class _$SupportTicketCopyWithImpl<$Res, $Val extends SupportTicket>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            oderId: null == oderId
-                ? _value.oderId
-                : oderId // ignore: cast_nullable_to_non_nullable
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
                       as String,
             tripId: freezed == tripId
                 ? _value.tripId
@@ -162,7 +162,7 @@ abstract class _$$SupportTicketImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String oderId,
+    String userId,
     String? tripId,
     TicketCategory category,
     TicketStatus status,
@@ -191,7 +191,7 @@ class __$$SupportTicketImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? oderId = null,
+    Object? userId = null,
     Object? tripId = freezed,
     Object? category = null,
     Object? status = null,
@@ -209,9 +209,9 @@ class __$$SupportTicketImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        oderId: null == oderId
-            ? _value.oderId
-            : oderId // ignore: cast_nullable_to_non_nullable
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
                   as String,
         tripId: freezed == tripId
             ? _value.tripId
@@ -263,7 +263,7 @@ class __$$SupportTicketImplCopyWithImpl<$Res>
 class _$SupportTicketImpl extends _SupportTicket {
   const _$SupportTicketImpl({
     required this.id,
-    required this.oderId,
+    required this.userId,
     this.tripId,
     required this.category,
     required this.status,
@@ -283,7 +283,7 @@ class _$SupportTicketImpl extends _SupportTicket {
   @override
   final String id;
   @override
-  final String oderId;
+  final String userId;
   @override
   final String? tripId;
   @override
@@ -315,7 +315,7 @@ class _$SupportTicketImpl extends _SupportTicket {
 
   @override
   String toString() {
-    return 'SupportTicket(id: $id, oderId: $oderId, tripId: $tripId, category: $category, status: $status, subject: $subject, description: $description, attachments: $attachments, assignedTo: $assignedTo, createdAt: $createdAt, updatedAt: $updatedAt, resolvedAt: $resolvedAt)';
+    return 'SupportTicket(id: $id, userId: $userId, tripId: $tripId, category: $category, status: $status, subject: $subject, description: $description, attachments: $attachments, assignedTo: $assignedTo, createdAt: $createdAt, updatedAt: $updatedAt, resolvedAt: $resolvedAt)';
   }
 
   @override
@@ -324,7 +324,7 @@ class _$SupportTicketImpl extends _SupportTicket {
         (other.runtimeType == runtimeType &&
             other is _$SupportTicketImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.oderId, oderId) || other.oderId == oderId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.tripId, tripId) || other.tripId == tripId) &&
             (identical(other.category, category) ||
                 other.category == category) &&
@@ -351,7 +351,7 @@ class _$SupportTicketImpl extends _SupportTicket {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    oderId,
+    userId,
     tripId,
     category,
     status,
@@ -381,7 +381,7 @@ class _$SupportTicketImpl extends _SupportTicket {
 abstract class _SupportTicket extends SupportTicket {
   const factory _SupportTicket({
     required final String id,
-    required final String oderId,
+    required final String userId,
     final String? tripId,
     required final TicketCategory category,
     required final TicketStatus status,
@@ -401,7 +401,7 @@ abstract class _SupportTicket extends SupportTicket {
   @override
   String get id;
   @override
-  String get oderId;
+  String get userId;
   @override
   String? get tripId;
   @override

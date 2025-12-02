@@ -31,10 +31,19 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<Trip> createTrip(Trip trip) async {
     try {
-      final docRef = _firestore.collection('trips').doc(trip.id);
-      final model = trip.toModel();
+      // Use auto-generated ID if trip.id is empty
+      final DocumentReference docRef;
+      if (trip.id.isEmpty) {
+        docRef = _firestore.collection('trips').doc();
+      } else {
+        docRef = _firestore.collection('trips').doc(trip.id);
+      }
+
+      // Create trip with the generated ID
+      final tripWithId = trip.copyWith(id: docRef.id);
+      final model = tripWithId.toModel();
       await docRef.set(model.toFirestore());
-      return trip;
+      return tripWithId;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {

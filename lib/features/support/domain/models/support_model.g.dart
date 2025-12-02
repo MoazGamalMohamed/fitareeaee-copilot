@@ -9,7 +9,7 @@ part of 'support_model.dart';
 _$SupportTicketImpl _$$SupportTicketImplFromJson(Map<String, dynamic> json) =>
     _$SupportTicketImpl(
       id: json['id'] as String,
-      oderId: json['oderId'] as String,
+      userId: json['userId'] as String,
       tripId: json['tripId'] as String?,
       category: $enumDecode(_$TicketCategoryEnumMap, json['category']),
       status: $enumDecode(_$TicketStatusEnumMap, json['status']),
@@ -31,7 +31,7 @@ _$SupportTicketImpl _$$SupportTicketImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SupportTicketImplToJson(_$SupportTicketImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'oderId': instance.oderId,
+      'userId': instance.userId,
       'tripId': instance.tripId,
       'category': _$TicketCategoryEnumMap[instance.category]!,
       'status': _$TicketStatusEnumMap[instance.status]!,

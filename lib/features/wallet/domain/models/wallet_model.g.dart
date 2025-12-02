@@ -42,7 +42,7 @@ _$WalletTransactionImpl _$$WalletTransactionImplFromJson(
   Map<String, dynamic> json,
 ) => _$WalletTransactionImpl(
   id: json['id'] as String,
-  oderId: json['oderId'] as String,
+  userId: json['userId'] as String,
   type: $enumDecode(_$TransactionTypeEnumMap, json['type']),
   status: $enumDecode(_$TransactionStatusEnumMap, json['status']),
   amount: (json['amount'] as num).toDouble(),
@@ -64,7 +64,7 @@ Map<String, dynamic> _$$WalletTransactionImplToJson(
   _$WalletTransactionImpl instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'oderId': instance.oderId,
+  'userId': instance.userId,
   'type': _$TransactionTypeEnumMap[instance.type]!,
   'status': _$TransactionStatusEnumMap[instance.status]!,
   'amount': instance.amount,

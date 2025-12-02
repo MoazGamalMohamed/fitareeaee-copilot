@@ -436,7 +436,7 @@ WalletTransaction _$WalletTransactionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$WalletTransaction {
   String get id => throw _privateConstructorUsedError;
-  String get oderId => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   TransactionType get type => throw _privateConstructorUsedError;
   TransactionStatus get status => throw _privateConstructorUsedError;
   double get amount => throw _privateConstructorUsedError;
@@ -470,7 +470,7 @@ abstract class $WalletTransactionCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String oderId,
+    String userId,
     TransactionType type,
     TransactionStatus status,
     double amount,
@@ -503,7 +503,7 @@ class _$WalletTransactionCopyWithImpl<$Res, $Val extends WalletTransaction>
   @override
   $Res call({
     Object? id = null,
-    Object? oderId = null,
+    Object? userId = null,
     Object? type = null,
     Object? status = null,
     Object? amount = null,
@@ -524,9 +524,9 @@ class _$WalletTransactionCopyWithImpl<$Res, $Val extends WalletTransaction>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            oderId: null == oderId
-                ? _value.oderId
-                : oderId // ignore: cast_nullable_to_non_nullable
+            userId: null == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
                       as String,
             type: null == type
                 ? _value.type
@@ -597,7 +597,7 @@ abstract class _$$WalletTransactionImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String oderId,
+    String userId,
     TransactionType type,
     TransactionStatus status,
     double amount,
@@ -629,7 +629,7 @@ class __$$WalletTransactionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? oderId = null,
+    Object? userId = null,
     Object? type = null,
     Object? status = null,
     Object? amount = null,
@@ -650,9 +650,9 @@ class __$$WalletTransactionImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        oderId: null == oderId
-            ? _value.oderId
-            : oderId // ignore: cast_nullable_to_non_nullable
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
                   as String,
         type: null == type
             ? _value.type
@@ -716,7 +716,7 @@ class __$$WalletTransactionImplCopyWithImpl<$Res>
 class _$WalletTransactionImpl implements _WalletTransaction {
   const _$WalletTransactionImpl({
     required this.id,
-    required this.oderId,
+    required this.userId,
     required this.type,
     required this.status,
     required this.amount,
@@ -738,7 +738,7 @@ class _$WalletTransactionImpl implements _WalletTransaction {
   @override
   final String id;
   @override
-  final String oderId;
+  final String userId;
   @override
   final TransactionType type;
   @override
@@ -768,7 +768,7 @@ class _$WalletTransactionImpl implements _WalletTransaction {
 
   @override
   String toString() {
-    return 'WalletTransaction(id: $id, oderId: $oderId, type: $type, status: $status, amount: $amount, currency: $currency, description: $description, tripId: $tripId, bookingId: $bookingId, paymentIntentId: $paymentIntentId, counterpartyId: $counterpartyId, counterpartyName: $counterpartyName, failureReason: $failureReason, createdAt: $createdAt, completedAt: $completedAt)';
+    return 'WalletTransaction(id: $id, userId: $userId, type: $type, status: $status, amount: $amount, currency: $currency, description: $description, tripId: $tripId, bookingId: $bookingId, paymentIntentId: $paymentIntentId, counterpartyId: $counterpartyId, counterpartyName: $counterpartyName, failureReason: $failureReason, createdAt: $createdAt, completedAt: $completedAt)';
   }
 
   @override
@@ -777,7 +777,7 @@ class _$WalletTransactionImpl implements _WalletTransaction {
         (other.runtimeType == runtimeType &&
             other is _$WalletTransactionImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.oderId, oderId) || other.oderId == oderId) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.amount, amount) || other.amount == amount) &&
@@ -807,7 +807,7 @@ class _$WalletTransactionImpl implements _WalletTransaction {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    oderId,
+    userId,
     type,
     status,
     amount,
@@ -843,7 +843,7 @@ class _$WalletTransactionImpl implements _WalletTransaction {
 abstract class _WalletTransaction implements WalletTransaction {
   const factory _WalletTransaction({
     required final String id,
-    required final String oderId,
+    required final String userId,
     required final TransactionType type,
     required final TransactionStatus status,
     required final double amount,
@@ -865,7 +865,7 @@ abstract class _WalletTransaction implements WalletTransaction {
   @override
   String get id;
   @override
-  String get oderId;
+  String get userId;
   @override
   TransactionType get type;
   @override

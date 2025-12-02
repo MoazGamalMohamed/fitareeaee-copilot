@@ -20,10 +20,10 @@ final userVerificationProvider = StreamProvider.family<UserVerification?, String
 });
 
 /// Provider for current user's verification
-final currentUserVerificationProvider = StreamProvider<UserVerification?>((ref) {
+final currentUserVerificationProvider = FutureProvider<UserVerification?>((ref) async {
   final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return Stream.value(null);
-  return ref.watch(userVerificationProvider(user.uid).stream);
+  if (user == null) return null;
+  return ref.watch(userVerificationProvider(user.uid).future);
 });
 
 /// Upload verification document

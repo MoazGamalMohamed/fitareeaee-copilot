@@ -21,9 +21,11 @@ class NotificationsScreen extends ConsumerWidget {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
                 await markAllNotificationsAsRead(user.uid);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('All notifications marked as read')),
-                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('All notifications marked as read')),
+                  );
+                }
               }
             },
             tooltip: 'Mark all as read',

@@ -93,7 +93,7 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
                 color: _isTriggering ? Colors.red.shade900 : Colors.red,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.5),
+                    color: Colors.red.withValues(alpha: 0.5),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -246,7 +246,7 @@ class _AddContactDialogState extends State<_AddContactDialog> {
         ElevatedButton(
           onPressed: () async {
             await addEmergencyContact(name: _nameController.text, phone: _phoneController.text);
-            if (mounted) Navigator.pop(context);
+            if (context.mounted) Navigator.pop(context);
           },
           child: const Text('Add'),
         ),

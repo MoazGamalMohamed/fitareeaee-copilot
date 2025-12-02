@@ -45,7 +45,7 @@ class WalletModel with _$WalletModel {
 class WalletTransaction with _$WalletTransaction {
   const factory WalletTransaction({
     required String id,
-    required String oderId,
+    required String userId,
     required TransactionType type,
     required TransactionStatus status,
     required double amount,
