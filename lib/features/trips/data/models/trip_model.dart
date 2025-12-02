@@ -1,0 +1,131 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../domain/entities/trip.dart';
+
+part 'trip_model.freezed.dart';
+part 'trip_model.g.dart';
+
+@freezed
+class TripModel with _$TripModel {
+  const factory TripModel({
+    required String id,
+    @JsonKey(name: 'type') required String type,
+    @JsonKey(name: 'direction') required String direction,
+    required String driverId,
+    String? passengerId,
+    @JsonKey(name: 'origin_address') required String originAddress,
+    @JsonKey(name: 'destination_address') required String destinationAddress,
+    @JsonKey(name: 'origin_lat') required double originLat,
+    @JsonKey(name: 'origin_lng') required double originLng,
+    @JsonKey(name: 'destination_lat') required double destinationLat,
+    @JsonKey(name: 'destination_lng') required double destinationLng,
+    @JsonKey(name: 'departure_time') required DateTime departureTime,
+    required double distance,
+    @JsonKey(name: 'estimated_duration') required int estimatedDuration,
+    @JsonKey(name: 'price_per_seat') required double pricePerSeat,
+    @JsonKey(name: 'total_seats') required int totalSeats,
+    @JsonKey(name: 'available_seats') required int availableSeats,
+    @JsonKey(name: 'passenger_ids') @Default([]) List<String> passengerIds,
+    @Default('pending') String status,
+    String? description,
+    @Default(false) bool allowPets,
+    @Default(false) bool allowSmoking,
+    @Default([]) List<String> amenities,
+    @Default({}) Map<String, dynamic> metadata,
+    @JsonKey(name: 'created_at') required DateTime createdAt,
+    @JsonKey(name: 'updated_at') required DateTime updatedAt,
+  }) = _TripModel;
+
+  factory TripModel.fromJson(Map<String, dynamic> json) =>
+      _$TripModelFromJson(json);
+}
+
+extension TripModelExtension on TripModel {
+  Trip toEntity() => Trip(
+        id: id,
+        type: type,
+        direction: direction,
+        driverId: driverId,
+        passengerId: passengerId,
+        originAddress: originAddress,
+        destinationAddress: destinationAddress,
+        originLat: originLat,
+        originLng: originLng,
+        destinationLat: destinationLat,
+        destinationLng: destinationLng,
+        departureTime: departureTime,
+        distance: distance,
+        estimatedDuration: estimatedDuration,
+        pricePerSeat: pricePerSeat,
+        totalSeats: totalSeats,
+        availableSeats: availableSeats,
+        passengerIds: passengerIds,
+        status: status,
+        description: description,
+        allowPets: allowPets,
+        allowSmoking: allowSmoking,
+        amenities: amenities,
+        metadata: metadata,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+
+  Map<String, dynamic> toFirestore() => {
+        'id': id,
+        'type': type,
+        'direction': direction,
+        'driverId': driverId,
+        'passengerId': passengerId,
+        'origin_address': originAddress,
+        'destination_address': destinationAddress,
+        'origin_lat': originLat,
+        'origin_lng': originLng,
+        'destination_lat': destinationLat,
+        'destination_lng': destinationLng,
+        'departure_time': departureTime,
+        'distance': distance,
+        'estimated_duration': estimatedDuration,
+        'price_per_seat': pricePerSeat,
+        'total_seats': totalSeats,
+        'available_seats': availableSeats,
+        'passenger_ids': passengerIds,
+        'status': status,
+        'description': description,
+        'allow_pets': allowPets,
+        'allow_smoking': allowSmoking,
+        'amenities': amenities,
+        'metadata': metadata,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+      };
+}
+
+extension TripToModel on Trip {
+  TripModel toModel() => TripModel(
+        id: id,
+        type: type,
+        direction: direction,
+        driverId: driverId,
+        passengerId: passengerId,
+        originAddress: originAddress,
+        destinationAddress: destinationAddress,
+        originLat: originLat,
+        originLng: originLng,
+        destinationLat: destinationLat,
+        destinationLng: destinationLng,
+        departureTime: departureTime,
+        distance: distance,
+        estimatedDuration: estimatedDuration,
+        pricePerSeat: pricePerSeat,
+        totalSeats: totalSeats,
+        availableSeats: availableSeats,
+        passengerIds: passengerIds,
+        status: status,
+        description: description,
+        allowPets: allowPets,
+        allowSmoking: allowSmoking,
+        amenities: amenities,
+        metadata: metadata,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
+}
