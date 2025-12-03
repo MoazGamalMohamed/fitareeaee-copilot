@@ -197,7 +197,7 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Stream<List<Trip>> streamAvailableTrips() {
+  Stream<List<Trip>> streamAvailableTrips({String? excludeUserId}) {
     return _firestore
         .collection('trips')
         .snapshots()
@@ -207,6 +207,12 @@ class TripRepositoryImpl implements TripRepository {
         try {
           final data = _convertTimestamps(doc.data());
           final trip = Trip.fromJson(data);
+          
+          // Exclude user's own trips if excludeUserId is provided
+          if (excludeUserId != null && trip.driverId == excludeUserId) {
+            continue;
+          }
+          
           trips.add(trip);
         } catch (e) {
           print('Warning: Skipping invalid trip document ${doc.id}: $e');

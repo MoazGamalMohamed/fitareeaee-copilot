@@ -13,7 +13,7 @@ abstract class TripRepository {
     DateTime? departureDate,
     String? tripType,
   });
-  Stream<List<Trip>> streamAvailableTrips();
+  Stream<List<Trip>> streamAvailableTrips({String? excludeUserId});
   Future<void> bookTrip(String tripId, String userId);
   Future<void> cancelBooking(String tripId, String userId);
 }

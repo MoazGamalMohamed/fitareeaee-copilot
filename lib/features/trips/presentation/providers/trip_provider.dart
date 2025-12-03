@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/trip.dart';
 import '../../data/repositories/trip_repository_impl.dart' as repo;
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 // Repository Provider
 final tripRepositoryProvider = Provider((ref) {
@@ -15,7 +16,20 @@ final tripRepositoryProvider = Provider((ref) {
 // Stream Providers
 final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
-  return repository.streamAvailableTrips();
+  final currentUserAsync = ref.watch(authStateProvider);
+  
+  // Return empty stream if not authenticated
+  return currentUserAsync.when(
+    data: (user) {
+      if (user == null) {
+        return Stream.value([]);
+      }
+      // Stream available trips excluding user's own trips
+      return repository.streamAvailableTrips(excludeUserId: user.id);
+    },
+    loading: () => Stream.value([]),
+    error: (_, __) => Stream.value([]),
+  );
 });
 
 final userTripsProvider = StreamProvider.family<List<Trip>, String>((
