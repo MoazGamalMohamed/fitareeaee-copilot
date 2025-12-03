@@ -1,18 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user_profile.dart';
 
 part 'user_profile_model.freezed.dart';
 part 'user_profile_model.g.dart';
-
-/// Helper to parse DateTime from various Firestore formats
-DateTime _parseDateTime(dynamic value) {
-  if (value == null) return DateTime.now();
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
-  if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
-  return DateTime.now();
-}
 
 /// User profile data model with JSON serialization
 @freezed
@@ -41,36 +31,9 @@ class UserProfileModel with _$UserProfileModel {
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
   }) = _UserProfileModel;
 
-  /// Custom factory to handle Firestore Timestamp conversion
-  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
-    // Pre-process the json to handle Timestamps
-    final processedJson = Map<String, dynamic>.from(json);
-
-    // Handle created_at - can be Timestamp, String, or missing
-    if (processedJson['created_at'] != null) {
-      processedJson['created_at'] = _parseDateTime(processedJson['created_at']).toIso8601String();
-    } else if (processedJson['createdAt'] != null) {
-      processedJson['created_at'] = _parseDateTime(processedJson['createdAt']).toIso8601String();
-    } else {
-      processedJson['created_at'] = DateTime.now().toIso8601String();
-    }
-
-    // Handle updated_at - can be Timestamp, String, or missing
-    if (processedJson['updated_at'] != null) {
-      processedJson['updated_at'] = _parseDateTime(processedJson['updated_at']).toIso8601String();
-    } else if (processedJson['updatedAt'] != null) {
-      processedJson['updated_at'] = _parseDateTime(processedJson['updatedAt']).toIso8601String();
-    } else {
-      processedJson['updated_at'] = DateTime.now().toIso8601String();
-    }
-
-    // Ensure required fields have defaults
-    processedJson['userId'] ??= '';
-    processedJson['email'] ??= '';
-    processedJson['name'] ??= '';
-
-    return _$UserProfileModelFromJson(processedJson);
-  }
+  /// Factory to create from JSON
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
+      _$$UserProfileModelImplFromJson(json);
 }
 
 /// Extension to convert between model and entity

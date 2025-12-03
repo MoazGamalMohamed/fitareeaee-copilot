@@ -4,7 +4,7 @@ part 'verification_model.freezed.dart';
 part 'verification_model.g.dart';
 
 enum VerificationStatus { pending, approved, rejected, expired }
-enum VerificationType { email, phone, identity, driverLicense, vehicle }
+enum VerificationType { email, phone, identity, driverLicense, vehicle, selfieWithId }
 
 @freezed
 class VerificationModel with _$VerificationModel {
@@ -38,15 +38,18 @@ class UserVerification with _$UserVerification {
     @Default(false) bool identityVerified,
     @Default(false) bool driverLicenseVerified,
     @Default(false) bool vehicleVerified,
+    @Default(false) bool selfieWithIdVerified,
     String? identityDocumentUrl,
     String? driverLicenseUrl,
     String? vehicleRegistrationUrl,
+    String? selfieWithIdUrl,
     String? vehiclePlateNumber,
     String? vehicleModel,
     String? vehicleColor,
     DateTime? identityVerifiedAt,
     DateTime? driverLicenseVerifiedAt,
     DateTime? vehicleVerifiedAt,
+    DateTime? selfieWithIdVerifiedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _UserVerification;
@@ -54,12 +57,13 @@ class UserVerification with _$UserVerification {
   factory UserVerification.fromJson(Map<String, dynamic> json) =>
       _$UserVerificationFromJson(json);
 
-  /// Get verification level (0-3)
+  /// Get verification level (0-4)
   int get verificationLevel {
     int level = 0;
     if (emailVerified && phoneVerified) level = 1;
     if (level == 1 && identityVerified) level = 2;
-    if (level == 2 && (driverLicenseVerified || vehicleVerified)) level = 3;
+    if (level == 2 && selfieWithIdVerified) level = 3;
+    if (level == 3 && (driverLicenseVerified || vehicleVerified)) level = 4;
     return level;
   }
 
@@ -73,6 +77,8 @@ class UserVerification with _$UserVerification {
       case 2:
         return 'ID Verified';
       case 3:
+        return 'Selfie Verified';
+      case 4:
         return 'Fully Verified';
       default:
         return 'Unverified';
@@ -80,9 +86,12 @@ class UserVerification with _$UserVerification {
   }
 
   /// Check if user can be a driver
-  bool get canBeDriver => identityVerified && driverLicenseVerified;
+  bool get canBeDriver => identityVerified && selfieWithIdVerified && driverLicenseVerified;
 
   /// Check if user can be a courier
-  bool get canBeCourier => identityVerified;
+  bool get canBeCourier => identityVerified && selfieWithIdVerified;
+
+  /// Check if user can be matched (has payment and selfie verification)
+  bool get canBeMatched => selfieWithIdVerified;
 }
 

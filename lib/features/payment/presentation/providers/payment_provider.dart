@@ -366,40 +366,62 @@ final hasPaymentMethodProvider = Provider<bool>((ref) {
   );
 });
 
-/// Save a new payment method (card)
+/// Save a new payment method (card or bank account)
 Future<SavedPaymentMethod> savePaymentMethod({
-  required String cardNumber,
-  required String expiryMonth,
-  required String expiryYear,
-  required String cvv,
+  String? cardNumber,
+  String? expiryMonth,
+  String? expiryYear,
+  String? cvv,
+  String? accountNumber,
+  String? routingNumber,
+  String? bankName,
+  String? holderName,
+  required String type, // 'card' or 'bank'
   bool setAsDefault = true,
 }) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) throw Exception('Not authenticated');
 
-  // In production, this would tokenize the card via Stripe
-  // For now, we just save the last 4 digits
-  final last4 = cardNumber.replaceAll(' ', '').substring(cardNumber.length - 4);
-  final brand = _detectCardBrand(cardNumber);
+  String last4;
+  String? brand;
+
+  if (type == 'card') {
+    if (cardNumber == null || cardNumber.isEmpty) {
+      throw Exception('Card number is required');
+    }
+    final cleanNumber = cardNumber.replaceAll(' ', '');
+    last4 = cleanNumber.substring(cleanNumber.length - 4);
+    brand = _detectCardBrand(cardNumber);
+  } else {
+    if (accountNumber == null || accountNumber.isEmpty) {
+      throw Exception('Account number is required');
+    }
+    last4 = accountNumber.length >= 4
+        ? accountNumber.substring(accountNumber.length - 4)
+        : accountNumber;
+    brand = bankName;
+  }
 
   final docRef = _firestore.collection('payment_methods').doc();
   final method = SavedPaymentMethod(
     id: docRef.id,
     userId: user.uid,
-    type: 'card',
+    type: type,
     last4: last4,
     brand: brand,
     expiryMonth: expiryMonth,
     expiryYear: expiryYear,
+    bankName: bankName,
     isDefault: setAsDefault,
     createdAt: DateTime.now(),
   );
 
-  // If setting as default, unset other defaults
+  // If setting as default, unset other defaults for same type
   if (setAsDefault) {
     final existing = await _firestore
         .collection('payment_methods')
         .where('userId', isEqualTo: user.uid)
+        .where('type', isEqualTo: type)
         .where('isDefault', isEqualTo: true)
         .get();
 

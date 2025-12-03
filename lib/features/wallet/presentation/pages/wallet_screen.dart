@@ -710,6 +710,7 @@ class _AddPaymentMethodSheetState extends ConsumerState<AddPaymentMethodSheet> {
     try {
       final expiry = _expiryController.text.split('/');
       await savePaymentMethod(
+        type: 'card',
         cardNumber: _cardNumberController.text,
         expiryMonth: expiry[0],
         expiryYear: expiry[1],

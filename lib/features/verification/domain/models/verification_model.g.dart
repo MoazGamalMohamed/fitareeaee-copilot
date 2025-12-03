@@ -50,6 +50,7 @@ const _$VerificationTypeEnumMap = {
   VerificationType.identity: 'identity',
   VerificationType.driverLicense: 'driverLicense',
   VerificationType.vehicle: 'vehicle',
+  VerificationType.selfieWithId: 'selfieWithId',
 };
 
 const _$VerificationStatusEnumMap = {
@@ -68,9 +69,11 @@ _$UserVerificationImpl _$$UserVerificationImplFromJson(
   identityVerified: json['identityVerified'] as bool? ?? false,
   driverLicenseVerified: json['driverLicenseVerified'] as bool? ?? false,
   vehicleVerified: json['vehicleVerified'] as bool? ?? false,
+  selfieWithIdVerified: json['selfieWithIdVerified'] as bool? ?? false,
   identityDocumentUrl: json['identityDocumentUrl'] as String?,
   driverLicenseUrl: json['driverLicenseUrl'] as String?,
   vehicleRegistrationUrl: json['vehicleRegistrationUrl'] as String?,
+  selfieWithIdUrl: json['selfieWithIdUrl'] as String?,
   vehiclePlateNumber: json['vehiclePlateNumber'] as String?,
   vehicleModel: json['vehicleModel'] as String?,
   vehicleColor: json['vehicleColor'] as String?,
@@ -83,6 +86,9 @@ _$UserVerificationImpl _$$UserVerificationImplFromJson(
   vehicleVerifiedAt: json['vehicleVerifiedAt'] == null
       ? null
       : DateTime.parse(json['vehicleVerifiedAt'] as String),
+  selfieWithIdVerifiedAt: json['selfieWithIdVerifiedAt'] == null
+      ? null
+      : DateTime.parse(json['selfieWithIdVerifiedAt'] as String),
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
@@ -96,9 +102,11 @@ Map<String, dynamic> _$$UserVerificationImplToJson(
   'identityVerified': instance.identityVerified,
   'driverLicenseVerified': instance.driverLicenseVerified,
   'vehicleVerified': instance.vehicleVerified,
+  'selfieWithIdVerified': instance.selfieWithIdVerified,
   'identityDocumentUrl': instance.identityDocumentUrl,
   'driverLicenseUrl': instance.driverLicenseUrl,
   'vehicleRegistrationUrl': instance.vehicleRegistrationUrl,
+  'selfieWithIdUrl': instance.selfieWithIdUrl,
   'vehiclePlateNumber': instance.vehiclePlateNumber,
   'vehicleModel': instance.vehicleModel,
   'vehicleColor': instance.vehicleColor,
@@ -106,6 +114,7 @@ Map<String, dynamic> _$$UserVerificationImplToJson(
   'driverLicenseVerifiedAt': instance.driverLicenseVerifiedAt
       ?.toIso8601String(),
   'vehicleVerifiedAt': instance.vehicleVerifiedAt?.toIso8601String(),
+  'selfieWithIdVerifiedAt': instance.selfieWithIdVerifiedAt?.toIso8601String(),
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
 };

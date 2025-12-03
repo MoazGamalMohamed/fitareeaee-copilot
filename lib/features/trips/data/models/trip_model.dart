@@ -33,6 +33,13 @@ class TripModel with _$TripModel {
     @Default({}) Map<String, dynamic> metadata,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
+    // Combined trip support
+    @JsonKey(name: 'includes_person') @Default(true) bool includesPerson,
+    @JsonKey(name: 'includes_package') @Default(false) bool includesPackage,
+    // Package-specific fields
+    @JsonKey(name: 'package_weight') double? packageWeight,
+    @JsonKey(name: 'package_description') String? packageDescription,
+    @JsonKey(name: 'package_photo_urls') @Default([]) List<String> packagePhotoUrls,
   }) = _TripModel;
 
   factory TripModel.fromJson(Map<String, dynamic> json) =>
@@ -67,6 +74,11 @@ extension TripModelExtension on TripModel {
         metadata: metadata,
         createdAt: createdAt,
         updatedAt: updatedAt,
+        includesPerson: includesPerson,
+        includesPackage: includesPackage,
+        packageWeight: packageWeight,
+        packageDescription: packageDescription,
+        packagePhotoUrls: packagePhotoUrls,
       );
 
   Map<String, dynamic> toFirestore() => {
@@ -96,6 +108,11 @@ extension TripModelExtension on TripModel {
         'metadata': metadata,
         'created_at': createdAt,
         'updated_at': updatedAt,
+        'includes_person': includesPerson,
+        'includes_package': includesPackage,
+        'package_weight': packageWeight,
+        'package_description': packageDescription,
+        'package_photo_urls': packagePhotoUrls,
       };
 }
 
@@ -127,5 +144,10 @@ extension TripToModel on Trip {
         metadata: metadata,
         createdAt: createdAt,
         updatedAt: updatedAt,
+        includesPerson: includesPerson,
+        includesPackage: includesPackage,
+        packageWeight: packageWeight,
+        packageDescription: packageDescription,
+        packagePhotoUrls: packagePhotoUrls,
       );
 }

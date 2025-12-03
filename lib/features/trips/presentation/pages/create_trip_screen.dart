@@ -814,6 +814,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       return; // Error will be shown in UI
     }
 
+    // Refresh trips list to show the newly created trip
+    ref.invalidate(availableTripsProvider);
+    ref.invalidate(allTripsProvider);
+
     // Show success message
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

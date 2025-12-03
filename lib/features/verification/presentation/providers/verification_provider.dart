@@ -68,6 +68,7 @@ Future<void> submitVerification({
     VerificationType.identity: 'identityDocumentUrl',
     VerificationType.driverLicense: 'driverLicenseUrl',
     VerificationType.vehicle: 'vehicleRegistrationUrl',
+    VerificationType.selfieWithId: 'selfieWithIdUrl',
   };
 
   if (fieldMap.containsKey(type)) {
@@ -107,6 +108,7 @@ Future<void> approveVerification({
     VerificationType.identity: {'identityVerified': true, 'identityVerifiedAt': now.toIso8601String()},
     VerificationType.driverLicense: {'driverLicenseVerified': true, 'driverLicenseVerifiedAt': now.toIso8601String()},
     VerificationType.vehicle: {'vehicleVerified': true, 'vehicleVerifiedAt': now.toIso8601String()},
+    VerificationType.selfieWithId: {'selfieWithIdVerified': true, 'selfieWithIdVerifiedAt': now.toIso8601String()},
     VerificationType.email: {'emailVerified': true},
     VerificationType.phone: {'phoneVerified': true},
   };

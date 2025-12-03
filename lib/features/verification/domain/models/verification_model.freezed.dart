@@ -435,15 +435,18 @@ mixin _$UserVerification {
   bool get identityVerified => throw _privateConstructorUsedError;
   bool get driverLicenseVerified => throw _privateConstructorUsedError;
   bool get vehicleVerified => throw _privateConstructorUsedError;
+  bool get selfieWithIdVerified => throw _privateConstructorUsedError;
   String? get identityDocumentUrl => throw _privateConstructorUsedError;
   String? get driverLicenseUrl => throw _privateConstructorUsedError;
   String? get vehicleRegistrationUrl => throw _privateConstructorUsedError;
+  String? get selfieWithIdUrl => throw _privateConstructorUsedError;
   String? get vehiclePlateNumber => throw _privateConstructorUsedError;
   String? get vehicleModel => throw _privateConstructorUsedError;
   String? get vehicleColor => throw _privateConstructorUsedError;
   DateTime? get identityVerifiedAt => throw _privateConstructorUsedError;
   DateTime? get driverLicenseVerifiedAt => throw _privateConstructorUsedError;
   DateTime? get vehicleVerifiedAt => throw _privateConstructorUsedError;
+  DateTime? get selfieWithIdVerifiedAt => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -471,15 +474,18 @@ abstract class $UserVerificationCopyWith<$Res> {
     bool identityVerified,
     bool driverLicenseVerified,
     bool vehicleVerified,
+    bool selfieWithIdVerified,
     String? identityDocumentUrl,
     String? driverLicenseUrl,
     String? vehicleRegistrationUrl,
+    String? selfieWithIdUrl,
     String? vehiclePlateNumber,
     String? vehicleModel,
     String? vehicleColor,
     DateTime? identityVerifiedAt,
     DateTime? driverLicenseVerifiedAt,
     DateTime? vehicleVerifiedAt,
+    DateTime? selfieWithIdVerifiedAt,
     DateTime createdAt,
     DateTime updatedAt,
   });
@@ -506,15 +512,18 @@ class _$UserVerificationCopyWithImpl<$Res, $Val extends UserVerification>
     Object? identityVerified = null,
     Object? driverLicenseVerified = null,
     Object? vehicleVerified = null,
+    Object? selfieWithIdVerified = null,
     Object? identityDocumentUrl = freezed,
     Object? driverLicenseUrl = freezed,
     Object? vehicleRegistrationUrl = freezed,
+    Object? selfieWithIdUrl = freezed,
     Object? vehiclePlateNumber = freezed,
     Object? vehicleModel = freezed,
     Object? vehicleColor = freezed,
     Object? identityVerifiedAt = freezed,
     Object? driverLicenseVerifiedAt = freezed,
     Object? vehicleVerifiedAt = freezed,
+    Object? selfieWithIdVerifiedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -544,6 +553,10 @@ class _$UserVerificationCopyWithImpl<$Res, $Val extends UserVerification>
                 ? _value.vehicleVerified
                 : vehicleVerified // ignore: cast_nullable_to_non_nullable
                       as bool,
+            selfieWithIdVerified: null == selfieWithIdVerified
+                ? _value.selfieWithIdVerified
+                : selfieWithIdVerified // ignore: cast_nullable_to_non_nullable
+                      as bool,
             identityDocumentUrl: freezed == identityDocumentUrl
                 ? _value.identityDocumentUrl
                 : identityDocumentUrl // ignore: cast_nullable_to_non_nullable
@@ -555,6 +568,10 @@ class _$UserVerificationCopyWithImpl<$Res, $Val extends UserVerification>
             vehicleRegistrationUrl: freezed == vehicleRegistrationUrl
                 ? _value.vehicleRegistrationUrl
                 : vehicleRegistrationUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            selfieWithIdUrl: freezed == selfieWithIdUrl
+                ? _value.selfieWithIdUrl
+                : selfieWithIdUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
             vehiclePlateNumber: freezed == vehiclePlateNumber
                 ? _value.vehiclePlateNumber
@@ -579,6 +596,10 @@ class _$UserVerificationCopyWithImpl<$Res, $Val extends UserVerification>
             vehicleVerifiedAt: freezed == vehicleVerifiedAt
                 ? _value.vehicleVerifiedAt
                 : vehicleVerifiedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            selfieWithIdVerifiedAt: freezed == selfieWithIdVerifiedAt
+                ? _value.selfieWithIdVerifiedAt
+                : selfieWithIdVerifiedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
             createdAt: null == createdAt
                 ? _value.createdAt
@@ -610,15 +631,18 @@ abstract class _$$UserVerificationImplCopyWith<$Res>
     bool identityVerified,
     bool driverLicenseVerified,
     bool vehicleVerified,
+    bool selfieWithIdVerified,
     String? identityDocumentUrl,
     String? driverLicenseUrl,
     String? vehicleRegistrationUrl,
+    String? selfieWithIdUrl,
     String? vehiclePlateNumber,
     String? vehicleModel,
     String? vehicleColor,
     DateTime? identityVerifiedAt,
     DateTime? driverLicenseVerifiedAt,
     DateTime? vehicleVerifiedAt,
+    DateTime? selfieWithIdVerifiedAt,
     DateTime createdAt,
     DateTime updatedAt,
   });
@@ -644,15 +668,18 @@ class __$$UserVerificationImplCopyWithImpl<$Res>
     Object? identityVerified = null,
     Object? driverLicenseVerified = null,
     Object? vehicleVerified = null,
+    Object? selfieWithIdVerified = null,
     Object? identityDocumentUrl = freezed,
     Object? driverLicenseUrl = freezed,
     Object? vehicleRegistrationUrl = freezed,
+    Object? selfieWithIdUrl = freezed,
     Object? vehiclePlateNumber = freezed,
     Object? vehicleModel = freezed,
     Object? vehicleColor = freezed,
     Object? identityVerifiedAt = freezed,
     Object? driverLicenseVerifiedAt = freezed,
     Object? vehicleVerifiedAt = freezed,
+    Object? selfieWithIdVerifiedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -682,6 +709,10 @@ class __$$UserVerificationImplCopyWithImpl<$Res>
             ? _value.vehicleVerified
             : vehicleVerified // ignore: cast_nullable_to_non_nullable
                   as bool,
+        selfieWithIdVerified: null == selfieWithIdVerified
+            ? _value.selfieWithIdVerified
+            : selfieWithIdVerified // ignore: cast_nullable_to_non_nullable
+                  as bool,
         identityDocumentUrl: freezed == identityDocumentUrl
             ? _value.identityDocumentUrl
             : identityDocumentUrl // ignore: cast_nullable_to_non_nullable
@@ -693,6 +724,10 @@ class __$$UserVerificationImplCopyWithImpl<$Res>
         vehicleRegistrationUrl: freezed == vehicleRegistrationUrl
             ? _value.vehicleRegistrationUrl
             : vehicleRegistrationUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        selfieWithIdUrl: freezed == selfieWithIdUrl
+            ? _value.selfieWithIdUrl
+            : selfieWithIdUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
         vehiclePlateNumber: freezed == vehiclePlateNumber
             ? _value.vehiclePlateNumber
@@ -718,6 +753,10 @@ class __$$UserVerificationImplCopyWithImpl<$Res>
             ? _value.vehicleVerifiedAt
             : vehicleVerifiedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        selfieWithIdVerifiedAt: freezed == selfieWithIdVerifiedAt
+            ? _value.selfieWithIdVerifiedAt
+            : selfieWithIdVerifiedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -741,15 +780,18 @@ class _$UserVerificationImpl extends _UserVerification {
     this.identityVerified = false,
     this.driverLicenseVerified = false,
     this.vehicleVerified = false,
+    this.selfieWithIdVerified = false,
     this.identityDocumentUrl,
     this.driverLicenseUrl,
     this.vehicleRegistrationUrl,
+    this.selfieWithIdUrl,
     this.vehiclePlateNumber,
     this.vehicleModel,
     this.vehicleColor,
     this.identityVerifiedAt,
     this.driverLicenseVerifiedAt,
     this.vehicleVerifiedAt,
+    this.selfieWithIdVerifiedAt,
     required this.createdAt,
     required this.updatedAt,
   }) : super._();
@@ -775,11 +817,16 @@ class _$UserVerificationImpl extends _UserVerification {
   @JsonKey()
   final bool vehicleVerified;
   @override
+  @JsonKey()
+  final bool selfieWithIdVerified;
+  @override
   final String? identityDocumentUrl;
   @override
   final String? driverLicenseUrl;
   @override
   final String? vehicleRegistrationUrl;
+  @override
+  final String? selfieWithIdUrl;
   @override
   final String? vehiclePlateNumber;
   @override
@@ -793,13 +840,15 @@ class _$UserVerificationImpl extends _UserVerification {
   @override
   final DateTime? vehicleVerifiedAt;
   @override
+  final DateTime? selfieWithIdVerifiedAt;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'UserVerification(userId: $userId, emailVerified: $emailVerified, phoneVerified: $phoneVerified, identityVerified: $identityVerified, driverLicenseVerified: $driverLicenseVerified, vehicleVerified: $vehicleVerified, identityDocumentUrl: $identityDocumentUrl, driverLicenseUrl: $driverLicenseUrl, vehicleRegistrationUrl: $vehicleRegistrationUrl, vehiclePlateNumber: $vehiclePlateNumber, vehicleModel: $vehicleModel, vehicleColor: $vehicleColor, identityVerifiedAt: $identityVerifiedAt, driverLicenseVerifiedAt: $driverLicenseVerifiedAt, vehicleVerifiedAt: $vehicleVerifiedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserVerification(userId: $userId, emailVerified: $emailVerified, phoneVerified: $phoneVerified, identityVerified: $identityVerified, driverLicenseVerified: $driverLicenseVerified, vehicleVerified: $vehicleVerified, selfieWithIdVerified: $selfieWithIdVerified, identityDocumentUrl: $identityDocumentUrl, driverLicenseUrl: $driverLicenseUrl, vehicleRegistrationUrl: $vehicleRegistrationUrl, selfieWithIdUrl: $selfieWithIdUrl, vehiclePlateNumber: $vehiclePlateNumber, vehicleModel: $vehicleModel, vehicleColor: $vehicleColor, identityVerifiedAt: $identityVerifiedAt, driverLicenseVerifiedAt: $driverLicenseVerifiedAt, vehicleVerifiedAt: $vehicleVerifiedAt, selfieWithIdVerifiedAt: $selfieWithIdVerifiedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -818,12 +867,16 @@ class _$UserVerificationImpl extends _UserVerification {
                 other.driverLicenseVerified == driverLicenseVerified) &&
             (identical(other.vehicleVerified, vehicleVerified) ||
                 other.vehicleVerified == vehicleVerified) &&
+            (identical(other.selfieWithIdVerified, selfieWithIdVerified) ||
+                other.selfieWithIdVerified == selfieWithIdVerified) &&
             (identical(other.identityDocumentUrl, identityDocumentUrl) ||
                 other.identityDocumentUrl == identityDocumentUrl) &&
             (identical(other.driverLicenseUrl, driverLicenseUrl) ||
                 other.driverLicenseUrl == driverLicenseUrl) &&
             (identical(other.vehicleRegistrationUrl, vehicleRegistrationUrl) ||
                 other.vehicleRegistrationUrl == vehicleRegistrationUrl) &&
+            (identical(other.selfieWithIdUrl, selfieWithIdUrl) ||
+                other.selfieWithIdUrl == selfieWithIdUrl) &&
             (identical(other.vehiclePlateNumber, vehiclePlateNumber) ||
                 other.vehiclePlateNumber == vehiclePlateNumber) &&
             (identical(other.vehicleModel, vehicleModel) ||
@@ -839,6 +892,8 @@ class _$UserVerificationImpl extends _UserVerification {
                 other.driverLicenseVerifiedAt == driverLicenseVerifiedAt) &&
             (identical(other.vehicleVerifiedAt, vehicleVerifiedAt) ||
                 other.vehicleVerifiedAt == vehicleVerifiedAt) &&
+            (identical(other.selfieWithIdVerifiedAt, selfieWithIdVerifiedAt) ||
+                other.selfieWithIdVerifiedAt == selfieWithIdVerifiedAt) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -847,7 +902,7 @@ class _$UserVerificationImpl extends _UserVerification {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     userId,
     emailVerified,
@@ -855,18 +910,21 @@ class _$UserVerificationImpl extends _UserVerification {
     identityVerified,
     driverLicenseVerified,
     vehicleVerified,
+    selfieWithIdVerified,
     identityDocumentUrl,
     driverLicenseUrl,
     vehicleRegistrationUrl,
+    selfieWithIdUrl,
     vehiclePlateNumber,
     vehicleModel,
     vehicleColor,
     identityVerifiedAt,
     driverLicenseVerifiedAt,
     vehicleVerifiedAt,
+    selfieWithIdVerifiedAt,
     createdAt,
     updatedAt,
-  );
+  ]);
 
   /// Create a copy of UserVerification
   /// with the given fields replaced by the non-null parameter values.
@@ -893,15 +951,18 @@ abstract class _UserVerification extends UserVerification {
     final bool identityVerified,
     final bool driverLicenseVerified,
     final bool vehicleVerified,
+    final bool selfieWithIdVerified,
     final String? identityDocumentUrl,
     final String? driverLicenseUrl,
     final String? vehicleRegistrationUrl,
+    final String? selfieWithIdUrl,
     final String? vehiclePlateNumber,
     final String? vehicleModel,
     final String? vehicleColor,
     final DateTime? identityVerifiedAt,
     final DateTime? driverLicenseVerifiedAt,
     final DateTime? vehicleVerifiedAt,
+    final DateTime? selfieWithIdVerifiedAt,
     required final DateTime createdAt,
     required final DateTime updatedAt,
   }) = _$UserVerificationImpl;
@@ -923,11 +984,15 @@ abstract class _UserVerification extends UserVerification {
   @override
   bool get vehicleVerified;
   @override
+  bool get selfieWithIdVerified;
+  @override
   String? get identityDocumentUrl;
   @override
   String? get driverLicenseUrl;
   @override
   String? get vehicleRegistrationUrl;
+  @override
+  String? get selfieWithIdUrl;
   @override
   String? get vehiclePlateNumber;
   @override
@@ -940,6 +1005,8 @@ abstract class _UserVerification extends UserVerification {
   DateTime? get driverLicenseVerifiedAt;
   @override
   DateTime? get vehicleVerifiedAt;
+  @override
+  DateTime? get selfieWithIdVerifiedAt;
   @override
   DateTime get createdAt;
   @override
