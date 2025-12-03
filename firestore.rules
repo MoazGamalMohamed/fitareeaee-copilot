@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is the owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection - users can read/write their own data
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update, delete: if isOwner(userId);
+    }
+    
+    // Trips collection - all authenticated users can read, owners can modify
+    match /trips/{tripId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && 
+        (resource.data.driverId == request.auth.uid || 
+         resource.data.userId == request.auth.uid);
+    }
+    
+    // Bookings collection
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.passengerId == request.auth.uid || 
+         resource.data.driverId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+        (resource.data.passengerId == request.auth.uid || 
+         resource.data.driverId == request.auth.uid);
+    }
+    
+    // Wallets collection - only owner can access
+    match /wallets/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Wallet transactions
+    match /wallet_transactions/{transactionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+    
+    // Verifications collection
+    match /verifications/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+    }
+    
+    // Support tickets
+    match /support_tickets/{ticketId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+      }
+    }
+    
+    // FAQ - read-only for all authenticated users
+    match /faq/{faqId} {
+      allow read: if isAuthenticated();
+      allow update: if isAuthenticated(); // For helpful/not helpful counts
+    }
+    
+    // Chat messages
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.senderId == request.auth.uid || 
+         resource.data.recipientId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+        (resource.data.senderId == request.auth.uid || 
+         resource.data.recipientId == request.auth.uid);
+    }
+    
+    // Conversations
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      
+      match /messages/{messageId} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+    
+    // Typing status
+    match /typing_status/{conversationId} {
+      allow read, write: if isAuthenticated();
+      
+      match /users/{userId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    // Tracking data
+    match /tracking/{tripId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // Emergency contacts
+    match /emergency_contacts/{contactId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Payout requests
+    match /payout_requests/{requestId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+    }
+
+    // Disputes
+    match /disputes/{disputeId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.complainantId == request.auth.uid ||
+         resource.data.respondentId == request.auth.uid);
+      allow create: if isAuthenticated();
+    }
+
+    // Payment methods - only owner can access
+    match /payment_methods/{methodId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Payments
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.payerId == request.auth.uid ||
+         resource.data.payeeId == request.auth.uid);
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() &&
+        (resource.data.payerId == request.auth.uid ||
+         resource.data.payeeId == request.auth.uid);
+    }
+  }
+}
+

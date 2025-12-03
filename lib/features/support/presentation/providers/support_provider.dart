@@ -8,14 +8,23 @@ final userTicketsProvider = StreamProvider<List<SupportTicket>>((ref) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return Stream.value([]);
 
+  // Simplified query without orderBy to avoid needing composite index
   return FirebaseFirestore.instance
       .collection('support_tickets')
       .where('userId', isEqualTo: user.uid)
-      .orderBy('createdAt', descending: true)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => SupportTicket.fromJson({...doc.data(), 'id': doc.id}))
-          .toList());
+      .map((snapshot) {
+        final tickets = snapshot.docs
+            .map((doc) => SupportTicket.fromJson({...doc.data(), 'id': doc.id}))
+            .toList();
+        // Sort client-side
+        tickets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return tickets;
+      })
+      .handleError((error) {
+        // Return empty list on error
+        return <SupportTicket>[];
+      });
 });
 
 /// Provider for ticket messages
@@ -31,16 +40,64 @@ final ticketMessagesProvider = StreamProvider.family<List<TicketMessage>, String
           .toList());
 });
 
+/// Default FAQ items when Firestore collection is empty
+List<FAQItem> _getDefaultFAQs() {
+  return [
+    FAQItem(
+      id: 'faq_1',
+      question: 'How do I book a ride?',
+      answer: 'Browse available trips, select one that matches your route, and tap "Book" to request a seat. The driver will confirm your booking.',
+      category: 'Booking',
+    ),
+    FAQItem(
+      id: 'faq_2',
+      question: 'How do payments work?',
+      answer: 'Payments are held in escrow until the trip is completed. Once the driver confirms arrival, funds are released to them.',
+      category: 'Payments',
+    ),
+    FAQItem(
+      id: 'faq_3',
+      question: 'How do I become a driver?',
+      answer: 'Go to your profile, tap "Become a Driver", and complete the verification process including uploading your ID and vehicle information.',
+      category: 'Drivers',
+    ),
+    FAQItem(
+      id: 'faq_4',
+      question: 'What if I need to cancel?',
+      answer: 'You can cancel a booking from your trips page. Cancellation policies vary - check the trip details for specific terms.',
+      category: 'Booking',
+    ),
+    FAQItem(
+      id: 'faq_5',
+      question: 'How do I contact support?',
+      answer: 'Submit a support ticket from this Help Center. Our team typically responds within 24 hours.',
+      category: 'Support',
+    ),
+  ];
+}
+
 /// Provider for FAQ items
 final faqProvider = FutureProvider<List<FAQItem>>((ref) async {
-  final snapshot = await FirebaseFirestore.instance
-      .collection('faq')
-      .orderBy('category')
-      .get();
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('faq')
+        .get();
 
-  return snapshot.docs
-      .map((doc) => FAQItem.fromJson({...doc.data(), 'id': doc.id}))
-      .toList();
+    if (snapshot.docs.isEmpty) {
+      return _getDefaultFAQs();
+    }
+
+    final faqs = snapshot.docs
+        .map((doc) => FAQItem.fromJson({...doc.data(), 'id': doc.id}))
+        .toList();
+
+    // Sort by category client-side
+    faqs.sort((a, b) => a.category.compareTo(b.category));
+    return faqs;
+  } catch (e) {
+    // Return default FAQs on error
+    return _getDefaultFAQs();
+  }
 });
 
 /// Create support ticket

@@ -23,15 +23,24 @@ final walletTransactionsProvider = StreamProvider<List<WalletTransaction>>((ref)
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return Stream.value([]);
 
+  // Simplified query without orderBy to avoid needing composite index
   return FirebaseFirestore.instance
       .collection('wallet_transactions')
       .where('userId', isEqualTo: user.uid)
-      .orderBy('createdAt', descending: true)
       .limit(50)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => WalletTransaction.fromJson({...doc.data(), 'id': doc.id}))
-          .toList());
+      .map((snapshot) {
+        final transactions = snapshot.docs
+            .map((doc) => WalletTransaction.fromJson({...doc.data(), 'id': doc.id}))
+            .toList();
+        // Sort client-side
+        transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return transactions;
+      })
+      .handleError((error) {
+        // Return empty list on error
+        return <WalletTransaction>[];
+      });
 });
 
 /// Create or get wallet for user

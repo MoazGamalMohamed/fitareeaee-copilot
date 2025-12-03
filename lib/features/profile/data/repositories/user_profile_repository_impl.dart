@@ -23,15 +23,52 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       final doc = await _firestore.collection('users').doc(userId).get();
 
       if (!doc.exists) {
-        throw UserNotFoundException('User profile not found');
+        // Create a default profile if it doesn't exist
+        final auth = await _getAuthUser(userId);
+        final defaultProfile = UserProfile(
+          userId: userId,
+          email: auth?['email'] ?? '',
+          name: auth?['displayName'] ?? '',
+          photoUrl: auth?['photoUrl'],
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        await createUserProfile(defaultProfile);
+        return defaultProfile;
       }
 
-      final model = UserProfileModel.fromJson(doc.data() as Map<String, dynamic>);
+      final data = {...doc.data()!, 'userId': userId};
+      final model = UserProfileModel.fromJson(data);
       return model.toEntity();
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
       throw AppException(message: 'Failed to get user profile: $e');
+    }
+  }
+
+  /// Get auth user info from Firebase Auth
+  Future<Map<String, String?>?> _getAuthUser(String userId) async {
+    try {
+      // We can't directly access other users' auth data
+      // Return null and let the caller handle it
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Create a new user profile
+  Future<void> createUserProfile(UserProfile profile) async {
+    try {
+      final model = profile.toModel();
+      await _firestore.collection('users').doc(profile.userId).set(
+        model.toFirestore(),
+      );
+    } on FirebaseException catch (e) {
+      throw _handleFirebaseException(e);
+    } catch (e) {
+      throw AppException(message: 'Failed to create user profile: $e');
     }
   }
 
@@ -158,12 +195,17 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         .doc(userId)
         .snapshots()
         .map((doc) {
-      if (!doc.exists) {
+      if (!doc.exists || doc.data() == null) {
         return null;
       }
-      final model =
-          UserProfileModel.fromJson(doc.data() as Map<String, dynamic>);
-      return model.toEntity();
+      try {
+        final data = {...doc.data()!, 'userId': userId};
+        final model = UserProfileModel.fromJson(data);
+        return model.toEntity();
+      } catch (e) {
+        // If parsing fails, return null
+        return null;
+      }
     });
   }
 

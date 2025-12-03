@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import '../providers/trip_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -47,6 +49,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   TimeOfDay? _selectedTime;
   bool _allowPets = false;
   bool _allowSmoking = false;
+
+  // Location coordinates
+  double? _originLat;
+  double? _originLng;
+  double? _destinationLat;
+  double? _destinationLng;
 
   // Role-based flow
   late bool _roleIsPreset;
@@ -214,32 +222,18 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   // Location Fields
                   _buildSectionTitle(context, 'Route'),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  _buildLocationField(
                     controller: _originController,
-                    decoration: InputDecoration(
-                      labelText: 'From',
-                      hintText: 'Starting location',
-                      prefixIcon: const Icon(Icons.location_on),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Please enter origin' : null,
+                    label: 'From',
+                    hint: 'Starting location',
+                    isOrigin: true,
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
+                  _buildLocationField(
                     controller: _destinationController,
-                    decoration: InputDecoration(
-                      labelText: 'To',
-                      hintText: 'Destination',
-                      prefixIcon: const Icon(Icons.location_on),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Please enter destination' : null,
+                    label: 'To',
+                    hint: 'Destination',
+                    isOrigin: false,
                   ),
                   const SizedBox(height: 24),
 
@@ -466,6 +460,75 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     );
   }
 
+  /// Location field with map picker button
+  Widget _buildLocationField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool isOrigin,
+  }) {
+    final hasCoordinates = isOrigin
+        ? (_originLat != null && _originLng != null)
+        : (_destinationLat != null && _destinationLng != null);
+
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        prefixIcon: const Icon(Icons.location_on),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasCoordinates)
+              const Icon(Icons.check_circle, color: Colors.green, size: 20),
+            IconButton(
+              icon: const Icon(Icons.map),
+              tooltip: 'Pick on map',
+              onPressed: () => _showLocationPicker(isOrigin),
+            ),
+          ],
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      validator: (value) =>
+          value?.isEmpty ?? true ? 'Please enter $label location' : null,
+    );
+  }
+
+  /// Show location picker dialog with map
+  Future<void> _showLocationPicker(bool isOrigin) async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => _LocationPickerSheet(
+        initialLat: isOrigin ? _originLat : _destinationLat,
+        initialLng: isOrigin ? _originLng : _destinationLng,
+        title: isOrigin ? 'Pick Origin' : 'Pick Destination',
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        if (isOrigin) {
+          _originLat = result['lat'];
+          _originLng = result['lng'];
+          if (result['address'] != null) {
+            _originController.text = result['address'];
+          }
+        } else {
+          _destinationLat = result['lat'];
+          _destinationLng = result['lng'];
+          if (result['address'] != null) {
+            _destinationController.text = result['address'];
+          }
+        }
+      });
+    }
+  }
+
   /// Checkbox-style card for selecting trip types (can select multiple)
   Widget _buildTypeCheckCard(
     BuildContext context,
@@ -589,6 +652,87 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     }
   }
 
+  /// Calculate approximate distance between origin and destination (in km)
+  double _calculateDistance() {
+    if (_originLat == null || _originLng == null ||
+        _destinationLat == null || _destinationLng == null) {
+      return 0.0;
+    }
+
+    // Haversine formula for distance calculation
+    const double earthRadius = 6371; // km
+    final double dLat = _toRadians(_destinationLat! - _originLat!);
+    final double dLng = _toRadians(_destinationLng! - _originLng!);
+
+    final double a =
+        _sin(dLat / 2) * _sin(dLat / 2) +
+        _cos(_toRadians(_originLat!)) * _cos(_toRadians(_destinationLat!)) *
+        _sin(dLng / 2) * _sin(dLng / 2);
+
+    final double c = 2 * _atan2(_sqrt(a), _sqrt(1 - a));
+    return earthRadius * c;
+  }
+
+  /// Estimate duration based on distance (assuming average speed of 50 km/h)
+  int _estimateDuration() {
+    final distance = _calculateDistance();
+    if (distance == 0) return 0;
+    // Return duration in minutes
+    return ((distance / 50) * 60).round();
+  }
+
+  // Math helper functions
+  double _toRadians(double degrees) => degrees * 3.14159265359 / 180;
+  double _sin(double x) => _taylorSin(x);
+  double _cos(double x) => _taylorSin(x + 3.14159265359 / 2);
+  double _sqrt(double x) => x > 0 ? _newtonSqrt(x) : 0;
+  double _atan2(double y, double x) {
+    if (x > 0) return _taylorAtan(y / x);
+    if (x < 0 && y >= 0) return _taylorAtan(y / x) + 3.14159265359;
+    if (x < 0 && y < 0) return _taylorAtan(y / x) - 3.14159265359;
+    if (x == 0 && y > 0) return 3.14159265359 / 2;
+    if (x == 0 && y < 0) return -3.14159265359 / 2;
+    return 0;
+  }
+
+  double _taylorSin(double x) {
+    // Normalize to [-pi, pi]
+    while (x > 3.14159265359) {
+      x -= 2 * 3.14159265359;
+    }
+    while (x < -3.14159265359) {
+      x += 2 * 3.14159265359;
+    }
+    double result = x;
+    double term = x;
+    for (int i = 1; i <= 10; i++) {
+      term *= -x * x / ((2 * i) * (2 * i + 1));
+      result += term;
+    }
+    return result;
+  }
+
+  double _newtonSqrt(double x) {
+    if (x <= 0) return 0;
+    double guess = x / 2;
+    for (int i = 0; i < 20; i++) {
+      guess = (guess + x / guess) / 2;
+    }
+    return guess;
+  }
+
+  double _taylorAtan(double x) {
+    if (x > 1) return 3.14159265359 / 2 - _taylorAtan(1 / x);
+    if (x < -1) return -3.14159265359 / 2 - _taylorAtan(1 / x);
+    double result = x;
+    double term = x;
+    for (int i = 1; i <= 20; i++) {
+      term *= -x * x;
+      result += term / (2 * i + 1);
+    }
+    return result;
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null) {
@@ -640,13 +784,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       driverId: userId,
       originAddress: _originController.text,
       destinationAddress: _destinationController.text,
-      originLat: 0.0, // TODO: Get from location picker
-      originLng: 0.0,
-      destinationLat: 0.0,
-      destinationLng: 0.0,
+      originLat: _originLat ?? 0.0,
+      originLng: _originLng ?? 0.0,
+      destinationLat: _destinationLat ?? 0.0,
+      destinationLng: _destinationLng ?? 0.0,
       departureTime: departureTime,
-      distance: 0.0, // TODO: Calculate from route
-      estimatedDuration: 0, // TODO: Calculate from route
+      distance: _calculateDistance(),
+      estimatedDuration: _estimateDuration(),
       pricePerSeat: double.tryParse(_priceController.text) ?? 0.0,
       totalSeats: int.tryParse(_seatsController.text) ?? 1,
       availableSeats: int.tryParse(_seatsController.text) ?? 1,
@@ -682,5 +826,233 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       );
       context.pop();
     }
+  }
+}
+
+/// Location picker sheet with map
+class _LocationPickerSheet extends StatefulWidget {
+  final double? initialLat;
+  final double? initialLng;
+  final String title;
+
+  const _LocationPickerSheet({
+    this.initialLat,
+    this.initialLng,
+    required this.title,
+  });
+
+  @override
+  State<_LocationPickerSheet> createState() => _LocationPickerSheetState();
+}
+
+class _LocationPickerSheetState extends State<_LocationPickerSheet> {
+  GoogleMapController? _mapController;
+  LatLng? _selectedLocation;
+  bool _isLoading = true;
+  String? _selectedAddress;
+  final _searchController = TextEditingController();
+
+  // Default to a central location (can be changed based on user's region)
+  static const _defaultLocation = LatLng(25.2048, 55.2708); // Dubai
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLocation = widget.initialLat != null && widget.initialLng != null
+        ? LatLng(widget.initialLat!, widget.initialLng!)
+        : null;
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final location = Location();
+
+      bool serviceEnabled = await location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await location.requestService();
+        if (!serviceEnabled) {
+          setState(() => _isLoading = false);
+          return;
+        }
+      }
+
+      PermissionStatus permission = await location.hasPermission();
+      if (permission == PermissionStatus.denied) {
+        permission = await location.requestPermission();
+        if (permission != PermissionStatus.granted) {
+          setState(() => _isLoading = false);
+          return;
+        }
+      }
+
+      final locationData = await location.getLocation();
+      if (mounted && _selectedLocation == null) {
+        setState(() {
+          _selectedLocation = LatLng(
+            locationData.latitude ?? _defaultLocation.latitude,
+            locationData.longitude ?? _defaultLocation.longitude,
+          );
+          _isLoading = false;
+        });
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLng(_selectedLocation!),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+
+          // Search field
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search location...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              onSubmitted: (value) {
+                // In production, this would use Google Places API
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Tap on the map to select a location'),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Map
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _selectedLocation ?? _defaultLocation,
+                      zoom: 14,
+                    ),
+                    onMapCreated: (controller) => _mapController = controller,
+                    onTap: (latLng) {
+                      setState(() {
+                        _selectedLocation = latLng;
+                        _selectedAddress = '${latLng.latitude.toStringAsFixed(4)}, ${latLng.longitude.toStringAsFixed(4)}';
+                      });
+                    },
+                    markers: _selectedLocation != null
+                        ? {
+                            Marker(
+                              markerId: const MarkerId('selected'),
+                              position: _selectedLocation!,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueRed,
+                              ),
+                            ),
+                          }
+                        : {},
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    zoomControlsEnabled: true,
+                  ),
+          ),
+
+          // Selected location info and confirm button
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                if (_selectedLocation != null) ...[
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _selectedAddress ??
+                            '${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _selectedLocation != null
+                        ? () {
+                            Navigator.pop(context, {
+                              'lat': _selectedLocation!.latitude,
+                              'lng': _selectedLocation!.longitude,
+                              'address': _selectedAddress,
+                            });
+                          }
+                        : null,
+                    child: const Text('Confirm Location'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _mapController?.dispose();
+    super.dispose();
   }
 }

@@ -109,7 +109,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.trips,
         name: 'trips',
-        builder: (context, state) => const TripsListScreen(),
+        builder: (context, state) {
+          // Get role from query parameter (rider or driver)
+          final role = state.uri.queryParameters['role'];
+          return TripsListScreen(role: role);
+        },
       ),
       GoRoute(
         path: AppRoutes.nearbyTripsMap,

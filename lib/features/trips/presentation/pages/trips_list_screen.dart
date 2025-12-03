@@ -5,7 +5,10 @@ import '../providers/trip_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class TripsListScreen extends ConsumerStatefulWidget {
-  const TripsListScreen({Key? key}) : super(key: key);
+  /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
+  final String? role;
+
+  const TripsListScreen({super.key, this.role});
 
   @override
   ConsumerState<TripsListScreen> createState() => _TripsListScreenState();
@@ -53,7 +56,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           ),
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: _showFiltersSheet,
+            onPressed: showFiltersSheet,
           ),
         ],
       ),
@@ -63,7 +66,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           // Available Trips Tab
           availableTrips.when(
             data: (trips) {
-              final filtered = _filterTrips(trips);
+              final filtered = filterTrips(trips);
               return _buildTripsList(filtered, isMyTrips: false);
             },
             loading: () => const Center(
@@ -96,7 +99,10 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  onPressed: () => context.push('/trips/create'),
+                  onPressed: () {
+                    final roleParam = widget.role != null ? '?role=${widget.role}' : '';
+                    context.push('/trips/create$roleParam');
+                  },
                   icon: const Icon(Icons.add),
                   label: const Text('Create Trip'),
                 ),
@@ -106,7 +112,10 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/trips/create'),
+        onPressed: () {
+          final roleParam = widget.role != null ? '?role=${widget.role}' : '';
+          context.push('/trips/create$roleParam');
+        },
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -381,7 +390,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
     );
   }
 
-  void _showFiltersSheet() {
+  void showFiltersSheet() {
     showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -455,7 +464,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
     );
   }
 
-  List _filterTrips(List trips) {
+  List filterTrips(List trips) {
     return trips.where((trip) {
       if (_filterType != 'all' && trip.type != _filterType) return false;
       if (_filterDirection != 'all' && trip.direction != _filterDirection) {

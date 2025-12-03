@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/payment_model.dart';
 
@@ -275,4 +276,176 @@ class PaymentMethodNotifier extends StateNotifier<PaymentMethodState> {
 final paymentMethodProvider = StateNotifierProvider<PaymentMethodNotifier, PaymentMethodState>((ref) {
   return PaymentMethodNotifier();
 });
+
+/// Saved payment method model
+class SavedPaymentMethod {
+  final String id;
+  final String userId;
+  final String type; // 'card', 'bank_account'
+  final String last4;
+  final String? brand; // 'visa', 'mastercard', etc.
+  final String? expiryMonth;
+  final String? expiryYear;
+  final String? bankName;
+  final bool isDefault;
+  final DateTime createdAt;
+
+  SavedPaymentMethod({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.last4,
+    this.brand,
+    this.expiryMonth,
+    this.expiryYear,
+    this.bankName,
+    this.isDefault = false,
+    required this.createdAt,
+  });
+
+  factory SavedPaymentMethod.fromJson(Map<String, dynamic> json) {
+    return SavedPaymentMethod(
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      type: json['type'] ?? 'card',
+      last4: json['last4'] ?? '****',
+      brand: json['brand'],
+      expiryMonth: json['expiryMonth'],
+      expiryYear: json['expiryYear'],
+      bankName: json['bankName'],
+      isDefault: json['isDefault'] ?? false,
+      createdAt: json['createdAt'] is String
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'userId': userId,
+    'type': type,
+    'last4': last4,
+    'brand': brand,
+    'expiryMonth': expiryMonth,
+    'expiryYear': expiryYear,
+    'bankName': bankName,
+    'isDefault': isDefault,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  String get displayName {
+    if (type == 'card') {
+      return '${brand?.toUpperCase() ?? 'Card'} •••• $last4';
+    } else {
+      return '${bankName ?? 'Bank'} •••• $last4';
+    }
+  }
+}
+
+/// Provider for user's saved payment methods
+final savedPaymentMethodsProvider = StreamProvider<List<SavedPaymentMethod>>((ref) {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) return Stream.value([]);
+
+  return _firestore
+      .collection('payment_methods')
+      .where('userId', isEqualTo: user.uid)
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => SavedPaymentMethod.fromJson({...doc.data(), 'id': doc.id}))
+          .toList())
+      .handleError((error) => <SavedPaymentMethod>[]);
+});
+
+/// Check if user has any saved payment method
+final hasPaymentMethodProvider = Provider<bool>((ref) {
+  final methods = ref.watch(savedPaymentMethodsProvider);
+  return methods.maybeWhen(
+    data: (list) => list.isNotEmpty,
+    orElse: () => false,
+  );
+});
+
+/// Save a new payment method (card)
+Future<SavedPaymentMethod> savePaymentMethod({
+  required String cardNumber,
+  required String expiryMonth,
+  required String expiryYear,
+  required String cvv,
+  bool setAsDefault = true,
+}) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) throw Exception('Not authenticated');
+
+  // In production, this would tokenize the card via Stripe
+  // For now, we just save the last 4 digits
+  final last4 = cardNumber.replaceAll(' ', '').substring(cardNumber.length - 4);
+  final brand = _detectCardBrand(cardNumber);
+
+  final docRef = _firestore.collection('payment_methods').doc();
+  final method = SavedPaymentMethod(
+    id: docRef.id,
+    userId: user.uid,
+    type: 'card',
+    last4: last4,
+    brand: brand,
+    expiryMonth: expiryMonth,
+    expiryYear: expiryYear,
+    isDefault: setAsDefault,
+    createdAt: DateTime.now(),
+  );
+
+  // If setting as default, unset other defaults
+  if (setAsDefault) {
+    final existing = await _firestore
+        .collection('payment_methods')
+        .where('userId', isEqualTo: user.uid)
+        .where('isDefault', isEqualTo: true)
+        .get();
+
+    for (final doc in existing.docs) {
+      await doc.reference.update({'isDefault': false});
+    }
+  }
+
+  await docRef.set(method.toJson());
+  return method;
+}
+
+/// Delete a saved payment method
+Future<void> deletePaymentMethod(String methodId) async {
+  await _firestore.collection('payment_methods').doc(methodId).delete();
+}
+
+/// Set a payment method as default
+Future<void> setDefaultPaymentMethod(String methodId) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) throw Exception('Not authenticated');
+
+  // Unset all other defaults
+  final existing = await _firestore
+      .collection('payment_methods')
+      .where('userId', isEqualTo: user.uid)
+      .where('isDefault', isEqualTo: true)
+      .get();
+
+  for (final doc in existing.docs) {
+    await doc.reference.update({'isDefault': false});
+  }
+
+  // Set new default
+  await _firestore.collection('payment_methods').doc(methodId).update({
+    'isDefault': true,
+  });
+}
+
+/// Detect card brand from number
+String _detectCardBrand(String cardNumber) {
+  final number = cardNumber.replaceAll(' ', '');
+  if (number.startsWith('4')) return 'visa';
+  if (number.startsWith('5')) return 'mastercard';
+  if (number.startsWith('34') || number.startsWith('37')) return 'amex';
+  if (number.startsWith('6')) return 'discover';
+  return 'card';
+}
 

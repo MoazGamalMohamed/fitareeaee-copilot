@@ -160,14 +160,14 @@ class HelpCenterScreen extends ConsumerWidget {
   }
 }
 
-class _CreateTicketSheet extends StatefulWidget {
+class _CreateTicketSheet extends ConsumerStatefulWidget {
   const _CreateTicketSheet();
 
   @override
-  State<_CreateTicketSheet> createState() => _CreateTicketSheetState();
+  ConsumerState<_CreateTicketSheet> createState() => _CreateTicketSheetState();
 }
 
-class _CreateTicketSheetState extends State<_CreateTicketSheet> {
+class _CreateTicketSheetState extends ConsumerState<_CreateTicketSheet> {
   final _subjectController = TextEditingController();
   final _descriptionController = TextEditingController();
   TicketCategory _category = TicketCategory.other;
@@ -212,6 +212,8 @@ class _CreateTicketSheetState extends State<_CreateTicketSheet> {
     try {
       await createTicket(category: _category, subject: _subjectController.text, description: _descriptionController.text);
       if (mounted) {
+        // Invalidate the tickets provider to refresh the list
+        ref.invalidate(userTicketsProvider);
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ticket created successfully')));
       }
