@@ -15,10 +15,6 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-UserProfileModel _$UserProfileModelFromJson(Map<String, dynamic> json) {
-  return _UserProfileModel.fromJson(json);
-}
-
 /// @nodoc
 mixin _$UserProfileModel {
   String get userId => throw _privateConstructorUsedError;
@@ -44,9 +40,6 @@ mixin _$UserProfileModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
-
-  /// Serializes this UserProfileModel to a JSON map.
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
   /// Create a copy of UserProfileModel
   /// with the given fields replaced by the non-null parameter values.
@@ -378,7 +371,7 @@ class __$$UserProfileModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
 class _$UserProfileModelImpl implements _UserProfileModel {
   const _$UserProfileModelImpl({
     required this.userId,
@@ -404,9 +397,6 @@ class _$UserProfileModelImpl implements _UserProfileModel {
     @JsonKey(name: 'updated_at') required this.updatedAt,
   }) : _roles = roles,
        _metadata = metadata;
-
-  factory _$UserProfileModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserProfileModelImplFromJson(json);
 
   @override
   final String userId;
@@ -516,7 +506,6 @@ class _$UserProfileModelImpl implements _UserProfileModel {
                 other.updatedAt == updatedAt));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
     runtimeType,
@@ -553,11 +542,6 @@ class _$UserProfileModelImpl implements _UserProfileModel {
         this,
         _$identity,
       );
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$UserProfileModelImplToJson(this);
-  }
 }
 
 abstract class _UserProfileModel implements UserProfileModel {
@@ -584,9 +568,6 @@ abstract class _UserProfileModel implements UserProfileModel {
     @JsonKey(name: 'created_at') required final DateTime createdAt,
     @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$UserProfileModelImpl;
-
-  factory _UserProfileModel.fromJson(Map<String, dynamic> json) =
-      _$UserProfileModelImpl.fromJson;
 
   @override
   String get userId;
