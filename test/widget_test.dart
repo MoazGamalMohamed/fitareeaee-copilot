@@ -37,7 +37,7 @@ void main() {
       final trip = Trip(
         id: 'trip1',
         type: 'person',
-        direction: 'offer',
+        role: 'offer',
         driverId: 'driver1',
         originAddress: 'Cairo',
         originLat: 30.0,
@@ -78,7 +78,7 @@ void main() {
       final trip = Trip(
         id: 'trip1',
         type: 'person',
-        direction: 'offer',
+        role: 'offer',
         driverId: 'driver1',
         originAddress: 'Cairo',
         originLat: 30.0,

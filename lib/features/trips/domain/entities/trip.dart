@@ -15,10 +15,12 @@ enum TripStatus { pending, accepted, inProgress, completed, cancelled }
 /// Trip entity - supports combined person + package trips
 @freezed
 class Trip with _$Trip {
+  const Trip._();
+  
   const factory Trip({
     required String id,
     @JsonKey(name: 'type') required String type, // 'person', 'package', or 'both'
-    @JsonKey(name: 'direction') required String direction, // 'offer' or 'request'
+    @JsonKey(name: 'role') required String role, // 'offer' or 'request'
     required String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') required String originAddress,
@@ -54,15 +56,13 @@ class Trip with _$Trip {
   }) = _Trip;
 
   factory Trip.fromJson(Map<String, dynamic> json) => _$TripFromJson(json);
-}
 
-/// Extension methods for Trip
-extension TripExtension on Trip {
+  /// Computed properties
   bool get isAvailable => status == 'pending' && availableSeats > 0;
   bool get isPerson => type == 'person';
   bool get isPackage => type == 'package';
-  bool get isOffer => direction == 'offer';
-  bool get isRequest => direction == 'request';
+  bool get isOffer => role == 'offer';
+  bool get isRequest => role == 'request';
   bool get isFull => availableSeats <= 0;
   bool get isPast => departureTime.isBefore(DateTime.now());
   

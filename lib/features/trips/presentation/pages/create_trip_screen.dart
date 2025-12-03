@@ -44,7 +44,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   // Form values
   bool _includesPerson = true;  // Whether trip includes person transport
   bool _includesPackage = false; // Whether trip includes package delivery
-  String _direction = 'offer'; // 'offer' or 'request' - may be preset from role
+  String _role = 'offer'; // 'offer' or 'request' - may be preset from role
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   bool _allowPets = false;
@@ -70,12 +70,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     _packageWeightController = TextEditingController();
     _packageDescriptionController = TextEditingController();
 
-    // Set direction based on role from navigation
+    // Set role based on role from navigation
     _roleIsPreset = widget.role != null;
     if (widget.role == 'driver') {
-      _direction = 'offer';
+      _role = 'offer';
     } else if (widget.role == 'rider') {
-      _direction = 'request';
+      _role = 'request';
     }
   }
 
@@ -92,7 +92,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   }
 
   String get _tripTitle {
-    if (_direction == 'offer') {
+    if (_role == 'offer') {
       return 'Create Offer';
     }
     return 'Create Request';
@@ -119,28 +119,28 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: _direction == 'offer'
+                        color: _role == 'offer'
                             ? Colors.green.withValues(alpha: 0.1)
                             : Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _direction == 'offer' ? Colors.green : Colors.blue,
+                          color: _role == 'offer' ? Colors.green : Colors.blue,
                         ),
                       ),
                       child: Row(
                         children: [
                           Icon(
-                            _direction == 'offer' ? Icons.drive_eta : Icons.search,
-                            color: _direction == 'offer' ? Colors.green : Colors.blue,
+                            _role == 'offer' ? Icons.drive_eta : Icons.search,
+                            color: _role == 'offer' ? Colors.green : Colors.blue,
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            _direction == 'offer'
+                            _role == 'offer'
                                 ? 'You are offering a trip'
                                 : 'You are requesting a trip',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: _direction == 'offer' ? Colors.green : Colors.blue,
+                              color: _role == 'offer' ? Colors.green : Colors.blue,
                             ),
                           ),
                         ],
@@ -200,8 +200,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                             context,
                             'Offering',
                             Icons.arrow_upward,
-                            _direction == 'offer',
-                            () => setState(() => _direction = 'offer'),
+                            _role == 'offer',
+                            () => setState(() => _role = 'offer'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -210,8 +210,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                             context,
                             'Requesting',
                             Icons.arrow_downward,
-                            _direction == 'request',
-                            () => setState(() => _direction = 'request'),
+                            _role == 'request',
+                            () => setState(() => _role = 'request'),
                           ),
                         ),
                       ],
@@ -295,7 +295,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                           child: TextFormField(
                             controller: _seatsController,
                             decoration: InputDecoration(
-                              labelText: _direction == 'offer' ? 'Available seats' : 'Seats needed',
+                              labelText: _role == 'offer' ? 'Available seats' : 'Seats needed',
                               hintText: '1',
                               prefixIcon: const Icon(Icons.people),
                               border: OutlineInputBorder(
@@ -442,7 +442,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(_direction == 'offer' ? 'Create Offer' : 'Create Request'),
+                        : Text(_role == 'offer' ? 'Create Offer' : 'Create Request'),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -780,7 +780,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     final trip = Trip(
       id: '', // Will be set by Firestore
       type: tripType,
-      direction: _direction,
+      role: _role,
       driverId: userId,
       originAddress: _originController.text,
       destinationAddress: _destinationController.text,
@@ -794,6 +794,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       pricePerSeat: double.tryParse(_priceController.text) ?? 0.0,
       totalSeats: int.tryParse(_seatsController.text) ?? 1,
       availableSeats: int.tryParse(_seatsController.text) ?? 1,
+      status: 'pending', // Explicitly set status
       description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
       allowPets: _allowPets,
       allowSmoking: _allowSmoking,
@@ -822,7 +823,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_direction == 'offer'
+          content: Text(_role == 'offer'
               ? 'Trip offer created successfully!'
               : 'Trip request created successfully!'),
           backgroundColor: Colors.green,

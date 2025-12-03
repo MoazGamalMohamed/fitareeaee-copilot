@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/trip_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../domain/entities/trip.dart';
 
 class TripsListScreen extends ConsumerStatefulWidget {
   /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
@@ -18,7 +20,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _filterType = 'all'; // 'all', 'person', 'package'
-  String _filterDirection = 'all'; // 'all', 'offer', 'request'
+  String _filterRole = 'all'; // 'all', 'offer', 'request'
   int _selectedNavIndex = 1; // Trips is index 1
 
   @override
@@ -36,6 +38,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   @override
   Widget build(BuildContext context) {
     final availableTrips = ref.watch(availableTripsProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -85,28 +88,36 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           ),
 
           // My Trips Tab
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.directions_car, size: 80, color: Colors.grey[400]),
-                const SizedBox(height: 16),
-                Text(
-                  'No trips yet',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+          currentUser.when(
+            data: (user) {
+              if (user == null) {
+                return const Center(
+                  child: Text('Please sign in to view your trips'),
+                );
+              }
+              final userTrips = ref.watch(userTripsProvider(user.id));
+              return userTrips.when(
+                data: (trips) => _buildTripsList(trips, isMyTrips: true),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    final roleParam = widget.role != null ? '?role=${widget.role}' : '';
-                    context.push('/trips/create$roleParam');
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Create Trip'),
+                error: (error, st) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
+                      const SizedBox(height: 16),
+                      Text('Error: $error'),
+                    ],
+                  ),
                 ),
-              ],
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            error: (error, st) => Center(
+              child: Text('Error loading user: $error'),
             ),
           ),
         ],
@@ -429,23 +440,23 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
               ),
               const SizedBox(height: 24),
 
-              // Direction Filter
-              Text('Direction', style: Theme.of(context).textTheme.titleMedium),
+              // Role Filter
+              Text('Role', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 children: ['all', 'offer', 'request']
-                    .map((direction) => FilterChip(
+                    .map((role) => FilterChip(
                           label: Text(
-                            direction == 'all'
+                            role == 'all'
                                 ? 'All'
-                                : direction == 'offer'
+                                : role == 'offer'
                                     ? 'Offering'
                                     : 'Requesting',
                           ),
-                          selected: _filterDirection == direction,
+                          selected: _filterRole == role,
                           onSelected: (selected) {
-                            setState(() => _filterDirection = direction);
+                            setState(() => _filterRole = role);
                           },
                         ))
                     .toList(),
@@ -467,7 +478,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   List filterTrips(List trips) {
     return trips.where((trip) {
       if (_filterType != 'all' && trip.type != _filterType) return false;
-      if (_filterDirection != 'all' && trip.direction != _filterDirection) {
+      if (_filterRole != 'all' && trip.role != _filterRole) {
         return false;
       }
       return true;

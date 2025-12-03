@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
+import '../../../../core/widgets/error_dialog.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -23,34 +25,65 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final resetState = ref.watch(passwordResetProvider);
 
+    ref.listen<AsyncValue<void>>(passwordResetProvider, (previous, next) {
+      next.when(
+        data: (_) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Reset Email Sent'),
+              content: const Text('Check your email for password reset instructions.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    context.pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        },
+        error: (error, stackTrace) {
+          showErrorDialog(
+            context: context,
+            title: 'Reset Failed',
+            message: error.toString(),
+          );
+        },
+        loading: () {},
+      );
+    });
+
     return Scaffold(
-      appBar: AppBar(title: Text('Reset Password')),
+      appBar: AppBar(title: const Text('Forgot Password')),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Text(
-                  'Forgot Password?',
+                  'Reset Password',
                   style: Theme.of(context).textTheme.headlineLarge,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Text(
-                  'Enter your email address and we\'ll send you a link to reset your password.',
+                  'Enter your email to receive reset instructions',
                   style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
 
                 // Email field
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     hintText: 'Enter your email',
                     prefixIcon: Icon(Icons.email),
@@ -66,7 +99,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
 
                 // Reset button
                 ElevatedButton(
@@ -77,29 +110,22 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             ref.read(passwordResetProvider.notifier).resetPassword(
                                   email: _emailController.text,
                                 );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Check your email for password reset link'),
-                              ),
-                            );
                           }
                         },
                   child: resetState.isLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text('Send Reset Link'),
+                      : const Text('Send Reset Email'),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 // Back to login
                 TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back to Login'),
+                  onPressed: () => context.pop(),
+                  child: const Text('Back to Login'),
                 ),
               ],
             ),

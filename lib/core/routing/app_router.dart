@@ -5,29 +5,13 @@ import 'package:fitareeaee/features/auth/presentation/providers/auth_provider.da
 import 'package:fitareeaee/features/chat/presentation/pages/chat_list_screen.dart';
 import 'package:fitareeaee/features/chat/presentation/pages/chat_screen.dart';
 import 'package:fitareeaee/features/home/presentation/pages/home_screen.dart';
-import 'package:fitareeaee/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:fitareeaee/features/profile/presentation/pages/profile_screen.dart';
-import 'package:fitareeaee/features/search/presentation/pages/advanced_search_screen.dart';
-import 'package:fitareeaee/features/search/presentation/pages/search_results_screen.dart';
 import 'package:fitareeaee/features/settings/presentation/pages/settings_screen.dart';
-import 'package:fitareeaee/features/booking/presentation/pages/booking_screen.dart';
-import 'package:fitareeaee/features/booking/domain/models/booking_model.dart';
-import 'package:fitareeaee/features/payment/presentation/pages/payment_screen.dart';
-import 'package:fitareeaee/features/ratings/presentation/pages/rating_screen.dart';
-import 'package:fitareeaee/features/trips/domain/entities/trip.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/nearby_trips_map_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
-import 'package:fitareeaee/features/wallet/presentation/pages/wallet_screen.dart';
-import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
-import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
-import 'package:fitareeaee/features/tracking/presentation/pages/tracking_screen.dart';
 import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
-import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
-import 'package:fitareeaee/features/ai/presentation/pages/ai_assistant_screen.dart';
-import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
-import 'package:fitareeaee/features/trips/presentation/pages/package_photos_screen.dart';
-import 'package:fitareeaee/features/trips/presentation/pages/nearby_trips_map_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -96,14 +80,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
       ),
-      GoRoute(
-        path: '${AppRoutes.profile}/edit',
-        name: 'edit-profile',
-        builder: (context, state) {
-          final userId = state.extra as String? ?? 'current_user_id';
-          return EditProfileScreen(userId: userId);
-        },
-      ),
 
       // Trips Routes
       GoRoute(
@@ -138,26 +114,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Search Routes
-      GoRoute(
-        path: AppRoutes.search,
-        name: 'advanced-search',
-        builder: (context, state) => const AdvancedSearchScreen(),
-      ),
-      GoRoute(
-        path: '${AppRoutes.search}/results',
-        name: 'search-results',
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>? ?? {};
-          return SearchResultsScreen(
-            origin: extra['origin'] ?? '',
-            destination: extra['destination'] ?? '',
-            departureDate: extra['departureDate'] ?? DateTime.now(),
-            tripType: extra['tripType'] ?? 'person',
-          );
-        },
-      ),
-
       // Chat Routes
       GoRoute(
         path: AppRoutes.chat,
@@ -180,113 +136,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
 
-      // Booking Route
-      GoRoute(
-        path: AppRoutes.booking,
-        name: 'booking',
-        builder: (context, state) {
-          final trip = state.extra as Trip;
-          return BookingScreen(trip: trip);
-        },
-      ),
-
-      // Payment Route
-      GoRoute(
-        path: AppRoutes.payment,
-        name: 'payment',
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return PaymentScreen(
-            booking: data['booking'] as BookingModel,
-            payeeId: data['payeeId'] as String,
-          );
-        },
-      ),
-
-      // Rating Route
-      GoRoute(
-        path: AppRoutes.rating,
-        name: 'rating',
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return RatingScreen(
-            tripId: data['tripId'] as String,
-            ratedUserId: data['ratedUserId'] as String,
-            ratedUserName: data['ratedUserName'] as String,
-          );
-        },
-      ),
-
-      // Wallet Route
-      GoRoute(
-        path: AppRoutes.wallet,
-        name: 'wallet',
-        builder: (context, state) => const WalletScreen(),
-      ),
-
-      // Verification Route
-      GoRoute(
-        path: AppRoutes.verification,
-        name: 'verification',
-        builder: (context, state) => const VerificationScreen(),
-      ),
-
-      // Driver Profile Route
-      GoRoute(
-        path: AppRoutes.driverProfile,
-        name: 'driver-profile',
-        builder: (context, state) {
-          final isRequired = state.uri.queryParameters['required'] == 'true';
-          return DriverProfileScreen(isRequired: isRequired);
-        },
-      ),
-
-      // Notifications Route
-      GoRoute(
-        path: AppRoutes.notifications,
-        name: 'notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-
-      // Tracking Route
-      GoRoute(
-        path: '${AppRoutes.tracking}/:tripId',
-        name: 'tracking',
-        builder: (context, state) {
-          final tripId = state.pathParameters['tripId'] ?? '';
-          final params = state.uri.queryParameters;
-          return TrackingScreen(
-            tripId: tripId,
-            isDriver: params['isDriver'] == 'true',
-            originLat: double.tryParse(params['originLat'] ?? ''),
-            originLng: double.tryParse(params['originLng'] ?? ''),
-            destLat: double.tryParse(params['destLat'] ?? ''),
-            destLng: double.tryParse(params['destLng'] ?? ''),
-            originName: params['originName'],
-            destName: params['destName'],
-          );
-        },
-      ),
-
-      // Package Photos Route
-      GoRoute(
-        path: '${AppRoutes.packagePhotos}/:bookingId',
-        name: 'package-photos',
-        builder: (context, state) {
-          final bookingId = state.pathParameters['bookingId'] ?? '';
-          final tripId = state.uri.queryParameters['tripId'] ?? '';
-          final typeStr = state.uri.queryParameters['type'] ?? 'pickup';
-          final photoType = typeStr == 'dropoff'
-              ? PackagePhotoType.dropoff
-              : PackagePhotoType.pickup;
-          return PackagePhotosScreen(
-            bookingId: bookingId,
-            tripId: tripId,
-            photoType: photoType,
-          );
-        },
-      ),
-
       // SOS Route
       GoRoute(
         path: AppRoutes.sos,
@@ -295,20 +144,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final tripId = state.extra as String?;
           return SOSScreen(tripId: tripId);
         },
-      ),
-
-      // Help Center Route
-      GoRoute(
-        path: AppRoutes.helpCenter,
-        name: 'help-center',
-        builder: (context, state) => const HelpCenterScreen(),
-      ),
-
-      // AI Assistant Route
-      GoRoute(
-        path: AppRoutes.aiAssistant,
-        name: 'ai-assistant',
-        builder: (context, state) => const AIAssistantScreen(),
       ),
     ],
     redirect: (context, state) {

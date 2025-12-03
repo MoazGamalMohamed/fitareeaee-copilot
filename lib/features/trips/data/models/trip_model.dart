@@ -9,7 +9,7 @@ class TripModel with _$TripModel {
   const factory TripModel({
     required String id,
     @JsonKey(name: 'type') required String type,
-    @JsonKey(name: 'direction') required String direction,
+    @JsonKey(name: 'role') required String role,
     required String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') required String originAddress,
@@ -50,7 +50,7 @@ extension TripModelExtension on TripModel {
   Trip toEntity() => Trip(
         id: id,
         type: type,
-        direction: direction,
+        role: role,
         driverId: driverId,
         passengerId: passengerId,
         originAddress: originAddress,
@@ -84,7 +84,7 @@ extension TripModelExtension on TripModel {
   Map<String, dynamic> toFirestore() => {
         'id': id,
         'type': type,
-        'direction': direction,
+        'role': role,
         'driverId': driverId,
         'passengerId': passengerId,
         'origin_address': originAddress,
@@ -120,7 +120,7 @@ extension TripToModel on Trip {
   TripModel toModel() => TripModel(
         id: id,
         type: type,
-        direction: direction,
+        role: role,
         driverId: driverId,
         passengerId: passengerId,
         originAddress: originAddress,

@@ -24,8 +24,8 @@ mixin _$TripModel {
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'type')
   String get type => throw _privateConstructorUsedError;
-  @JsonKey(name: 'direction')
-  String get direction => throw _privateConstructorUsedError;
+  @JsonKey(name: 'role')
+  String get role => throw _privateConstructorUsedError;
   String get driverId => throw _privateConstructorUsedError;
   String? get passengerId => throw _privateConstructorUsedError;
   @JsonKey(name: 'origin_address')
@@ -92,7 +92,7 @@ abstract class $TripModelCopyWith<$Res> {
   $Res call({
     String id,
     @JsonKey(name: 'type') String type,
-    @JsonKey(name: 'direction') String direction,
+    @JsonKey(name: 'role') String role,
     String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') String originAddress,
@@ -141,7 +141,7 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
   $Res call({
     Object? id = null,
     Object? type = null,
-    Object? direction = null,
+    Object? role = null,
     Object? driverId = null,
     Object? passengerId = freezed,
     Object? originAddress = null,
@@ -181,9 +181,9 @@ class _$TripModelCopyWithImpl<$Res, $Val extends TripModel>
                 ? _value.type
                 : type // ignore: cast_nullable_to_non_nullable
                       as String,
-            direction: null == direction
-                ? _value.direction
-                : direction // ignore: cast_nullable_to_non_nullable
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
                       as String,
             driverId: null == driverId
                 ? _value.driverId
@@ -315,7 +315,7 @@ abstract class _$$TripModelImplCopyWith<$Res>
   $Res call({
     String id,
     @JsonKey(name: 'type') String type,
-    @JsonKey(name: 'direction') String direction,
+    @JsonKey(name: 'role') String role,
     String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') String originAddress,
@@ -363,7 +363,7 @@ class __$$TripModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? type = null,
-    Object? direction = null,
+    Object? role = null,
     Object? driverId = null,
     Object? passengerId = freezed,
     Object? originAddress = null,
@@ -403,9 +403,9 @@ class __$$TripModelImplCopyWithImpl<$Res>
             ? _value.type
             : type // ignore: cast_nullable_to_non_nullable
                   as String,
-        direction: null == direction
-            ? _value.direction
-            : direction // ignore: cast_nullable_to_non_nullable
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
                   as String,
         driverId: null == driverId
             ? _value.driverId
@@ -530,7 +530,7 @@ class _$TripModelImpl implements _TripModel {
   const _$TripModelImpl({
     required this.id,
     @JsonKey(name: 'type') required this.type,
-    @JsonKey(name: 'direction') required this.direction,
+    @JsonKey(name: 'role') required this.role,
     required this.driverId,
     this.passengerId,
     @JsonKey(name: 'origin_address') required this.originAddress,
@@ -574,8 +574,8 @@ class _$TripModelImpl implements _TripModel {
   @JsonKey(name: 'type')
   final String type;
   @override
-  @JsonKey(name: 'direction')
-  final String direction;
+  @JsonKey(name: 'role')
+  final String role;
   @override
   final String driverId;
   @override
@@ -685,7 +685,7 @@ class _$TripModelImpl implements _TripModel {
 
   @override
   String toString() {
-    return 'TripModel(id: $id, type: $type, direction: $direction, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt, includesPerson: $includesPerson, includesPackage: $includesPackage, packageWeight: $packageWeight, packageDescription: $packageDescription, packagePhotoUrls: $packagePhotoUrls)';
+    return 'TripModel(id: $id, type: $type, role: $role, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt, includesPerson: $includesPerson, includesPackage: $includesPackage, packageWeight: $packageWeight, packageDescription: $packageDescription, packagePhotoUrls: $packagePhotoUrls)';
   }
 
   @override
@@ -695,8 +695,7 @@ class _$TripModelImpl implements _TripModel {
             other is _$TripModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.direction, direction) ||
-                other.direction == direction) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.driverId, driverId) ||
                 other.driverId == driverId) &&
             (identical(other.passengerId, passengerId) ||
@@ -765,7 +764,7 @@ class _$TripModelImpl implements _TripModel {
     runtimeType,
     id,
     type,
-    direction,
+    role,
     driverId,
     passengerId,
     originAddress,
@@ -814,7 +813,7 @@ abstract class _TripModel implements TripModel {
   const factory _TripModel({
     required final String id,
     @JsonKey(name: 'type') required final String type,
-    @JsonKey(name: 'direction') required final String direction,
+    @JsonKey(name: 'role') required final String role,
     required final String driverId,
     final String? passengerId,
     @JsonKey(name: 'origin_address') required final String originAddress,
@@ -855,8 +854,8 @@ abstract class _TripModel implements TripModel {
   @JsonKey(name: 'type')
   String get type;
   @override
-  @JsonKey(name: 'direction')
-  String get direction;
+  @JsonKey(name: 'role')
+  String get role;
   @override
   String get driverId;
   @override

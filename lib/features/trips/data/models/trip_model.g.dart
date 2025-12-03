@@ -10,7 +10,7 @@ _$TripModelImpl _$$TripModelImplFromJson(Map<String, dynamic> json) =>
     _$TripModelImpl(
       id: json['id'] as String,
       type: json['type'] as String,
-      direction: json['direction'] as String,
+      role: json['role'] as String,
       driverId: json['driverId'] as String,
       passengerId: json['passengerId'] as String?,
       originAddress: json['origin_address'] as String,
@@ -57,7 +57,7 @@ Map<String, dynamic> _$$TripModelImplToJson(_$TripModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'type': instance.type,
-      'direction': instance.direction,
+      'role': instance.role,
       'driverId': instance.driverId,
       'passengerId': instance.passengerId,
       'origin_address': instance.originAddress,

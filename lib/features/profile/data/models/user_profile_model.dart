@@ -1,67 +1,79 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/user_profile.dart';
 
-part 'user_profile_model.freezed.dart';
-part 'user_profile_model.g.dart';
-
 /// User profile data model with JSON serialization
-@freezed
-class UserProfileModel with _$UserProfileModel {
-  const factory UserProfileModel({
-    required String userId,
-    required String email,
-    required String name,
-    String? phone,
-    String? photoUrl,
-    String? bio,
-    String? address,
-    String? city,
-    String? country,
-    double? latitude,
-    double? longitude,
-    @Default([]) List<String> roles,
-    @Default(0.0) double rating,
-    @Default(0) int totalRatings,
-    @Default(0) int totalTrips,
-    @Default(false) bool isEmailVerified,
-    @Default(false) bool isPhoneVerified,
-    @Default(false) bool isProfileComplete,
-    @Default({}) Map<String, dynamic> metadata,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
-    @JsonKey(name: 'updated_at') required DateTime updatedAt,
-  }) = _UserProfileModel;
+class UserProfileModel {
+  UserProfileModel({
+    required this.userId,
+    required this.email,
+    required this.name,
+    this.phone,
+    this.photoUrl,
+    this.bio,
+    this.address,
+    this.city,
+    this.country,
+    this.latitude,
+    this.longitude,
+    this.roles = const [],
+    this.rating = 0.0,
+    this.totalRatings = 0,
+    this.totalTrips = 0,
+    this.isEmailVerified = false,
+    this.isPhoneVerified = false,
+    this.isProfileComplete = false,
+    this.metadata = const {},
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final String userId;
+  final String email;
+  final String name;
+  final String? phone;
+  final String? photoUrl;
+  final String? bio;
+  final String? address;
+  final String? city;
+  final String? country;
+  final double? latitude;
+  final double? longitude;
+  final List<String> roles;
+  final double rating;
+  final int totalRatings;
+  final int totalTrips;
+  final bool isEmailVerified;
+  final bool isPhoneVerified;
+  final bool isProfileComplete;
+  final Map<String, dynamic> metadata;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   /// Factory to create from JSON
-  factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
-      _$$UserProfileModelImplFromJson(json);
-}
-
-/// Extension to convert between model and entity
-extension UserProfileModelExtension on UserProfileModel {
-  /// Convert model to domain entity
-  UserProfile toEntity() => UserProfile(
-        userId: userId,
-        email: email,
-        name: name,
-        phone: phone,
-        photoUrl: photoUrl,
-        bio: bio,
-        address: address,
-        city: city,
-        country: country,
-        latitude: latitude,
-        longitude: longitude,
-        roles: roles,
-        rating: rating,
-        totalRatings: totalRatings,
-        totalTrips: totalTrips,
-        isEmailVerified: isEmailVerified,
-        isPhoneVerified: isPhoneVerified,
-        isProfileComplete: isProfileComplete,
-        metadata: metadata,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    return UserProfileModel(
+      userId: json['userId'] as String,
+      email: json['email'] as String,
+      name: json['name'] as String,
+      phone: json['phone'] as String?,
+      photoUrl: json['photoUrl'] as String?,
+      bio: json['bio'] as String?,
+      address: json['address'] as String?,
+      city: json['city'] as String?,
+      country: json['country'] as String?,
+      latitude: json['latitude'] as double?,
+      longitude: json['longitude'] as double?,
+      roles: List<String>.from(json['roles'] ?? []),
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      totalRatings: json['totalRatings'] as int? ?? 0,
+      totalTrips: json['totalTrips'] as int? ?? 0,
+      isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+      isPhoneVerified: json['isPhoneVerified'] as bool? ?? false,
+      isProfileComplete: json['isProfileComplete'] as bool? ?? false,
+      metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+    );
+  }
 
   /// Convert to JSON for Firestore
   Map<String, dynamic> toFirestore() => {
@@ -87,6 +99,31 @@ extension UserProfileModelExtension on UserProfileModel {
         'created_at': createdAt,
         'updated_at': updatedAt,
       };
+
+  /// Convert model to domain entity
+  UserProfile toEntity() => UserProfile(
+        userId: userId,
+        email: email,
+        name: name,
+        phone: phone,
+        photoUrl: photoUrl,
+        bio: bio,
+        address: address,
+        city: city,
+        country: country,
+        latitude: latitude,
+        longitude: longitude,
+        roles: roles,
+        rating: rating,
+        totalRatings: totalRatings,
+        totalTrips: totalTrips,
+        isEmailVerified: isEmailVerified,
+        isPhoneVerified: isPhoneVerified,
+        isProfileComplete: isProfileComplete,
+        metadata: metadata,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
 }
 
 /// Extension to convert entity to model

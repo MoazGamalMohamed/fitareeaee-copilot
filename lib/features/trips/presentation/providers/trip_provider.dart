@@ -23,7 +23,7 @@ final userTripsProvider = StreamProvider.family<List<Trip>, String>((
   String userId,
 ) {
   final repository = ref.watch(tripRepositoryProvider);
-  return repository.streamAvailableTrips();
+  return repository.streamUserTrips(userId);
 });
 
 // Future Providers

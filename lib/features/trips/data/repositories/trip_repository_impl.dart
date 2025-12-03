@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/trip.dart';
-import '../models/trip_model.dart';
 import '../../../../core/utils/exceptions/app_exceptions.dart';
 
 abstract class TripRepository {
@@ -17,6 +16,7 @@ abstract class TripRepository {
     String? tripType,
   });
   Stream<List<Trip>> streamAvailableTrips();
+  Stream<List<Trip>> streamUserTrips(String userId);
   Future<void> bookTrip(String tripId, String userId);
   Future<void> cancelBooking(String tripId, String userId);
 }
@@ -41,8 +41,7 @@ class TripRepositoryImpl implements TripRepository {
 
       // Create trip with the generated ID
       final tripWithId = trip.copyWith(id: docRef.id);
-      final model = tripWithId.toModel();
-      await docRef.set(model.toFirestore());
+      await docRef.set(tripWithId.toJson());
       return tripWithId;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
@@ -54,10 +53,7 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<void> updateTrip(Trip trip) async {
     try {
-      final model = trip.toModel();
-      await _firestore.collection('trips').doc(trip.id).update(
-            model.toFirestore(),
-          );
+      await _firestore.collection('trips').doc(trip.id).update(trip.toJson());
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -85,8 +81,8 @@ class TripRepositoryImpl implements TripRepository {
         throw AppException(message: 'Trip not found');
       }
 
-      final model = TripModel.fromJson(doc.data() as Map<String, dynamic>);
-      return model.toEntity();
+      final data = _convertTimestamps(doc.data() as Map<String, dynamic>);
+      return Trip.fromJson(data);
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -98,11 +94,18 @@ class TripRepositoryImpl implements TripRepository {
   Future<List<Trip>> getAllTrips() async {
     try {
       final snapshot = await _firestore.collection('trips').get();
-      return snapshot.docs
-          .map((doc) =>
-              TripModel.fromJson(doc.data())
-                  .toEntity())
-          .toList();
+      final trips = <Trip>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = _convertTimestamps(doc.data());
+          final trip = Trip.fromJson(data);
+          trips.add(trip);
+        } catch (e) {
+          print('Warning: Skipping invalid trip document ${doc.id}: $e');
+          continue;
+        }
+      }
+      return trips;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -118,11 +121,18 @@ class TripRepositoryImpl implements TripRepository {
           .where('driverId', isEqualTo: userId)
           .get();
 
-      return snapshot.docs
-          .map((doc) =>
-              TripModel.fromJson(doc.data())
-                  .toEntity())
-          .toList();
+      final trips = <Trip>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = _convertTimestamps(doc.data());
+          final trip = Trip.fromJson(data);
+          trips.add(trip);
+        } catch (e) {
+          print('Warning: Skipping invalid user trip document ${doc.id}: $e');
+          continue;
+        }
+      }
+      return trips;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -156,22 +166,26 @@ class TripRepositoryImpl implements TripRepository {
 
       final snapshot = await query.get();
 
-      var trips = snapshot.docs
-          .map((doc) =>
-              TripModel.fromJson(doc.data())
-                  .toEntity())
-          .toList();
+      final trips = <Trip>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = _convertTimestamps(doc.data());
+          final trip = Trip.fromJson(data);
+          trips.add(trip);
+        } catch (e) {
+          print('Warning: Skipping invalid trip document ${doc.id}: $e');
+          continue;
+        }
+      }
 
       // Filter by date if provided
       if (departureDate != null) {
         final startOfDay = DateTime(departureDate.year, departureDate.month, departureDate.day);
         final endOfDay = startOfDay.add(const Duration(days: 1));
 
-        trips = trips
-            .where((trip) =>
-                trip.departureTime.isAfter(startOfDay) &&
-                trip.departureTime.isBefore(endOfDay))
-            .toList();
+        trips.removeWhere((trip) =>
+            trip.departureTime.isBefore(startOfDay) ||
+            trip.departureTime.isAfter(endOfDay));
       }
 
       return trips;
@@ -186,19 +200,54 @@ class TripRepositoryImpl implements TripRepository {
   Stream<List<Trip>> streamAvailableTrips() {
     return _firestore
         .collection('trips')
-        .where('status', isEqualTo: 'pending')
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
-          .map((doc) =>
-              TripModel.fromJson(doc.data())
-                  .toEntity())
-          .toList();
+      final trips = <Trip>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = _convertTimestamps(doc.data());
+          final trip = Trip.fromJson(data);
+          trips.add(trip);
+        } catch (e) {
+          print('Warning: Skipping invalid trip document ${doc.id}: $e');
+          // Skip this document but continue processing others
+          continue;
+        }
+      }
+      return trips;
     }).handleError((e) {
       if (e is FirebaseException) {
         throw _handleFirebaseException(e);
       }
       throw AppException(message: 'Failed to stream trips: $e');
+    });
+  }
+
+  @override
+  Stream<List<Trip>> streamUserTrips(String userId) {
+    return _firestore
+        .collection('trips')
+        .where('driverId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+      final trips = <Trip>[];
+      for (final doc in snapshot.docs) {
+        try {
+          final data = _convertTimestamps(doc.data());
+          final trip = Trip.fromJson(data);
+          trips.add(trip);
+        } catch (e) {
+          print('Warning: Skipping invalid user trip document ${doc.id}: $e');
+          // Skip this document but continue processing others
+          continue;
+        }
+      }
+      return trips;
+    }).handleError((e) {
+      if (e is FirebaseException) {
+        throw _handleFirebaseException(e);
+      }
+      throw AppException(message: 'Failed to stream user trips: $e');
     });
   }
 
@@ -266,5 +315,67 @@ class TripRepositoryImpl implements TripRepository {
       default:
         return AppException(message: 'Firebase error: ${e.message}');
     }
+  }
+
+  /// Convert Firestore Timestamps to ISO strings for JSON parsing
+  /// Also ensures all critical fields are present and have safe defaults
+  Map<String, dynamic> _convertTimestamps(Map<String, dynamic> data) {
+    final converted = Map<String, dynamic>.from(data);
+
+    // Convert timestamp fields to ISO strings
+    final timestampFields = ['departure_time', 'created_at', 'updated_at'];
+    for (final field in timestampFields) {
+      if (converted[field] is Timestamp) {
+        converted[field] = (converted[field] as Timestamp).toDate().toIso8601String();
+      } else if (converted[field] == null) {
+        // Provide default ISO string for missing timestamp fields
+        converted[field] = DateTime.now().toIso8601String();
+      }
+    }
+
+    // Ensure required string fields have defaults if missing
+    final requiredFields = {
+      'type': 'person',
+      'role': 'offer',
+      'origin_address': 'Unknown',
+      'destination_address': 'Unknown',
+      'status': 'pending',
+      'driverId': '',
+    };
+
+    requiredFields.forEach((field, defaultValue) {
+      if (!converted.containsKey(field) || converted[field] == null) {
+        converted[field] = defaultValue;
+      }
+    });
+
+    // Ensure required numeric fields have defaults if missing
+    final numericFields = {
+      'origin_lat': 0.0,
+      'origin_lng': 0.0,
+      'destination_lat': 0.0,
+      'destination_lng': 0.0,
+      'distance': 0.0,
+      'estimated_duration': 0,
+      'price_per_seat': 0.0,
+      'total_seats': 1,
+      'available_seats': 0,
+    };
+
+    numericFields.forEach((field, defaultValue) {
+      if (!converted.containsKey(field) || converted[field] == null) {
+        converted[field] = defaultValue;
+      }
+    });
+
+    // Ensure list fields have empty list defaults
+    final listFields = ['passenger_ids', 'amenities', 'package_photo_urls'];
+    for (final field in listFields) {
+      if (!converted.containsKey(field) || converted[field] == null) {
+        converted[field] = [];
+      }
+    }
+
+    return converted;
   }
 }

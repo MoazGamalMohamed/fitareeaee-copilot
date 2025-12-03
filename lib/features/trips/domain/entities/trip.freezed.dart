@@ -24,8 +24,8 @@ mixin _$Trip {
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'type')
   String get type => throw _privateConstructorUsedError; // 'person', 'package', or 'both'
-  @JsonKey(name: 'direction')
-  String get direction => throw _privateConstructorUsedError; // 'offer' or 'request'
+  @JsonKey(name: 'role')
+  String get role => throw _privateConstructorUsedError; // 'offer' or 'request'
   String get driverId => throw _privateConstructorUsedError;
   String? get passengerId => throw _privateConstructorUsedError;
   @JsonKey(name: 'origin_address')
@@ -91,7 +91,7 @@ abstract class $TripCopyWith<$Res> {
   $Res call({
     String id,
     @JsonKey(name: 'type') String type,
-    @JsonKey(name: 'direction') String direction,
+    @JsonKey(name: 'role') String role,
     String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') String originAddress,
@@ -140,7 +140,7 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
   $Res call({
     Object? id = null,
     Object? type = null,
-    Object? direction = null,
+    Object? role = null,
     Object? driverId = null,
     Object? passengerId = freezed,
     Object? originAddress = null,
@@ -180,9 +180,9 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
                 ? _value.type
                 : type // ignore: cast_nullable_to_non_nullable
                       as String,
-            direction: null == direction
-                ? _value.direction
-                : direction // ignore: cast_nullable_to_non_nullable
+            role: null == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
                       as String,
             driverId: null == driverId
                 ? _value.driverId
@@ -313,7 +313,7 @@ abstract class _$$TripImplCopyWith<$Res> implements $TripCopyWith<$Res> {
   $Res call({
     String id,
     @JsonKey(name: 'type') String type,
-    @JsonKey(name: 'direction') String direction,
+    @JsonKey(name: 'role') String role,
     String driverId,
     String? passengerId,
     @JsonKey(name: 'origin_address') String originAddress,
@@ -359,7 +359,7 @@ class __$$TripImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? type = null,
-    Object? direction = null,
+    Object? role = null,
     Object? driverId = null,
     Object? passengerId = freezed,
     Object? originAddress = null,
@@ -399,9 +399,9 @@ class __$$TripImplCopyWithImpl<$Res>
             ? _value.type
             : type // ignore: cast_nullable_to_non_nullable
                   as String,
-        direction: null == direction
-            ? _value.direction
-            : direction // ignore: cast_nullable_to_non_nullable
+        role: null == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
                   as String,
         driverId: null == driverId
             ? _value.driverId
@@ -522,11 +522,11 @@ class __$$TripImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TripImpl implements _Trip {
+class _$TripImpl extends _Trip {
   const _$TripImpl({
     required this.id,
     @JsonKey(name: 'type') required this.type,
-    @JsonKey(name: 'direction') required this.direction,
+    @JsonKey(name: 'role') required this.role,
     required this.driverId,
     this.passengerId,
     @JsonKey(name: 'origin_address') required this.originAddress,
@@ -559,7 +559,8 @@ class _$TripImpl implements _Trip {
   }) : _passengerIds = passengerIds,
        _amenities = amenities,
        _metadata = metadata,
-       _packagePhotoUrls = packagePhotoUrls;
+       _packagePhotoUrls = packagePhotoUrls,
+       super._();
 
   factory _$TripImpl.fromJson(Map<String, dynamic> json) =>
       _$$TripImplFromJson(json);
@@ -571,8 +572,8 @@ class _$TripImpl implements _Trip {
   final String type;
   // 'person', 'package', or 'both'
   @override
-  @JsonKey(name: 'direction')
-  final String direction;
+  @JsonKey(name: 'role')
+  final String role;
   // 'offer' or 'request'
   @override
   final String driverId;
@@ -686,7 +687,7 @@ class _$TripImpl implements _Trip {
 
   @override
   String toString() {
-    return 'Trip(id: $id, type: $type, direction: $direction, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt, includesPerson: $includesPerson, includesPackage: $includesPackage, packageWeight: $packageWeight, packageDescription: $packageDescription, packagePhotoUrls: $packagePhotoUrls)';
+    return 'Trip(id: $id, type: $type, role: $role, driverId: $driverId, passengerId: $passengerId, originAddress: $originAddress, destinationAddress: $destinationAddress, originLat: $originLat, originLng: $originLng, destinationLat: $destinationLat, destinationLng: $destinationLng, departureTime: $departureTime, distance: $distance, estimatedDuration: $estimatedDuration, pricePerSeat: $pricePerSeat, totalSeats: $totalSeats, availableSeats: $availableSeats, passengerIds: $passengerIds, status: $status, description: $description, allowPets: $allowPets, allowSmoking: $allowSmoking, amenities: $amenities, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt, includesPerson: $includesPerson, includesPackage: $includesPackage, packageWeight: $packageWeight, packageDescription: $packageDescription, packagePhotoUrls: $packagePhotoUrls)';
   }
 
   @override
@@ -696,8 +697,7 @@ class _$TripImpl implements _Trip {
             other is _$TripImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.direction, direction) ||
-                other.direction == direction) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.driverId, driverId) ||
                 other.driverId == driverId) &&
             (identical(other.passengerId, passengerId) ||
@@ -766,7 +766,7 @@ class _$TripImpl implements _Trip {
     runtimeType,
     id,
     type,
-    direction,
+    role,
     driverId,
     passengerId,
     originAddress,
@@ -811,11 +811,11 @@ class _$TripImpl implements _Trip {
   }
 }
 
-abstract class _Trip implements Trip {
+abstract class _Trip extends Trip {
   const factory _Trip({
     required final String id,
     @JsonKey(name: 'type') required final String type,
-    @JsonKey(name: 'direction') required final String direction,
+    @JsonKey(name: 'role') required final String role,
     required final String driverId,
     final String? passengerId,
     @JsonKey(name: 'origin_address') required final String originAddress,
@@ -846,6 +846,7 @@ abstract class _Trip implements Trip {
     @JsonKey(name: 'package_description') final String? packageDescription,
     @JsonKey(name: 'package_photo_urls') final List<String> packagePhotoUrls,
   }) = _$TripImpl;
+  const _Trip._() : super._();
 
   factory _Trip.fromJson(Map<String, dynamic> json) = _$TripImpl.fromJson;
 
@@ -855,8 +856,8 @@ abstract class _Trip implements Trip {
   @JsonKey(name: 'type')
   String get type; // 'person', 'package', or 'both'
   @override
-  @JsonKey(name: 'direction')
-  String get direction; // 'offer' or 'request'
+  @JsonKey(name: 'role')
+  String get role; // 'offer' or 'request'
   @override
   String get driverId;
   @override
