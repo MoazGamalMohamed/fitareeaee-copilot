@@ -85,7 +85,7 @@ class AppLocalizations {
 
   /// Get localized string by key
   static String getString(String key, [Locale? locale]) {
-    // TODO: Add Arabic and other languages support
+    // The application shell is English; Copilot accepts Arabic input.
     return en[key] ?? key;
   }
 }
