@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
@@ -276,7 +274,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           // Input field
           _ChatInputField(
             controller: _messageController,
-            currentUserId: currentUser.id,
             recipientId: widget.recipientId,
             onMessageSent: () {
               setState(() => _shouldAutoScroll = true);
@@ -502,13 +499,11 @@ class _MessageBubble extends ConsumerWidget {
 /// Chat input field
 class _ChatInputField extends ConsumerStatefulWidget {
   final TextEditingController controller;
-  final String currentUserId;
   final String recipientId;
   final VoidCallback onMessageSent;
 
   const _ChatInputField({
     required this.controller,
-    required this.currentUserId,
     required this.recipientId,
     required this.onMessageSent,
   });
@@ -518,66 +513,27 @@ class _ChatInputField extends ConsumerStatefulWidget {
 }
 
 class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
-  final ImagePicker _imagePicker = ImagePicker();
-  final List<String> _selectedImagePaths = [];
   bool _isUploading = false;
 
   Future<void> _sendMessage() async {
     final content = widget.controller.text.trim();
-    if (content.isEmpty && _selectedImagePaths.isEmpty) return;
+    if (content.isEmpty) return;
 
     setState(() {
       _isUploading = true;
     });
 
     try {
-      // Upload images to Firebase Storage if any
-      List<String> uploadedUrls = [];
-      if (_selectedImagePaths.isNotEmpty) {
-        final storage = firebase_storage.FirebaseStorage.instance;
-
-        for (final imagePath in _selectedImagePaths) {
-          try {
-            // Create unique filename
-            final timestamp = DateTime.now().millisecondsSinceEpoch;
-            final fileName = 'chat_${widget.currentUserId}_$timestamp.jpg';
-            final storageRef = storage.ref('chat_attachments/$fileName');
-
-            // Upload file
-            print('📤 Uploading image: $imagePath');
-            final bytes = await XFile(imagePath).readAsBytes();
-            await storageRef.putData(
-              bytes,
-              firebase_storage.SettableMetadata(contentType: 'image/jpeg'),
-            );
-
-            // Get download URL
-            final downloadUrl = await storageRef.getDownloadURL();
-            uploadedUrls.add(downloadUrl);
-            print('✅ Uploaded: $downloadUrl');
-          } catch (e) {
-            print('❌ Failed to upload image: $e');
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to upload image: $e')),
-              );
-            }
-          }
-        }
-      }
-
-      // Send message with attachments
       await ref
           .read(sendMessageProvider(widget.recipientId).notifier)
           .sendMessage(
             recipientId: widget.recipientId,
             content: content,
-            attachments: uploadedUrls,
+            attachments: const [],
           );
 
       widget.controller.clear();
       setState(() {
-        _selectedImagePaths.clear();
         _isUploading = false;
       });
       widget.onMessageSent();
@@ -596,27 +552,6 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
     }
   }
 
-  Future<void> _pickImages() async {
-    try {
-      final pickedFiles = await _imagePicker.pickMultiImage(
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-
-      if (pickedFiles.isNotEmpty) {
-        setState(() {
-          _selectedImagePaths.addAll(pickedFiles.map((file) => file.path));
-        });
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to pick images: $e')));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -629,96 +564,8 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Selected images preview (disabled for web compatibility)
-            if (_selectedImagePaths.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.image, color: Colors.blue.shade700),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_selectedImagePaths.length} image(s) selected',
-                      style: TextStyle(color: Colors.blue.shade700),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 20),
-                      onPressed: () {
-                        setState(() {
-                          _selectedImagePaths.clear();
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            /*
-            // TODO: Enable image preview when web support is added
-            if (_selectedImagePaths.isNotEmpty)
-              SizedBox(
-                height: 80,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _selectedImagePaths.length,
-                  itemBuilder: (context, index) {
-                    final imagePath = _selectedImagePaths[index];
-                    return Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            // image: DecorationImage(
-                            //   image: FileImage(File(imagePath)),
-                            //   fit: BoxFit.cover,
-                            // ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedImagePaths.removeAt(index);
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.red,
-                              ),
-                              padding: const EdgeInsets.all(2),
-                              child: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            */
-            // Input row
             Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.attach_file),
-                  onPressed: _pickImages,
-                  tooltip: 'Attach images',
-                ),
                 Expanded(
                   child: TextField(
                     controller: widget.controller,

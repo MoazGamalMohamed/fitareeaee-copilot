@@ -51,6 +51,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "participant_ids",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "participant_ids",
+          "arrayConfig": "CONTAINS"
+        },
+        {
           "fieldPath": "created_at",
           "order": "DESCENDING"
         }

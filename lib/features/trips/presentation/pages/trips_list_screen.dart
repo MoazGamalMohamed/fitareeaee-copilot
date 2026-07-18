@@ -57,11 +57,6 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => context.pushNamed('advanced-search'),
-            tooltip: 'Advanced Search',
-          ),
-          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: showFiltersSheet,
           ),

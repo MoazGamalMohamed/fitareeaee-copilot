@@ -72,7 +72,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Price and Payment
+                  // Price summary. Payments are intentionally out of scope.
                   _buildPriceSection(context, trip),
                   const SizedBox(height: 24),
 
@@ -92,12 +92,8 @@ class BookingConfirmationScreen extends ConsumerWidget {
                                   (driverVerif?.selfieWithIdVerified ?? false);
 
                               if (userVerified && driverVerified) {
-                                return () => _confirmBooking(
-                                  context,
-                                  ref,
-                                  currentUser.id,
-                                  trip,
-                                );
+                                return () =>
+                                    _confirmBooking(context, ref, trip);
                               }
                               return null; // Disable button
                             },
@@ -302,8 +298,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
               if (!isVerified)
                 TextButton(
                   onPressed: () {
-                    // Navigate to verification screen
-                    // context.push('/verification');
+                    if (label == 'Your Identity') {
+                      context.push('/verification');
+                    }
                   },
                   child: const Text('Verify'),
                 ),
@@ -362,7 +359,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Payment',
+            'Trip price',
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -407,24 +404,25 @@ class BookingConfirmationScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmBooking(
-    BuildContext context,
-    WidgetRef ref,
-    String userId,
-    Trip trip,
-  ) async {
-    await ref.read(tripBookingProvider.notifier).bookTrip(trip.id, userId);
-
-    if (context.mounted) {
-      // Show success message and navigate to chat
+  void _confirmBooking(BuildContext context, WidgetRef ref, Trip trip) async {
+    try {
+      final userId = ref.read(authStateProvider).value?.id;
+      if (userId == null) return;
+      await ref.read(tripBookingProvider.notifier).bookTrip(trip.id, userId);
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(availableTripsProvider);
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Booking confirmed! You can now message the driver.'),
         ),
       );
-
-      // Navigate to chat with the driver
       context.go('/chat/${trip.driverId}');
+    } catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString()), backgroundColor: Colors.red),
+      );
     }
   }
 }

@@ -1,302 +1,189 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../../../core/error/failures.dart';
+import '../../../../core/utils/firestore_helpers.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../models/message_model.dart';
-import '../../../../core/error/failures.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:typed_data';
-import '../../../../core/utils/firestore_helpers.dart';
 
-/// Implementation of ChatRepository using Firebase Firestore
+/// Firestore chat repository with participant-scoped queries.
 class ChatRepositoryImpl implements ChatRepository {
+  ChatRepositoryImpl({
+    required FirebaseFirestore firebaseFirestore,
+    FirebaseAuth? firebaseAuth,
+  }) : _firebaseFirestore = firebaseFirestore,
+       _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
   final FirebaseFirestore _firebaseFirestore;
+  final FirebaseAuth _firebaseAuth;
 
-  ChatRepositoryImpl({required FirebaseFirestore firebaseFirestore})
-    : _firebaseFirestore = firebaseFirestore;
-
-  final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-
-  /// Reference to messages collection
   CollectionReference<Map<String, dynamic>> get _messagesCollection =>
       _firebaseFirestore.collection('messages');
 
-  /// Upload attachment bytes to Firebase Storage and return public URL
+  String? get _currentUserId => _firebaseAuth.currentUser?.uid;
+
+  String _getConversationId(String userId1, String userId2) {
+    final ids = [userId1, userId2]..sort();
+    return '${ids[0]}_${ids[1]}';
+  }
+
+  Message _messageFromDocument(
+    QueryDocumentSnapshot<Map<String, dynamic>> document,
+  ) {
+    final data = FirestoreHelpers.convertTimestamps({
+      ...document.data(),
+      'id': document.id,
+    });
+    return MessageModel.fromJson(data).toEntity();
+  }
+
+  FirebaseFailure _failure(Object error, String fallback) {
+    return FirebaseFailure(
+      message: error is FirebaseException
+          ? error.message ?? fallback
+          : fallback,
+    );
+  }
+
   @override
   Future<Either<Failure, String>> uploadAttachment(
     String conversationId,
     Uint8List bytes,
     String filename,
   ) async {
-    try {
-      final ref = _firebaseStorage
-          .ref()
-          .child('chat_attachments')
-          .child(conversationId)
-          .child(filename);
-
-      final uploadTask = await ref.putData(bytes);
-      final downloadUrl = await uploadTask.ref.getDownloadURL();
-      return Right(downloadUrl);
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message ?? 'Upload failed'));
-    } catch (e) {
-      return Left(FirebaseFailure(message: 'Upload failed: $e'));
-    }
-  }
-
-  /// Get conversation ID from two user IDs
-  /// This ensures consistent conversation IDs regardless of order
-  String _getConversationId(String userId1, String userId2) {
-    final ids = [userId1, userId2]..sort();
-    return '${ids[0]}_${ids[1]}';
+    return Left(
+      FirebaseFailure(
+        message: 'Chat attachments are unavailable in the judge build.',
+      ),
+    );
   }
 
   @override
   Future<Either<Failure, Message>> sendMessage(Message message) async {
-    try {
-      final messageModel = message.toModel();
-      await _messagesCollection.doc(message.id).set(messageModel.toFirestore());
-      return Right(message);
-    } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(message: e.message ?? 'Send message failed'));
-    } catch (e) {
-      return Left(FirebaseFailure(message: 'Send message failed: $e'));
+    final userId = _currentUserId;
+    if (userId == null || message.senderId != userId) {
+      return Left(FirebaseFailure(message: 'Not authorized to send message'));
     }
+    try {
+      await _messagesCollection
+          .doc(message.id)
+          .set(message.toModel().toFirestore());
+      return Right(message);
+    } catch (error) {
+      return Left(_failure(error, 'Send message failed'));
+    }
+  }
+
+  Query<Map<String, dynamic>> _conversationQuery(
+    String conversationId,
+    String userId,
+  ) {
+    return _messagesCollection
+        .where('conversation_id', isEqualTo: conversationId)
+        .where('participant_ids', arrayContains: userId)
+        .orderBy('created_at', descending: true);
+  }
+
+  Query<Map<String, dynamic>> _userMessagesQuery(String userId) {
+    return _messagesCollection
+        .where('participant_ids', arrayContains: userId)
+        .orderBy('created_at', descending: true);
   }
 
   @override
   Future<Either<Failure, List<Message>>> getConversation(
     String conversationId,
   ) async {
-    try {
-      // Parse conversation ID to get user IDs
-      final userIds = conversationId.split('_');
-      if (userIds.length != 2) {
-        return Left(FirebaseFailure(message: 'Invalid conversation ID'));
-      }
-
-      final userId1 = userIds[0];
-      final userId2 = userIds[1];
-
-      // Get messages where users are sender/recipient (both directions)
-      final query1 = _messagesCollection
-          .where('sender_id', isEqualTo: userId1)
-          .where('recipient_id', isEqualTo: userId2)
-          .where('is_deleted', isEqualTo: false);
-
-      final query2 = _messagesCollection
-          .where('sender_id', isEqualTo: userId2)
-          .where('recipient_id', isEqualTo: userId1)
-          .where('is_deleted', isEqualTo: false);
-
-      final snapshot1 = await query1
-          .orderBy('created_at', descending: true)
-          .get();
-      final snapshot2 = await query2
-          .orderBy('created_at', descending: true)
-          .get();
-
-      final allDocs = [...snapshot1.docs, ...snapshot2.docs];
-      allDocs.sort((a, b) {
-        final timeA = a.data()['created_at'] as Timestamp? ?? Timestamp.now();
-        final timeB = b.data()['created_at'] as Timestamp? ?? Timestamp.now();
-        return timeB.compareTo(timeA);
-      });
-
-      final messages = allDocs.map((doc) {
-        final data = FirestoreHelpers.convertTimestamps({
-          ...doc.data(),
-          'id': doc.id,
-        });
-        return MessageModel.fromJson(data).toEntity();
-      }).toList();
-
-      return Right(messages);
-    } on FirebaseException catch (e) {
-      return Left(
-        FirebaseFailure(message: e.message ?? 'Failed to get conversation'),
-      );
-    } catch (e) {
-      return Left(FirebaseFailure(message: 'Failed to get conversation: $e'));
+    final userId = _currentUserId;
+    if (userId == null) {
+      return Left(FirebaseFailure(message: 'Sign in to view messages'));
     }
+    try {
+      final snapshot = await _conversationQuery(conversationId, userId).get();
+      final messages = snapshot.docs
+          .map(_messageFromDocument)
+          .where((message) => !message.isDeleted)
+          .toList();
+      return Right(messages);
+    } catch (error) {
+      return Left(_failure(error, 'Failed to get conversation'));
+    }
+  }
+
+  List<Message> _latestConversationMessages(
+    Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> documents,
+  ) {
+    final latest = <String, Message>{};
+    for (final document in documents) {
+      final message = _messageFromDocument(document);
+      if (message.isDeleted) continue;
+      final conversationId = _getConversationId(
+        message.senderId,
+        message.recipientId,
+      );
+      latest.putIfAbsent(conversationId, () => message);
+    }
+    final messages = latest.values.toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return messages;
   }
 
   @override
   Future<Either<Failure, List<Message>>> getConversations(String userId) async {
+    if (_currentUserId != userId) {
+      return Left(FirebaseFailure(message: 'Not authorized'));
+    }
     try {
-      // Get all conversations where user is sender
-      final sentSnapshots = await _messagesCollection
-          .where('sender_id', isEqualTo: userId)
-          .where('is_deleted', isEqualTo: false)
-          .orderBy('created_at', descending: true)
-          .get();
-
-      // Get all conversations where user is recipient
-      final receivedSnapshots = await _messagesCollection
-          .where('recipient_id', isEqualTo: userId)
-          .where('is_deleted', isEqualTo: false)
-          .orderBy('created_at', descending: true)
-          .get();
-
-      // Combine and deduplicate by conversation ID
-      final allDocs = [...sentSnapshots.docs, ...receivedSnapshots.docs];
-      final conversationMap =
-          <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
-
-      for (final doc in allDocs) {
-        final data = doc.data();
-        final senderId = data['sender_id'] as String;
-        final recipientId = data['recipient_id'] as String;
-        final conversationId = _getConversationId(senderId, recipientId);
-
-        if (!conversationMap.containsKey(conversationId)) {
-          conversationMap[conversationId] = doc;
-        }
-      }
-
-      // Convert to messages and sort by date
-      final messages = conversationMap.values.map((doc) {
-        final data = FirestoreHelpers.convertTimestamps({
-          ...doc.data(),
-          'id': doc.id,
-        });
-        return MessageModel.fromJson(data).toEntity();
-      }).toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-      return Right(messages);
-    } on FirebaseException catch (e) {
-      return Left(
-        FirebaseFailure(message: e.message ?? 'Failed to get conversations'),
-      );
-    } catch (e) {
-      return Left(FirebaseFailure(message: 'Failed to get conversations: $e'));
+      final snapshot = await _userMessagesQuery(userId).get();
+      return Right(_latestConversationMessages(snapshot.docs));
+    } catch (error) {
+      return Left(_failure(error, 'Failed to get conversations'));
     }
   }
 
   @override
   Stream<Either<Failure, List<Message>>> streamConversation(
     String conversationId,
-  ) {
+  ) async* {
+    final userId = _currentUserId;
+    if (userId == null) {
+      yield Left(FirebaseFailure(message: 'Sign in to view messages'));
+      return;
+    }
     try {
-      print('🔍 Querying messages for conversation: $conversationId');
-
-      return _messagesCollection
-          .where('conversation_id', isEqualTo: conversationId)
-          .orderBy('created_at', descending: true)
-          .snapshots()
-          .map((snapshot) {
-            print(
-              '📨 Received ${snapshot.docs.length} messages from Firestore',
-            );
-
-            final messages =
-                snapshot.docs
-                    .map((doc) {
-                      try {
-                        final rawData = doc.data();
-                        final data = FirestoreHelpers.convertTimestamps({
-                          ...rawData,
-                          'id': doc.id,
-                        });
-                        return MessageModel.fromJson(data).toEntity();
-                      } catch (e) {
-                        print('❌ Error parsing message ${doc.id}: $e');
-                        return null;
-                      }
-                    })
-                    .whereType<Message>()
-                    .where((msg) => !msg.isDeleted)
-                    .toList()
-                  ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-            print('✅ Returning ${messages.length} valid messages');
-            return Right<Failure, List<Message>>(messages);
-          })
-          .handleError((error) {
-            print('❌ Firestore error: $error');
-            return Left<Failure, List<Message>>(
-              FirebaseFailure(
-                message: error is FirebaseException
-                    ? error.message ?? 'Failed to stream conversation'
-                    : 'Failed to stream conversation: $error',
-              ),
-            );
-          });
-    } catch (e) {
-      print('❌ Exception in streamConversation: $e');
-      return Stream.value(
-        Left(FirebaseFailure(message: 'Failed to stream conversation: $e')),
-      );
+      await for (final snapshot in _conversationQuery(
+        conversationId,
+        userId,
+      ).snapshots()) {
+        final messages = snapshot.docs
+            .map(_messageFromDocument)
+            .where((message) => !message.isDeleted)
+            .toList();
+        yield Right(messages);
+      }
+    } catch (error) {
+      yield Left(_failure(error, 'Failed to stream conversation'));
     }
   }
 
   @override
-  Stream<Either<Failure, List<Message>>> streamConversations(String userId) {
+  Stream<Either<Failure, List<Message>>> streamConversations(
+    String userId,
+  ) async* {
+    if (_currentUserId != userId) {
+      yield Left(FirebaseFailure(message: 'Not authorized'));
+      return;
+    }
     try {
-      // Simplified query - just get all messages and filter client-side
-      // This avoids needing complex composite indexes
-      return _messagesCollection
-          .snapshots()
-          .map((snapshot) {
-            final allDocs = snapshot.docs;
-
-            // Filter to only messages involving this user
-            final relevantDocs = allDocs.where((doc) {
-              final data = doc.data();
-              final senderId = data['sender_id'] as String?;
-              final recipientId = data['recipient_id'] as String?;
-              final isDeleted = data['is_deleted'] as bool? ?? false;
-              return !isDeleted &&
-                  (senderId == userId || recipientId == userId);
-            }).toList();
-
-            // Sort by created_at descending
-            relevantDocs.sort((a, b) {
-              final timeA = a.data()['created_at'];
-              final timeB = b.data()['created_at'];
-              if (timeA == null && timeB == null) return 0;
-              if (timeA == null) return 1;
-              if (timeB == null) return -1;
-              if (timeA is Timestamp && timeB is Timestamp) {
-                return timeB.compareTo(timeA);
-              }
-              return 0;
-            });
-
-            // Get most recent message per conversation
-            final conversationMap =
-                <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
-            for (final doc in relevantDocs) {
-              final data = doc.data();
-              final senderId = data['sender_id'] as String?;
-              final recipientId = data['recipient_id'] as String?;
-              if (senderId == null || recipientId == null) continue;
-              final conversationId = _getConversationId(senderId, recipientId);
-
-              if (!conversationMap.containsKey(conversationId)) {
-                conversationMap[conversationId] = doc;
-              }
-            }
-
-            // Convert to messages
-            final messages = conversationMap.values.map((doc) {
-              final data = FirestoreHelpers.convertTimestamps({
-                ...doc.data(),
-                'id': doc.id,
-              });
-              return MessageModel.fromJson(data).toEntity();
-            }).toList();
-
-            return Right<Failure, List<Message>>(messages);
-          })
-          .handleError((error) {
-            // Return empty list on error instead of throwing
-            return Right<Failure, List<Message>>([]);
-          });
-    } catch (e) {
-      // Return empty list on error
-      return Stream.value(const Right<Failure, List<Message>>([]));
+      await for (final snapshot in _userMessagesQuery(userId).snapshots()) {
+        yield Right(_latestConversationMessages(snapshot.docs));
+      }
+    } catch (error) {
+      yield Left(_failure(error, 'Failed to stream conversations'));
     }
   }
 
@@ -308,29 +195,18 @@ class ChatRepositoryImpl implements ChatRepository {
         'read_at': FieldValue.serverTimestamp(),
       });
       return const Right(null);
-    } on FirebaseException catch (e) {
-      return Left(
-        FirebaseFailure(message: e.message ?? 'Failed to mark message as read'),
-      );
-    } catch (e) {
-      return Left(
-        FirebaseFailure(message: 'Failed to mark message as read: $e'),
-      );
+    } catch (error) {
+      return Left(_failure(error, 'Failed to mark message as read'));
     }
   }
 
   @override
   Future<Either<Failure, void>> deleteMessage(String messageId) async {
     try {
-      // Soft delete - just mark as deleted
       await _messagesCollection.doc(messageId).update({'is_deleted': true});
       return const Right(null);
-    } on FirebaseException catch (e) {
-      return Left(
-        FirebaseFailure(message: e.message ?? 'Failed to delete message'),
-      );
-    } catch (e) {
-      return Left(FirebaseFailure(message: 'Failed to delete message: $e'));
+    } catch (error) {
+      return Left(_failure(error, 'Failed to delete message'));
     }
   }
 }

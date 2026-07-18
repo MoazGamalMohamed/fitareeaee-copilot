@@ -60,11 +60,13 @@ class MessageModel with _$MessageModel {
   /// Convert to Firestore document format
   Map<String, dynamic> toFirestore() {
     final conversationId = Message.getConversationId(senderId, recipientId);
+    final participantIds = <String>[senderId, recipientId]..sort();
     return {
       'id': id,
       'sender_id': senderId,
       'recipient_id': recipientId,
       'conversation_id': conversationId,
+      'participant_ids': participantIds,
       'content': content,
       'attachments': attachments,
       'created_at': createdAt,

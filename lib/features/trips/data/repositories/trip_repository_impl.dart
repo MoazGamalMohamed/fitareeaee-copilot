@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/utils/exceptions/app_exceptions.dart';
 
@@ -23,9 +24,13 @@ abstract class TripRepository {
 
 class TripRepositoryImpl implements TripRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
-  const TripRepositoryImpl({required FirebaseFirestore firestore})
-    : _firestore = firestore;
+  TripRepositoryImpl({
+    required FirebaseFirestore firestore,
+    FirebaseFunctions? functions,
+  }) : _firestore = firestore,
+       _functions = functions ?? FirebaseFunctions.instance;
 
   @override
   Future<Trip> createTrip(Trip trip) async {
@@ -273,55 +278,14 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<void> bookTrip(String tripId, String userId) async {
     try {
-      final trip = await getTripById(tripId);
-
-      if (trip.isFull) {
-        throw AppException(message: 'No available seats');
-      }
-
-      if (trip.hasPassenger(userId)) {
-        throw AppException(message: 'Already booked this trip');
-      }
-
-      final updatedPassengers = [...trip.passengerIds, userId];
-      final updatedAvailable = trip.availableSeats - 1;
-
-      print('📝 Creating booking document for trip $tripId, passenger $userId');
-
-      // Create booking document
-      final bookingRef = _firestore.collection('bookings').doc();
-      await bookingRef.set({
-        'id': bookingRef.id,
+      await _functions.httpsCallable('createBooking').call({
+        'schemaVersion': 1,
         'tripId': tripId,
-        'passengerId': userId,
-        'driverId': trip.driverId,
-        'seatsBooked': 1,
-        'totalPrice': trip.pricePerSeat,
-        'status': 'confirmed', // Auto-confirm the booking
-        'paymentStatus': 'unpaid',
-        'pickupLocation': trip.originAddress,
-        'dropoffLocation': trip.destinationAddress,
-        'pickupTime': trip.departureTime.toIso8601String(),
-        'dropoffTime': null,
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
+        'seats': 1,
       });
-
-      print('✅ Booking created: ${bookingRef.id}');
-
-      // Update trip document
-      await _firestore.collection('trips').doc(tripId).update({
-        'passenger_ids': updatedPassengers,
-        'available_seats': updatedAvailable,
-        'updated_at': DateTime.now(),
-      });
-
-      print('✅ Trip updated with passenger');
     } on FirebaseException catch (e) {
-      print('❌ Firebase error in bookTrip: $e');
       throw _handleFirebaseException(e);
     } catch (e) {
-      print('❌ Error in bookTrip: $e');
       throw AppException(message: 'Failed to book trip: $e');
     }
   }
@@ -329,21 +293,10 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<void> cancelBooking(String tripId, String userId) async {
     try {
-      final trip = await getTripById(tripId);
-
-      if (!trip.hasPassenger(userId)) {
-        throw AppException(message: 'Not booked on this trip');
-      }
-
-      final updatedPassengers = trip.passengerIds
-          .where((id) => id != userId)
-          .toList();
-      final updatedAvailable = trip.availableSeats + 1;
-
-      await _firestore.collection('trips').doc(tripId).update({
-        'passenger_ids': updatedPassengers,
-        'available_seats': updatedAvailable,
-        'updated_at': DateTime.now(),
+      await _functions.httpsCallable('cancelBooking').call({
+        'schemaVersion': 1,
+        'tripId': tripId,
+        'seats': 1,
       });
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);

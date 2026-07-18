@@ -141,18 +141,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Expanded(
                     child: _buildQuickLink(
                       context,
-                      icon: Icons.account_balance_wallet,
-                      label: 'Wallet',
-                      onTap: () => context.push('/wallet'),
+                      icon: Icons.verified_user_outlined,
+                      label: 'Verify',
+                      onTap: () => context.push('/verification'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildQuickLink(
                       context,
-                      icon: Icons.help_outline,
-                      label: 'Help',
-                      onTap: () => context.push('/help'),
+                      icon: Icons.notifications_outlined,
+                      label: 'Alerts',
+                      onTap: () => context.push('/notifications'),
                     ),
                   ),
                 ],

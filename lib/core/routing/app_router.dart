@@ -16,6 +16,7 @@ import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
 import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
 import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
+import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
 import 'package:fitareeaee/features/admin/presentation/pages/admin_verifications_screen.dart';
 import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -172,6 +173,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       // Driver Profile Route
       GoRoute(
+        path: AppRoutes.verification,
+        name: 'verification',
+        builder: (context, state) => const VerificationScreen(),
+      ),
+
+      GoRoute(
         path: AppRoutes.driverProfile,
         name: 'driver-profile',
         builder: (context, state) {
@@ -198,6 +205,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
     redirect: (context, state) {
+      if (authStateAsync.isLoading) return null;
+
       final isAuthenticated = authStateAsync.when(
         data: (user) => user != null,
         loading: () => false,

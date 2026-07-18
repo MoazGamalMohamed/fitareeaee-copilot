@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../domain/models/verification_model.dart';
 import '../providers/verification_provider.dart';
@@ -349,30 +349,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       final updatedUser = FirebaseAuth.instance.currentUser;
 
       if (updatedUser?.emailVerified ?? false) {
-        // Update Firestore if email is verified
-        final docRef = FirebaseFirestore.instance
-            .collection('verifications')
-            .doc(user.uid);
-        final docSnapshot = await docRef.get();
-        final now = DateTime.now().toIso8601String();
-
-        if (!docSnapshot.exists) {
-          // Create new document with all required fields
-          await docRef.set({
-            'userId': user.uid,
-            'emailVerified': true,
-            'phoneVerified': false,
-            'identityVerified': false,
-            'driverLicenseVerified': false,
-            'vehicleVerified': false,
-            'selfieWithIdVerified': false,
-            'createdAt': now,
-            'updatedAt': now,
-          });
-        } else {
-          // Update existing document
-          await docRef.update({'emailVerified': true, 'updatedAt': now});
-        }
+        await FirebaseFunctions.instance
+            .httpsCallable('syncContactVerification')
+            .call();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -640,20 +619,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   Future<void> _updatePhoneVerificationStatus(String phoneNumber) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-
-    await FirebaseFirestore.instance
-        .collection('verifications')
-        .doc(user.uid)
-        .set({
-          'userId': user.uid,
-          'phoneVerified': true,
-          'updatedAt': DateTime.now().toIso8601String(),
-          if (await FirebaseFirestore.instance
-              .collection('verifications')
-              .doc(user.uid)
-              .get()
-              .then((doc) => !doc.exists))
-            'createdAt': DateTime.now().toIso8601String(),
-        }, SetOptions(merge: true));
+    await FirebaseFunctions.instance
+        .httpsCallable('syncContactVerification')
+        .call();
   }
 }

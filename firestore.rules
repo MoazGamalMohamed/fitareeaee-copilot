@@ -1,0 +1,148 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /admins/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if isOwner(uid)
+        && request.resource.data.id == uid
+        && request.resource.data.isVerified == false;
+      allow update: if isOwner(uid)
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.isVerified == resource.data.isVerified;
+      allow delete: if false;
+    }
+
+    match /trips/{tripId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.id == tripId
+        && request.resource.data.driverId == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.available_seats == request.resource.data.total_seats
+        && request.resource.data.passenger_ids is list
+        && request.resource.data.passenger_ids.size() == 0;
+      allow update: if signedIn()
+        && resource.data.driverId == request.auth.uid
+        && request.resource.data.driverId == resource.data.driverId
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.available_seats == resource.data.available_seats
+        && request.resource.data.passenger_ids == resource.data.passenger_ids;
+      allow delete: if signedIn()
+        && resource.data.driverId == request.auth.uid
+        && resource.data.passenger_ids.size() == 0;
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if signedIn()
+        && (resource.data.passengerId == request.auth.uid
+          || resource.data.driverId == request.auth.uid
+          || isAdmin());
+      allow write: if false;
+    }
+
+    match /verifications/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /verification_requests/{requestId} {
+      allow read: if signedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    match /messages/{messageId} {
+      allow read: if signedIn()
+        && resource.data.participant_ids is list
+        && request.auth.uid in resource.data.participant_ids;
+      allow create: if signedIn()
+        && request.resource.data.sender_id == request.auth.uid
+        && request.resource.data.recipient_id is string
+        && request.resource.data.recipient_id != request.auth.uid
+        && request.resource.data.participant_ids is list
+        && request.resource.data.participant_ids.size() == 2
+        && request.resource.data.participant_ids.hasAll([
+          request.auth.uid,
+          request.resource.data.recipient_id
+        ])
+        && request.resource.data.is_read == false
+        && request.resource.data.is_deleted == false;
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.participant_ids
+        && request.resource.data.sender_id == resource.data.sender_id
+        && request.resource.data.recipient_id == resource.data.recipient_id
+        && request.resource.data.participant_ids == resource.data.participant_ids
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'is_read', 'read_at', 'is_deleted'
+        ])
+        && (
+          (request.auth.uid == resource.data.recipient_id
+            && request.resource.data.is_deleted == resource.data.is_deleted)
+          ||
+          (request.auth.uid == resource.data.sender_id
+            && request.resource.data.is_read == resource.data.is_read
+            && request.resource.data.read_at == resource.data.read_at)
+        );
+      allow delete: if false;
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'isRead', 'readAt'
+        ]);
+      allow create, delete: if false;
+    }
+
+    match /payments/{document=**} {
+      allow read: if signedIn() && resource.data.payerId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /wallets/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    match /wallet_transactions/{transactionId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /payout_requests/{requestId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /copilot_rate_limits/{uid} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

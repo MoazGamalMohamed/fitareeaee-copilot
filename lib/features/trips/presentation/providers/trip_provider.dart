@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../../domain/entities/trip.dart';
 import '../../data/repositories/trip_repository_impl.dart' as repo;
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -8,7 +9,10 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 final tripRepositoryProvider = Provider((ref) {
   final firestore = FirebaseFirestore.instance;
 
-  return repo.TripRepositoryImpl(firestore: firestore);
+  return repo.TripRepositoryImpl(
+    firestore: firestore,
+    functions: FirebaseFunctions.instance,
+  );
 });
 
 // Stream Providers
@@ -113,6 +117,7 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
+      rethrow;
     }
   }
 
@@ -123,6 +128,7 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
+      rethrow;
     }
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../providers/admin_provider.dart';
-import '../../../notifications/data/notification_service.dart';
 
 /// Admin screen to review and approve/reject user verifications
 class AdminVerificationsScreen extends ConsumerStatefulWidget {
@@ -18,7 +18,6 @@ class AdminVerificationsScreen extends ConsumerStatefulWidget {
 class _AdminVerificationsScreenState
     extends ConsumerState<AdminVerificationsScreen> {
   String _selectedFilter = 'pending'; // pending, all, approved, rejected
-  final NotificationService _notificationService = NotificationService();
 
   @override
   Widget build(BuildContext context) {
@@ -598,43 +597,35 @@ class _AdminVerificationsScreenState
     );
   }
 
+  String _verificationType(String fieldName) {
+    switch (fieldName) {
+      case 'identityVerified':
+        return 'identity';
+      case 'selfieWithIdVerified':
+        return 'selfieWithId';
+      case 'driverLicenseVerified':
+        return 'driverLicense';
+      case 'vehicleVerified':
+        return 'vehicle';
+      default:
+        throw ArgumentError.value(fieldName, 'fieldName');
+    }
+  }
+
   Future<void> _approveVerification(
     String userId,
     String fieldName,
     String title,
   ) async {
     try {
-      // Determine rejection reason field name to clear it
-      String rejectionField;
-      if (fieldName == 'identityVerified') {
-        rejectionField = 'identityRejectionReason';
-      } else if (fieldName == 'selfieWithIdVerified') {
-        rejectionField = 'selfieRejectionReason';
-      } else if (fieldName == 'driverLicenseVerified') {
-        rejectionField = 'licenseRejectionReason';
-      } else if (fieldName == 'vehicleVerified') {
-        rejectionField = 'vehicleRejectionReason';
-      } else {
-        rejectionField = 'rejectionReason';
-      }
-
-      await FirebaseFirestore.instance
-          .collection('verifications')
-          .doc(userId)
-          .update({
-            fieldName: true,
-            '${fieldName.replaceAll('Verified', 'VerifiedAt')}':
-                FieldValue.serverTimestamp(),
-            rejectionField:
-                FieldValue.delete(), // Clear any previous rejection reason
-            'updatedAt': FieldValue.serverTimestamp(),
+      await FirebaseFunctions.instance
+          .httpsCallable('reviewVerification')
+          .call({
+            'schemaVersion': 1,
+            'userId': userId,
+            'type': _verificationType(fieldName),
+            'approved': true,
           });
-
-      // Send notification to user
-      await _notificationService.sendDocumentApprovedNotification(
-        userId: userId,
-        documentType: title,
-      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -689,51 +680,16 @@ class _AdminVerificationsScreenState
 
     if (reason == null || reason.isEmpty) return;
 
-    // Determine rejection reason field name based on verification type
-    String rejectionField;
-    if (fieldName == 'identityVerified') {
-      rejectionField = 'identityRejectionReason';
-    } else if (fieldName == 'selfieWithIdVerified') {
-      rejectionField = 'selfieRejectionReason';
-    } else if (fieldName == 'driverLicenseVerified') {
-      rejectionField = 'licenseRejectionReason';
-    } else if (fieldName == 'vehicleVerified') {
-      rejectionField = 'vehicleRejectionReason';
-    } else {
-      rejectionField = 'rejectionReason';
-    }
-
-    // Get document type for notification
-    String documentType;
-    if (fieldName == 'identityVerified') {
-      documentType = 'Identity Document';
-    } else if (fieldName == 'selfieWithIdVerified') {
-      documentType = 'Selfie with ID';
-    } else if (fieldName == 'driverLicenseVerified') {
-      documentType = 'Driver License';
-    } else if (fieldName == 'vehicleVerified') {
-      documentType = 'Vehicle Registration';
-    } else {
-      documentType = 'Document';
-    }
-
     try {
-      await FirebaseFirestore.instance
-          .collection('verifications')
-          .doc(userId)
-          .update({
-            fieldName: false,
-            urlField: FieldValue.delete(), // Remove the document URL
-            rejectionField: reason,
-            'updatedAt': FieldValue.serverTimestamp(),
+      await FirebaseFunctions.instance
+          .httpsCallable('reviewVerification')
+          .call({
+            'schemaVersion': 1,
+            'userId': userId,
+            'type': _verificationType(fieldName),
+            'approved': false,
+            'reason': reason,
           });
-
-      // Send notification to user
-      await _notificationService.sendDocumentRejectedNotification(
-        userId: userId,
-        documentType: documentType,
-        reason: reason,
-      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -5,6 +5,21 @@ import '../../domain/models/booking_model.dart';
 // Firestore instance
 final _firestore = FirebaseFirestore.instance;
 
+BookingModel _bookingFromFirestore(
+  DocumentSnapshot<Map<String, dynamic>> document,
+) {
+  final data = Map<String, dynamic>.from(document.data()!);
+  for (final field in ['pickupTime', 'dropoffTime', 'createdAt', 'updatedAt']) {
+    final value = data[field];
+    if (value is Timestamp) {
+      data[field] = value.toDate().toIso8601String();
+    } else if (value is DateTime) {
+      data[field] = value.toIso8601String();
+    }
+  }
+  return BookingModel.fromJson({...data, 'id': document.id});
+}
+
 // Create booking
 final createBookingProvider = FutureProvider.family<BookingModel, BookingModel>((
   ref,
@@ -89,7 +104,7 @@ final userBookingsProvider = StreamProvider.family<List<BookingModel>, String>((
           print(
             '  - Booking ${doc.id}: status=${data['status']}, paymentStatus=${data['paymentStatus']}',
           );
-          return BookingModel.fromJson({...data, 'id': doc.id});
+          return _bookingFromFirestore(doc);
         }).toList();
         return bookings;
       });
@@ -102,7 +117,7 @@ final bookingProvider = FutureProvider.family<BookingModel?, String>((
 ) async {
   final doc = await _firestore.collection('bookings').doc(bookingId).get();
   if (!doc.exists) return null;
-  return BookingModel.fromJson({...doc.data()!, 'id': doc.id});
+  return _bookingFromFirestore(doc);
 });
 
 // Update booking status
