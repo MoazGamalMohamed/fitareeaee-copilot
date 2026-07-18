@@ -9,7 +9,7 @@ import {
   RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
 import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore";
-import {ref, uploadBytes} from "firebase/storage";
+import {deleteObject, ref, uploadBytes} from "firebase/storage";
 
 let environment: RulesTestEnvironment;
 
@@ -175,8 +175,21 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     id: "driver_rider",
     participant_ids: ["driver", "rider"],
   });
+  await seed("messages/legacy-mismatch", {
+    ...message,
+    id: "legacy-mismatch",
+    recipient_id: "outsider",
+    participant_ids: ["outsider", "rider"],
+  });
   await assertSucceeds(setDoc(doc(rider, "messages/message-1"), message));
   await assertFails(getDoc(doc(outsider, "messages/message-1")));
+  await assertFails(getDoc(doc(rider, "messages/legacy-mismatch")));
+  await assertFails(
+    updateDoc(doc(rider, "messages/legacy-mismatch"), {
+      is_read: true,
+      read_at: new Date(),
+    })
+  );
   await assertFails(
     setDoc(doc(rider, "messages/spoofed"), {...message, sender_id: "driver"})
   );
@@ -221,6 +234,12 @@ test("storage limits verification uploads to the owning user and images", async 
       image,
       {contentType: "image/jpeg"}
     )
+  );
+  await assertFails(
+    deleteObject(ref(otherStorage, "verification_documents/rider/id.jpg"))
+  );
+  await assertSucceeds(
+    deleteObject(ref(riderStorage, "verification_documents/rider/id.jpg"))
   );
   await assertFails(
     uploadBytes(

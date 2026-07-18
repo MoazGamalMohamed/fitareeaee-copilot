@@ -26,7 +26,6 @@ mixin _$VerificationModel {
   VerificationType get type => throw _privateConstructorUsedError;
   VerificationStatus get status => throw _privateConstructorUsedError;
   String? get documentUrl => throw _privateConstructorUsedError;
-  String? get documentNumber => throw _privateConstructorUsedError;
   String? get rejectionReason => throw _privateConstructorUsedError;
   DateTime? get expiryDate => throw _privateConstructorUsedError;
   DateTime? get verifiedAt => throw _privateConstructorUsedError;
@@ -57,7 +56,6 @@ abstract class $VerificationModelCopyWith<$Res> {
     VerificationType type,
     VerificationStatus status,
     String? documentUrl,
-    String? documentNumber,
     String? rejectionReason,
     DateTime? expiryDate,
     DateTime? verifiedAt,
@@ -87,7 +85,6 @@ class _$VerificationModelCopyWithImpl<$Res, $Val extends VerificationModel>
     Object? type = null,
     Object? status = null,
     Object? documentUrl = freezed,
-    Object? documentNumber = freezed,
     Object? rejectionReason = freezed,
     Object? expiryDate = freezed,
     Object? verifiedAt = freezed,
@@ -116,10 +113,6 @@ class _$VerificationModelCopyWithImpl<$Res, $Val extends VerificationModel>
             documentUrl: freezed == documentUrl
                 ? _value.documentUrl
                 : documentUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            documentNumber: freezed == documentNumber
-                ? _value.documentNumber
-                : documentNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
             rejectionReason: freezed == rejectionReason
                 ? _value.rejectionReason
@@ -166,7 +159,6 @@ abstract class _$$VerificationModelImplCopyWith<$Res>
     VerificationType type,
     VerificationStatus status,
     String? documentUrl,
-    String? documentNumber,
     String? rejectionReason,
     DateTime? expiryDate,
     DateTime? verifiedAt,
@@ -195,7 +187,6 @@ class __$$VerificationModelImplCopyWithImpl<$Res>
     Object? type = null,
     Object? status = null,
     Object? documentUrl = freezed,
-    Object? documentNumber = freezed,
     Object? rejectionReason = freezed,
     Object? expiryDate = freezed,
     Object? verifiedAt = freezed,
@@ -224,10 +215,6 @@ class __$$VerificationModelImplCopyWithImpl<$Res>
         documentUrl: freezed == documentUrl
             ? _value.documentUrl
             : documentUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        documentNumber: freezed == documentNumber
-            ? _value.documentNumber
-            : documentNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
         rejectionReason: freezed == rejectionReason
             ? _value.rejectionReason
@@ -267,7 +254,6 @@ class _$VerificationModelImpl implements _VerificationModel {
     required this.type,
     required this.status,
     this.documentUrl,
-    this.documentNumber,
     this.rejectionReason,
     this.expiryDate,
     this.verifiedAt,
@@ -290,8 +276,6 @@ class _$VerificationModelImpl implements _VerificationModel {
   @override
   final String? documentUrl;
   @override
-  final String? documentNumber;
-  @override
   final String? rejectionReason;
   @override
   final DateTime? expiryDate;
@@ -306,7 +290,7 @@ class _$VerificationModelImpl implements _VerificationModel {
 
   @override
   String toString() {
-    return 'VerificationModel(id: $id, oderId: $oderId, type: $type, status: $status, documentUrl: $documentUrl, documentNumber: $documentNumber, rejectionReason: $rejectionReason, expiryDate: $expiryDate, verifiedAt: $verifiedAt, verifiedBy: $verifiedBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'VerificationModel(id: $id, oderId: $oderId, type: $type, status: $status, documentUrl: $documentUrl, rejectionReason: $rejectionReason, expiryDate: $expiryDate, verifiedAt: $verifiedAt, verifiedBy: $verifiedBy, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -320,8 +304,6 @@ class _$VerificationModelImpl implements _VerificationModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.documentUrl, documentUrl) ||
                 other.documentUrl == documentUrl) &&
-            (identical(other.documentNumber, documentNumber) ||
-                other.documentNumber == documentNumber) &&
             (identical(other.rejectionReason, rejectionReason) ||
                 other.rejectionReason == rejectionReason) &&
             (identical(other.expiryDate, expiryDate) ||
@@ -345,7 +327,6 @@ class _$VerificationModelImpl implements _VerificationModel {
     type,
     status,
     documentUrl,
-    documentNumber,
     rejectionReason,
     expiryDate,
     verifiedAt,
@@ -378,7 +359,6 @@ abstract class _VerificationModel implements VerificationModel {
     required final VerificationType type,
     required final VerificationStatus status,
     final String? documentUrl,
-    final String? documentNumber,
     final String? rejectionReason,
     final DateTime? expiryDate,
     final DateTime? verifiedAt,
@@ -400,8 +380,6 @@ abstract class _VerificationModel implements VerificationModel {
   VerificationStatus get status;
   @override
   String? get documentUrl;
-  @override
-  String? get documentNumber;
   @override
   String? get rejectionReason;
   @override

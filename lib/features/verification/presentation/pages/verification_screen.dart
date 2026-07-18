@@ -80,11 +80,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Upload failed: $e'),
+          const SnackBar(
+            content: Text(
+              'Upload failed. Check the image and connection, then try again.',
+            ),
             backgroundColor: Colors.red,
           ),
         );

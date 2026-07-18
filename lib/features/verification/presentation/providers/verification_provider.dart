@@ -77,7 +77,6 @@ Future<void> submitVerification({
   required String userId,
   required VerificationType type,
   required String documentUrl,
-  String? documentNumber,
 }) async {
   if (FirebaseAuth.instance.currentUser?.uid != userId) {
     throw StateError(
@@ -88,7 +87,6 @@ Future<void> submitVerification({
     'schemaVersion': 1,
     'type': type.name,
     'documentUrl': documentUrl,
-    if (documentNumber != null) 'documentNumber': documentNumber,
   });
 }
 

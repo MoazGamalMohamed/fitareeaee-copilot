@@ -22,7 +22,6 @@ class VerificationModel with _$VerificationModel {
     required VerificationType type,
     required VerificationStatus status,
     String? documentUrl,
-    String? documentNumber,
     String? rejectionReason,
     DateTime? expiryDate,
     DateTime? verifiedAt,

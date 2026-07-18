@@ -103,8 +103,6 @@ export const submitVerification = functions.https.onCall(async (rawData, context
   const type = parseDocumentType(data.type);
   const documentUrl = validateDocumentUrl(data.documentUrl, uid);
   await verifyStoredDocument(documentUrl);
-  const documentNumber = typeof data.documentNumber === "string" ?
-    data.documentNumber.trim().slice(0, 80) : null;
   const fields = verificationFields[type];
   const db = getFirestore();
   const requestRef = db.collection("verification_requests").doc();
@@ -119,7 +117,6 @@ export const submitVerification = functions.https.onCall(async (rawData, context
       type,
       status: "pending",
       documentUrl,
-      documentNumber,
       createdAt: now,
       updatedAt: now,
     });
@@ -185,6 +182,7 @@ export const reviewVerification = functions.https.onCall(async (rawData, context
       verifiedAt: now,
       verifiedBy: context.auth.uid,
       documentUrl: FieldValue.delete(),
+      documentNumber: FieldValue.delete(),
       updatedAt: now,
     }, {merge: true});
   }
@@ -194,10 +192,7 @@ export const reviewVerification = functions.https.onCall(async (rawData, context
     try {
       await getStorage().bucket(STORAGE_BUCKET).file(objectPath).delete({ignoreNotFound: true});
     } catch (_) {
-      functions.logger.warn("Reviewed verification object cleanup failed", {
-        userId,
-        type,
-      });
+      functions.logger.warn("Reviewed verification object cleanup failed");
     }
   }
   return {schemaVersion: 1, status: approved ? "approved" : "rejected"};

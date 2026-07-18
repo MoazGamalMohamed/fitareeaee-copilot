@@ -95,7 +95,9 @@ service cloud.firestore {
       allow read: if signedIn()
         && resource.data.participant_ids is list
         && request.auth.uid in resource.data.participant_ids
-        && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id));
+        && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id))
+        && get(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id)).data.participant_ids
+          == resource.data.participant_ids;
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly([
           'id', 'sender_id', 'recipient_id', 'conversation_id',
@@ -133,6 +135,8 @@ service cloud.firestore {
       allow update: if signedIn()
         && request.auth.uid in resource.data.participant_ids
         && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id))
+        && get(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id)).data.participant_ids
+          == resource.data.participant_ids
         && request.resource.data.sender_id == resource.data.sender_id
         && request.resource.data.recipient_id == resource.data.recipient_id
         && request.resource.data.participant_ids == resource.data.participant_ids

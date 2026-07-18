@@ -14,7 +14,6 @@ _$VerificationModelImpl _$$VerificationModelImplFromJson(
   type: $enumDecode(_$VerificationTypeEnumMap, json['type']),
   status: $enumDecode(_$VerificationStatusEnumMap, json['status']),
   documentUrl: json['documentUrl'] as String?,
-  documentNumber: json['documentNumber'] as String?,
   rejectionReason: json['rejectionReason'] as String?,
   expiryDate: json['expiryDate'] == null
       ? null
@@ -35,7 +34,6 @@ Map<String, dynamic> _$$VerificationModelImplToJson(
   'type': _$VerificationTypeEnumMap[instance.type]!,
   'status': _$VerificationStatusEnumMap[instance.status]!,
   'documentUrl': instance.documentUrl,
-  'documentNumber': instance.documentNumber,
   'rejectionReason': instance.rejectionReason,
   'expiryDate': instance.expiryDate?.toIso8601String(),
   'verifiedAt': instance.verifiedAt?.toIso8601String(),
