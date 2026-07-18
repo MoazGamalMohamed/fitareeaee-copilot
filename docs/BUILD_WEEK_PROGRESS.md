@@ -171,3 +171,74 @@ Make the authoritative root Android app start against the intended Firebase proj
 ### Next action
 
 Implement Stage 1 server-authoritative booking, default-deny matching Firestore/Storage rules, verification/payment lockdown, secure chat access, and judge-route cleanup with focused negative tests.
+
+## 2026-07-17 22:25 CDT / 20:25 PDT — Stage 1 secure judge-path checkpoint
+
+### Objective
+
+Make booking, verification, chat, and data access server-authoritative for the demonstrated path; remove unstable prototype backend surface; and prove the authorization boundary locally.
+
+### Work completed
+
+- Added authenticated `createBooking` and `cancelBooking` callable Functions with deterministic booking IDs and Firestore transactions. The server validates trip state, ownership, departure time, seat capacity, duplicate requests, and both participants' manual verification before atomically creating/cancelling the booking and updating trip inventory.
+- Added authenticated verification submission/contact-sync callables and an admin-only manual review callable. GPT is not involved in identity decisions. Client writes to verification summaries and approval state are denied.
+- Replaced the deployable legacy Functions bundle (simulated payments, escrow/refunds, email triggers, Maps proxies, and destructive global reset) with the narrowly scoped judge-path exports. Those prototype Functions are no longer deployable from this source.
+- Upgraded Firebase Admin/Functions to current releases, removed unused Axios/Nodemailer/legacy test packages, and applied all non-breaking npm audit remediations. Seven moderate transitive advisories remain in Firebase Admin's storage dependency chain; npm's proposed forced remediation is an unsafe Firebase Admin downgrade and was not applied.
+- Added default-deny Firestore rules and owner-scoped Storage rules, plus composite indexes used by participant-scoped chat and booking queries.
+- Scoped chat reads to authenticated participants, added immutable `participant_ids`, removed unrestricted collection scans and disabled attachment uploads from the judge UI/rules.
+- Routed booking through the callable backend, fixed false-success navigation, invalidated relevant providers after success, and kept verification review as the explicit prerequisite.
+- Registered required verification navigation, hid broken Home/list actions, removed simulated wallet/payment entry points from the submitted path, and normalized Firestore `Timestamp` values for trip/booking model parsing.
+- Added booking, verification, Firestore, and Storage contract tests, including negative authorization cases.
+
+### Files changed
+
+- `functions/src/index.ts`, `functions/src/booking.ts`, `functions/src/verification.ts`
+- `functions/src/*.contract.test.ts`, `functions/package.json`, `functions/package-lock.json`
+- `firestore.rules`, `storage.rules`, `firestore.indexes.json`
+- Flutter booking, verification/admin, chat, trip repository/provider, routing, Home, and booking-confirmation files
+- Removed `functions/src/resetVerifications.ts` from the deployable source
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 141 files, 0 changes
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 6/6 tests
+- `npm test` in `functions/`: PASS; 6/6 booking and verification contracts
+- `npm run build` in `functions/`: PASS; TypeScript compiler exit 0
+- `firebase emulators:exec --only "firestore,storage" "npm --prefix functions run test:rules"`: PASS; 6/6 Firestore/Storage authorization contracts
+- `npm audit fix`: applied non-breaking remediations; remaining production report is 7 moderate, 0 high, 0 critical, all transitive to Firebase Admin storage packages
+- `flutter build apk --debug`: PASS; universal debug APK built from committed source
+- Clean emulator uninstall/install: PASS; both commands returned `Success`
+- Android startup smoke: PASS; fresh app process PID `11136`, Login semantics (`Welcome Back`, email/password, `Sign In`) present, and recent filtered logs contained no fatal Flutter/Firebase exception
+
+### APK record
+
+- Build type: debug, universal
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 156,206,854 bytes / 148.97 MiB
+- SHA-256: `F5D42B7A3C219DDF71D8F31B84384D0FAB58C40EBAE8376E4D26E630986B1675`
+- Build timestamp: 2026-07-17 22:21:52 CDT
+- Source commit: `96f44e0034079ff23d6cf155c026b454b4d1c566`
+- Tested device: Android emulator `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`
+- Installation result: PASS after a clean uninstall; the first replace-install attempt failed for emulator storage and was not counted
+- Smoke result: PASS to unauthenticated Login screen; physical-phone and credentialed end-to-end tests remain pending
+
+### Git and publication
+
+- Commit: `96f44e0034079ff23d6cf155c026b454b4d1c566` (`fix(security): enforce booking and verification authorization`)
+- Branch: `build-week/final`
+- Tag: `build-week-stage1` to be created after this append-only record is committed
+- Push/PR: BLOCKED by missing GitHub CLI/authenticated remote; no unsafe publication attempted
+- Deployment: not performed. Rules/Functions will be deployed only after Copilot completion, emulator coverage, exact `fitareeaee` project confirmation, and server secret availability.
+
+### Known issues and rollback point
+
+- No physical Android phone or judge/test credentials were available; only fresh-install unauthenticated emulator startup is claimed.
+- Seven moderate transitive npm advisories remain upstream in Firebase Admin's storage dependency chain; no forced downgrade was used.
+- The old local Git ancestry contains the formerly tracked `.env`, so it must not become the public submission history. A sanitized publication history is still required.
+- GPT-5.6 Copilot, deterministic Copilot ranking, judge data, release signing, deployment, and complete submission materials remain.
+- Rollback point: `96f44e0034079ff23d6cf155c026b454b4d1c566`; Stage 0 reference is tag `build-week-stage0`.
+
+### Next action
+
+Implement Stage 2: official OpenAI Responses API/GPT-5.6 callable with strict schema validation, authentication/rate limits, English/Arabic Copilot review flow, deterministic Firestore ranking, empty/retry/manual-fallback states, and focused tests.
