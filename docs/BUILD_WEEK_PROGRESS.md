@@ -398,3 +398,45 @@ Production-harden the demonstrated Android path, minimize exposed marketplace/ch
 ### Next action
 
 Create and verify a sanitized publication history, establish authenticated GitHub publication tooling, then obtain the owner-only managed OpenAI secret and dedicated judge Auth UIDs for deployment, seeding, capped live GPT-5.6 tests, and two complete credentialed Android flows.
+
+## 2026-07-18 01:32 CDT / 2026-07-17 23:32 PDT — Sanitized GitHub publication preparation
+
+### Objective
+
+Prepare a public history that preserves the honest baseline and dated Build Week commits/tags without publishing any formerly tracked configuration or credential-like API identifier.
+
+### Work completed
+
+- Installed official GitHub CLI `v2.96.0` in a temporary tools directory; no binary or installer was added to the repository.
+- Confirmed the connected GitHub app can inspect existing repositories but cannot create a repository or upload a release.
+- Confirmed GitHub CLI has no authenticated host session; no repository creation or push was attempted.
+- Created a separate `%TEMP%` publication clone. The original worktree and history were not rewritten.
+- Removed root `.env` and `android/app/google-services.json` from every publication commit/tag.
+- Replaced both Firebase client API literals discovered in older setup/config files with explicit placeholders throughout publication history.
+- Removed filter backup refs, expired publication-clone reflogs, pruned unreachable objects, removed the local-source remote, and created `main` at the sanitized final evidence tree while retaining `build-week/final`.
+- Preserved all five annotated evidence tags and recorded the local-to-public commit map in `docs/PUBLICATION_HISTORY.md`.
+
+### Verification and exact results
+
+- Reachable `.env` path scan: PASS; no result
+- `.env` and `android/app/google-services.json` history scan: PASS; no result
+- All-revisions OpenAI/Firebase/private-key signature scan: PASS after sanitization; no result
+- `refs/original/` scan: PASS; empty
+- `git fsck --full --no-reflogs --unreachable`: PASS; no unreachable objects reported
+- Sanitized-clone worktree: clean
+- Original current tree and sanitized current tree: identical tree ID `09d16549656099ec7afc54188f6aef0caacd59ef`
+- Original Stage 3 APK source and sanitized `build-week-stage3-local`: identical tree ID `3b4991a3286ca3040d6fb2ed8d9c3b67a69ad58a`
+- Sanitized `main` before this progress entry: `ea6b548e68c712df00ad49f6c7ff0ba442cd8cf2`
+- Sanitized Stage 3 APK tag target: `7f48fd557bf462e83503a5132a217b2295c967ee`
+
+### Publication status and blocker
+
+- Intended owner/repository: `MoazGamalMohamed/fitareeaee-copilot`
+- Visibility: intended public, but not created yet
+- Push/release/PR: not performed
+- Blocker: GitHub CLI requires an owner-controlled browser/device authentication (`gh auth login`). This is an external credential action; the exact prompt will be requested after all remaining credential-independent work is exhausted.
+- Rollback point: original local `build-week-stage3-local`; sanitized publication clone remains separate and disposable.
+
+### Next action
+
+Apply this final documentation entry to the sanitized clone and re-run its secret/tree/status checks. Then complete every Firebase/deployment step that does not require the absent OpenAI secret or judge Auth UIDs before requesting the smallest owner action bundle.
