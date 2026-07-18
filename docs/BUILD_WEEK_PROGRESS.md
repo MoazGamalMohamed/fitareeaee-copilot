@@ -724,3 +724,12 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 - Android device check: only `emulator-5554`; physical-phone step remains external
 - Rollback point: `9b591e0`; no production deployment or data mutation occurred during this cleanup
 - Next action: commit this evidence, propagate the two passing commits to the sanitized clone, repeat the deep scan/tree comparison, and then request the smallest owner-only action bundle needed to unlock Copilot deployment, judge seeding, GitHub release, and endpoint retirement.
+
+## 2026-07-18 03:35 CDT / 2026-07-18 01:35 PDT — Release-cleanup publication reconciliation
+
+- Applied private cleanup/evidence commits `9b591e0` and `46e80f5` to the sanitized clone as `9b94427a30ac6f49098c66a7f7fb43971e16bbc0` and `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61`.
+- Sanitized `main` and `build-week/final` both point to `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61`; worktree is clean.
+- Deep scan PASS: 0 secret signatures, 0 sensitive path commits, 0 sensitive object paths, 0 `refs/original`, 0 unreachable objects, and 0 unsafe legacy verification guides at HEAD.
+- Private and sanitized current trees match exactly at `9d348d08028eb0576b4b74ea911a803bb9f5fe01`.
+- Push/PR/release remain blocked only on owner-controlled GitHub authentication; rollback points are private `46e80f5a61b5a976211faf282e071dcf64a8b807` and sanitized `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61`.
+- Next action: propagate this mapping-only record, perform the final clean/tree/secret scan, then wait only for the minimal owner inputs needed for live Copilot, judge accounts, endpoint retirement, and publication.

@@ -27,6 +27,8 @@ evidence to the sanitized publication history:
 | Verification data minimization | `3f3fedfd576110af4e4383da016ecfe321ee0142` | `d533c263f41939a381058e6ab6abedfe1073fe6d` |
 | Targeted deployment documentation | `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed` | `ba69b4837e4408aa102dcdf6851a5f6f29331d2b` |
 | Consolidated security evidence | `a297c73a2820958a7a0af75e143caebc6681c322` | `0abea666c667cf01989809bbdcb7725473989886` |
+| Unreachable-stub cleanup source | `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16` | `9b94427a30ac6f49098c66a7f7fb43971e16bbc0` |
+| Release-cleanup evidence | `46e80f5a61b5a976211faf282e071dcf64a8b807` | `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61` |
 
 The annotated tag names are preserved:
 
