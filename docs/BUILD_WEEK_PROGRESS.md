@@ -317,3 +317,84 @@ Implement the meaningful Build Week extension: secure GPT-5.6 natural-language t
 ### Next action
 
 Continue all credential-independent Stage 3/4 work: polish demonstrated screens, remove debug/prototype residue, add judge fixtures/instructions and privacy/limitations, prepare release documentation/demo copy, and produce the next APK. Then request the one safe secret/test-account action needed for live end-to-end verification and deployment.
+
+## 2026-07-18 01:18 CDT / 2026-07-17 23:18 PDT — Stage 3/4 hardened local judge checkpoint
+
+### Objective
+
+Production-harden the demonstrated Android path, minimize exposed marketplace/chat/verification data, remove unsafe prototype surfaces, complete the judge documentation package, and produce a tested APK checkpoint before credentialed deployment.
+
+### Work completed
+
+- Removed the redundant nested Flutter starter and unused payment, wallet, tracking, SOS, map, legacy OpenRouter, AI-verification, broken trip-creation, and insecure reset prototype surfaces.
+- Carried reviewed Copilot seat/package counts through results, details, confirmation, and the transactional booking callable.
+- Added server-maintained minimal `public_profiles` and `public_trips` projections; exact coordinates, passenger IDs, package photos/descriptions, arbitrary metadata, and private profile fields are not exposed to the marketplace.
+- Added server-issued conversation authorization. Booking creates it atomically; offer-to-request chat requires an authenticated callable that validates the live request and manual verification state.
+- Denied direct client trip writes and restricted private trip reads to the owner/admin path.
+- Restricted profile edits to an explicit client allowlist and removed client control of verification, trust, admin, and public-projection state.
+- Changed verification records to store exact private Storage object paths, validated uploaded object metadata server-side, and deleted reviewed raw identity objects after manual admin review.
+- Added guarded, fictional judge-data seeding for existing dedicated Auth UIDs; no passwords are accepted or stored.
+- Removed stale insecure setup guides and completed README, MIT license, test matrix, privacy/safety notes, Devpost copy, 2:40 demo script, judge instructions, changelog, and checklist.
+- A full-trigger emulator run exposed sparse legacy trip fields producing `undefined`; the projection now emits a complete canonical document and has a regression contract.
+
+### Principal files changed
+
+- `lib/features/copilot/`, trip details/booking/chat/profile/verification/admin/Home/settings routes and providers
+- `functions/src/booking.ts`, `conversation.ts`, `publicProfile.ts`, `publicTrip.ts`, `verification.ts`, and their contracts
+- `functions/integration/booking.emulator.test.cjs`, `functions/scripts/seed-judge-data.cjs`
+- `firestore.rules`, `storage.rules`, `firestore.indexes.json`, Android manifest/build configuration
+- `README.md`, `LICENSE`, and the Stage 3/4 submission documents under `docs/`
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 119 files, 0 changes
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 16/16 tests
+- Focused Copilot widget tests: PASS; 3/3
+- `npm test` in `functions/`: PASS; 16/16 contracts
+- `npm run build` in `functions/`: PASS; TypeScript compiler exit 0
+- `firebase emulators:exec --only "firestore,storage" "npm --prefix functions run test:rules" --project fitareeaee`: PASS; 7/7 Firestore/Storage authorization contracts
+- `firebase emulators:exec --only "auth,functions,firestore" "npm --prefix functions run test:integration:booking" --project fitareeaee`: PASS; 3/3 real callable integration cases with production projection triggers enabled
+- Local Functions emulator warning: host Node 24 was used while `functions/package.json` declares production Node 20; Node 20 deployment/CI remains a release check
+- OpenAI API calls/cost: zero; the managed secret is still absent and no live paid call was attempted
+- `flutter build apk --debug`: PASS; universal APK built from commit `31deb8c8dc132f1768e19b55b3676fa712865678`
+- `flutter build apk --debug --split-per-abi`: PASS; ARMv7, ARM64, and x86_64 splits built from the same source
+- Android clean uninstall/install: PASS with the x86_64 split on `emulator-5554`
+- Android cold launch: PASS; `MainActivity` status `ok`, Login semantics present, PID `12946` alive, and filtered logs contained no matched fatal Flutter/Firebase startup error
+- Working-tree secret signature scan: PASS; no OpenAI/private key or non-placeholder credential found outside ignored local configuration
+
+### APK record
+
+- Judge candidate type: universal debug-signed sideload APK; no safe private release-signing configuration is present
+- Universal path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Universal size: 154,897,342 bytes / 147.72 MiB
+- Universal SHA-256: `E89FC8547EEFC4366ABC1ACF9098ECCCD0220742999D2035721D498CF0C187D8`
+- Universal build timestamp: 2026-07-18 01:15:34 CDT
+- Same-source x86_64 path: `build/app/outputs/flutter-apk/app-x86_64-debug.apk`
+- x86_64 size: 71,567,900 bytes / 68.25 MiB
+- x86_64 SHA-256: `D8C39E41214AD8720DE6F1469545E1A102CE39A4DCD791A4BC4667907DFCFB8E`
+- Source commit: `31deb8c8dc132f1768e19b55b3676fa712865678`
+- Tag: `build-week-stage3-local`
+- Tested device: Android emulator `sdk_gphone64_x86_64`, API 36, `emulator-5554`
+- Installation result: same-source x86_64 split PASS after clean uninstall/install; universal install is not claimed on this low-storage emulator
+- Smoke result: PASS to unauthenticated Login; credentialed and physical-phone paths remain pending
+
+### Git and publication
+
+- Commit: `31deb8c8dc132f1768e19b55b3676fa712865678` (`fix(security): harden final judge path`)
+- Branch: `build-week/final`
+- Tag: annotated `build-week-stage3-local` points to the APK-producing commit
+- Push/PR: not performed. The local ancestry contains a formerly tracked `.env`; it will not be published. A sanitized history and authenticated GitHub destination are still required.
+- Deployment: not performed; the OpenAI managed secret and judge Auth UIDs are unavailable.
+
+### Known issues and rollback point
+
+- The local APK reaches Login and is source/widget/emulator tested, but the credentialed deployed Home → Copilot → matches → details → verification → booking → chat flow is not yet claimed.
+- Live GPT-5.6 English/package/Arabic calls, Firebase deployment, judge fixture seeding, stable public APK URL/download verification, physical-phone install, and two fresh credentialed flows remain.
+- GitHub publication must use sanitized history; the original local ancestry must never be pushed publicly.
+- No final release signing material exists, so the current installable candidate is explicitly debug-signed.
+- Rollback point: tag `build-week-stage3-local` / commit `31deb8c8dc132f1768e19b55b3676fa712865678`.
+
+### Next action
+
+Create and verify a sanitized publication history, establish authenticated GitHub publication tooling, then obtain the owner-only managed OpenAI secret and dedicated judge Auth UIDs for deployment, seeding, capped live GPT-5.6 tests, and two complete credentialed Android flows.

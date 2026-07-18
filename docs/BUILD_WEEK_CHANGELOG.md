@@ -79,7 +79,7 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
-The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The Stage 3/4 source commit is recorded in the append-only progress checkpoint immediately after commit.
+The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`.
 
 - Flutter format gate: 119 files, 0 changes
 - Flutter analysis: no issues
@@ -88,8 +88,8 @@ The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its pa
 - Firestore/Storage rules contracts: 7/7 passed
 - Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
 - Functions TypeScript build: passed
-- Universal debug APK: built; 156,206,220 bytes
-- Universal APK SHA-256: `CDE5929FF44A622C930F31FBC8DDBA7075B6D805A70F57C1FAFCBDEE2D72E985`
+- Universal debug APK: rebuilt from the tagged source; 154,897,342 bytes
+- Universal APK SHA-256: `E89FC8547EEFC4366ABC1ACF9098ECCCD0220742999D2035721D498CF0C187D8`
 - Same-source x86_64 APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
 
 ## Not yet claimed

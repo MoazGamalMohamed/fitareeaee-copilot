@@ -17,7 +17,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` | PASS | Universal debug APK built |
+| Android build | `flutter build apk --debug` | PASS | Universal debug APK rebuilt from tagged commit `31deb8c` |
 
 ## Copilot behavior
 
@@ -80,13 +80,14 @@ exact-runtime release check.
 
 - Build type: universal debug judge candidate
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
-- Size: 156,206,220 bytes (148.97 MiB)
-- Build timestamp: July 17, 2026 at 23:56:08 CDT
-- Source commit: **PENDING — recorded in the append-only checkpoint immediately after commit**
-- SHA-256: `CDE5929FF44A622C930F31FBC8DDBA7075B6D805A70F57C1FAFCBDEE2D72E985`
+- Size: 154,897,342 bytes (147.72 MiB)
+- Build timestamp: July 18, 2026 at 01:15:34 CDT
+- Source commit: `31deb8c8dc132f1768e19b55b3676fa712865678`
+- Source tag: `build-week-stage3-local`
+- SHA-256: `E89FC8547EEFC4366ABC1ACF9098ECCCD0220742999D2035721D498CF0C187D8`
 - Universal installation: not counted on the low-storage emulator (`INSTALL_FAILED_INSUFFICIENT_STORAGE`)
-- Same-source x86_64 APK: 71,652,880 bytes; SHA-256 `303CE8EF1D579BF51BBDC7C21E29F6823268BEAC7C7CA422837583083BA58B1E`
-- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process alive, and no fatal Android/Flutter logs
+- Same-source x86_64 APK: 71,567,900 bytes; SHA-256 `D8C39E41214AD8720DE6F1469545E1A102CE39A4DCD791A4BC4667907DFCFB8E`
+- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `12946` alive, and no matched fatal Android/Flutter/Firebase logs
 
 This is a local engineering checkpoint, not yet the published judge artifact.
 

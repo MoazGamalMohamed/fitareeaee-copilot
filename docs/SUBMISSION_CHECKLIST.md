@@ -50,7 +50,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Stage 3/4 Functions contracts passed: 16/16.
 - [x] Stage 3/4 rules contracts passed: 7/7.
 - [x] Stage 3/4 real callable emulator integration passed: 3/3.
-- [x] Stage 3/4 Functions build and universal debug APK build passed.
+- [x] Stage 3/4 Functions build and universal debug APK build passed from tagged commit `31deb8c`.
 - [x] Same-source x86_64 APK clean-installed and reached Login on API 36.1 with no fatal logs.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [ ] Rerun the complete mandatory gate on the exact final release commit.
@@ -67,8 +67,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [ ] Push passing stage commits/tags; no force-push.
 - [ ] Open/update draft PR if appropriate; do not merge without owner confirmation.
 - [ ] Build signed universal release APK if safe signing exists; otherwise label the judge debug APK clearly.
-- [ ] Record final APK path, type, size, timestamp, commit, SHA-256, and tested device.
-- [ ] Tag the exact source commit that produced the APK.
+- [x] Record the latest local APK path, type, size, timestamp, commit, SHA-256, and tested emulator.
+- [x] Tag the exact local APK source commit as `build-week-stage3-local`.
 - [ ] Publish APK at a stable GitHub Release/direct URL.
 - [ ] Download the APK from the public judge URL.
 - [ ] Confirm downloaded SHA-256 matches the release record.
