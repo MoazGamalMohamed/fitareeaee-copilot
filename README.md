@@ -184,6 +184,9 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_PROGRESS.md) — append-only checkpoints
 - [`docs/PUBLICATION_HISTORY.md`](docs/PUBLICATION_HISTORY.md) — original-to-sanitized commit map
 
+- [`docs/RESUME_HERE.md`](docs/RESUME_HERE.md) — current recovery checkpoint and exact next action
+- [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) — consequential scope and safety decisions
+
 ## Known limitations
 
 - This contest build supports Android sideloading, not Google Play distribution.

@@ -29,6 +29,7 @@ evidence to the sanitized publication history:
 | Consolidated security evidence | `a297c73a2820958a7a0af75e143caebc6681c322` | `0abea666c667cf01989809bbdcb7725473989886` |
 | Unreachable-stub cleanup source | `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16` | `9b94427a30ac6f49098c66a7f7fb43971e16bbc0` |
 | Release-cleanup evidence | `46e80f5a61b5a976211faf282e071dcf64a8b807` | `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61` |
+| Authorized resume, recovery, and judge provisioning | `867f96867ff54588cc07f9f009b657d046a2ccf6` | `d3e624c7666def3a05dd61a4e33bb66852feb904` |
 
 The annotated tag names are preserved:
 

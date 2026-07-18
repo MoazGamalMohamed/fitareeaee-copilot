@@ -12,11 +12,12 @@ credentialed Android verification, sanitized GitHub publication, and final evide
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `a54ede51a822c3f53ac957a932258d6edb6a1515`
-- Current private work: guarded judge-provisioning compatibility fix plus this handoff
+- Last committed private checkpoint: `867f96867ff54588cc07f9f009b657d046a2ccf6`
+- Current private work: publication mapping for the completed provisioning checkpoint
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
-- Sanitized branch/checkpoint: `main` / `8c0bbfae91e92a230561380c3dbcdbb6fc66d419`
-- Sanitized tree: `5b9887237b57ef54fa70f026e60b82eb38672080`
+- Sanitized branch/checkpoint: `main` and `build-week/final` /
+  `d3e624c7666def3a05dd61a4e33bb66852feb904`
+- Current private/sanitized tree: `8c4d78fac7a9e8977e27dab67c406ddb1755c614`
 - Temporary and durable sanitized clones match at the recorded checkpoint
 - Latest tested application source: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
 

@@ -5,7 +5,9 @@ history. It was superseded on July 17, 2026 when the owner created the active
 persistent Codex goal for the final submission and granted the narrower current
 authority recorded in this primary thread.
 
-Do not restart from the older prompt or its stale risk list. Resume from:
+Do not restart from the older prompt or its stale risk list. Read
+[`RESUME_HERE.md`](RESUME_HERE.md) and [`DECISION_LOG.md`](DECISION_LOG.md)
+first, then resume from:
 
 1. [`BUILD_WEEK_PROGRESS.md`](BUILD_WEEK_PROGRESS.md) — append-only evidence;
 2. [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) — verified/pending gate;
