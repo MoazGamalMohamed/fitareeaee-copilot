@@ -562,3 +562,90 @@ Propagate this passing checkpoint into the sanitized publication clone and re-ru
 - Tag/push/PR: pending credentialed final verification and GitHub authentication
 - Rollback point: `289209b`; previous deployed backend source remains `28117b9`
 - Next action: update and deep-scan the sanitized clone, then obtain only the owner actions that cannot be performed autonomously.
+
+## 2026-07-18 03:06 CDT / 2026-07-18 01:06 PDT — Consolidated security review and release checkpoint
+
+### Objective
+
+Integrate independent final code, security, and release-document reviews; close every credential-independent finding on the submitted path; deploy only the narrowed safe Firebase changes; and produce a same-source Android checkpoint.
+
+### Work completed
+
+- Integrated bounded final code, security, and documentation audits. Earlier multi-seat, profile-authorization, driver-profile, release-structure, and broad-deployment findings were confirmed resolved.
+- Constrained `public_profiles.photoUrl` to the owner's exact Firebase Storage `profile.jpg` path (or `null`) and added emulator assertions that reject arbitrary/tracking URLs and another user's object path.
+- Removed the unconditional participant-card chat entry that could bypass server-issued booking/request conversation authorization.
+- Made message-send failures observable to the UI, retained unsent text after failure, and added notifier regression tests for both failure and success.
+- Required exact server-recorded message participants for reads/updates, including protection from malformed legacy message documents.
+- Removed document-number collection/storage from the current verification model, provider, UI payload, and Functions backend. Review now clears legacy `documentNumber` and `documentUrl` fields as well as the raw object path.
+- Allowed an owner to delete a pending/abandoned raw verification upload while continuing to deny other users; reviewed raw objects remain deleted server-side.
+- Removed two obsolete verification setup/security guides that described unsafe permissive/OpenRouter-era behavior.
+- Replaced broad production deploy instructions with explicitly targeted Functions/rules commands and warnings against unscoped inherited endpoint/index deletion.
+- Updated privacy, judge, changelog, matrix, and release-checklist claims to distinguish the deployed hardened backend from the still-blocked Copilot secret/deployment and credentialed release flow.
+
+### Files changed
+
+- `firestore.rules`, `storage.rules`, `test/rules/firestore.rules.test.js`
+- `functions/src/verification.ts`
+- `lib/core/providers/verification_provider.dart`
+- `lib/features/verification/data/models/verification_model.dart` and regenerated model files
+- `lib/features/verification/presentation/pages/document_upload_screen.dart`
+- `lib/features/trips/presentation/pages/trip_details_screen.dart`
+- `lib/features/chat/presentation/providers/chat_provider.dart`
+- `lib/features/chat/presentation/pages/chat_screen.dart`
+- `test/features/chat/send_message_notifier_test.dart`
+- `README.md`, `docs/PRIVACY_AND_SAFETY.md`, `docs/BUILD_WEEK_CHANGELOG.md`, `docs/JUDGE_TESTING.md`, `docs/TEST_MATRIX.md`, `docs/SUBMISSION_CHECKLIST.md`
+- Removed `MANUAL_VERIFICATION_SETUP.md` and `VERIFICATION_SECURITY_PRICING.md`
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 118 files, 0 changed
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 18/18, including chat notifier 2/2
+- `npm test` in `functions/`: PASS; TypeScript build plus 16/16 contracts
+- Firestore/Storage rules emulator contracts: PASS; 7/7 with constrained avatar, exact legacy participants, and owner raw-upload deletion assertions
+- Auth/Functions/Firestore callable integration: PASS; 3/3 with Gen 2 projections loaded in `europe-west1`
+- Scoped `firebase deploy --only "firestore:rules,storage,functions:submitVerification,functions:reviewVerification" --project fitareeaee`: PASS; Firestore/Storage rules released and both verification Functions updated in `us-central1`
+- Live unauthenticated `submitVerification` probe: PASS; HTTP 401 / `UNAUTHENTICATED`
+- Live unauthenticated `reviewVerification` probe: PASS; HTTP 401 / `UNAUTHENTICATED`
+- `flutter build apk --debug`: PASS
+- `flutter build apk --debug --split-per-abi`: PASS
+- Clean x86_64 uninstall/install: PASS; installation returned `Success`
+- Emulator launch: UI wait timed out during Flutter initialization, but PID `14247` remained alive, Login semantics rendered, and the fatal-log filter matched nothing; smoke result PASS
+- OpenAI live calls: 0; recorded OpenAI testing spend: USD $0
+
+### APK record
+
+- Build type: universal debug-signed judge checkpoint
+- Universal path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Universal size: 154,895,270 bytes
+- Universal timestamp: 2026-07-18 03:01:26 CDT
+- Universal SHA-256: `4AC2FBAD53963817CB2A8F056520A981FD089CB07F0FC182250A7B6CBF64AA5C`
+- x86_64 path: `build/app/outputs/flutter-apk/app-x86_64-debug.apk`
+- x86_64 size: 71,565,828 bytes
+- x86_64 timestamp: 2026-07-18 03:02:09 CDT
+- x86_64 SHA-256: `CE78FBD85D00D0D9EE3FA22826D2ECF2FF8C48380AAB672350F953A751507A5F`
+- arm64 size/SHA-256: 85,642,166 bytes / `1CA433394904D614C1B0F5C2D1A2E0FD7DB282CA76BC5759B4EFAFA163D4DFC7`
+- armeabi-v7a size/SHA-256: 64,900,342 bytes / `F3F5CB6590BE8541D113C011664545D96B6BB3509D813F7387E9DBB905A7FA80`
+- Source commit: `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`
+- Tested device/result: Android API 36 `emulator-5554`; x86_64 install and Login smoke PASS; physical phone remains untested
+
+### Git, deployment, and publication status
+
+- Branch: `build-week/final`
+- Security commits: `00f89ec` (avatar rules), `d80b6d3` (chat authorization/failure handling), `3f3fedf` (verification minimization), `85d73f0` (targeted deployment documentation)
+- Tag: pending credentialed release candidate
+- Push/PR/release: not performed; GitHub CLI remains unauthenticated and only the separately sanitized publication clone may be pushed
+- Deployment: narrowed verification/rules update PASS; booking/chat/projection deployment and message indexes remain active from the prior checkpoint; `planTripWithCopilot` remains undeployed
+
+### Known issues and rollback point
+
+- The `OPENAI_API_KEY` managed secret resource exists but has no usable version. No live GPT-5.6 behavior is claimed.
+- Dedicated driver/rider Auth UIDs and judge fixtures are unavailable, so two credentialed fresh-install flows remain untested.
+- Thirty-six inherited live prototype Functions remain pending explicit owner deletion approval; deleting them without that approval could disrupt an unknown legacy client.
+- Legacy Stripe test/email runtime credentials exposed only in Firebase CLI diagnostics still require owner-controlled rotation; no values were copied into source or this record.
+- GitHub authentication, public repository/release, downloaded-artifact verification, physical-phone test, video, `/feedback`, legal review, and final Devpost submission remain external actions.
+- Rollback point: source `85d73f0`; prior stable deployed backend checkpoint `28117b9`; production data was not deleted or reset.
+
+### Next action
+
+Commit this evidence, transfer the reviewed commit series into the separate sanitized publication clone, and re-run its complete secret/path/object/ref/tree scan. Then resume credentialed Copilot deployment, judge seeding, and publication immediately after the owner-only inputs are available.

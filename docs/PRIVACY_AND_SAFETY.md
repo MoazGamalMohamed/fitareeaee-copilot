@@ -79,6 +79,12 @@ No rank score is a declaration of personal safety or endorsement of a participan
 - Verification images remain in owner/admin-scoped Firebase Storage and are
   never sent to OpenAI. Firestore stores object paths rather than public token
   URLs; after an admin review, the raw object is deleted and the path is cleared.
+- The submitted verification form does not collect or store document numbers.
+  An owner may delete a pending or abandoned raw upload; other users cannot.
+  Pending verification metadata and its object path can remain until review or
+  cleanup, so judge fixtures must use fictional evidence only.
+- Message reads and updates require the authenticated user to match the exact
+  participant list recorded by the server, including for older malformed data.
 
 Users remain responsible for confirming trip details, participant identity context, lawful package contents, local regulations, and an appropriate meeting plan.
 

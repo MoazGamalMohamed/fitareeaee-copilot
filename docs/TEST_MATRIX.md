@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Stage 3/4 hardened revision: 119 files, 0 changes |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Consolidated hardened revision: 118 files, 0 changes |
 | Static analysis | `flutter analyze` | PASS | `No issues found!` |
-| Flutter suite | `flutter test` | PASS | Hardened revision: 16/16 tests |
+| Flutter suite | `flutter test` | PASS | Consolidated hardened revision: 18/18 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
-| Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Focused widget tests: 3/3 |
+| Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
 | Functions contracts | Booking, conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling | PASS | 16/16 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
-| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts |
+| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts, including exact legacy-message participants, constrained avatar URLs, and owner withdrawal of raw verification uploads |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` | PASS | Universal and split debug APKs rebuilt from cleanup commit `289209b` |
+| Android build | `flutter build apk --debug` | PASS | Universal and split debug APKs rebuilt from consolidated source `85d73f0` |
 
 ## Copilot behavior
 
@@ -34,7 +34,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | User edits draft | Reviewed values are used for matching | PASS — widget/domain coverage |
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
-| AI/backend failure | Retry plus manual-search fallback | PASS — UI path/code inspection |
+| AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
 | Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — managed OpenAI secret pending |
 
 ## Security and transactional behavior
@@ -62,12 +62,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Check | Current status | Notes |
 | --- | --- | --- |
 | Confirmed project | PASS | All deployment commands explicitly targeted `fitareeaee` |
-| Firestore rules | PASS | Deployed July 18, 2026; 7/7 emulator contracts also pass |
-| Storage rules | PASS | Deployed July 18, 2026; owner/type restrictions covered by emulator tests |
+| Firestore rules | PASS | Latest constrained-avatar and exact-message-participant rules deployed July 18, 2026; 7/7 emulator contracts pass |
+| Storage rules | PASS | Latest owner/type/delete restrictions deployed July 18, 2026; emulator contracts pass |
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
-| Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1` |
+| Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1`; minimized verification submit/review versions were redeployed successfully |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
-| Copilot callable | BLOCKED | `OPENAI_API_KEY` managed secret is absent; no model call or spend has occurred |
+| Copilot callable | BLOCKED | `OPENAI_API_KEY` secret resource has no usable version; no model call or spend has occurred |
 | Inherited prototype Functions retirement | BLOCKED | Exact production deletion set requires owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
@@ -97,14 +97,14 @@ the contest release.
 
 - Build type: universal debug judge candidate
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
-- Size: 154,895,722 bytes (147.72 MiB)
-- Build timestamp: July 18, 2026 at 02:29:23 CDT
-- Source commit: `289209b`
+- Size: 154,895,270 bytes (147.72 MiB)
+- Build timestamp: July 18, 2026 at 03:01:26 CDT
+- Source commit: `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`
 - Source tag: pending release-candidate tag after credentialed verification
-- SHA-256: `38E5978A914EDC22AD65B49CE93FF8405193A87810BEA338498F9443351D3E1C`
+- SHA-256: `4AC2FBAD53963817CB2A8F056520A981FD089CB07F0FC182250A7B6CBF64AA5C`
 - Universal installation: not counted on the low-storage emulator (`INSTALL_FAILED_INSUFFICIENT_STORAGE`)
-- Same-source x86_64 APK: 71,566,280 bytes; SHA-256 `E1E44AAD88432A0A62C697B0B17042BC92FA9A82DF78EBEEFF267CEA591B193A`
-- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `13848` alive, and no matched fatal Android/Flutter/Firebase logs
+- Same-source x86_64 APK: 71,565,828 bytes; SHA-256 `CE78FBD85D00D0D9EE3FA22826D2ECF2FF8C48380AAB672350F953A751507A5F`
+- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `14247` alive, and no matched fatal Android/Flutter/Firebase logs
 
 This is a local engineering checkpoint, not yet the published judge artifact.
 
