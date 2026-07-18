@@ -66,10 +66,13 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
 
     final result = await _chatRepository.sendMessage(message);
 
-    state = result.fold(
-      (failure) => AsyncValue.error(failure.toString(), StackTrace.current),
-      (_) => const AsyncValue.data(null),
-    );
+    result.fold((_) {
+      final error = Exception(
+        'Message could not be sent. Check that this conversation is authorized and try again.',
+      );
+      state = AsyncValue.error(error, StackTrace.current);
+      throw error;
+    }, (_) => state = const AsyncValue.data(null));
   }
 }
 

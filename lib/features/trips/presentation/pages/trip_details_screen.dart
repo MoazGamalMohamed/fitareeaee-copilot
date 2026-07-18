@@ -71,13 +71,18 @@ class TripDetailsScreen extends ConsumerWidget {
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, st) => Center(
+        error: (_, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              const Text('Trip details are unavailable. Please try again.'),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: () => ref.invalidate(tripDetailProvider(tripId)),
+                child: const Text('Retry'),
+              ),
             ],
           ),
         ),
@@ -564,13 +569,6 @@ class TripDetailsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.chat_bubble_outline),
-                onPressed: () {
-                  // Navigate to chat
-                  context.push('/chat/${trip.driverId}');
-                },
-              ),
             ],
           ),
         );
@@ -589,7 +587,7 @@ class TripDetailsScreen extends ConsumerWidget {
           ),
         ),
       ),
-      error: (e, st) {
+      error: (_, _) {
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
@@ -600,18 +598,10 @@ class TripDetailsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Error loading driver info',
+                'Participant details are unavailable.',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.red,
+                  color: Colors.grey[700],
                   fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                e.toString(),
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey[600],
-                  fontSize: 10,
                 ),
               ),
             ],

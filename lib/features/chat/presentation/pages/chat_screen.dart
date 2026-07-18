@@ -519,23 +519,25 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
             attachments: const [],
           );
 
+      if (!mounted) return;
       widget.controller.clear();
       setState(() {
         _isUploading = false;
       });
       widget.onMessageSent();
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isUploading = false;
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to send message: $e'),
-            backgroundColor: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Message could not be sent. Check that this conversation is authorized and try again.',
           ),
-        );
-      }
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
