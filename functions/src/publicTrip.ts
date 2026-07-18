@@ -1,5 +1,5 @@
 import {getFirestore} from "firebase-admin/firestore";
-import * as functions from "firebase-functions/v1";
+import {onDocumentWritten} from "firebase-functions/v2/firestore";
 
 export function publicTripData(
   data: Record<string, unknown>,
@@ -53,17 +53,21 @@ export function publicTripData(
  * Maintains the signed-in marketplace projection. Precise coordinates,
  * passenger identifiers, package photos, and arbitrary metadata stay private.
  */
-export const syncPublicTrip = functions.firestore
-  .document("trips/{tripId}")
-  .onWrite(async (change, context) => {
+export const syncPublicTrip = onDocumentWritten({
+  document: "trips/{tripId}",
+  region: "europe-west1",
+}, async (event) => {
+    const change = event.data;
+    if (!change) return;
+
     const target = getFirestore()
       .collection("public_trips")
-      .doc(context.params.tripId);
+      .doc(event.params.tripId);
     if (!change.after.exists) {
       await target.delete();
       return;
     }
 
     const data = change.after.data() ?? {};
-    await target.set(publicTripData(data, context.params.tripId), {merge: false});
-  });
+    await target.set(publicTripData(data, event.params.tripId), {merge: false});
+});

@@ -1,5 +1,5 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
-import * as functions from "firebase-functions/v1";
+import {onDocumentWritten} from "firebase-functions/v2/firestore";
 
 function stringOrNull(value: unknown, max: number): string | null {
   return typeof value === "string" && value.trim().length > 0 ?
@@ -21,10 +21,15 @@ function safePhotoUrl(value: unknown, uid: string): string | null {
 }
 
 /** Maintains a PII-minimized projection for participant cards and chat. */
-export const syncPublicProfile = functions.firestore
-  .document("users/{uid}")
-  .onWrite(async (change, context) => {
-    const target = getFirestore().collection("public_profiles").doc(context.params.uid);
+export const syncPublicProfile = onDocumentWritten({
+  document: "users/{uid}",
+  region: "europe-west1",
+}, async (event) => {
+    const change = event.data;
+    if (!change) return;
+
+    const uid = event.params.uid;
+    const target = getFirestore().collection("public_profiles").doc(uid);
     if (!change.after.exists) {
       await target.delete();
       return;
@@ -33,9 +38,9 @@ export const syncPublicProfile = functions.firestore
     const roles = Array.isArray(data.roles) ?
       data.roles.filter((role: unknown) => typeof role === "string" && role !== "admin").slice(0, 4) : [];
     await target.set({
-      id: context.params.uid,
+      id: uid,
       name: stringOrNull(data.name, 80),
-      photoUrl: safePhotoUrl(data.photoUrl, context.params.uid),
+      photoUrl: safePhotoUrl(data.photoUrl, uid),
       roles,
       rating: Number.isFinite(data.rating) ? data.rating : 0,
       totalRatings: Number.isInteger(data.totalRatings) ? data.totalRatings : 0,
@@ -43,4 +48,4 @@ export const syncPublicProfile = functions.firestore
       createdAt: data.createdAt ?? data.created_at ?? Timestamp.now(),
       updatedAt: Timestamp.now(),
     }, {merge: false});
-  });
+});
