@@ -73,7 +73,7 @@ test("trip owners cannot change server-owned seat inventory", async () => {
   );
 });
 
-test("clients cannot create bookings or approve verification", async () => {
+test("clients cannot create bookings, approve verification, or alter AI limits", async () => {
   const rider = environment.authenticatedContext("rider").firestore();
   await assertFails(
     setDoc(doc(rider, "bookings/forged"), {
@@ -86,6 +86,11 @@ test("clients cannot create bookings or approve verification", async () => {
     setDoc(doc(rider, "verifications/rider"), {
       identityVerified: true,
       selfieWithIdVerified: true,
+    })
+  );
+  await assertFails(
+    setDoc(doc(rider, "copilot_rate_limits/rider"), {
+      count: 0,
     })
   );
 });

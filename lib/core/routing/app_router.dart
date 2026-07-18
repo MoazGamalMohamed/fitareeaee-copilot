@@ -19,6 +19,9 @@ import 'package:fitareeaee/features/verification/presentation/pages/driver_profi
 import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
 import 'package:fitareeaee/features/admin/presentation/pages/admin_verifications_screen.dart';
 import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:fitareeaee/features/copilot/domain/copilot_draft.dart';
+import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_screen.dart';
+import 'package:fitareeaee/features/copilot/presentation/pages/copilot_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,6 +54,8 @@ class AppRoutes {
   static const helpCenter = '/help';
   static const aiAssistant = '/ai-assistant';
   static const nearbyTripsMap = '/trips/map';
+  static const copilot = '/copilot';
+  static const copilotResults = '/copilot/results';
 }
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -81,6 +86,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.copilot,
+        name: 'copilot',
+        builder: (context, state) => const CopilotScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.copilotResults,
+        name: 'copilot-results',
+        builder: (context, state) {
+          final draft = state.extra;
+          if (draft is! CopilotDraft) {
+            return const CopilotScreen();
+          }
+          return CopilotResultsScreen(draft: draft);
+        },
       ),
       GoRoute(
         path: AppRoutes.profile,
