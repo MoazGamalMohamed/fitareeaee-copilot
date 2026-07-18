@@ -21,6 +21,14 @@ function fail(message) {
   process.exit(1);
 }
 
+function safeErrorDetail(error) {
+  const raw = String(error?.message || error?.errorInfo?.message || "");
+  return raw
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/[A-Za-z0-9_-]{32,}/g, "[redacted-token]")
+    .slice(0, 300);
+}
+
 if (confirmation !== EXPECTED_PROJECT) {
   fail(`PROVISION_JUDGE_USERS must equal ${EXPECTED_PROJECT}.`);
 }
@@ -130,6 +138,9 @@ async function ensureUser(auth, role, account) {
 async function main() {
   const credentials = loadOrCreateCredentials();
   const accessToken = getOwnerAccessToken();
+  // Firebase Admin adds this as x-goog-user-project for owner user credentials.
+  // Without it, Identity Toolkit rejects an otherwise valid gcloud access token.
+  process.env.GOOGLE_CLOUD_QUOTA_PROJECT = EXPECTED_PROJECT;
   const credential = {
     getAccessToken: async () => ({
       access_token: accessToken,
@@ -159,18 +170,22 @@ async function main() {
   process.env.JUDGE_DRIVER_UID = credentials.accounts.driver.uid;
   process.env.JUDGE_RIDER_UID = credentials.accounts.rider.uid;
   const {seedJudgeData} = require("./seed-judge-data.cjs");
-  await seedJudgeData();
+  await seedJudgeData({
+    accessToken,
+    driverEmail: credentials.accounts.driver.email,
+    riderEmail: credentials.accounts.rider.email,
+  });
 
   process.stdout.write(
-    `Provisioned fictional judge users and fixtures. Credentials remain only at ${credentialsPath}.\n` +
-    `Driver UID: ${credentials.accounts.driver.uid}\n` +
-    `Rider UID: ${credentials.accounts.rider.uid}\n`,
+    `Provisioned fictional judge users and fixtures. Credentials remain only at ${credentialsPath}.\n`,
   );
 }
 
 main().catch((error) => {
+  const detail = safeErrorDetail(error);
   process.stderr.write(
     `Judge provisioning failed (${error?.code || error?.name || "Error"}). ` +
+    `${detail || "No additional service detail."} ` +
     "No credentials were logged.\n",
   );
   process.exitCode = 1;

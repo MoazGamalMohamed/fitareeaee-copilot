@@ -800,3 +800,73 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 The same user-only credential, authentication, production-approval, and physical-action conditions have now persisted for three consecutive goal turns. All safe credential-independent implementation, security review, tests, APK construction/audit, sanitized history preparation, and submission drafting have been exhausted. The persistent goal is therefore marked blocked rather than complete. No requirement dependent on these actions is claimed as passing.
 
 Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not restart discovery or publish the private original history.
+
+## 2026-07-18 18:34 CDT / 2026-07-18 16:34 PDT — Authorized resume and judge provisioning
+
+### Objective and outcome
+
+- Resumed the existing goal from the owner-supplied self-contained authorization;
+  no prior implementation or evidence was restarted or discarded.
+- Re-read every authoritative project handoff, the complete attached authorization,
+  live Devpost rules/overview/FAQ/update, and current official GPT-5.6 Responses API
+  and Structured Outputs guidance.
+- Confirmed the private worktree was clean at `a54ede5`, the temporary sanitized
+  clone was clean at `8c0bbfa`, and the recorded APK/hash remained present.
+- Created the authorized durable sanitized sibling clone at
+  `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`.
+- Verified durable/temporary sanitized HEAD and tree equality, no reachable `.env`
+  or `google-services.json`, no `refs/original`, and no unreachable objects. A broad
+  scan matched only documented placeholder examples in preserved pre-existing history.
+- Opened private interactive prompts for the managed OpenAI secret and GitHub device
+  authentication. At the last metadata check neither prompt had completed.
+- Ran the explicitly approved guarded judge provisioner. Two fictional Auth users,
+  four private/public trip fixtures, two fictional verification summaries, and two
+  minimal public profiles now exist in project `fitareeaee`.
+- Fixed owner-credential compatibility by adding the required quota-project header
+  and using the same short-lived token for an authenticated Firestore REST commit.
+  No service-account file was created.
+- Added `docs/RESUME_HERE.md` and `docs/DECISION_LOG.md` for durable recovery.
+
+### Commands and exact results
+
+- Private `git status --short --branch`: PASS; clean before this checkpoint
+- `git clone --no-hardlinks <sanitized-temp> <durable-sibling>`: PASS
+- Durable sanitized history/ref/path/object checks: PASS
+- First guarded provision attempt: FAIL before user creation with
+  `auth/internal-error`; redacted diagnostics identified missing quota project
+- Second attempt: created both Auth users, then FAIL before fixture writes because
+  Admin Firestore rejects owner user credentials
+- Final guarded provision attempt: PASS; exact approved users and fixtures upserted
+- `.judge-credentials.local.json`: present and ignored; passwords were not printed
+  or committed
+- `node --check` for both provisioning scripts: PASS
+- Sandboxed `npm test`: TypeScript build PASS; Node workers blocked by environment
+  `spawn EPERM`
+- Authorized `npm test`: PASS; Functions build plus 16/16 contracts
+- OpenAI calls/spend: 0 / USD $0
+
+### Git, APK, rollback, and next action
+
+- Private checkpoint before current changes: `a54ede51a822c3f53ac957a932258d6edb6a1515`
+- Durable sanitized checkpoint: `8c0bbfae91e92a230561380c3dbcdbb6fc66d419`
+- Push/PR/Release: not yet performed; GitHub authentication remains incomplete
+- Latest APK remains the debug artifact from source `9b591e0`, size/hash recorded in
+  `TEST_MATRIX.md`; no newer APK is claimed by this checkpoint
+- Production data deletion: none; inherited Function retirement not yet executed
+- Rollback: provisioning source before compatibility changes is `a54ede5`; judge
+  fixtures are fixed, fictional, idempotent records and are not rolled back automatically
+- Next action: commit this passing provisioning/recovery checkpoint, sync it into the
+  durable sanitized clone, then implement the highest-priority judge-path state and
+  trip-specific communication fixes.
+
+### Same-checkpoint correction — judge login and availability
+
+- Independent review found that valid Auth users would still return to Login because
+  the application requires canonical private `users/{uid}` profiles. The guarded
+  provisioner now creates only those two corresponding fictional private profiles;
+  the final provision run passed without printing UIDs or passwords.
+- The original relative +1/+2-day fixtures would expire before judging. All four
+  departures are now fixed on August 10, 2026, after the conservative judging-access
+  window. Judge/demo prompts will use the exact date instead of “tomorrow.”
+- This correction touched no non-judge user, booking, message, Storage object, or
+  unrelated production document.
