@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — UI path/code inspection |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — managed key/deployment pending |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — managed OpenAI secret pending |
 
 ## Security and transactional behavior
 
@@ -54,6 +54,21 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Public marketplace projection | Exact coordinates, passenger IDs, photos, descriptions, arbitrary metadata excluded | PASS — Functions/rules contracts |
 | Client reads/writes Copilot throttle data | Denied | PASS — rules contract |
 | Payment/wallet/reset prototype used from judge path | No exposed judge navigation/deployable reset/payment callable | PASS — source review; release recheck required |
+| Live booking without authentication | Rejected before reading or writing trip data | PASS — deployed callable returned HTTP 401 / `UNAUTHENTICATED` |
+| Live chat authorization without authentication | Rejected before creating conversation authorization | PASS — deployed callable returned HTTP 401 / `UNAUTHENTICATED` |
+
+## Deployed Firebase verification
+
+| Check | Current status | Notes |
+| --- | --- | --- |
+| Confirmed project | PASS | All deployment commands explicitly targeted `fitareeaee` |
+| Firestore rules | PASS | Deployed July 18, 2026; 7/7 emulator contracts also pass |
+| Storage rules | PASS | Deployed July 18, 2026; owner/type restrictions covered by emulator tests |
+| Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
+| Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1` |
+| Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
+| Copilot callable | BLOCKED | `OPENAI_API_KEY` managed secret is absent; no model call or spend has occurred |
+| Inherited prototype Functions retirement | BLOCKED | Exact production deletion set requires owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
 
@@ -73,8 +88,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
-contracts, rules, and integrations passed; deployment/CI on Node 20 remains the
-exact-runtime release check.
+contracts, rules, and integrations passed. The hardened callables and projection
+triggers were also successfully built and deployed on the declared Node 20
+runtime; Firebase warns that Node 20 is deprecated and must be upgraded after
+the contest release.
 
 ## Latest recorded local APK
 

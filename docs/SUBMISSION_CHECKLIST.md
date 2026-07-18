@@ -26,10 +26,14 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Deterministic matching with transparent reasons and no fabricated trips.
 - [x] Authenticated transactional booking and server-controlled verification.
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
-- [x] Simulated financial/reset/AI-verification prototypes excluded from the judge path/deployable Functions.
+- [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
+- [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
 - [ ] Owner sets `OPENAI_API_KEY` as a managed Firebase secret without sharing or committing it.
-- [ ] Deploy only to confirmed Firebase project `fitareeaee`.
-- [ ] Deploy Functions, Firestore rules/indexes, and Storage rules.
+- [x] Deploy only to confirmed Firebase project `fitareeaee`.
+- [x] Deploy hardened booking, verification, chat, and public-projection Functions.
+- [x] Deploy Firestore and Storage rules.
+- [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
+- [ ] Deploy `planTripWithCopilot` after the managed OpenAI secret is set.
 - [ ] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests.
 - [ ] Confirm OpenAI test spend remains below USD $5.
 - [ ] Create dedicated judge accounts and seeded demo trips; keep passwords out of Git.
@@ -52,6 +56,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Stage 3/4 real callable emulator integration passed: 3/3.
 - [x] Stage 3/4 Functions build and universal debug APK build passed from tagged commit `31deb8c`.
 - [x] Same-source x86_64 APK clean-installed and reached Login on API 36.1 with no fatal logs.
+- [x] Deployment checkpoint gate passed on `28117b9`: format 119/0, analysis clean, Flutter 16/16, Functions 16/16, rules 7/7, integration 3/3, APK build/install/launch PASS.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [ ] Rerun the complete mandatory gate on the exact final release commit.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
@@ -61,9 +66,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 ## Repository and release
 
 - [ ] Create/configure sanitized GitHub repository `fitareeaee-copilot`.
-- [ ] Ensure old history containing tracked `.env` is not published.
+- [x] Ensure old history containing tracked `.env` is not published; use only the separately sanitized publication clone.
 - [x] Add an open-source license and complete judge-ready README.
-- [ ] Confirm repository contains no API keys, `.env`, service accounts, keystores, passwords, or private data.
+- [x] Confirm sanitized publication clone contains no API keys, `.env`, service accounts, keystores, passwords, or private data.
 - [ ] Push passing stage commits/tags; no force-push.
 - [ ] Open/update draft PR if appropriate; do not merge without owner confirmation.
 - [ ] Build signed universal release APK if safe signing exists; otherwise label the judge debug APK clearly.
@@ -104,8 +109,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 
 ## Current external blockers
 
-1. Managed OpenAI key setup and live Firebase deployment.
-2. Dedicated test credentials and seeded/live judge data.
-3. Sanitized GitHub remote/publication tooling.
-4. Physical Android phone interaction.
-5. YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.
+1. Owner privately sets the managed OpenAI key; Copilot deploy and capped live tests then resume.
+2. Owner creates two dedicated Firebase Auth users and supplies only their UIDs for judge-data seeding.
+3. Owner confirms deletion of the exact inherited live prototype Function set and rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
+4. Owner completes GitHub CLI browser/device authentication for sanitized publication.
+5. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.

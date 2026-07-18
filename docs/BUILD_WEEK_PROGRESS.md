@@ -440,3 +440,82 @@ Prepare a public history that preserves the honest baseline and dated Build Week
 ### Next action
 
 Apply this final documentation entry to the sanitized clone and re-run its secret/tree/status checks. Then complete every Firebase/deployment step that does not require the absent OpenAI secret or judge Auth UIDs before requesting the smallest owner action bundle.
+
+## 2026-07-18 02:15 CDT / 2026-07-18 00:15 PDT — Firebase security deployment checkpoint
+
+### Objective
+
+Deploy the credential-independent hardened backend to the confirmed `fitareeaee` project, preserve production data and legacy indexes, verify live authorization boundaries, and rebuild the Android checkpoint from the exact deployed source.
+
+### Work completed
+
+- Deployed the reviewed Firestore and Storage rules to `fitareeaee`; no production documents, Storage objects, or indexes were deleted.
+- Audited the ten existing composite indexes and created only the two missing message indexes additively. Both now report `READY`.
+- Deployed `createBooking`, `cancelBooking`, `reviewVerification`, `submitVerification`, `syncContactVerification`, and `authorizeTripConversation` to `us-central1`; all report `ACTIVE`.
+- Migrated the PII-minimized `syncPublicProfile` and `syncPublicTrip` projections from unsupported Gen 1 Firestore triggers to Gen 2.
+- Removed only failed/non-serving `UNKNOWN` trigger records created by the rejected Gen 1 attempts, applied Google's required Gen 2 service-agent IAM bindings, and deployed both projections successfully to `europe-west1` with `eur3` Eventarc sources.
+- Added a one-day Artifact Registry cleanup policy for generated Gen 2 function images in `europe-west1` to prevent stale image storage charges.
+- Confirmed live unauthenticated booking and chat-authorization requests return HTTP 401 with `UNAUTHENTICATED`; no database write occurred.
+- Rebuilt universal and split debug APKs and clean-installed the x86_64 build on the Android emulator. The process remained alive, the Login semantics rendered, and recent errors contained no fatal Flutter/Firebase exception.
+
+### Deployment safety and credential notice
+
+- The targeted deployments did not include `planTripWithCopilot`; `OPENAI_API_KEY` remains absent, OpenAI calls remain zero, and recorded OpenAI test spend remains USD $0.
+- The live project still contains inherited prototype payment, payout, refund, reset, maps, notification, and AI-verification Functions from the pre-existing deployment. They are absent from the submitted source/judge navigation, but deleting production endpoints requires explicit owner confirmation of the exact set.
+- During an early verbose Firebase inventory/deploy command, Firebase CLI diagnostic output disclosed values from legacy Runtime Config. No value is copied into source or documentation. The owner must revoke/rotate the affected Stripe test credential and email app password before release.
+- Firebase warns that Node.js 20 is deprecated. The current deployment succeeded on Node 20; upgrading to Node 22 is deferred until after the contest candidate to avoid an unnecessary late runtime change.
+
+### Commands and exact results
+
+- `firebase deploy --only "firestore:rules,storage" --project fitareeaee`: PASS
+- Additive `gcloud firestore indexes composite create` commands: PASS; subsequent list shows both new message indexes `READY`; ten legacy indexes preserved
+- Targeted hardened callable deployment: PASS; six functions `ACTIVE`
+- Initial Gen 1 projection deploys: FAIL as expected for the `eur3` trigger resource; failed `UNKNOWN` records inspected and removed
+- First Gen 2 setup attempt: FAIL pending the documented service-agent IAM propagation; four exact Google-required bindings applied successfully
+- `firebase functions:artifacts:setpolicy --location europe-west1 --days 1 --force --project fitareeaee`: PASS
+- Final targeted Gen 2 projection deployment: PASS; both functions `ACTIVE`, runtime `nodejs20`, environment `GEN_2`, function region `europe-west1`, trigger region `eur3`
+- Live `createBooking` unauthenticated probe: PASS; HTTP 401 / `UNAUTHENTICATED`
+- Live `authorizeTripConversation` unauthenticated probe: PASS; HTTP 401 / `UNAUTHENTICATED`
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 119 files, 0 changed
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 16/16
+- `npm test` in `functions/`: PASS; TypeScript build plus 16/16 contracts
+- Rules emulator contracts: PASS; 7/7
+- Auth/Functions/Firestore callable integration: PASS; 3/3 with Gen 2 projections loaded in `europe-west1`
+- `flutter build apk --debug`: PASS
+- `flutter build apk --debug --split-per-abi`: PASS
+- Emulator clean uninstall/install: PASS; x86_64 package install returned `Success`
+- Emulator launch: UI wait command timed out while Flutter initialized, but PID `13523` remained alive and the subsequent UI hierarchy contained Login, Welcome Back, Email, Password, and Sign In; smoke result PASS
+
+### APK record
+
+- Build type: universal debug-signed judge checkpoint
+- Universal path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Universal size: 154,897,342 bytes
+- Universal SHA-256: `E89FC8547EEFC4366ABC1ACF9098ECCCD0220742999D2035721D498CF0C187D8`
+- Universal timestamp: 2026-07-18 02:12:29 CDT
+- x86_64 path: `build/app/outputs/flutter-apk/app-x86_64-debug.apk`
+- x86_64 size: 71,567,900 bytes
+- x86_64 SHA-256: `D8C39E41214AD8720DE6F1469545E1A102CE39A4DCD791A4BC4667907DFCFB8E`
+- x86_64 timestamp: 2026-07-18 02:13:23 CDT
+- Source commit: `28117b949a5d68eee9a80526d390bb3b3d0ce9ef` (`fix(firebase): deploy projections in Firestore region`)
+- Tested device: Android emulator `sdk_gphone64_x86_64`, API 36, `emulator-5554`
+- Installation/smoke: PASS with same-source x86_64 split; physical phone remains untested
+
+### Git and publication
+
+- Source checkpoint: `28117b9` on `build-week/final`
+- Tag: pending final release candidate after credentialed Copilot verification
+- Push/PR: blocked only by owner-controlled GitHub CLI browser/device authentication; original unsanitized history still has no remote and will not be pushed
+- Sanitized publication clone must receive this checkpoint and pass its full history scan again before publication
+
+### Known issues and rollback point
+
+- Managed OpenAI secret, deployed Copilot callable, capped live English/package/Arabic tests, judge Auth UIDs/data, two credentialed fresh-install flows, physical phone install, public GitHub Release/download verification, video, and final Devpost actions remain.
+- Exact inherited Function retirement is blocked on explicit owner approval because it can disrupt unknown legacy clients.
+- Legacy Runtime Config credentials require owner-controlled revocation/rotation.
+- Rollback point for backend source: `28117b9`; prior local APK rollback remains tag `build-week-stage3-local`.
+
+### Next action
+
+Propagate this passing checkpoint into the sanitized publication clone and re-run deep secret/history checks. Then request the minimal owner action bundle: managed OpenAI secret setup, two judge Auth UIDs, GitHub device authentication, credential rotation confirmation, and explicit approval for the enumerated inherited Function deletions.
