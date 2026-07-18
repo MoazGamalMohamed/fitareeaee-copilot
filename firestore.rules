@@ -22,34 +22,41 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read: if signedIn();
+      allow read: if isOwner(uid) || isAdmin();
       allow create: if isOwner(uid)
         && request.resource.data.id == uid
-        && request.resource.data.isVerified == false;
+        && request.resource.data.isVerified == false
+        && request.resource.data.isEmailVerified == false
+        && request.resource.data.isPhoneVerified == false
+        && request.resource.data.rating == 5
+        && request.resource.data.totalRatings == 0
+        && request.resource.data.totalTrips == 0;
       allow update: if isOwner(uid)
         && request.resource.data.id == resource.data.id
-        && request.resource.data.isVerified == resource.data.isVerified;
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'phone', 'bio', 'address', 'city', 'country',
+          'latitude', 'longitude', 'isProfileComplete', 'metadata',
+          'updatedAt', 'updated_at'
+        ]);
       allow delete: if false;
     }
 
+    match /public_profiles/{uid} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow write: if false;
+    }
+
     match /trips/{tripId} {
+      allow get: if signedIn()
+        && (resource.data.driverId == request.auth.uid || isAdmin());
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    match /public_trips/{tripId} {
       allow read: if signedIn();
-      allow create: if signedIn()
-        && request.resource.data.id == tripId
-        && request.resource.data.driverId == request.auth.uid
-        && request.resource.data.status == 'pending'
-        && request.resource.data.available_seats == request.resource.data.total_seats
-        && request.resource.data.passenger_ids is list
-        && request.resource.data.passenger_ids.size() == 0;
-      allow update: if signedIn()
-        && resource.data.driverId == request.auth.uid
-        && request.resource.data.driverId == resource.data.driverId
-        && request.resource.data.id == resource.data.id
-        && request.resource.data.available_seats == resource.data.available_seats
-        && request.resource.data.passenger_ids == resource.data.passenger_ids;
-      allow delete: if signedIn()
-        && resource.data.driverId == request.auth.uid
-        && resource.data.passenger_ids.size() == 0;
+      allow write: if false;
     }
 
     match /bookings/{bookingId} {
@@ -74,21 +81,45 @@ service cloud.firestore {
     match /messages/{messageId} {
       allow read: if signedIn()
         && resource.data.participant_ids is list
-        && request.auth.uid in resource.data.participant_ids;
+        && request.auth.uid in resource.data.participant_ids
+        && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id));
       allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'id', 'sender_id', 'recipient_id', 'conversation_id',
+          'participant_ids', 'content', 'attachments', 'created_at',
+          'is_read', 'read_at', 'is_deleted'
+        ])
+        && request.resource.data.id == messageId
         && request.resource.data.sender_id == request.auth.uid
         && request.resource.data.recipient_id is string
         && request.resource.data.recipient_id != request.auth.uid
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 2000
+        && request.resource.data.attachments is list
+        && request.resource.data.attachments.size() == 0
+        && request.resource.data.created_at is timestamp
+        && request.resource.data.read_at == null
+        && (
+          request.resource.data.conversation_id ==
+            request.auth.uid + '_' + request.resource.data.recipient_id
+          || request.resource.data.conversation_id ==
+            request.resource.data.recipient_id + '_' + request.auth.uid
+        )
         && request.resource.data.participant_ids is list
         && request.resource.data.participant_ids.size() == 2
         && request.resource.data.participant_ids.hasAll([
           request.auth.uid,
           request.resource.data.recipient_id
         ])
+        && exists(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id))
+        && get(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id)).data.participant_ids
+          == request.resource.data.participant_ids
         && request.resource.data.is_read == false
         && request.resource.data.is_deleted == false;
       allow update: if signedIn()
         && request.auth.uid in resource.data.participant_ids
+        && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id))
         && request.resource.data.sender_id == resource.data.sender_id
         && request.resource.data.recipient_id == resource.data.recipient_id
         && request.resource.data.participant_ids == resource.data.participant_ids
@@ -106,6 +137,13 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /conversation_authorizations/{conversationId} {
+      allow read: if signedIn()
+        && resource.data.participant_ids is list
+        && request.auth.uid in resource.data.participant_ids;
+      allow write: if false;
+    }
+
     match /notifications/{notificationId} {
       allow read: if signedIn() && resource.data.userId == request.auth.uid;
       allow update: if signedIn()
@@ -118,8 +156,7 @@ service cloud.firestore {
     }
 
     match /payments/{document=**} {
-      allow read: if signedIn() && resource.data.payerId == request.auth.uid;
-      allow write: if false;
+      allow read, write: if false;
     }
 
     match /wallets/{uid} {

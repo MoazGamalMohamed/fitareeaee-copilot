@@ -128,6 +128,10 @@ Gate: `flutter analyze`, `flutter test`, `npm run build`, `flutter build apk --d
 
 Gate: clean happy path on Android plus negative tests for unauthenticated booking/admin access; create a debug APK checkpoint.
 
+The final mandatory gate also includes Functions contracts, Firestore/Storage
+rules emulator tests, and the real Auth/Functions/Firestore booking integration
+suite documented in `README.md` and `TEST_MATRIX.md`.
+
 ### Stage 2 — GPT-5.6 Fitareeaee Copilot (July 18 afternoon through July 19 morning)
 
 - Add the official OpenAI server SDK to Functions.
@@ -240,4 +244,3 @@ Push after each passing gate. Tag stable APK checkpoints. Never commit `.env`, s
 - GitHub contains the final source, license, README, instructions, evidence, and matching tag.
 - The public video is under three minutes and covers Codex and GPT-5.6.
 - Devpost contains the category, description, repo, test build, instructions, and `/feedback` session ID before the internal deadline.
-

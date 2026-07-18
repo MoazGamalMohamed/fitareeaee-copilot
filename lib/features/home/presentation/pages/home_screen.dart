@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../verification/presentation/providers/verification_provider.dart';
 
 /// Home screen showing only two primary options:
 /// - Find a ride (Rider flow)
@@ -153,9 +151,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 context,
                 icon: Icons.drive_eta,
                 title: 'Offer a Ride',
-                subtitle: 'Share your trip and earn money',
+                subtitle: 'Describe your route, seats, and preferences',
                 color: Colors.green,
-                onTap: () => _handleOfferRide(context),
+                onTap: () => context.push('/copilot'),
               ),
 
               const SizedBox(height: 40),
@@ -332,72 +330,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  /// Handle "Offer a Ride" button tap
-  /// Checks if user has driver profile before allowing trip creation
-  Future<void> _handleOfferRide(BuildContext context) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please sign in first')));
-      return;
-    }
-
-    // Check if user has driver profile
-    final verificationAsync = ref.read(userVerificationProvider(userId));
-
-    verificationAsync.when(
-      loading: () {
-        // Show loading and proceed - will check on create trip screen
-        context.push('/trips/create?role=driver');
-      },
-      error: (e, _) {
-        // On error, proceed anyway - will check on create trip screen
-        context.push('/trips/create?role=driver');
-      },
-      data: (verification) {
-        // Check if user has vehicle info
-        final hasVehicleInfo =
-            verification?.vehicleModel != null &&
-            verification?.vehiclePlateNumber != null;
-
-        if (hasVehicleInfo) {
-          // User has driver profile, proceed to create trip
-          context.push('/trips/create?role=driver');
-        } else {
-          // User needs to complete driver profile first
-          _showDriverProfileRequired(context);
-        }
-      },
-    );
-  }
-
-  /// Show dialog prompting user to complete driver profile
-  void _showDriverProfileRequired(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Driver Profile Required'),
-        content: const Text(
-          'To offer rides, you need to complete your driver profile with vehicle information first.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.push('/driver-profile?required=true');
-            },
-            child: const Text('Complete Profile'),
-          ),
-        ],
       ),
     );
   }

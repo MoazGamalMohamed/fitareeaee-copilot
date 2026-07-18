@@ -1,5 +1,5 @@
 name: fitareeaee
-description: "A new Flutter project."
+description: "Fitareeaee Copilot — trusted natural-language ride and package matching."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -50,14 +50,9 @@ dependencies:
   go_router: ^14.0.0
 
   # Location & Maps
-  google_maps_flutter: ^2.7.4
   location: ^6.0.1
-  google_maps_flutter_web: ^0.5.10
-  geocoding: ^3.0.0
 
   # Networking & HTTP
-  dio: ^5.4.0
-  http: ^1.1.0
 
   # Model Serialization
   json_annotation: ^4.9.0
@@ -65,14 +60,11 @@ dependencies:
 
   # Local Storage
   shared_preferences: ^2.2.0
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
 
   # Dependency Injection
   get_it: ^8.0.0
 
   # Environment Configuration
-  flutter_dotenv: ^5.1.0
 
   # Localization
   intl: ^0.19.0
@@ -84,12 +76,8 @@ dependencies:
 
   # Utilities
   uuid: ^4.0.0
-  equatable: ^2.0.5
   dartz: ^0.10.1
   image_picker: ^0.8.7+5
-  path: ^1.8.3
-  google_sign_in: ^7.2.0
-  sign_in_with_apple: ^7.0.1
   firebase_messaging: ^15.1.0
   url_launcher: ^6.3.2
 
@@ -112,7 +100,6 @@ dev_dependencies:
 
   # Testing
   mocktail: ^1.0.3
-  analyzer: ^7.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

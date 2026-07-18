@@ -103,9 +103,6 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
 
                       final filtered = filterTrips(availableFiltered);
 
-                      print(
-                        '🚗 Total: ${trips.length}, After booking filter: ${availableFiltered.length}, After search: ${filtered.length}',
-                      );
                       return _buildTripsList(filtered, isMyTrips: false);
                     },
                     loading: () =>
@@ -211,11 +208,9 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final roleParam = widget.role != null ? '?role=${widget.role}' : '';
-          context.push('/trips/create$roleParam');
-        },
-        child: const Icon(Icons.add),
+        tooltip: 'Plan with AI',
+        onPressed: () => context.push('/copilot'),
+        child: const Icon(Icons.auto_awesome),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
@@ -229,10 +224,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
               // Already on trips, do nothing
               break;
             case 2:
-              // TODO: Navigate to chat
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Chat feature coming soon')),
-              );
+              context.pushReplacement('/chat');
               break;
             case 3:
               context.pushReplacementNamed('profile');
@@ -564,7 +556,6 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   }
 
   Widget _buildMatchesTab(String userId) {
-    print('🎯 Building Matches tab for userId: $userId');
     // Get user bookings (agreed deals)
     final userBookingsAsync = ref.watch(userBookingsProvider(userId));
 
@@ -611,23 +602,6 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
             final agreedDeals = bookings
                 .where((b) => b.status == 'confirmed' || b.status == 'paid')
                 .toList();
-
-            print(
-              '📊 Matches tab: ${bookings.length} total bookings, ${agreedDeals.length} agreed deals',
-            );
-            if (bookings.isEmpty) {
-              print('⚠️ No bookings found for user $userId');
-              print('   Make sure:');
-              print('   1. User has created bookings');
-              print('   2. Bookings have passengerId = $userId');
-              print('   3. Firestore index is deployed');
-            } else {
-              for (final booking in bookings) {
-                print(
-                  '   📋 Booking: ${booking.id} | status: ${booking.status} | payment: ${booking.paymentStatus}',
-                );
-              }
-            }
 
             // Build the matches UI with two sections
             return ListView(
@@ -876,8 +850,16 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
     );
   }
 
-  List filterTrips(List trips) {
+  List<Trip> filterTrips(List<Trip> trips) {
+    final now = DateTime.now();
     return trips.where((trip) {
+      if (trip.status != 'pending' ||
+          trip.departureTime.isBefore(now) ||
+          trip.availableSeats <= 0) {
+        return false;
+      }
+      if (widget.role == 'rider' && !trip.isOffer) return false;
+      if (widget.role == 'driver' && !trip.isRequest) return false;
       if (_filterType != 'all' && trip.type != _filterType) return false;
       if (_filterRole != 'all' && trip.role != _filterRole) {
         return false;

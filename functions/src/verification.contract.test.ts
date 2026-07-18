@@ -9,9 +9,12 @@ test("verification accepts the four manually reviewed document types", () => {
 });
 
 test("verification upload must belong to the authenticated user's folder", () => {
-  const valid = "https://firebasestorage.googleapis.com/v0/b/fitareeaee.appspot.com/o/" +
-    "verification_documents%2Frider%2Fidentity_1.jpg?alt=media";
+  const valid = "verification_documents/rider/identity_1.jpg";
   assert.equal(validateDocumentUrl(valid, "rider"), valid);
   assert.throws(() => validateDocumentUrl(valid, "someone-else"));
-  assert.throws(() => validateDocumentUrl("https://example.com/file.jpg", "rider"));
+  assert.throws(() => validateDocumentUrl("verification_documents/rider/../other.jpg", "rider"));
+  assert.throws(() => validateDocumentUrl(
+    "verification_documents/rider/subfolder/identity.jpg",
+    "rider"
+  ));
 });

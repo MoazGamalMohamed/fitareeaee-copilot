@@ -1,13 +1,61 @@
 import 'package:fitareeaee/features/copilot/domain/copilot_draft.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_screen.dart';
+import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  test('Copilot preserves requested seat count in the details handoff', () {
+    expect(copilotTripDetailsRoute('trip-1', _draft), '/trips/trip-1?seats=2');
+  });
+
+  testWidgets('Copilot failure keeps retry and manual fallback available', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var calls = 0;
+    final router = GoRouter(
+      initialLocation: '/copilot',
+      routes: [
+        GoRoute(
+          path: '/copilot',
+          builder: (context, state) => CopilotScreen(
+            planner: (_) async {
+              calls++;
+              throw Exception('AI planning is temporarily unavailable.');
+            },
+          ),
+        ),
+        GoRoute(
+          path: '/trips',
+          builder: (context, state) => const Scaffold(body: Text('Manual')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    await tester.enterText(find.byType(TextField).first, 'Dallas to Austin');
+    await tester.pump();
+    await tester.tap(find.text('Create AI draft'));
+    await tester.pumpAndSettle();
+
+    expect(calls, 1);
+    expect(find.textContaining('temporarily unavailable'), findsOneWidget);
+    expect(find.text('Create AI draft'), findsOneWidget);
+    expect(find.text('Use manual trip search'), findsOneWidget);
+  });
+
   testWidgets('AI output remains a draft until explicit confirmation', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(1000, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     var plannerCalls = 0;
     CopilotDraft? confirmedDraft;
     final router = GoRouter(
@@ -46,17 +94,8 @@ void main() {
       find.byType(TextField).first,
       'Dallas to Austin on July 20 at 9 AM for two people',
     );
+    await tester.pump();
     final createDraft = find.text('Create AI draft');
-    await tester.scrollUntilVisible(
-      createDraft,
-      300,
-      scrollable: find
-          .descendant(
-            of: find.byType(ListView),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
     await tester.tap(createDraft);
     await tester.pumpAndSettle();
 
@@ -67,11 +106,8 @@ void main() {
       findsOneWidget,
     );
 
-    final confirm = find.text(
-      'Confirm draft and find transparent matches',
-      skipOffstage: false,
-    );
-    await tester.drag(find.byType(ListView), const Offset(0, -1600));
+    final confirm = find.text('Confirm draft and find transparent matches');
+    await tester.drag(find.byType(ListView), const Offset(0, -2200));
     await tester.pumpAndSettle();
     await tester.tap(confirm);
     await tester.pumpAndSettle();

@@ -8,7 +8,6 @@ import 'package:country_picker/country_picker.dart';
 import '../../domain/models/verification_model.dart';
 import '../providers/verification_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import 'driver_profile_screen.dart';
 
 class VerificationScreen extends ConsumerStatefulWidget {
   const VerificationScreen({super.key});
@@ -112,18 +111,14 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         data: (verification) => userAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
-          data: (user) => _buildContent(verification, user),
+          data: (_) => _buildContent(verification),
         ),
       ),
     );
   }
 
-  Widget _buildContent(UserVerification? verification, user) {
+  Widget _buildContent(UserVerification? verification) {
     final level = verification?.verificationLevel ?? 0;
-    final isDriver = user?.hasRole('driver') ?? false;
-    final isCourier = user?.hasRole('courier') ?? false;
-    // Both driver license and vehicle registration required for anyone using vehicles
-    final needsVehicleVerification = isDriver || isCourier;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -202,55 +197,6 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           onTap: () =>
               _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
         ),
-        if (needsVehicleVerification)
-          Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor:
-                    (verification?.driverLicenseVerified ?? false) &&
-                        (verification?.vehicleVerified ?? false)
-                    ? Colors.green
-                    : (verification?.driverLicenseUrl != null ||
-                          verification?.vehicleRegistrationUrl != null)
-                    ? Colors.orange
-                    : Colors.blue,
-                child: Icon(
-                  (verification?.driverLicenseVerified ?? false) &&
-                          (verification?.vehicleVerified ?? false)
-                      ? Icons.check_circle
-                      : Icons.drive_eta,
-                  color: Colors.white,
-                ),
-              ),
-              title: const Text('Driver/Vehicle Verification'),
-              subtitle: Text(
-                (verification?.driverLicenseVerified ?? false) &&
-                        (verification?.vehicleVerified ?? false)
-                    ? 'Driver profile verified'
-                    : (verification?.driverLicenseUrl != null ||
-                          verification?.vehicleRegistrationUrl != null)
-                    ? 'Complete your driver profile'
-                    : 'Set up your driver profile and upload documents',
-                style: TextStyle(
-                  color:
-                      (verification?.driverLicenseVerified ?? false) &&
-                          (verification?.vehicleVerified ?? false)
-                      ? Colors.green
-                      : null,
-                ),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DriverProfileScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
       ],
     );
   }

@@ -80,7 +80,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       await _firestore
           .collection('users')
           .doc(profile.userId)
-          .update(model.toFirestore());
+          .update(model.toEditableFirestore());
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {

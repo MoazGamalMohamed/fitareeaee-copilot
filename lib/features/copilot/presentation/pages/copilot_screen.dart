@@ -191,6 +191,11 @@ class _CopilotScreenState extends State<CopilotScreen> {
             ),
           ),
           const SizedBox(height: 12),
+          const Text(
+            'Do not include names, IDs, document numbers, email addresses, phone numbers, links, or private chat details.',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: _loading || _request.text.trim().length < 5
                 ? null

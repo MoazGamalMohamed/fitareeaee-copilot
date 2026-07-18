@@ -95,21 +95,11 @@ final conversationMessagesProvider =
           .streamConversation(conversationId)
           .asyncMap((result) {
             return result.fold(
-              (failure) {
-                print('❌ Chat error: ${failure.toString()}');
-                return <Message>[];
-              },
-              (messages) {
-                print('✅ Chat loaded: ${messages.length} messages');
-                return messages;
-              },
+              (failure) => <Message>[],
+              (messages) => messages,
             );
           })
-          .handleError((error, stackTrace) {
-            // If anything goes wrong, return empty list
-            print('❌ Final error handler: $error');
-            return <Message>[];
-          });
+          .handleError((error, stackTrace) => <Message>[]);
     });
 
 /// Stream provider for all conversations

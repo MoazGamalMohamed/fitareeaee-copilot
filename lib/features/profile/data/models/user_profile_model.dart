@@ -94,7 +94,7 @@ class UserProfileModel {
 
   /// Convert to JSON for Firestore
   Map<String, dynamic> toFirestore() => {
-    'userId': userId,
+    'id': userId,
     'email': email,
     'name': name,
     'phone': phone,
@@ -113,8 +113,25 @@ class UserProfileModel {
     'isPhoneVerified': isPhoneVerified,
     'isProfileComplete': isProfileComplete,
     'metadata': metadata,
-    'created_at': createdAt,
-    'updated_at': updatedAt,
+    'isVerified': false,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
+
+  /// Owner-editable profile fields only. Trust, role, verification, identity,
+  /// and account fields remain server controlled.
+  Map<String, dynamic> toEditableFirestore() => {
+    'name': name,
+    'phone': phone,
+    'bio': bio,
+    'address': address,
+    'city': city,
+    'country': country,
+    'latitude': latitude,
+    'longitude': longitude,
+    'isProfileComplete': isProfileComplete,
+    'metadata': metadata,
+    'updatedAt': updatedAt.toIso8601String(),
   };
 
   /// Convert model to domain entity

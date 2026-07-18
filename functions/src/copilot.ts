@@ -107,12 +107,19 @@ export function authenticatedUid(auth: {uid?: unknown} | null | undefined): stri
 }
 
 export function redactContactDetails(value: string): string {
-  return value
+  const dates: string[] = [];
+  const protectedValue = value.replace(/\b\d{4}-\d{2}-\d{2}\b/g, (date) => {
+    dates.push(date);
+    return `__PRESERVED_DATE_${dates.length - 1}__`;
+  });
+  return protectedValue
+    .replace(/https?:\/\/\S+/gi, "[url removed]")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email removed]")
     .replace(/(?:\+?\d[\d\s().-]{6,}\d)/g, (match) => {
       const digits = match.replace(/\D/g, "");
-      return digits.length >= 10 ? "[phone removed]" : match;
-    });
+      return digits.length >= 7 ? "[number removed]" : match;
+    })
+    .replace(/__PRESERVED_DATE_(\d+)__/g, (_match, index) => dates[Number(index)] ?? "[date]");
 }
 
 function nullableString(value: unknown, field: string, max = 240): string | null {
@@ -170,6 +177,14 @@ export function validateDraft(value: unknown): CopilotDraft {
   if (budget !== null && (typeof budget !== "number" || !Number.isFinite(budget) || budget < 0 || budget > 100000)) {
     throw new Error("Invalid maximum budget");
   }
+  const assistantSummary = nullableString(
+    data.assistantSummary,
+    "assistantSummary",
+    500
+  );
+  if (assistantSummary === null) {
+    throw new Error("Missing assistant summary");
+  }
 
   return {
     schemaVersion: 1,
@@ -183,7 +198,7 @@ export function validateDraft(value: unknown): CopilotDraft {
     packageDetails: nullableString(data.packageDetails, "packageDetails", 500),
     maximumBudget: budget as number | null,
     preferences: stringArray(data.preferences, "preferences"),
-    assistantSummary: nullableString(data.assistantSummary, "assistantSummary", 500)!,
+    assistantSummary,
     missingInformation: stringArray(data.missingInformation, "missingInformation"),
     clarificationQuestion: nullableString(data.clarificationQuestion, "clarificationQuestion", 300),
     language: data.language,
@@ -272,6 +287,7 @@ export const planTripWithCopilot = functions
           "Use find for someone seeking a ride/delivery and offer for someone driving or carrying a package.",
           "Use ride for passenger travel and package for package-only delivery.",
           "Resolve relative dates from the supplied currentDate and timezone.",
+          "Normalize recognizable place names to commonly used English names for matching, even when the request is Arabic.",
           "If essential origin, destination, or departure date is absent, list it and ask one concise clarification question.",
           "Write the summary and clarification in the request language. Do not invent details.",
         ].join(" "),

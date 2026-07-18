@@ -74,7 +74,9 @@ class Trip with _$Trip {
   String get directionDisplay => isOffer ? 'Offering' : 'Requesting';
   String get statusDisplay =>
       status.replaceFirst(status[0], status[0].toUpperCase());
-  String get priceDisplay => '\$${pricePerSeat.toStringAsFixed(2)}/seat';
+  String get priceDisplay => isPackage
+      ? '\$${pricePerSeat.toStringAsFixed(2)}/delivery'
+      : '\$${pricePerSeat.toStringAsFixed(2)}/seat';
   String get distanceDisplay => '${distance.toStringAsFixed(1)} km';
   String get durationDisplay =>
       '${(estimatedDuration / 60).toStringAsFixed(0)}h ${estimatedDuration % 60}m';

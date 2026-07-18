@@ -5,12 +5,14 @@
     "build": "tsc",
     "test": "npm run build && node --test lib/booking.contract.test.js lib/verification.contract.test.js lib/copilot.contract.test.js",
     "test:rules": "npm run build && node --test lib/rules.contract.test.js",
+    "test:integration:booking": "node --test --test-isolation=none integration/booking.emulator.test.cjs",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "seed:judge": "node scripts/seed-judge-data.cjs"
   },
   "engines": {
     "node": "20"

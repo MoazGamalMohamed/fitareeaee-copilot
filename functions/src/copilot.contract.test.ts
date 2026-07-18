@@ -41,6 +41,8 @@ test("Copilot removes email addresses and likely phone numbers", () => {
   const redacted = redactContactDetails("Call +1 (214) 555-0199 or me@example.com");
   assert.equal(redacted.includes("214"), false);
   assert.equal(redacted.includes("example.com"), false);
+  assert.equal(redactContactDetails("Use https://example.com/private"), "Use [url removed]");
+  assert.equal(redactContactDetails("Call 555-0199"), "Call [number removed]");
   assert.equal(redactContactDetails("Travel on 2026-07-20"), "Travel on 2026-07-20");
 });
 
@@ -54,6 +56,7 @@ test("Copilot rejects malformed dates, counts, and unknown fields", () => {
   assert.throws(() => validateDraft({...validDraft, passengerOrSeatCount: 0}));
   assert.throws(() => validateDraft({...validDraft, language: "fr"}));
   assert.throws(() => validateDraft({...validDraft, userId: "private"}));
+  assert.throws(() => validateDraft({...validDraft, assistantSummary: null}));
 });
 
 test("Copilot accepts Arabic clarification drafts", () => {

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../domain/entities/message.dart';
 import '../providers/chat_provider.dart';
 import 'package:flutter/services.dart';
@@ -87,7 +86,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         'userId': widget.recipientId,
       }),
     );
-    final otherUserAsync = ref.watch(userProfileProvider(widget.recipientId));
+    final otherUserAsync = ref.watch(userByIdProvider(widget.recipientId));
 
     return Scaffold(
       appBar: AppBar(
@@ -102,13 +101,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           },
         ),
         title: otherUserAsync.maybeWhen(
-          data: (profile) => Text(
-            (profile != null && profile.name.isNotEmpty)
-                ? profile.name
-                : (profile != null && profile.email.isNotEmpty)
-                ? profile.email
-                : 'User',
-          ),
+          data: (profile) =>
+              Text(profile?.name?.isNotEmpty == true ? profile!.name! : 'User'),
           orElse: () => const Text('Chat'),
         ),
         elevation: 0,
@@ -227,22 +221,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 ? 'You'
                                 : otherUserAsync.maybeWhen(
                                     data: (profile) {
-                                      if (profile != null &&
-                                          profile.name.isNotEmpty) {
-                                        return profile.name;
-                                      } else if (profile != null &&
-                                          profile.email.isNotEmpty) {
-                                        return profile.email;
+                                      if (profile?.name?.isNotEmpty == true) {
+                                        return profile!.name!;
                                       }
                                       return 'User';
                                     },
                                     loading: () {
                                       return 'Loading...';
                                     },
-                                    error: (error, stack) {
-                                      print('❌ Profile error: $error');
-                                      return 'User';
-                                    },
+                                    error: (error, stack) => 'User',
                                     orElse: () => 'User',
                                   );
 

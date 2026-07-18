@@ -1,6 +1,9 @@
 import {getAuth} from "firebase-admin/auth";
 import {FieldValue, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {getStorage} from "firebase-admin/storage";
 import * as functions from "firebase-functions/v1";
+
+const STORAGE_BUCKET = "fitareeaee.firebasestorage.app";
 
 const documentTypes = [
   "identity",
@@ -58,22 +61,29 @@ export function parseDocumentType(value: unknown): DocumentType {
 }
 
 export function validateDocumentUrl(value: unknown, uid: string): string {
-  if (typeof value !== "string" || value.length > 2048) {
+  if (typeof value !== "string" || value.length > 512) {
     throw new functions.https.HttpsError("invalid-argument", "A valid document upload is required.");
   }
-  let parsed: URL;
-  try {
-    parsed = new URL(value);
-  } catch (_) {
-    throw new functions.https.HttpsError("invalid-argument", "A valid document upload is required.");
-  }
-  const allowedHost = parsed.hostname === "firebasestorage.googleapis.com" ||
-    parsed.hostname === "storage.googleapis.com";
-  const decodedPath = decodeURIComponent(parsed.pathname);
-  if (!allowedHost || !decodedPath.includes(`verification_documents/${uid}/`)) {
+  const expectedPrefix = `verification_documents/${uid}/`;
+  if (!value.startsWith(expectedPrefix) || value.slice(expectedPrefix.length).length < 1 ||
+      value.includes("..") || value.split("/").length !== 3) {
     throw new functions.https.HttpsError("permission-denied", "The upload does not belong to this user.");
   }
   return value;
+}
+
+async function verifyStoredDocument(objectPath: string): Promise<void> {
+  try {
+    const [metadata] = await getStorage().bucket(STORAGE_BUCKET).file(objectPath).getMetadata();
+    const size = Number(metadata.size);
+    const contentType = metadata.contentType ?? "";
+    if (!Number.isFinite(size) || size <= 0 || size > 10 * 1024 * 1024 ||
+        !(contentType.startsWith("image/") || contentType === "application/pdf")) {
+      throw new Error("Invalid verification object metadata");
+    }
+  } catch (_) {
+    throw new functions.https.HttpsError("invalid-argument", "The verification upload could not be validated.");
+  }
 }
 
 async function requireAdmin(uid: string): Promise<void> {
@@ -92,6 +102,7 @@ export const submitVerification = functions.https.onCall(async (rawData, context
   const uid = context.auth.uid;
   const type = parseDocumentType(data.type);
   const documentUrl = validateDocumentUrl(data.documentUrl, uid);
+  await verifyStoredDocument(documentUrl);
   const documentNumber = typeof data.documentNumber === "string" ?
     data.documentNumber.trim().slice(0, 80) : null;
   const fields = verificationFields[type];
@@ -157,6 +168,7 @@ export const reviewVerification = functions.https.onCall(async (rawData, context
   const summaryRef = db.collection("verifications").doc(userId);
   const summary = await summaryRef.get();
   const requestId = summary.data()?.[`${type}RequestId`];
+  const objectPath = summary.data()?.[fields.url];
   const batch = db.batch();
   batch.set(summaryRef, {
     [fields.verified]: approved,
@@ -172,10 +184,22 @@ export const reviewVerification = functions.https.onCall(async (rawData, context
       rejectionReason: approved ? FieldValue.delete() : reason,
       verifiedAt: now,
       verifiedBy: context.auth.uid,
+      documentUrl: FieldValue.delete(),
       updatedAt: now,
     }, {merge: true});
   }
   await batch.commit();
+  if (typeof objectPath === "string" &&
+      objectPath.startsWith(`verification_documents/${userId}/`)) {
+    try {
+      await getStorage().bucket(STORAGE_BUCKET).file(objectPath).delete({ignoreNotFound: true});
+    } catch (_) {
+      functions.logger.warn("Reviewed verification object cleanup failed", {
+        userId,
+        type,
+      });
+    }
+  }
   return {schemaVersion: 1, status: approved ? "approved" : "rejected"};
 });
 

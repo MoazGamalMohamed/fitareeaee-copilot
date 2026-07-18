@@ -5,6 +5,7 @@ import {
   Transaction,
 } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
+import {conversationDocumentId} from "./conversation";
 
 export interface BookingRequest {
   schemaVersion: 1;
@@ -92,7 +93,10 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
 
   try {
     return await db.runTransaction(async (transaction: Transaction) => {
-      const tripSnapshot = await transaction.get(tripRef);
+      const [tripSnapshot, existingBooking] = await Promise.all([
+        transaction.get(tripRef),
+        transaction.get(bookingRef),
+      ]);
       if (!tripSnapshot.exists) {
         throw new functions.https.HttpsError("not-found", "Trip not found.");
       }
@@ -127,27 +131,20 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       }
 
       const availableSeats = Number(trip.available_seats);
-      if (!Number.isInteger(availableSeats) || availableSeats < request.seats) {
-        throw new functions.https.HttpsError(
-          "resource-exhausted",
-          "Not enough seats are available."
-        );
-      }
-
-      const riderVerificationRef = db
-        .collection("verifications")
-        .doc(passengerId);
-      const driverVerificationRef = db.collection("verifications").doc(driverId);
-      const [existingBooking, riderVerification, driverVerification] =
-        await Promise.all([
-          transaction.get(bookingRef),
-          transaction.get(riderVerificationRef),
-          transaction.get(driverVerificationRef),
-        ]);
-
+      const conversationId = conversationDocumentId(passengerId, driverId);
+      const conversationRef = db
+        .collection("conversation_authorizations")
+        .doc(conversationId);
       if (existingBooking.exists) {
         const existing = existingBooking.data();
         if (existing?.status === "confirmed") {
+          transaction.set(conversationRef, {
+            id: conversationId,
+            participant_ids: [passengerId, driverId].sort(),
+            source: "booking",
+            tripId: request.tripId,
+            createdAt: existing.createdAt ?? Timestamp.now(),
+          }, {merge: true});
           return {
             schemaVersion: 1,
             bookingId: bookingRef.id,
@@ -164,6 +161,22 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         );
       }
 
+      if (!Number.isInteger(availableSeats) || availableSeats < request.seats) {
+        throw new functions.https.HttpsError(
+          "resource-exhausted",
+          "Not enough seats are available."
+        );
+      }
+
+      const riderVerificationRef = db
+        .collection("verifications")
+        .doc(passengerId);
+      const driverVerificationRef = db.collection("verifications").doc(driverId);
+      const [riderVerification, driverVerification] = await Promise.all([
+        transaction.get(riderVerificationRef),
+        transaction.get(driverVerificationRef),
+      ]);
+
       if (
         !hasRequiredVerification(riderVerification) ||
         !hasRequiredVerification(driverVerification)
@@ -177,16 +190,6 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       const now = Timestamp.now();
       const unitPrice = Number(trip.price_per_seat) || 0;
       const totalPrice = Math.max(0, unitPrice * request.seats);
-      const passengerIds = Array.isArray(trip.passenger_ids)
-        ? trip.passenger_ids.filter((id: unknown) => typeof id === "string")
-        : [];
-      if (passengerIds.includes(passengerId)) {
-        throw new functions.https.HttpsError(
-          "already-exists",
-          "You already joined this trip."
-        );
-      }
-
       transaction.create(bookingRef, {
         id: bookingRef.id,
         schemaVersion: 1,
@@ -206,9 +209,15 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       });
       transaction.update(tripRef, {
         available_seats: availableSeats - request.seats,
-        passenger_ids: [...passengerIds, passengerId],
         updated_at: now,
       });
+      transaction.set(conversationRef, {
+        id: conversationId,
+        participant_ids: [passengerId, driverId].sort(),
+        source: "booking",
+        tripId: request.tripId,
+        createdAt: now,
+      }, {merge: true});
 
       return {
         schemaVersion: 1,
@@ -271,17 +280,11 @@ export const cancelBooking = functions.https.onCall(async (rawData, context) => 
       const totalSeats = Number(trip.total_seats) || 0;
       const availableSeats = Number(trip.available_seats) || 0;
       const bookedSeats = Number(booking.seatsBooked) || 1;
-      const passengerIds = Array.isArray(trip.passenger_ids)
-        ? trip.passenger_ids.filter(
-          (id: unknown) => typeof id === "string" && id !== passengerId
-        )
-        : [];
       const now = Timestamp.now();
 
       transaction.update(bookingRef, {status: "cancelled", updatedAt: now});
       transaction.update(tripRef, {
         available_seats: Math.min(totalSeats, availableSeats + bookedSeats),
-        passenger_ids: passengerIds,
         updated_at: now,
       });
       return {schemaVersion: 1, bookingId: bookingRef.id, status: "cancelled"};

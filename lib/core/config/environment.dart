@@ -58,12 +58,6 @@ class Environment {
     defaultValue: 30000,
   );
 
-  // Maps Configuration
-  static const String googleMapsApiKey = String.fromEnvironment(
-    'GOOGLE_MAPS_API_KEY',
-    defaultValue: 'your_google_maps_api_key_here',
-  );
-
   /// Check if app is in development mode
   static bool get isDevelopment => environment == 'development';
 

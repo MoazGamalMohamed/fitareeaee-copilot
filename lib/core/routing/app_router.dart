@@ -10,12 +10,8 @@ import 'package:fitareeaee/features/profile/presentation/pages/profile_screen.da
 import 'package:fitareeaee/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:fitareeaee/features/settings/presentation/pages/settings_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/booking_confirmation_screen.dart';
-import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
-import 'package:fitareeaee/features/trips/presentation/pages/nearby_trips_map_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
-import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
-import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
 import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
 import 'package:fitareeaee/features/admin/presentation/pages/admin_verifications_screen.dart';
 import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
@@ -33,27 +29,12 @@ class AppRoutes {
   static const profile = '/profile';
   static const editProfile = '/profile/edit';
   static const trips = '/trips';
-  static const createTrip = '/trips/create';
   static const tripDetails = '/trips/:id';
-  static const search = '/search';
-  static const searchResults = '/search/results';
   static const chat = '/chat';
   static const chatConversation = '/chat/:userId';
   static const settings = '/settings';
-  static const booking = '/booking';
-  static const payment = '/payment';
-  static const rating = '/rating';
-  // New routes
-  static const wallet = '/wallet';
   static const verification = '/verification';
-  static const driverProfile = '/driver-profile';
   static const notifications = '/notifications';
-  static const tracking = '/tracking';
-  static const packagePhotos = '/package-photos';
-  static const sos = '/sos';
-  static const helpCenter = '/help';
-  static const aiAssistant = '/ai-assistant';
-  static const nearbyTripsMap = '/trips/map';
   static const copilot = '/copilot';
   static const copilotResults = '/copilot/results';
 }
@@ -128,25 +109,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: AppRoutes.nearbyTripsMap,
-        name: 'nearby-trips-map',
-        builder: (context, state) => const NearbyTripsMapScreen(),
-      ),
-      GoRoute(
-        path: '${AppRoutes.trips}/create',
-        name: 'create-trip',
-        builder: (context, state) {
-          // Get role from query parameter (driver or rider)
-          final role = state.uri.queryParameters['role'];
-          return CreateTripScreen(role: role);
-        },
-      ),
-      GoRoute(
         path: '${AppRoutes.trips}/:id',
         name: 'trip-details',
         builder: (context, state) {
           final tripId = state.pathParameters['id'] ?? '';
-          return TripDetailsScreen(tripId: tripId);
+          final requestedSeats = int.tryParse(
+            state.uri.queryParameters['seats'] ?? '',
+          );
+          return TripDetailsScreen(
+            tripId: tripId,
+            requestedSeats: requestedSeats,
+          );
         },
       ),
       GoRoute(
@@ -159,7 +132,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               body: Center(child: Text('Trip ID not found')),
             );
           }
-          return BookingConfirmationScreen(tripId: tripId);
+          final requestedSeats = int.tryParse(
+            state.uri.queryParameters['seats'] ?? '',
+          );
+          return BookingConfirmationScreen(
+            tripId: tripId,
+            requestedSeats: requestedSeats,
+          );
         },
       ),
 
@@ -197,25 +176,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.verification,
         name: 'verification',
         builder: (context, state) => const VerificationScreen(),
-      ),
-
-      GoRoute(
-        path: AppRoutes.driverProfile,
-        name: 'driver-profile',
-        builder: (context, state) {
-          final required = state.uri.queryParameters['required'] == 'true';
-          return DriverProfileScreen(isRequired: required);
-        },
-      ),
-
-      // SOS Route
-      GoRoute(
-        path: AppRoutes.sos,
-        name: 'sos',
-        builder: (context, state) {
-          final tripId = state.extra as String?;
-          return SOSScreen(tripId: tripId);
-        },
       ),
 
       // Admin Routes

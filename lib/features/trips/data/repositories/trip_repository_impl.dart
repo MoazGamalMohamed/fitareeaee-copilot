@@ -18,7 +18,7 @@ abstract class TripRepository {
   });
   Stream<List<Trip>> streamAvailableTrips();
   Stream<List<Trip>> streamUserTrips(String userId);
-  Future<void> bookTrip(String tripId, String userId);
+  Future<void> bookTrip(String tripId, String userId, int seats);
   Future<void> cancelBooking(String tripId, String userId);
 }
 
@@ -79,7 +79,7 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<Trip> getTripById(String tripId) async {
     try {
-      final doc = await _firestore.collection('trips').doc(tripId).get();
+      final doc = await _firestore.collection('public_trips').doc(tripId).get();
 
       if (!doc.exists) {
         throw AppException(message: 'Trip not found');
@@ -97,15 +97,14 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<List<Trip>> getAllTrips() async {
     try {
-      final snapshot = await _firestore.collection('trips').get();
+      final snapshot = await _firestore.collection('public_trips').get();
       final trips = <Trip>[];
       for (final doc in snapshot.docs) {
         try {
           final data = _convertTimestamps(doc.data());
           final trip = Trip.fromJson(data);
           trips.add(trip);
-        } catch (e) {
-          print('Warning: Skipping invalid trip document ${doc.id}: $e');
+        } catch (_) {
           continue;
         }
       }
@@ -121,7 +120,7 @@ class TripRepositoryImpl implements TripRepository {
   Future<List<Trip>> getUserTrips(String userId) async {
     try {
       final snapshot = await _firestore
-          .collection('trips')
+          .collection('public_trips')
           .where('driverId', isEqualTo: userId)
           .get();
 
@@ -131,8 +130,7 @@ class TripRepositoryImpl implements TripRepository {
           final data = _convertTimestamps(doc.data());
           final trip = Trip.fromJson(data);
           trips.add(trip);
-        } catch (e) {
-          print('Warning: Skipping invalid user trip document ${doc.id}: $e');
+        } catch (_) {
           continue;
         }
       }
@@ -152,7 +150,7 @@ class TripRepositoryImpl implements TripRepository {
     String? tripType,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = _firestore.collection('trips');
+      Query<Map<String, dynamic>> query = _firestore.collection('public_trips');
 
       if (origin.isNotEmpty) {
         query = query.where(
@@ -180,8 +178,7 @@ class TripRepositoryImpl implements TripRepository {
           final data = _convertTimestamps(doc.data());
           final trip = Trip.fromJson(data);
           trips.add(trip);
-        } catch (e) {
-          print('Warning: Skipping invalid trip document ${doc.id}: $e');
+        } catch (_) {
           continue;
         }
       }
@@ -213,7 +210,7 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Stream<List<Trip>> streamAvailableTrips({String? excludeUserId}) {
     return _firestore
-        .collection('trips')
+        .collection('public_trips')
         .snapshots()
         .map((snapshot) {
           final trips = <Trip>[];
@@ -228,9 +225,7 @@ class TripRepositoryImpl implements TripRepository {
               }
 
               trips.add(trip);
-            } catch (e) {
-              print('Warning: Skipping invalid trip document ${doc.id}: $e');
-              // Skip this document but continue processing others
+            } catch (_) {
               continue;
             }
           }
@@ -247,7 +242,7 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Stream<List<Trip>> streamUserTrips(String userId) {
     return _firestore
-        .collection('trips')
+        .collection('public_trips')
         .where('driverId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) {
@@ -257,11 +252,7 @@ class TripRepositoryImpl implements TripRepository {
               final data = _convertTimestamps(doc.data());
               final trip = Trip.fromJson(data);
               trips.add(trip);
-            } catch (e) {
-              print(
-                'Warning: Skipping invalid user trip document ${doc.id}: $e',
-              );
-              // Skip this document but continue processing others
+            } catch (_) {
               continue;
             }
           }
@@ -276,12 +267,12 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<void> bookTrip(String tripId, String userId) async {
+  Future<void> bookTrip(String tripId, String userId, int seats) async {
     try {
       await _functions.httpsCallable('createBooking').call({
         'schemaVersion': 1,
         'tripId': tripId,
-        'seats': 1,
+        'seats': seats,
       });
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);

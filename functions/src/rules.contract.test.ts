@@ -46,6 +46,11 @@ test("users cannot write another user's profile", async () => {
     setDoc(doc(rider, "users/rider"), {
       id: "rider",
       isVerified: false,
+      isEmailVerified: false,
+      isPhoneVerified: false,
+      rating: 5,
+      totalRatings: 0,
+      totalTrips: 0,
       name: "Judge Rider",
     })
   );
@@ -58,6 +63,33 @@ test("users cannot write another user's profile", async () => {
   );
 });
 
+test("private profiles stay private and trust fields are server-owned", async () => {
+  await seed("users/rider", {
+    id: "rider",
+    isVerified: false,
+    isEmailVerified: false,
+    isPhoneVerified: false,
+    rating: 5,
+    totalRatings: 0,
+    totalTrips: 0,
+    name: "Judge Rider",
+  });
+  await seed("public_profiles/rider", {
+    id: "rider",
+    name: "Judge Rider",
+    rating: 5,
+    totalRatings: 0,
+    totalTrips: 0,
+  });
+  const rider = environment.authenticatedContext("rider").firestore();
+  const outsider = environment.authenticatedContext("outsider").firestore();
+  await assertSucceeds(getDoc(doc(rider, "users/rider")));
+  await assertFails(getDoc(doc(outsider, "users/rider")));
+  await assertSucceeds(getDoc(doc(outsider, "public_profiles/rider")));
+  await assertFails(updateDoc(doc(rider, "users/rider"), {rating: 5.5}));
+  await assertSucceeds(updateDoc(doc(rider, "users/rider"), {name: "Updated Rider"}));
+});
+
 test("trip owners cannot change server-owned seat inventory", async () => {
   await seed("trips/trip-1", {
     id: "trip-1",
@@ -67,7 +99,17 @@ test("trip owners cannot change server-owned seat inventory", async () => {
     available_seats: 3,
     passenger_ids: [],
   });
+  await seed("public_trips/trip-1", {
+    id: "trip-1",
+    driverId: "driver",
+    status: "pending",
+    available_seats: 3,
+  });
   const driver = environment.authenticatedContext("driver").firestore();
+  const rider = environment.authenticatedContext("rider").firestore();
+  await assertSucceeds(getDoc(doc(driver, "trips/trip-1")));
+  await assertFails(getDoc(doc(rider, "trips/trip-1")));
+  await assertSucceeds(getDoc(doc(rider, "public_trips/trip-1")));
   await assertFails(
     updateDoc(doc(driver, "trips/trip-1"), {available_seats: 2})
   );
@@ -111,10 +153,30 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     read_at: null,
     is_deleted: false,
   };
+  await seed("conversation_authorizations/driver_rider", {
+    id: "driver_rider",
+    participant_ids: ["driver", "rider"],
+  });
   await assertSucceeds(setDoc(doc(rider, "messages/message-1"), message));
   await assertFails(getDoc(doc(outsider, "messages/message-1")));
   await assertFails(
     setDoc(doc(rider, "messages/spoofed"), {...message, sender_id: "driver"})
+  );
+  await assertFails(
+    setDoc(doc(rider, "messages/malformed"), {
+      ...message,
+      id: "malformed",
+      content: 42,
+    })
+  );
+  await assertFails(
+    setDoc(doc(rider, "messages/unsolicited"), {
+      ...message,
+      id: "unsolicited",
+      recipient_id: "outsider",
+      participant_ids: ["outsider", "rider"],
+      conversation_id: "outsider_rider",
+    })
   );
 });
 

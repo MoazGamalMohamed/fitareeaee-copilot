@@ -51,13 +51,13 @@ final userByIdProvider = StreamProvider.autoDispose.family<AppUser?, String>((
   }
 
   final firestore = ref.watch(firestoreProvider);
-  return firestore.collection('users').doc(userId).snapshots().map((doc) {
+  return firestore.collection('public_profiles').doc(userId).snapshots().map((
+    doc,
+  ) {
     if (!doc.exists) return null;
     var data = doc.data()!;
-    // Add the document ID if it's not in the data
-    if (!data.containsKey('id')) {
-      data['id'] = doc.id;
-    }
+    data['id'] = doc.id;
+    data['email'] = '';
     // Convert timestamps
     data = FirestoreHelpers.convertTimestamps(data);
     return AppUser.fromJson(data);

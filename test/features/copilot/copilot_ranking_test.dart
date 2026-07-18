@@ -67,6 +67,49 @@ void main() {
   test('missing required draft fields do not start matching', () {
     expect(rankCopilotMatches([_trip()], draft.copyWith(origin: '')), isEmpty);
   });
+
+  test('past trips are excluded before the booking path', () {
+    expect(
+      rankCopilotMatches(
+        [_trip(departure: DateTime.now().subtract(const Duration(hours: 1)))],
+        draft.copyWith(
+          departureDate: DateTime.now().toIso8601String().substring(0, 10),
+        ),
+      ),
+      isEmpty,
+    );
+  });
+
+  test('offer intent returns request trips for coordination', () {
+    final result = rankCopilotMatches([
+      _trip(role: 'request'),
+    ], draft.copyWith(intent: 'offer'));
+    expect(result.single.trip.role, 'request');
+  });
+
+  test('package capacity and Arabic place tokens are deterministic', () {
+    final packageDraft = draft.copyWith(
+      tripType: 'package',
+      origin: 'شيكاغو',
+      destination: 'ميلووكي',
+      packageDetails: 'طرد 5 كيلو',
+      passengerOrSeatCount: 1,
+    );
+    final fits = _trip(
+      type: 'package',
+      origin: 'Chicago, Illinois',
+      destination: 'Milwaukee, Wisconsin',
+      packageWeight: 10,
+    );
+    expect(
+      rankCopilotMatches([fits], packageDraft).single.reasons,
+      contains('Package weight fits the listed capacity'),
+    );
+    expect(
+      rankCopilotMatches([fits.copyWith(packageWeight: 2)], packageDraft),
+      isEmpty,
+    );
+  });
 }
 
 Trip _trip({
@@ -76,12 +119,15 @@ Trip _trip({
   DateTime? departure,
   int seats = 3,
   double price = 18,
+  String type = 'person',
+  String role = 'offer',
+  double? packageWeight,
 }) {
   final now = DateTime(2030, 7, 1);
   return Trip(
     id: id,
-    type: 'person',
-    role: 'offer',
+    type: type,
+    role: role,
     driverId: 'driver',
     originAddress: origin,
     destinationAddress: destination,
@@ -97,6 +143,7 @@ Trip _trip({
     availableSeats: seats,
     status: 'pending',
     allowSmoking: false,
+    packageWeight: packageWeight,
     createdAt: now,
     updatedAt: now,
   );

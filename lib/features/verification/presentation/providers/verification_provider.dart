@@ -69,7 +69,7 @@ final uploadVerificationDocumentProvider =
       );
 
       final uploadTask = await storageRef.putFile(params.file);
-      return await uploadTask.ref.getDownloadURL();
+      return uploadTask.ref.fullPath;
     });
 
 /// Submit verification request

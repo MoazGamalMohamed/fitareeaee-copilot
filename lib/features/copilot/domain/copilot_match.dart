@@ -23,9 +23,21 @@ List<CopilotMatch> rankCopilotMatches(List<Trip> trips, CopilotDraft draft) {
   final results = <CopilotMatch>[];
 
   for (final trip in trips) {
-    if (trip.status != 'pending' || trip.availableSeats < count) continue;
+    if (trip.status != 'pending' ||
+        trip.departureTime.isBefore(DateTime.now()) ||
+        trip.availableSeats < count) {
+      continue;
+    }
     if (trip.role != expectedRole) continue;
     if (trip.type != expectedType && trip.type != 'both') continue;
+    if (draft.tripType == 'package') {
+      final requestedWeight = _requestedPackageWeight(draft.packageDetails);
+      if (requestedWeight != null &&
+          trip.packageWeight != null &&
+          requestedWeight > trip.packageWeight!) {
+        continue;
+      }
+    }
 
     final originScore = _locationSimilarity(draft.origin!, trip.originAddress);
     final destinationScore = _locationSimilarity(
@@ -85,7 +97,15 @@ List<CopilotMatch> rankCopilotMatches(List<Trip> trips, CopilotDraft draft) {
     }
 
     score += 15;
-    reasons.add('$count ${count == 1 ? 'seat is' : 'seats are'} available');
+    reasons.add(
+      draft.tripType == 'package'
+          ? 'Package capacity is available'
+          : '$count ${count == 1 ? 'seat is' : 'seats are'} available',
+    );
+
+    if (draft.tripType == 'package' && trip.packageWeight != null) {
+      reasons.add('Package weight fits the listed capacity');
+    }
 
     if (draft.maximumBudget == null || totalPrice <= draft.maximumBudget!) {
       score += 13;
@@ -138,12 +158,28 @@ double _locationSimilarity(String requested, String actual) {
 }
 
 Set<String> _tokens(String value) {
-  return value
+  final normalized = value
       .toLowerCase()
+      .replaceAll('دالاس', 'dallas')
+      .replaceAll('أوستن', 'austin')
+      .replaceAll('اوستن', 'austin')
+      .replaceAll('هيوستن', 'houston')
+      .replaceAll('شيكاغو', 'chicago')
+      .replaceAll('ميلووكي', 'milwaukee');
+  return normalized
       .replaceAll(RegExp(r'[^a-z0-9\u0600-\u06ff ]'), ' ')
       .split(RegExp(r'\s+'))
       .where((token) => token.length > 1)
       .toSet();
+}
+
+double? _requestedPackageWeight(String? details) {
+  if (details == null) return null;
+  final match = RegExp(
+    r'(\d+(?:\.\d+)?)\s*(?:kg|كيلو)',
+    caseSensitive: false,
+  ).firstMatch(details);
+  return match == null ? null : double.tryParse(match.group(1)!);
 }
 
 double _preferenceScore(

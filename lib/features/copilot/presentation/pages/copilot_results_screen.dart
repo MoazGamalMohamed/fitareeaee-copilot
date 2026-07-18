@@ -7,6 +7,11 @@ import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/copilot_draft.dart';
 import '../../domain/copilot_match.dart';
 
+String copilotTripDetailsRoute(String tripId, CopilotDraft draft) {
+  final seats = (draft.passengerOrSeatCount ?? 1).clamp(1, 8);
+  return '/trips/$tripId?seats=$seats';
+}
+
 class CopilotResultsScreen extends ConsumerStatefulWidget {
   final CopilotDraft draft;
 
@@ -91,7 +96,8 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push('/trips/${trip.id}'),
+        onTap: () =>
+            context.push(copilotTripDetailsRoute(trip.id, widget.draft)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -114,7 +120,9 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
               ),
               const SizedBox(height: 10),
               Text(
-                '${trip.departureTime.toLocal()} • ${trip.availableSeats} seats available',
+                trip.isPackage
+                    ? '${trip.departureTime.toLocal()} • package capacity available'
+                    : '${trip.departureTime.toLocal()} • ${trip.availableSeats} seats available',
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -160,7 +168,7 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
               child: const Text('Adjust AI draft'),
             ),
             TextButton(
-              onPressed: () => context.push('/trips?role=rider'),
+              onPressed: () => context.push(_manualTripsRoute),
               child: const Text('Browse live trips manually'),
             ),
           ],
@@ -187,7 +195,7 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
               child: const Text('Retry'),
             ),
             TextButton(
-              onPressed: () => context.push('/trips?role=rider'),
+              onPressed: () => context.push(_manualTripsRoute),
               child: const Text('Use manual search'),
             ),
           ],
@@ -195,4 +203,8 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
       ),
     );
   }
+
+  String get _manualTripsRoute => widget.draft.intent == 'offer'
+      ? '/trips?role=driver'
+      : '/trips?role=rider';
 }

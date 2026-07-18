@@ -11,3 +11,6 @@ export {
   submitVerification,
   syncContactVerification,
 } from "./verification";
+export {syncPublicProfile} from "./publicProfile";
+export {syncPublicTrip} from "./publicTrip";
+export {authorizeTripConversation} from "./conversation";

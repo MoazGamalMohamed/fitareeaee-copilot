@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../providers/trip_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/trip.dart';
@@ -9,8 +10,19 @@ import '../../../booking/presentation/providers/booking_provider.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
+  final int requestedSeats;
 
-  const TripDetailsScreen({super.key, required this.tripId});
+  const TripDetailsScreen({
+    super.key,
+    required this.tripId,
+    int? requestedSeats,
+  }) : requestedSeats = requestedSeats == null
+           ? 1
+           : requestedSeats < 1
+           ? 1
+           : requestedSeats > 8
+           ? 8
+           : requestedSeats;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +60,10 @@ class TripDetailsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // Driver Info Card
-              _buildSectionTitle(context, 'Driver Information'),
+              _buildSectionTitle(
+                context,
+                trip.isRequest ? 'Requester Information' : 'Driver Information',
+              ),
               const SizedBox(height: 12),
               _buildDriverCard(context, ref, trip),
               const SizedBox(height: 32),
@@ -105,6 +120,15 @@ class TripDetailsScreen extends ConsumerWidget {
                       backgroundColor: Colors.grey[300],
                     ),
                     child: const Text('Your Own Trip'),
+                  )
+                else if (trip.isRequest)
+                  ElevatedButton.icon(
+                    onPressed: () => _messageRequester(context, trip),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    icon: const Icon(Icons.message),
+                    label: const Text('Message Requester'),
                   )
                 else if (hasBooked)
                   ElevatedButton(
@@ -566,10 +590,6 @@ class TripDetailsScreen extends ConsumerWidget {
         ),
       ),
       error: (e, st) {
-        // Log error for debugging
-        print('Driver card error for ${trip.driverId}: $e');
-        print('Stack trace: $st');
-
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
@@ -602,6 +622,28 @@ class TripDetailsScreen extends ConsumerWidget {
   }
 
   void _bookTrip(BuildContext context, Trip trip) {
-    context.push('/trips/${trip.id}/booking');
+    context.push('/trips/${trip.id}/booking?seats=$requestedSeats');
+  }
+
+  Future<void> _messageRequester(BuildContext context, Trip trip) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('authorizeTripConversation')
+          .call({
+            'schemaVersion': 1,
+            'tripId': trip.id,
+            'recipientId': trip.driverId,
+          });
+      if (context.mounted) context.push('/chat/${trip.driverId}');
+    } on FirebaseFunctionsException catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Messaging is unavailable. Confirm the request is active and your identity review is complete.',
+          ),
+        ),
+      );
+    }
   }
 }

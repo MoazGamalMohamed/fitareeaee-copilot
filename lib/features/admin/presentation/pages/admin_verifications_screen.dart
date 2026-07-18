@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../providers/admin_provider.dart';
@@ -502,27 +503,44 @@ class _AdminVerificationsScreenState
             ),
           ],
           const SizedBox(height: 12),
-          GestureDetector(
-            onTap: () => _showFullImage(imageUrl, title),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
+          FutureBuilder<String>(
+            future: _resolveDocumentUrl(imageUrl),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
                   height: 200,
                   color: Colors.grey[200],
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: Center(
+                    child: snapshot.hasError
+                        ? const Icon(Icons.error)
+                        : const CircularProgressIndicator(),
+                  ),
+                );
+              }
+              final resolvedUrl = snapshot.data!;
+              return GestureDetector(
+                onTap: () => _showFullImage(resolvedUrl, title),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+                    imageUrl: resolvedUrl,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      color: Colors.grey[200],
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200,
+                      color: Colors.grey[200],
+                      child: const Center(child: Icon(Icons.error)),
+                    ),
+                  ),
                 ),
-                errorWidget: (context, url, error) => Container(
-                  height: 200,
-                  color: Colors.grey[200],
-                  child: const Center(child: Icon(Icons.error)),
-                ),
-              ),
-            ),
+              );
+            },
           ),
           if (!isVerified) ...[
             const SizedBox(height: 12),
@@ -560,6 +578,11 @@ class _AdminVerificationsScreenState
         ],
       ),
     );
+  }
+
+  Future<String> _resolveDocumentUrl(String reference) {
+    if (reference.startsWith('https://')) return Future.value(reference);
+    return FirebaseStorage.instance.ref(reference).getDownloadURL();
   }
 
   void _showFullImage(String imageUrl, String title) {

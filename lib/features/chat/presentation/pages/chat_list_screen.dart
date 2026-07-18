@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../domain/entities/message.dart';
 import '../providers/chat_provider.dart';
 
@@ -115,7 +114,7 @@ class _ConversationTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Get the other user's profile
-    final otherUserProfileAsync = ref.watch(userProfileProvider(otherUserId));
+    final otherUserProfileAsync = ref.watch(userByIdProvider(otherUserId));
 
     return otherUserProfileAsync.when(
       data: (profile) {
@@ -132,20 +131,14 @@ class _ConversationTile extends ConsumerWidget {
                 : null,
             child: profile?.photoUrl == null
                 ? Text(
-                    (profile != null && profile.name.isNotEmpty)
-                        ? profile.name[0].toUpperCase()
-                        : (profile != null && profile.email.isNotEmpty)
-                        ? profile.email[0].toUpperCase()
+                    profile?.name?.isNotEmpty == true
+                        ? profile!.name![0].toUpperCase()
                         : 'U',
                   )
                 : null,
           ),
           title: Text(
-            (profile != null && profile.name.isNotEmpty)
-                ? profile.name
-                : (profile != null && profile.email.isNotEmpty)
-                ? profile.email
-                : 'User',
+            profile?.name?.isNotEmpty == true ? profile!.name! : 'User',
             style: TextStyle(
               fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
             ),

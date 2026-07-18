@@ -9,8 +9,19 @@ import '../../../../core/theme/app_colors.dart';
 
 class BookingConfirmationScreen extends ConsumerWidget {
   final String tripId;
+  final int requestedSeats;
 
-  const BookingConfirmationScreen({super.key, required this.tripId});
+  const BookingConfirmationScreen({
+    super.key,
+    required this.tripId,
+    int? requestedSeats,
+  }) : requestedSeats = requestedSeats == null
+           ? 1
+           : requestedSeats < 1
+           ? 1
+           : requestedSeats > 8
+           ? 8
+           : requestedSeats;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,10 +46,6 @@ class BookingConfirmationScreen extends ConsumerWidget {
           final userVerificationAsync = ref.watch(
             verificationStatusProvider(currentUser.id),
           );
-          final driverVerificationAsync = ref.watch(
-            verificationStatusProvider(trip.driverId),
-          );
-
           return Scaffold(
             appBar: AppBar(
               title: const Text('Confirm Booking'),
@@ -63,13 +70,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  _buildVerificationRequirement(
-                    context,
-                    'Driver Identity',
-                    driverVerificationAsync,
-                    trip.driverId,
-                    ref,
-                  ),
+                  _buildServerVerificationNotice(context),
                   const SizedBox(height: 24),
 
                   // Price summary. Payments are intentionally out of scope.
@@ -81,24 +82,16 @@ class BookingConfirmationScreen extends ConsumerWidget {
                     data: (_) {
                       return ElevatedButton(
                         onPressed: userVerificationAsync.maybeWhen(
-                          data: (userVerif) => driverVerificationAsync.maybeWhen(
-                            data: (driverVerif) {
-                              // Check if both have required verifications (identity and selfie)
-                              final userVerified =
-                                  (userVerif?.identityVerified ?? false) &&
-                                  (userVerif?.selfieWithIdVerified ?? false);
-                              final driverVerified =
-                                  (driverVerif?.identityVerified ?? false) &&
-                                  (driverVerif?.selfieWithIdVerified ?? false);
-
-                              if (userVerified && driverVerified) {
-                                return () =>
-                                    _confirmBooking(context, ref, trip);
-                              }
-                              return null; // Disable button
-                            },
-                            orElse: () => null,
-                          ),
+                          data: (userVerif) {
+                            final userVerified =
+                                (userVerif?.identityVerified ?? false) &&
+                                (userVerif?.selfieWithIdVerified ?? false);
+                            final hasCapacity =
+                                trip.availableSeats >= requestedSeats;
+                            return userVerified && hasCapacity
+                                ? () => _confirmBooking(context, ref, trip)
+                                : null;
+                          },
                           orElse: () => null,
                         ),
                         style: ElevatedButton.styleFrom(
@@ -164,13 +157,13 @@ class BookingConfirmationScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Error: ${error.toString()}',
+                            'Booking could not be completed. Review verification and availability, then try again.',
                             style: TextStyle(color: Colors.red[700]),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: null,
+                          onPressed: () => _confirmBooking(context, ref, trip),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             backgroundColor: Colors.grey[300],
@@ -178,7 +171,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                           child: const SizedBox(
                             width: double.infinity,
                             child: Text(
-                              'Confirm Booking',
+                              'Try Again',
                               textAlign: TextAlign.center,
                               style: TextStyle(color: Colors.white),
                             ),
@@ -346,8 +339,30 @@ class BookingConfirmationScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildServerVerificationNotice(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.blue[200]!),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.blue[50],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: const Row(
+        children: [
+          Icon(Icons.verified_user_outlined, color: Colors.blue),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'The driver’s private verification status is checked securely by the server when you confirm. It is not shared with other users.',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPriceSection(BuildContext context, Trip trip) {
-    final totalPrice = trip.pricePerSeat;
+    final totalPrice = trip.pricePerSeat * requestedSeats;
 
     return Container(
       decoration: BoxDecoration(
@@ -374,6 +389,17 @@ class BookingConfirmationScreen extends ConsumerWidget {
               ),
               Text(
                 '\$${trip.pricePerSeat.toStringAsFixed(2)}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Seats', style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                '$requestedSeats',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -408,7 +434,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
     try {
       final userId = ref.read(authStateProvider).value?.id;
       if (userId == null) return;
-      await ref.read(tripBookingProvider.notifier).bookTrip(trip.id, userId);
+      await ref
+          .read(tripBookingProvider.notifier)
+          .bookTrip(trip.id, userId, requestedSeats);
       ref.invalidate(tripDetailProvider(trip.id));
       ref.invalidate(availableTripsProvider);
       if (!context.mounted) return;
@@ -418,10 +446,15 @@ class BookingConfirmationScreen extends ConsumerWidget {
         ),
       );
       context.go('/chat/${trip.driverId}');
-    } catch (error) {
+    } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString()), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text(
+            'Booking could not be completed. Check verification and availability, then try again.',
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
