@@ -112,6 +112,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 
 ## Current external blockers
 
+Exact owner steps and the inherited Function set are recorded in
+[`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
+
 1. Owner privately sets the managed OpenAI key; Copilot deploy and capped live tests then resume.
 2. Owner creates two dedicated Firebase Auth users and supplies only their UIDs for judge-data seeding.
 3. Owner confirms deletion of the exact inherited live prototype Function set and rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
