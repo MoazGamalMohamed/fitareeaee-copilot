@@ -46,4 +46,13 @@ app.*.map.json
 
 # Environment variables and API keys
 .env
+.env.*
+!.env.example
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+**/firebase_options.local.dart
+android/key.properties
+*.jks
+*.keystore
+*.p12
 run_with_maps.ps1

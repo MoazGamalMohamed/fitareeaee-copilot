@@ -1,4 +1,4 @@
-package com.example.fitareeaee
+package com.fitareeaee.app
 
 import io.flutter.embedding.android.FlutterActivity
 

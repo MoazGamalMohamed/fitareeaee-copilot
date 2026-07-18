@@ -58,27 +58,10 @@ class Environment {
     defaultValue: 30000,
   );
 
-  // Payment Configuration
-  static const String stripeApiKey = String.fromEnvironment(
-    'STRIPE_API_KEY',
-    defaultValue: 'sk_test_placeholder',
-  );
-
   // Maps Configuration
   static const String googleMapsApiKey = String.fromEnvironment(
     'GOOGLE_MAPS_API_KEY',
     defaultValue: 'your_google_maps_api_key_here',
-  );
-
-  // OpenRouter AI Configuration
-  static const String openRouterApiKey = String.fromEnvironment(
-    'OPENROUTER_API_KEY',
-    defaultValue: 'your_openrouter_api_key_here',
-  );
-
-  static const String openRouterModel = String.fromEnvironment(
-    'OPENROUTER_MODEL',
-    defaultValue: 'meta-llama/llama-2-70b-chat',
   );
 
   /// Check if app is in development mode
