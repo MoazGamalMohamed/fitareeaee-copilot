@@ -733,3 +733,22 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 - Private and sanitized current trees match exactly at `9d348d08028eb0576b4b74ea911a803bb9f5fe01`.
 - Push/PR/release remain blocked only on owner-controlled GitHub authentication; rollback points are private `46e80f5a61b5a976211faf282e071dcf64a8b807` and sanitized `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61`.
 - Next action: propagate this mapping-only record, perform the final clean/tree/secret scan, then wait only for the minimal owner inputs needed for live Copilot, judge accounts, endpoint retirement, and publication.
+
+## 2026-07-18 03:42 CDT / 2026-07-18 01:42 PDT — Exact-APK security and metadata audit
+
+### Outcome
+
+- Inspected the exact universal debug APK built from `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`; the artifact hash remains `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`.
+- Archive path scan found 0 `.env`, `google-services.json`, service-account JSON, keystore, or signing-material paths.
+- Binary scans found no `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `STRIPE_SECRET_KEY`, or private-key PEM marker. A raw token-shape regex produced one match only inside the bundled `lib/arm64-v8a/libVkLayer_khronos_validation.so`; the extracted application payload outside native validation libraries produced 0 matches. No value was printed or copied.
+- `apksigner verify --verbose --print-certs`: PASS; APK Signature Scheme v2, one signer, expected `Android Debug` certificate, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- `aapt dump badging`: package `com.fitareeaee.app`, version `1.0.0` / code `1`, label `Fitareeaee Copilot`, launchable `MainActivity`, min API 24, target/compile API 36, and native ABIs `arm64-v8a`, `armeabi-v7a`, `x86_64`.
+- No source or production state changed during the artifact audit. Physical-phone, signed-release, published-download, and credentialed flow claims remain pending.
+
+### External-state recheck and next action
+
+- Managed `OPENAI_API_KEY`: still 0 versions.
+- GitHub CLI: still unauthenticated.
+- Android devices: emulator only; no physical phone.
+- Local/sanitized source before this evidence entry: clean, matching trees; sanitized `main`/`build-week/final` at `73cb04db196681cb4fcca50866dd2b4d6fdf57d2`.
+- Next action: publish this evidence-only update to the sanitized clone and resume immediately when the owner completes the open Firebase/GitHub/Auth actions in `docs/OWNER_ACTIONS.md`.

@@ -105,6 +105,9 @@ the contest release.
 - Universal installation: not counted on the low-storage emulator (`INSTALL_FAILED_INSUFFICIENT_STORAGE`)
 - Same-source x86_64 APK: 71,564,128 bytes; SHA-256 `3949BCC4DFDF56CC9F11915CC66F9AD9419875F67B284E672BF5368420C8BE51`
 - x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `14723` alive, and no matched fatal Android/Flutter/Firebase logs
+- APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
+- APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
+- Package metadata: `com.fitareeaee.app`, version `1.0.0` (`1`), label `Fitareeaee Copilot`, min API 24, target/compile API 36, ABIs `arm64-v8a`, `armeabi-v7a`, and `x86_64`
 
 This is a local engineering checkpoint, not yet the published judge artifact.
 
