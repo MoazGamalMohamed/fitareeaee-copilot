@@ -5,7 +5,7 @@ class AppLocalizations {
   static const Map<String, String> en = {
     // App
     'app_name': 'Fitareeaee',
-    
+
     // Auth
     'auth_email': 'Email',
     'auth_password': 'Password',
@@ -18,13 +18,13 @@ class AppLocalizations {
     'auth_error_invalid_email': 'Please enter a valid email',
     'auth_error_weak_password': 'Password is too weak',
     'auth_error_email_in_use': 'Email is already in use',
-    
+
     // Home
     'home_title': 'Home',
     'home_search_trips': 'Search trips',
     'home_recent_trips': 'Recent trips',
     'home_no_trips': 'No trips yet',
-    
+
     // Trips
     'trip_from': 'From',
     'trip_to': 'To',
@@ -38,20 +38,20 @@ class AppLocalizations {
     'trip_search': 'Search Trips',
     'trip_book': 'Book',
     'trip_cancel': 'Cancel',
-    
+
     // Chat
     'chat_messages': 'Messages',
     'chat_send': 'Send',
     'chat_type_message': 'Type a message',
     'chat_no_messages': 'No messages yet',
-    
+
     // Payment
     'payment_amount': 'Amount',
     'payment_pay': 'Pay',
     'payment_success': 'Payment successful',
     'payment_failed': 'Payment failed',
     'payment_pending': 'Payment pending',
-    
+
     // Profile
     'profile_title': 'Profile',
     'profile_edit': 'Edit Profile',
@@ -60,7 +60,7 @@ class AppLocalizations {
     'profile_rating': 'Rating',
     'profile_trips': 'Total Trips',
     'profile_logout': 'Logout',
-    
+
     // Ratings
     'rating_rate': 'Rate',
     'rating_add_review': 'Add Review',
@@ -68,7 +68,7 @@ class AppLocalizations {
     'rating_good': 'Good',
     'rating_average': 'Average',
     'rating_poor': 'Poor',
-    
+
     // Common
     'common_loading': 'Loading...',
     'common_error': 'Error',
@@ -82,7 +82,7 @@ class AppLocalizations {
     'common_back': 'Back',
     'common_ok': 'OK',
   };
-  
+
   /// Get localized string by key
   static String getString(String key, [Locale? locale]) {
     // TODO: Add Arabic and other languages support

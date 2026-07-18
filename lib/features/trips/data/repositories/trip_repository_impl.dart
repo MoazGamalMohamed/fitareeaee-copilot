@@ -24,9 +24,8 @@ abstract class TripRepository {
 class TripRepositoryImpl implements TripRepository {
   final FirebaseFirestore _firestore;
 
-  const TripRepositoryImpl({
-    required FirebaseFirestore firestore,
-  })  : _firestore = firestore;
+  const TripRepositoryImpl({required FirebaseFirestore firestore})
+    : _firestore = firestore;
 
   @override
   Future<Trip> createTrip(Trip trip) async {
@@ -151,13 +150,17 @@ class TripRepositoryImpl implements TripRepository {
       Query<Map<String, dynamic>> query = _firestore.collection('trips');
 
       if (origin.isNotEmpty) {
-        query = query.where('origin_address',
-            isGreaterThanOrEqualTo: origin.toLowerCase());
+        query = query.where(
+          'origin_address',
+          isGreaterThanOrEqualTo: origin.toLowerCase(),
+        );
       }
 
       if (destination.isNotEmpty) {
-        query = query.where('destination_address',
-            isGreaterThanOrEqualTo: destination.toLowerCase());
+        query = query.where(
+          'destination_address',
+          isGreaterThanOrEqualTo: destination.toLowerCase(),
+        );
       }
 
       if (tripType != null) {
@@ -180,12 +183,18 @@ class TripRepositoryImpl implements TripRepository {
 
       // Filter by date if provided
       if (departureDate != null) {
-        final startOfDay = DateTime(departureDate.year, departureDate.month, departureDate.day);
+        final startOfDay = DateTime(
+          departureDate.year,
+          departureDate.month,
+          departureDate.day,
+        );
         final endOfDay = startOfDay.add(const Duration(days: 1));
 
-        trips.removeWhere((trip) =>
-            trip.departureTime.isBefore(startOfDay) ||
-            trip.departureTime.isAfter(endOfDay));
+        trips.removeWhere(
+          (trip) =>
+              trip.departureTime.isBefore(startOfDay) ||
+              trip.departureTime.isAfter(endOfDay),
+        );
       }
 
       return trips;
@@ -202,31 +211,32 @@ class TripRepositoryImpl implements TripRepository {
         .collection('trips')
         .snapshots()
         .map((snapshot) {
-      final trips = <Trip>[];
-      for (final doc in snapshot.docs) {
-        try {
-          final data = _convertTimestamps(doc.data());
-          final trip = Trip.fromJson(data);
-          
-          // Exclude user's own trips if excludeUserId is provided
-          if (excludeUserId != null && trip.driverId == excludeUserId) {
-            continue;
+          final trips = <Trip>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final data = _convertTimestamps(doc.data());
+              final trip = Trip.fromJson(data);
+
+              // Exclude user's own trips if excludeUserId is provided
+              if (excludeUserId != null && trip.driverId == excludeUserId) {
+                continue;
+              }
+
+              trips.add(trip);
+            } catch (e) {
+              print('Warning: Skipping invalid trip document ${doc.id}: $e');
+              // Skip this document but continue processing others
+              continue;
+            }
           }
-          
-          trips.add(trip);
-        } catch (e) {
-          print('Warning: Skipping invalid trip document ${doc.id}: $e');
-          // Skip this document but continue processing others
-          continue;
-        }
-      }
-      return trips;
-    }).handleError((e) {
-      if (e is FirebaseException) {
-        throw _handleFirebaseException(e);
-      }
-      throw AppException(message: 'Failed to stream trips: $e');
-    });
+          return trips;
+        })
+        .handleError((e) {
+          if (e is FirebaseException) {
+            throw _handleFirebaseException(e);
+          }
+          throw AppException(message: 'Failed to stream trips: $e');
+        });
   }
 
   @override
@@ -236,25 +246,28 @@ class TripRepositoryImpl implements TripRepository {
         .where('driverId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) {
-      final trips = <Trip>[];
-      for (final doc in snapshot.docs) {
-        try {
-          final data = _convertTimestamps(doc.data());
-          final trip = Trip.fromJson(data);
-          trips.add(trip);
-        } catch (e) {
-          print('Warning: Skipping invalid user trip document ${doc.id}: $e');
-          // Skip this document but continue processing others
-          continue;
-        }
-      }
-      return trips;
-    }).handleError((e) {
-      if (e is FirebaseException) {
-        throw _handleFirebaseException(e);
-      }
-      throw AppException(message: 'Failed to stream user trips: $e');
-    });
+          final trips = <Trip>[];
+          for (final doc in snapshot.docs) {
+            try {
+              final data = _convertTimestamps(doc.data());
+              final trip = Trip.fromJson(data);
+              trips.add(trip);
+            } catch (e) {
+              print(
+                'Warning: Skipping invalid user trip document ${doc.id}: $e',
+              );
+              // Skip this document but continue processing others
+              continue;
+            }
+          }
+          return trips;
+        })
+        .handleError((e) {
+          if (e is FirebaseException) {
+            throw _handleFirebaseException(e);
+          }
+          throw AppException(message: 'Failed to stream user trips: $e');
+        });
   }
 
   @override
@@ -274,7 +287,7 @@ class TripRepositoryImpl implements TripRepository {
       final updatedAvailable = trip.availableSeats - 1;
 
       print('📝 Creating booking document for trip $tripId, passenger $userId');
-      
+
       // Create booking document
       final bookingRef = _firestore.collection('bookings').doc();
       await bookingRef.set({
@@ -293,7 +306,7 @@ class TripRepositoryImpl implements TripRepository {
         'createdAt': DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
       });
-      
+
       print('✅ Booking created: ${bookingRef.id}');
 
       // Update trip document
@@ -302,7 +315,7 @@ class TripRepositoryImpl implements TripRepository {
         'available_seats': updatedAvailable,
         'updated_at': DateTime.now(),
       });
-      
+
       print('✅ Trip updated with passenger');
     } on FirebaseException catch (e) {
       print('❌ Firebase error in bookTrip: $e');
@@ -322,8 +335,9 @@ class TripRepositoryImpl implements TripRepository {
         throw AppException(message: 'Not booked on this trip');
       }
 
-      final updatedPassengers =
-          trip.passengerIds.where((id) => id != userId).toList();
+      final updatedPassengers = trip.passengerIds
+          .where((id) => id != userId)
+          .toList();
       final updatedAvailable = trip.availableSeats + 1;
 
       await _firestore.collection('trips').doc(tripId).update({
@@ -360,7 +374,9 @@ class TripRepositoryImpl implements TripRepository {
     final timestampFields = ['departure_time', 'created_at', 'updated_at'];
     for (final field in timestampFields) {
       if (converted[field] is Timestamp) {
-        converted[field] = (converted[field] as Timestamp).toDate().toIso8601String();
+        converted[field] = (converted[field] as Timestamp)
+            .toDate()
+            .toIso8601String();
       } else if (converted[field] == null) {
         // Provide default ISO string for missing timestamp fields
         converted[field] = DateTime.now().toIso8601String();

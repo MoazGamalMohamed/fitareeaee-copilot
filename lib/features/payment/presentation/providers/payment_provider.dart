@@ -30,7 +30,10 @@ Map<String, double> calculateFees(double amount) {
 /// 2. Charge customer
 /// 3. Hold funds in escrow
 /// 4. Release to driver after trip completion
-final processPaymentProvider = FutureProvider.family<PaymentModel, PaymentModel>((ref, payment) async {
+final processPaymentProvider = FutureProvider.family<PaymentModel, PaymentModel>((
+  ref,
+  payment,
+) async {
   final docRef = _firestore.collection('payments').doc();
   final fees = calculateFees(payment.amount);
 
@@ -72,11 +75,20 @@ final processPaymentProvider = FutureProvider.family<PaymentModel, PaymentModel>
 });
 
 /// Release escrow payment to driver after trip completion
-final releaseEscrowProvider = FutureProvider.family<PaymentModel, String>((ref, paymentId) async {
-  final paymentDoc = await _firestore.collection('payments').doc(paymentId).get();
+final releaseEscrowProvider = FutureProvider.family<PaymentModel, String>((
+  ref,
+  paymentId,
+) async {
+  final paymentDoc = await _firestore
+      .collection('payments')
+      .doc(paymentId)
+      .get();
   if (!paymentDoc.exists) throw Exception('Payment not found');
 
-  final payment = PaymentModel.fromJson({...paymentDoc.data()!, 'id': paymentId});
+  final payment = PaymentModel.fromJson({
+    ...paymentDoc.data()!,
+    'id': paymentId,
+  });
 
   if (payment.escrowStatus != 'held') {
     throw Exception('Payment is not in escrow');
@@ -107,7 +119,10 @@ final releaseEscrowProvider = FutureProvider.family<PaymentModel, String>((ref, 
     netAmount: payment.netAmount,
   );
 
-  await _firestore.collection('payments').doc(paymentId).update(updatedPayment.toJson());
+  await _firestore
+      .collection('payments')
+      .doc(paymentId)
+      .update(updatedPayment.toJson());
 
   // Update booking status
   await _firestore.collection('bookings').doc(payment.bookingId).update({
@@ -122,52 +137,66 @@ final releaseEscrowProvider = FutureProvider.family<PaymentModel, String>((ref, 
 });
 
 /// Refund escrow payment
-final refundPaymentProvider = FutureProvider.family<PaymentModel, RefundRequest>((ref, request) async {
-  final paymentDoc = await _firestore.collection('payments').doc(request.paymentId).get();
-  if (!paymentDoc.exists) throw Exception('Payment not found');
+final refundPaymentProvider =
+    FutureProvider.family<PaymentModel, RefundRequest>((ref, request) async {
+      final paymentDoc = await _firestore
+          .collection('payments')
+          .doc(request.paymentId)
+          .get();
+      if (!paymentDoc.exists) throw Exception('Payment not found');
 
-  final payment = PaymentModel.fromJson({...paymentDoc.data()!, 'id': request.paymentId});
+      final payment = PaymentModel.fromJson({
+        ...paymentDoc.data()!,
+        'id': request.paymentId,
+      });
 
-  if (payment.status == 'refunded') {
-    throw Exception('Payment already refunded');
-  }
+      if (payment.status == 'refunded') {
+        throw Exception('Payment already refunded');
+      }
 
-  // In production, this would call a Cloud Function to refund via Stripe
-  final updatedPayment = PaymentModel(
-    id: payment.id,
-    bookingId: payment.bookingId,
-    payerId: payment.payerId,
-    payeeId: payment.payeeId,
-    amount: payment.amount,
-    currency: payment.currency,
-    paymentMethod: payment.paymentMethod,
-    status: 'refunded',
-    transactionId: payment.transactionId,
-    stripePaymentIntentId: payment.stripePaymentIntentId,
-    createdAt: payment.createdAt,
-    escrowStatus: 'refunded',
-    escrowHeldAt: payment.escrowHeldAt,
-    platformFee: payment.platformFee,
-    processingFee: payment.processingFee,
-    netAmount: payment.netAmount,
-    refundReason: request.reason,
-    refundedAt: DateTime.now(),
-  );
+      // In production, this would call a Cloud Function to refund via Stripe
+      final updatedPayment = PaymentModel(
+        id: payment.id,
+        bookingId: payment.bookingId,
+        payerId: payment.payerId,
+        payeeId: payment.payeeId,
+        amount: payment.amount,
+        currency: payment.currency,
+        paymentMethod: payment.paymentMethod,
+        status: 'refunded',
+        transactionId: payment.transactionId,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
+        createdAt: payment.createdAt,
+        escrowStatus: 'refunded',
+        escrowHeldAt: payment.escrowHeldAt,
+        platformFee: payment.platformFee,
+        processingFee: payment.processingFee,
+        netAmount: payment.netAmount,
+        refundReason: request.reason,
+        refundedAt: DateTime.now(),
+      );
 
-  await _firestore.collection('payments').doc(request.paymentId).update(updatedPayment.toJson());
+      await _firestore
+          .collection('payments')
+          .doc(request.paymentId)
+          .update(updatedPayment.toJson());
 
-  // Update booking status
-  await _firestore.collection('bookings').doc(payment.bookingId).update({
-    'paymentStatus': 'refunded',
-    'status': 'cancelled',
-    'updatedAt': FieldValue.serverTimestamp(),
-  });
+      // Update booking status
+      await _firestore.collection('bookings').doc(payment.bookingId).update({
+        'paymentStatus': 'refunded',
+        'status': 'cancelled',
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
 
-  return updatedPayment;
-});
+      return updatedPayment;
+    });
 
 /// Add funds to user's wallet
-Future<void> _addToWallet(String userId, double amount, String paymentId) async {
+Future<void> _addToWallet(
+  String userId,
+  double amount,
+  String paymentId,
+) async {
   final walletRef = _firestore.collection('wallets').doc(userId);
 
   await _firestore.runTransaction((transaction) async {
@@ -212,19 +241,27 @@ class RefundRequest {
 // COMPOSITE INDEX REQUIRED:
 // Collection: payments
 // Fields: payerId (ASCENDING), createdAt (DESCENDING)
-final userPaymentsProvider = StreamProvider.family<List<PaymentModel>, String>((ref, userId) {
+final userPaymentsProvider = StreamProvider.family<List<PaymentModel>, String>((
+  ref,
+  userId,
+) {
   return _firestore
       .collection('payments')
       .where('payerId', isEqualTo: userId)
       .orderBy('createdAt', descending: true)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => PaymentModel.fromJson({...doc.data(), 'id': doc.id}))
-          .toList());
+      .map(
+        (snapshot) => snapshot.docs
+            .map((doc) => PaymentModel.fromJson({...doc.data(), 'id': doc.id}))
+            .toList(),
+      );
 });
 
 // Get single payment
-final paymentProvider = FutureProvider.family<PaymentModel?, String>((ref, paymentId) async {
+final paymentProvider = FutureProvider.family<PaymentModel?, String>((
+  ref,
+  paymentId,
+) async {
   final doc = await _firestore.collection('payments').doc(paymentId).get();
   if (!doc.exists) return null;
   return PaymentModel.fromJson({...doc.data()!, 'id': doc.id});
@@ -277,9 +314,10 @@ class PaymentMethodNotifier extends StateNotifier<PaymentMethodState> {
   }
 }
 
-final paymentMethodProvider = StateNotifierProvider<PaymentMethodNotifier, PaymentMethodState>((ref) {
-  return PaymentMethodNotifier();
-});
+final paymentMethodProvider =
+    StateNotifierProvider<PaymentMethodNotifier, PaymentMethodState>((ref) {
+      return PaymentMethodNotifier();
+    });
 
 /// Saved payment method model
 class SavedPaymentMethod {
@@ -347,7 +385,9 @@ class SavedPaymentMethod {
 }
 
 /// Provider for user's saved payment methods
-final savedPaymentMethodsProvider = StreamProvider<List<SavedPaymentMethod>>((ref) {
+final savedPaymentMethodsProvider = StreamProvider<List<SavedPaymentMethod>>((
+  ref,
+) {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return Stream.value([]);
 
@@ -355,9 +395,14 @@ final savedPaymentMethodsProvider = StreamProvider<List<SavedPaymentMethod>>((re
       .collection('payment_methods')
       .where('userId', isEqualTo: user.uid)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => SavedPaymentMethod.fromJson({...doc.data(), 'id': doc.id}))
-          .toList())
+      .map(
+        (snapshot) => snapshot.docs
+            .map(
+              (doc) =>
+                  SavedPaymentMethod.fromJson({...doc.data(), 'id': doc.id}),
+            )
+            .toList(),
+      )
       .handleError((error) => <SavedPaymentMethod>[]);
 });
 
@@ -474,4 +519,3 @@ String _detectCardBrand(String cardNumber) {
   if (number.startsWith('6')) return 'discover';
   return 'card';
 }
-

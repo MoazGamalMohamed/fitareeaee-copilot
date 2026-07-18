@@ -6,25 +6,33 @@ import '../../domain/models/emergency_model.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Provider for user's emergency contacts
-final emergencyContactsProvider = StreamProvider.autoDispose<List<EmergencyContact>>((ref) {
-  // Watch auth state to automatically refresh when user signs in/out
-  final authState = ref.watch(authStateProvider);
-  final user = authState.value;
-  if (user == null) return Stream.value([]);
+final emergencyContactsProvider =
+    StreamProvider.autoDispose<List<EmergencyContact>>((ref) {
+      // Watch auth state to automatically refresh when user signs in/out
+      final authState = ref.watch(authStateProvider);
+      final user = authState.value;
+      if (user == null) return Stream.value([]);
 
-  return FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.id)
-      .collection('emergency_contacts')
-      .where('isActive', isEqualTo: true)
-      .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => EmergencyContact.fromJson({...doc.data(), 'id': doc.id}))
-          .toList());
-});
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.id)
+          .collection('emergency_contacts')
+          .where('isActive', isEqualTo: true)
+          .snapshots()
+          .map(
+            (snapshot) => snapshot.docs
+                .map(
+                  (doc) =>
+                      EmergencyContact.fromJson({...doc.data(), 'id': doc.id}),
+                )
+                .toList(),
+          );
+    });
 
 /// Provider for active emergency alerts
-final activeEmergencyProvider = StreamProvider.autoDispose<EmergencyAlert?>((ref) {
+final activeEmergencyProvider = StreamProvider.autoDispose<EmergencyAlert?>((
+  ref,
+) {
   // Watch auth state to automatically refresh when user signs in/out
   final authState = ref.watch(authStateProvider);
   final user = authState.value;
@@ -37,9 +45,12 @@ final activeEmergencyProvider = StreamProvider.autoDispose<EmergencyAlert?>((ref
       .limit(1)
       .snapshots()
       .map((snapshot) {
-    if (snapshot.docs.isEmpty) return null;
-    return EmergencyAlert.fromJson({...snapshot.docs.first.data(), 'id': snapshot.docs.first.id});
-  });
+        if (snapshot.docs.isEmpty) return null;
+        return EmergencyAlert.fromJson({
+          ...snapshot.docs.first.data(),
+          'id': snapshot.docs.first.id,
+        });
+      });
 });
 
 /// Add emergency contact
@@ -56,13 +67,13 @@ Future<void> addEmergencyContact({
       .doc(user.uid)
       .collection('emergency_contacts')
       .add({
-    'userId': user.uid,
-    'name': name,
-    'phone': phone,
-    'relationship': relationship,
-    'isActive': true,
-    'createdAt': DateTime.now().toIso8601String(),
-  });
+        'userId': user.uid,
+        'name': name,
+        'phone': phone,
+        'relationship': relationship,
+        'isActive': true,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
 }
 
 /// Remove emergency contact
@@ -104,17 +115,19 @@ Future<EmergencyAlert> triggerSOS({
       .toList();
 
   // Create emergency alert
-  final alertRef = await FirebaseFirestore.instance.collection('emergency_alerts').add({
-    'userId': user.uid,
-    'tripId': tripId,
-    'type': type.name,
-    'status': EmergencyStatus.active.name,
-    'latitude': locationData.latitude ?? 0.0,
-    'longitude': locationData.longitude ?? 0.0,
-    'description': description,
-    'emergencyContacts': contactPhones,
-    'createdAt': DateTime.now().toIso8601String(),
-  });
+  final alertRef = await FirebaseFirestore.instance
+      .collection('emergency_alerts')
+      .add({
+        'userId': user.uid,
+        'tripId': tripId,
+        'type': type.name,
+        'status': EmergencyStatus.active.name,
+        'latitude': locationData.latitude ?? 0.0,
+        'longitude': locationData.longitude ?? 0.0,
+        'description': description,
+        'emergencyContacts': contactPhones,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
 
   return EmergencyAlert(
     id: alertRef.id,
@@ -136,9 +149,9 @@ Future<void> cancelSOS(String alertId) async {
       .collection('emergency_alerts')
       .doc(alertId)
       .update({
-    'status': EmergencyStatus.cancelled.name,
-    'resolvedAt': DateTime.now().toIso8601String(),
-  });
+        'status': EmergencyStatus.cancelled.name,
+        'resolvedAt': DateTime.now().toIso8601String(),
+      });
 }
 
 /// Resolve SOS alert (admin)
@@ -151,10 +164,9 @@ Future<void> resolveSOS({
       .collection('emergency_alerts')
       .doc(alertId)
       .update({
-    'status': EmergencyStatus.resolved.name,
-    'resolvedAt': DateTime.now().toIso8601String(),
-    'resolvedBy': resolvedBy,
-    'resolutionNotes': notes,
-  });
+        'status': EmergencyStatus.resolved.name,
+        'resolvedAt': DateTime.now().toIso8601String(),
+        'resolvedBy': resolvedBy,
+        'resolutionNotes': notes,
+      });
 }
-

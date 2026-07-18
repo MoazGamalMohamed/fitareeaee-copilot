@@ -28,7 +28,7 @@ void main() {
     test('Message conversation ID generation', () {
       final convId1 = Message.getConversationId('alice', 'bob');
       final convId2 = Message.getConversationId('bob', 'alice');
-      
+
       expect(convId1, convId2);
       expect(convId1.contains('_'), true);
     });

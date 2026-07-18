@@ -26,7 +26,9 @@ Future<void> callResetVerifications(BuildContext context) async {
     );
 
     // Call the Cloud Function
-    final callable = FirebaseFunctions.instance.httpsCallable('resetAllVerifications');
+    final callable = FirebaseFunctions.instance.httpsCallable(
+      'resetAllVerifications',
+    );
     final result = await callable.call();
 
     // Close loading dialog

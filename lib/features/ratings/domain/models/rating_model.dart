@@ -16,5 +16,6 @@ class RatingModel with _$RatingModel {
     required DateTime createdAt,
   }) = _RatingModel;
 
-  factory RatingModel.fromJson(Map<String, dynamic> json) => _$RatingModelFromJson(json);
+  factory RatingModel.fromJson(Map<String, dynamic> json) =>
+      _$RatingModelFromJson(json);
 }

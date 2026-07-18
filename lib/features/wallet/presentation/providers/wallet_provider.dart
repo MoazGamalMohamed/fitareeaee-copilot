@@ -16,41 +16,46 @@ final walletProvider = StreamProvider.autoDispose<WalletModel?>((ref) {
       .doc(user.id)
       .snapshots()
       .map((doc) {
-    if (!doc.exists) return null;
-    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'userId': user.id});
-    return WalletModel.fromJson(data);
-  });
+        if (!doc.exists) return null;
+        final data = FirestoreHelpers.convertTimestamps({
+          ...doc.data()!,
+          'userId': user.id,
+        });
+        return WalletModel.fromJson(data);
+      });
 });
 
 /// Provider for wallet transactions
-final walletTransactionsProvider = StreamProvider.autoDispose<List<WalletTransaction>>((ref) {
-  // Watch auth state to automatically refresh when user signs in/out
-  final authState = ref.watch(authStateProvider);
-  final user = authState.value;
-  if (user == null) return Stream.value([]);
+final walletTransactionsProvider =
+    StreamProvider.autoDispose<List<WalletTransaction>>((ref) {
+      // Watch auth state to automatically refresh when user signs in/out
+      final authState = ref.watch(authStateProvider);
+      final user = authState.value;
+      if (user == null) return Stream.value([]);
 
-  // Simplified query without orderBy to avoid needing composite index
-  return FirebaseFirestore.instance
-      .collection('wallet_transactions')
-      .where('userId', isEqualTo: user.id)
-      .limit(50)
-      .snapshots()
-      .map((snapshot) {
-        final transactions = snapshot.docs
-            .map((doc) {
-              final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
+      // Simplified query without orderBy to avoid needing composite index
+      return FirebaseFirestore.instance
+          .collection('wallet_transactions')
+          .where('userId', isEqualTo: user.id)
+          .limit(50)
+          .snapshots()
+          .map((snapshot) {
+            final transactions = snapshot.docs.map((doc) {
+              final data = FirestoreHelpers.convertTimestamps({
+                ...doc.data(),
+                'id': doc.id,
+              });
               return WalletTransaction.fromJson(data);
-            })
-            .toList();
-        // Sort client-side
-        transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        return transactions;
-      })
-      .handleError((error) {
-        // Return empty list on error
-        return <WalletTransaction>[];
-      });
-});
+            }).toList();
+            // Sort client-side
+            transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return transactions;
+          })
+          .handleError((error) {
+            // Return empty list on error
+            return <WalletTransaction>[];
+          });
+    });
 
 /// Create or get wallet for user
 Future<WalletModel> getOrCreateWallet(String userId) async {
@@ -63,11 +68,7 @@ Future<WalletModel> getOrCreateWallet(String userId) async {
   }
 
   final now = DateTime.now();
-  final newWallet = WalletModel(
-    userId: userId,
-    createdAt: now,
-    updatedAt: now,
-  );
+  final newWallet = WalletModel(userId: userId, createdAt: now, updatedAt: now);
 
   await walletRef.set({
     ...newWallet.toJson(),
@@ -128,7 +129,10 @@ Future<void> requestPayout({
   final walletDoc = await firestore.collection('wallets').doc(userId).get();
   if (!walletDoc.exists) throw Exception('Wallet not found');
 
-  final walletData = FirestoreHelpers.convertTimestamps({...walletDoc.data()!, 'userId': userId});
+  final walletData = FirestoreHelpers.convertTimestamps({
+    ...walletDoc.data()!,
+    'userId': userId,
+  });
   final wallet = WalletModel.fromJson(walletData);
   if (!wallet.canWithdraw(amount)) throw Exception('Insufficient balance');
   if (!wallet.hasPayoutMethod) throw Exception('No payout method configured');
@@ -167,4 +171,3 @@ Future<void> requestPayout({
     'createdAt': now.toIso8601String(),
   });
 }
-

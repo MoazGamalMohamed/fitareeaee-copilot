@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseUserService {
   final FirebaseFirestore _firestore;
 
-  FirebaseUserService({required FirebaseFirestore firestore}) : _firestore = firestore;
+  FirebaseUserService({required FirebaseFirestore firestore})
+    : _firestore = firestore;
 
   /// Create a new user document in Firestore
   Future<void> createUser({
@@ -12,14 +13,19 @@ class FirebaseUserService {
     required Map<String, dynamic> userData,
   }) async {
     try {
-      await _firestore.collection('users').doc(userId).set(userData, SetOptions(merge: true));
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .set(userData, SetOptions(merge: true));
     } catch (e) {
       rethrow;
     }
   }
 
   /// Get user by ID
-  Future<DocumentSnapshot<Map<String, dynamic>>?> getUserById(String userId) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>?> getUserById(
+    String userId,
+  ) async {
     try {
       final doc = await _firestore.collection('users').doc(userId).get();
       return doc.exists ? doc : null;
@@ -76,7 +82,9 @@ class FirebaseUserService {
   }
 
   /// Search users by email
-  Future<QuerySnapshot<Map<String, dynamic>>> searchUsersByEmail(String email) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> searchUsersByEmail(
+    String email,
+  ) async {
     try {
       return _firestore
           .collection('users')
@@ -88,7 +96,9 @@ class FirebaseUserService {
   }
 
   /// Get users by role
-  Future<QuerySnapshot<Map<String, dynamic>>> getUsersByRole(String role) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> getUsersByRole(
+    String role,
+  ) async {
     try {
       return _firestore
           .collection('users')

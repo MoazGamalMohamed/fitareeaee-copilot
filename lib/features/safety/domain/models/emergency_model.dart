@@ -3,19 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'emergency_model.freezed.dart';
 part 'emergency_model.g.dart';
 
-enum EmergencyStatus {
-  active,
-  resolved,
-  cancelled,
-}
+enum EmergencyStatus { active, resolved, cancelled }
 
-enum EmergencyType {
-  accident,
-  harassment,
-  theft,
-  medical,
-  other,
-}
+enum EmergencyType { accident, harassment, theft, medical, other }
 
 @freezed
 class EmergencyAlert with _$EmergencyAlert {
@@ -73,4 +63,3 @@ class SafetySettings with _$SafetySettings {
   factory SafetySettings.fromJson(Map<String, dynamic> json) =>
       _$SafetySettingsFromJson(json);
 }
-

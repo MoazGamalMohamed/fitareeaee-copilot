@@ -14,24 +14,18 @@ class ChatListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final conversationsAsync = ref.watch(conversationsProvider);
-    final currentUser = ref.watch(authStateProvider).maybeWhen(
-          data: (user) => user,
-          orElse: () => null,
-        );
+    final currentUser = ref
+        .watch(authStateProvider)
+        .maybeWhen(data: (user) => user, orElse: () => null);
 
     if (currentUser == null) {
       return const Scaffold(
-        body: Center(
-          child: Text('Please log in to access chat'),
-        ),
+        body: Center(child: Text('Please log in to access chat')),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Messages'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Messages'), elevation: 0),
       body: conversationsAsync.when(
         data: (messages) {
           if (messages.isEmpty) {
@@ -47,16 +41,16 @@ class ChatListScreen extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     'No conversations yet',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Start a conversation with another user',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[500],
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -79,18 +73,12 @@ class ChatListScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red[400],
-              ),
+              Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
               const SizedBox(height: 16),
               Text(
                 'Error loading conversations',
@@ -99,9 +87,9 @@ class ChatListScreen extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 error.toString(),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -131,7 +119,9 @@ class _ConversationTile extends ConsumerWidget {
 
     return otherUserProfileAsync.when(
       data: (profile) {
-        final messagePreview = message.isDeleted ? '[Message deleted]' : message.content;
+        final messagePreview = message.isDeleted
+            ? '[Message deleted]'
+            : message.content;
         final isRead = message.isRead || message.senderId == currentUserId;
         final unreadCount = !isRead ? 1 : 0;
 
@@ -145,8 +135,8 @@ class _ConversationTile extends ConsumerWidget {
                     (profile != null && profile.name.isNotEmpty)
                         ? profile.name[0].toUpperCase()
                         : (profile != null && profile.email.isNotEmpty)
-                            ? profile.email[0].toUpperCase()
-                            : 'U',
+                        ? profile.email[0].toUpperCase()
+                        : 'U',
                   )
                 : null,
           ),
@@ -154,8 +144,8 @@ class _ConversationTile extends ConsumerWidget {
             (profile != null && profile.name.isNotEmpty)
                 ? profile.name
                 : (profile != null && profile.email.isNotEmpty)
-                    ? profile.email
-                    : 'User',
+                ? profile.email
+                : 'User',
             style: TextStyle(
               fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
             ),
@@ -175,15 +165,17 @@ class _ConversationTile extends ConsumerWidget {
             children: [
               Text(
                 _formatTime(message.createdAt),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[500],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
               ),
               if (unreadCount > 0)
                 Container(
                   margin: const EdgeInsets.only(top: 4),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(12),
@@ -215,9 +207,7 @@ class _ConversationTile extends ConsumerWidget {
         title: const Text('Loading...'),
       ),
       error: (error, stack) => ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.error_outline),
-        ),
+        leading: const CircleAvatar(child: Icon(Icons.error_outline)),
         title: const Text('Unknown User'),
         subtitle: Text(
           message.isDeleted ? '[Message deleted]' : message.content,

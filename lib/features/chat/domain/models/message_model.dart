@@ -16,7 +16,8 @@ class MessageModel with _$MessageModel {
     required DateTime timestamp,
   }) = _MessageModel;
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) => _$MessageModelFromJson(json);
+  factory MessageModel.fromJson(Map<String, dynamic> json) =>
+      _$MessageModelFromJson(json);
 }
 
 enum MessageType { text, image, location }

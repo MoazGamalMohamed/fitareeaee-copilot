@@ -49,7 +49,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     );
   }
 
-  Widget _buildContent(WalletModel? wallet, AsyncValue<List<WalletTransaction>> transactionsAsync) {
+  Widget _buildContent(
+    WalletModel? wallet,
+    AsyncValue<List<WalletTransaction>> transactionsAsync,
+  ) {
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(walletProvider);
@@ -86,10 +89,19 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Pending', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            const Text(
+                              'Pending',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
                             Text(
                               '\$${(wallet?.pendingBalance ?? 0).toStringAsFixed(2)}',
-                              style: const TextStyle(color: Colors.white, fontSize: 18),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
                           ],
                         ),
@@ -98,10 +110,19 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Total Earnings', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            const Text(
+                              'Total Earnings',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
                             Text(
                               '\$${(wallet?.totalEarnings ?? 0).toStringAsFixed(2)}',
-                              style: const TextStyle(color: Colors.white, fontSize: 18),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
                             ),
                           ],
                         ),
@@ -161,7 +182,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     ),
                   )
                 : Column(
-                    children: transactions.take(10).map((t) => _buildTransactionItem(t)).toList(),
+                    children: transactions
+                        .take(10)
+                        .map((t) => _buildTransactionItem(t))
+                        .toList(),
                   ),
           ),
         ],
@@ -225,7 +249,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                   ),
                 )
               : Column(
-                  children: methods.map((method) => _buildPaymentMethodCard(method)).toList(),
+                  children: methods
+                      .map((method) => _buildPaymentMethodCard(method))
+                      .toList(),
                 ),
         ),
       ],
@@ -280,7 +306,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -398,7 +427,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Amount',
                 prefixText: '\$',
@@ -452,9 +483,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
   void _showTransactionHistory() {
     // Navigate to full transaction history
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Full history coming soon')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Full history coming soon')));
   }
 }
 
@@ -462,7 +493,8 @@ class PayoutSettingsSheet extends ConsumerStatefulWidget {
   const PayoutSettingsSheet({super.key});
 
   @override
-  ConsumerState<PayoutSettingsSheet> createState() => _PayoutSettingsSheetState();
+  ConsumerState<PayoutSettingsSheet> createState() =>
+      _PayoutSettingsSheetState();
 }
 
 class _PayoutSettingsSheetState extends ConsumerState<PayoutSettingsSheet> {
@@ -475,35 +507,54 @@ class _PayoutSettingsSheetState extends ConsumerState<PayoutSettingsSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
       child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Payout Settings', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text(
+              'Payout Settings',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _bankNameController,
-              decoration: const InputDecoration(labelText: 'Bank Name', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Bank Name',
+                border: OutlineInputBorder(),
+              ),
               validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _accountNumberController,
-              decoration: const InputDecoration(labelText: 'Account Number', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Account Number',
+                border: OutlineInputBorder(),
+              ),
               validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _routingNumberController,
-              decoration: const InputDecoration(labelText: 'Routing Number', border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                labelText: 'Routing Number',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _isSaving ? null : _saveSettings,
-              child: _isSaving ? const CircularProgressIndicator() : const Text('Save Settings'),
+              child: _isSaving
+                  ? const CircularProgressIndicator()
+                  : const Text('Save Settings'),
             ),
           ],
         ),
@@ -523,9 +574,9 @@ class _PayoutSettingsSheetState extends ConsumerState<PayoutSettingsSheet> {
       // Update would go here
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payout settings saved')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Payout settings saved')));
       }
     } catch (e) {
       if (mounted) {
@@ -552,7 +603,8 @@ class AddPaymentMethodSheet extends ConsumerStatefulWidget {
   const AddPaymentMethodSheet({super.key});
 
   @override
-  ConsumerState<AddPaymentMethodSheet> createState() => _AddPaymentMethodSheetState();
+  ConsumerState<AddPaymentMethodSheet> createState() =>
+      _AddPaymentMethodSheetState();
 }
 
 class _AddPaymentMethodSheetState extends ConsumerState<AddPaymentMethodSheet> {
@@ -748,4 +800,3 @@ class _AddPaymentMethodSheetState extends ConsumerState<AddPaymentMethodSheet> {
     super.dispose();
   }
 }
-

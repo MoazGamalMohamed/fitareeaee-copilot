@@ -8,16 +8,14 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 final tripRepositoryProvider = Provider((ref) {
   final firestore = FirebaseFirestore.instance;
 
-  return repo.TripRepositoryImpl(
-    firestore: firestore,
-  );
+  return repo.TripRepositoryImpl(firestore: firestore);
 });
 
 // Stream Providers
 final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
   final currentUserAsync = ref.watch(authStateProvider);
-  
+
   // Return empty stream if not authenticated
   return currentUserAsync.when(
     data: (user) {
@@ -59,7 +57,7 @@ class CreateTripStateNotifier extends StateNotifier<AsyncValue<Trip?>> {
   final repo.TripRepositoryImpl _repository;
 
   CreateTripStateNotifier(this._repository)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> createTrip(Trip trip) async {
     state = const AsyncValue.loading();
@@ -75,8 +73,7 @@ class CreateTripStateNotifier extends StateNotifier<AsyncValue<Trip?>> {
 class SearchTripsStateNotifier extends StateNotifier<AsyncValue<List<Trip>>> {
   final repo.TripRepositoryImpl _repository;
 
-  SearchTripsStateNotifier(this._repository)
-      : super(const AsyncValue.data([]));
+  SearchTripsStateNotifier(this._repository) : super(const AsyncValue.data([]));
 
   Future<void> searchTrips({
     required String origin,
@@ -107,7 +104,7 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
   final repo.TripRepositoryImpl _repository;
 
   TripBookingStateNotifier(this._repository)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> bookTrip(String tripId, String userId) async {
     state = const AsyncValue.loading();
@@ -132,25 +129,28 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
 
 // State Notifier Providers
 final createTripProvider =
-    StateNotifierProvider.autoDispose<CreateTripStateNotifier, AsyncValue<Trip?>>((
-  ref,
-) {
-  final repository = ref.watch(tripRepositoryProvider);
-  return CreateTripStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      CreateTripStateNotifier,
+      AsyncValue<Trip?>
+    >((ref) {
+      final repository = ref.watch(tripRepositoryProvider);
+      return CreateTripStateNotifier(repository);
+    });
 
 final searchTripsProvider =
-    StateNotifierProvider.autoDispose<SearchTripsStateNotifier, AsyncValue<List<Trip>>>((
-  ref,
-) {
-  final repository = ref.watch(tripRepositoryProvider);
-  return SearchTripsStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      SearchTripsStateNotifier,
+      AsyncValue<List<Trip>>
+    >((ref) {
+      final repository = ref.watch(tripRepositoryProvider);
+      return SearchTripsStateNotifier(repository);
+    });
 
 final tripBookingProvider =
-    StateNotifierProvider.autoDispose<TripBookingStateNotifier, AsyncValue<void>>((
-  ref,
-) {
-  final repository = ref.watch(tripRepositoryProvider);
-  return TripBookingStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      TripBookingStateNotifier,
+      AsyncValue<void>
+    >((ref) {
+      final repository = ref.watch(tripRepositoryProvider);
+      return TripBookingStateNotifier(repository);
+    });

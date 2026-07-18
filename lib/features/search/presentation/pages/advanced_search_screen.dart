@@ -54,10 +54,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Advanced Search'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Advanced Search'), centerTitle: true),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -129,9 +126,13 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildTypeButton('Package', _tripType == 'package', () {
-                    setState(() => _tripType = 'package');
-                  }),
+                  child: _buildTypeButton(
+                    'Package',
+                    _tripType == 'package',
+                    () {
+                      setState(() => _tripType = 'package');
+                    },
+                  ),
                 ),
               ],
             ),
@@ -235,9 +236,9 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
@@ -258,10 +259,9 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
           label,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: isSelected ? AppColors.primary : Colors.grey[600],
-                fontWeight:
-                    isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
+            color: isSelected ? AppColors.primary : Colors.grey[600],
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
         ),
       ),
     );
@@ -282,9 +282,9 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   void _submitSearch() {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a date')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a date')));
       return;
     }
 

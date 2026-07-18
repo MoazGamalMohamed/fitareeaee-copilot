@@ -102,7 +102,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -140,7 +142,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ? null
                       : () {
                           if (_formKey.currentState!.validate()) {
-                            ref.read(signInProvider.notifier).signIn(
+                            ref
+                                .read(signInProvider.notifier)
+                                .signIn(
                                   email: _emailController.text,
                                   password: _passwordController.text,
                                 );

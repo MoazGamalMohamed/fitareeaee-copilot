@@ -49,12 +49,18 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
             const SizedBox(height: 24),
             const Text(
               'SOS ACTIVE',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
             ),
             const SizedBox(height: 16),
             Text('Type: ${alert.type.name.toUpperCase()}'),
             const SizedBox(height: 8),
-            Text('Location: ${alert.latitude.toStringAsFixed(4)}, ${alert.longitude.toStringAsFixed(4)}'),
+            Text(
+              'Location: ${alert.latitude.toStringAsFixed(4)}, ${alert.longitude.toStringAsFixed(4)}',
+            ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () => _callEmergency(),
@@ -63,7 +69,10 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -105,8 +114,18 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
                   children: [
                     Icon(Icons.sos, size: 60, color: Colors.white),
                     SizedBox(height: 8),
-                    Text('HOLD', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text('for SOS', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                    Text(
+                      'HOLD',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'for SOS',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
                   ],
                 ),
               ),
@@ -114,7 +133,10 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
           ),
           const SizedBox(height: 32),
           // Emergency type selector
-          const Text('Emergency Type:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Emergency Type:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -132,8 +154,16 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildQuickAction(Icons.phone, 'Call 911', () => _callEmergency()),
-              _buildQuickAction(Icons.share_location, 'Share Location', () => _shareLocation()),
+              _buildQuickAction(
+                Icons.phone,
+                'Call 911',
+                () => _callEmergency(),
+              ),
+              _buildQuickAction(
+                Icons.share_location,
+                'Share Location',
+                () => _shareLocation(),
+              ),
             ],
           ),
           const SizedBox(height: 32),
@@ -149,7 +179,11 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
       onTap: onTap,
       child: Column(
         children: [
-          CircleAvatar(radius: 30, backgroundColor: Colors.grey[200], child: Icon(icon, size: 30)),
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.grey[200],
+            child: Icon(icon, size: 30),
+          ),
           const SizedBox(height: 8),
           Text(label, style: const TextStyle(fontSize: 12)),
         ],
@@ -157,15 +191,24 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
     );
   }
 
-  Widget _buildEmergencyContactsSection(AsyncValue<List<EmergencyContact>> contacts) {
+  Widget _buildEmergencyContactsSection(
+    AsyncValue<List<EmergencyContact>> contacts,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Emergency Contacts', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            TextButton.icon(onPressed: _addEmergencyContact, icon: const Icon(Icons.add), label: const Text('Add')),
+            const Text(
+              'Emergency Contacts',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextButton.icon(
+              onPressed: _addEmergencyContact,
+              icon: const Icon(Icons.add),
+              label: const Text('Add'),
+            ),
           ],
         ),
         contacts.when(
@@ -173,7 +216,9 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
           error: (e, _) => Text('Error: $e'),
           data: (list) => list.isEmpty
               ? const Text('No emergency contacts added')
-              : Column(children: list.map((c) => _buildContactTile(c)).toList()),
+              : Column(
+                  children: list.map((c) => _buildContactTile(c)).toList(),
+                ),
         ),
       ],
     );
@@ -184,7 +229,10 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
       leading: const CircleAvatar(child: Icon(Icons.person)),
       title: Text(contact.name),
       subtitle: Text(contact.phone),
-      trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => removeEmergencyContact(contact.id)),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_outline),
+        onPressed: () => removeEmergencyContact(contact.id),
+      ),
     );
   }
 
@@ -193,10 +241,18 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
     try {
       await triggerSOS(tripId: widget.tripId, type: _selectedType);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SOS Alert Triggered!'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('SOS Alert Triggered!'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isTriggering = false);
     }
@@ -204,7 +260,10 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
 
   Future<void> _cancelAlert(String alertId) async {
     await cancelSOS(alertId);
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('SOS Cancelled')));
+    if (mounted)
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('SOS Cancelled')));
   }
 
   Future<void> _callEmergency() async {
@@ -213,7 +272,9 @@ class _SOSScreenState extends ConsumerState<SOSScreen> {
   }
 
   void _shareLocation() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Location shared with emergency contacts')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Location shared with emergency contacts')),
+    );
   }
 
   void _addEmergencyContact() {
@@ -237,15 +298,28 @@ class _AddContactDialogState extends State<_AddContactDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(controller: _nameController, decoration: const InputDecoration(labelText: 'Name')),
-          TextField(controller: _phoneController, decoration: const InputDecoration(labelText: 'Phone'), keyboardType: TextInputType.phone),
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+          ),
+          TextField(
+            controller: _phoneController,
+            decoration: const InputDecoration(labelText: 'Phone'),
+            keyboardType: TextInputType.phone,
+          ),
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
         ElevatedButton(
           onPressed: () async {
-            await addEmergencyContact(name: _nameController.text, phone: _phoneController.text);
+            await addEmergencyContact(
+              name: _nameController.text,
+              phone: _phoneController.text,
+            );
             if (context.mounted) Navigator.pop(context);
           },
           child: const Text('Add'),

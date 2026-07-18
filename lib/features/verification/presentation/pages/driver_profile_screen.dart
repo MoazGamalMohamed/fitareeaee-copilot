@@ -17,17 +17,18 @@ class DriverProfileScreen extends ConsumerStatefulWidget {
   const DriverProfileScreen({super.key, this.isRequired = false});
 
   @override
-  ConsumerState<DriverProfileScreen> createState() => _DriverProfileScreenState();
+  ConsumerState<DriverProfileScreen> createState() =>
+      _DriverProfileScreenState();
 }
 
 class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _vehicleModelController;
   late TextEditingController _vehicleColorController;
   late TextEditingController _plateNumberController;
   late TextEditingController _licenseNumberController;
-  
+
   String _vehicleType = 'car'; // car, van, motorcycle, truck, bike
   bool _isLoading = false;
   bool _hasExistingData = false;
@@ -54,7 +55,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    final verificationAsync = userId != null 
+    final verificationAsync = userId != null
         ? ref.watch(userVerificationProvider(userId))
         : const AsyncValue<UserVerification?>.data(null);
 
@@ -62,7 +63,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
       appBar: AppBar(
         title: const Text('Driver Profile'),
         centerTitle: true,
-        leading: widget.isRequired 
+        leading: widget.isRequired
             ? IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => context.pop(),
@@ -120,7 +121,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                   // Vehicle Information Section
                   _buildSectionTitle('Vehicle Information'),
                   const SizedBox(height: 16),
-                  
+
                   // Vehicle Type Selection
                   _buildSectionTitle('Vehicle Type'),
                   const SizedBox(height: 8),
@@ -128,25 +129,49 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                     spacing: 8,
                     children: [
                       _buildVehicleTypeChip('car', 'Car', Icons.directions_car),
-                      _buildVehicleTypeChip('van', 'Van', Icons.airport_shuttle),
-                      _buildVehicleTypeChip('motorcycle', 'Motorcycle', Icons.two_wheeler),
-                      _buildVehicleTypeChip('truck', 'Truck', Icons.local_shipping),
-                      _buildVehicleTypeChip('bike', 'Bicycle', Icons.pedal_bike),
+                      _buildVehicleTypeChip(
+                        'van',
+                        'Van',
+                        Icons.airport_shuttle,
+                      ),
+                      _buildVehicleTypeChip(
+                        'motorcycle',
+                        'Motorcycle',
+                        Icons.two_wheeler,
+                      ),
+                      _buildVehicleTypeChip(
+                        'truck',
+                        'Truck',
+                        Icons.local_shipping,
+                      ),
+                      _buildVehicleTypeChip(
+                        'bike',
+                        'Bicycle',
+                        Icons.pedal_bike,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
+
                   _buildTextField(
                     controller: _vehicleModelController,
-                    label: _vehicleType == 'bike' ? 'Bicycle Brand/Model' : 'Vehicle Model',
-                    hint: _vehicleType == 'bike' ? 'e.g., Trek Mountain Bike' : 'e.g., Toyota Camry 2020',
-                    icon: _vehicleType == 'bike' ? Icons.pedal_bike : Icons.directions_car,
+                    label: _vehicleType == 'bike'
+                        ? 'Bicycle Brand/Model'
+                        : 'Vehicle Model',
+                    hint: _vehicleType == 'bike'
+                        ? 'e.g., Trek Mountain Bike'
+                        : 'e.g., Toyota Camry 2020',
+                    icon: _vehicleType == 'bike'
+                        ? Icons.pedal_bike
+                        : Icons.directions_car,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   _buildTextField(
                     controller: _vehicleColorController,
-                    label: _vehicleType == 'bike' ? 'Bicycle Color' : 'Vehicle Color',
+                    label: _vehicleType == 'bike'
+                        ? 'Bicycle Color'
+                        : 'Vehicle Color',
                     hint: 'e.g., Silver',
                     icon: Icons.color_lens,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
@@ -175,17 +200,23 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                       icon: Icons.badge,
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Driver's License Document Upload
                     _buildDocumentUploadCard(
                       title: "Driver's License Photo",
-                      subtitle: 'Upload a clear photo of your driver\'s license',
+                      subtitle:
+                          'Upload a clear photo of your driver\'s license',
                       icon: Icons.drive_eta,
                       isVerified: verification?.driverLicenseVerified ?? false,
                       isUploading: _uploadingType == 'driverLicense',
-                      isPending: (verification?.driverLicenseUrl != null && !(verification?.driverLicenseVerified ?? false)),
+                      isPending:
+                          (verification?.driverLicenseUrl != null &&
+                          !(verification?.driverLicenseVerified ?? false)),
                       documentUrl: verification?.driverLicenseUrl,
-                      onUpload: () => _uploadDocument(VerificationType.driverLicense, "Driver's License"),
+                      onUpload: () => _uploadDocument(
+                        VerificationType.driverLicense,
+                        "Driver's License",
+                      ),
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -196,20 +227,28 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                     const SizedBox(height: 16),
                     _buildDocumentUploadCard(
                       title: 'Vehicle Registration Photo',
-                      subtitle: 'Upload a clear photo of your vehicle registration',
+                      subtitle:
+                          'Upload a clear photo of your vehicle registration',
                       icon: Icons.description,
                       isVerified: verification?.vehicleVerified ?? false,
                       isUploading: _uploadingType == 'vehicle',
-                      isPending: (verification?.vehicleRegistrationUrl != null && !(verification?.vehicleVerified ?? false)),
+                      isPending:
+                          (verification?.vehicleRegistrationUrl != null &&
+                          !(verification?.vehicleVerified ?? false)),
                       documentUrl: verification?.vehicleRegistrationUrl,
-                      onUpload: () => _uploadDocument(VerificationType.vehicle, 'Vehicle Registration'),
+                      onUpload: () => _uploadDocument(
+                        VerificationType.vehicle,
+                        'Vehicle Registration',
+                      ),
                     ),
                   ],
                   const SizedBox(height: 32),
 
                   // Submit Button
                   ElevatedButton(
-                    onPressed: _isLoading ? null : () => _saveProfile(verification),
+                    onPressed: _isLoading
+                        ? null
+                        : () => _saveProfile(verification),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -234,9 +273,9 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
@@ -253,9 +292,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       validator: validator,
     );
@@ -304,14 +341,14 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
           backgroundColor: isVerified
               ? Colors.green
               : isPending
-                  ? Colors.orange
-                  : Colors.grey[300],
+              ? Colors.orange
+              : Colors.grey[300],
           child: Icon(
             isVerified
                 ? Icons.check
                 : isPending
-                    ? Icons.pending
-                    : icon,
+                ? Icons.pending
+                : icon,
             color: isVerified || isPending ? Colors.white : Colors.grey[600],
           ),
         ),
@@ -365,7 +402,10 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
     );
   }
 
-  Future<void> _uploadDocument(VerificationType type, String documentName) async {
+  Future<void> _uploadDocument(
+    VerificationType type,
+    String documentName,
+  ) async {
     try {
       setState(() => _uploadingType = type.name);
 
@@ -387,7 +427,9 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
       // Upload to Firebase Storage
       final file = File(image.path);
       final params = UploadDocumentParams(file: file, type: type);
-      final downloadUrl = await ref.read(uploadVerificationDocumentProvider(params).future);
+      final downloadUrl = await ref.read(
+        uploadVerificationDocumentProvider(params).future,
+      );
 
       // Submit verification request
       await submitVerification(
@@ -421,7 +463,8 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
   }
 
   Widget _buildVerificationStatus(UserVerification? verification) {
-    final hasVehicleInfo = verification?.vehicleModel != null &&
+    final hasVehicleInfo =
+        verification?.vehicleModel != null &&
         verification?.vehiclePlateNumber != null;
     final isVerified = verification?.vehicleVerified ?? false;
 
@@ -431,15 +474,15 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
         color: isVerified
             ? Colors.green.withValues(alpha: 0.1)
             : hasVehicleInfo
-                ? Colors.orange.withValues(alpha: 0.1)
-                : Colors.grey.withValues(alpha: 0.1),
+            ? Colors.orange.withValues(alpha: 0.1)
+            : Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isVerified
               ? Colors.green
               : hasVehicleInfo
-                  ? Colors.orange
-                  : Colors.grey,
+              ? Colors.orange
+              : Colors.grey,
         ),
       ),
       child: Row(
@@ -448,13 +491,13 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
             isVerified
                 ? Icons.verified
                 : hasVehicleInfo
-                    ? Icons.pending
-                    : Icons.info_outline,
+                ? Icons.pending
+                : Icons.info_outline,
             color: isVerified
                 ? Colors.green
                 : hasVehicleInfo
-                    ? Colors.orange
-                    : Colors.grey,
+                ? Colors.orange
+                : Colors.grey,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -465,23 +508,23 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                   isVerified
                       ? 'Verified Driver'
                       : hasVehicleInfo
-                          ? 'Pending Verification'
-                          : 'Not Verified',
+                      ? 'Pending Verification'
+                      : 'Not Verified',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: isVerified
                         ? Colors.green
                         : hasVehicleInfo
-                            ? Colors.orange
-                            : Colors.grey,
+                        ? Colors.orange
+                        : Colors.grey,
                   ),
                 ),
                 Text(
                   isVerified
                       ? 'Your driver profile is verified'
                       : hasVehicleInfo
-                          ? 'Your information is being reviewed'
-                          : 'Complete your profile to start offering rides',
+                      ? 'Your information is being reviewed'
+                      : 'Complete your profile to start offering rides',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -533,10 +576,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -546,4 +586,3 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
     }
   }
 }
-

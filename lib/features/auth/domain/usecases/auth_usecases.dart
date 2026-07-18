@@ -10,10 +10,7 @@ abstract class AuthUseCases {
     required List<String> roles,
   });
 
-  Future<AppUser> signIn({
-    required String email,
-    required String password,
-  });
+  Future<AppUser> signIn({required String email, required String password});
 
   Future<void> signOut();
 

@@ -36,10 +36,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     final authState = ref.watch(authStateProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book Trip'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Book Trip'), centerTitle: true),
       body: authState.when(
         data: (user) {
           if (user == null) {
@@ -66,14 +63,41 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Trip Summary', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Trip Summary',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 12),
-                  _buildInfoRow(Icons.location_on, 'From', widget.trip.originAddress),
-                  _buildInfoRow(Icons.flag, 'To', widget.trip.destinationAddress),
-                  _buildInfoRow(Icons.calendar_today, 'Date', _formatDate(widget.trip.departureTime)),
-                  _buildInfoRow(Icons.access_time, 'Time', _formatTime(widget.trip.departureTime)),
-                  _buildInfoRow(Icons.attach_money, 'Price/Seat', '\$${widget.trip.pricePerSeat.toStringAsFixed(2)}'),
-                  _buildInfoRow(Icons.event_seat, 'Available', '${widget.trip.availableSeats} seats'),
+                  _buildInfoRow(
+                    Icons.location_on,
+                    'From',
+                    widget.trip.originAddress,
+                  ),
+                  _buildInfoRow(
+                    Icons.flag,
+                    'To',
+                    widget.trip.destinationAddress,
+                  ),
+                  _buildInfoRow(
+                    Icons.calendar_today,
+                    'Date',
+                    _formatDate(widget.trip.departureTime),
+                  ),
+                  _buildInfoRow(
+                    Icons.access_time,
+                    'Time',
+                    _formatTime(widget.trip.departureTime),
+                  ),
+                  _buildInfoRow(
+                    Icons.attach_money,
+                    'Price/Seat',
+                    '\$${widget.trip.pricePerSeat.toStringAsFixed(2)}',
+                  ),
+                  _buildInfoRow(
+                    Icons.event_seat,
+                    'Available',
+                    '${widget.trip.availableSeats} seats',
+                  ),
                 ],
               ),
             ),
@@ -87,18 +111,26 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Number of Seats', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Number of Seats',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: _seatsToBook > 1 ? () => setState(() => _seatsToBook--) : null,
+                        onPressed: _seatsToBook > 1
+                            ? () => setState(() => _seatsToBook--)
+                            : null,
                         icon: const Icon(Icons.remove_circle_outline),
                         iconSize: 32,
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(color: AppColors.border),
                           borderRadius: BorderRadius.circular(8),
@@ -130,7 +162,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pickup & Dropoff', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Pickup & Dropoff',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 12),
                   TextFormField(
                     initialValue: _pickupLocation,
@@ -165,7 +200,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Total Price', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Total Price',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
                 Text(
                   '\$${_totalPrice.toStringAsFixed(2)}',
                   style: TextStyle(
@@ -188,7 +226,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Text('Confirm Booking'),
             ),
@@ -207,7 +248,12 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
           Icon(icon, size: 18, color: AppColors.textSecondary),
           const SizedBox(width: 8),
           Text('$label: ', style: TextStyle(color: AppColors.textSecondary)),
-          Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500))),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
         ],
       ),
     );
@@ -241,8 +287,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
-      print('🎫 Creating booking: passenger=$userId, driver=${widget.trip.driverId}, trip=${widget.trip.id}');
+
+      print(
+        '🎫 Creating booking: passenger=$userId, driver=${widget.trip.driverId}, trip=${widget.trip.id}',
+      );
 
       await ref.read(createBookingProvider(booking).future);
 
@@ -258,7 +306,10 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Booking failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Booking failed: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -266,4 +317,3 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     }
   }
 }
-

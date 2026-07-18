@@ -42,10 +42,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     final paymentMethod = ref.watch(paymentMethodProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Payment'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Payment'), centerTitle: true),
       body: authState.when(
         data: (user) {
           if (user == null) return const Center(child: Text('Please log in'));
@@ -57,7 +54,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     );
   }
 
-  Widget _buildPaymentForm(BuildContext context, String userId, PaymentMethodState paymentMethod) {
+  Widget _buildPaymentForm(
+    BuildContext context,
+    String userId,
+    PaymentMethodState paymentMethod,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -93,13 +94,29 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Payment Summary', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'Payment Summary',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 12),
-                  _buildSummaryRow('Trip Booking', '\$${widget.booking.totalPrice.toStringAsFixed(2)}'),
-                  _buildSummaryRow('Service Fee (10%)', '\$${(widget.booking.totalPrice * 0.10).toStringAsFixed(2)}'),
-                  _buildSummaryRow('Processing Fee', '\$${((widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}'),
+                  _buildSummaryRow(
+                    'Trip Booking',
+                    '\$${widget.booking.totalPrice.toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Service Fee (10%)',
+                    '\$${(widget.booking.totalPrice * 0.10).toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Processing Fee',
+                    '\$${((widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}',
+                  ),
                   const Divider(),
-                  _buildSummaryRow('Total', '\$${(widget.booking.totalPrice + (widget.booking.totalPrice * 0.10) + (widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}', isBold: true),
+                  _buildSummaryRow(
+                    'Total',
+                    '\$${(widget.booking.totalPrice + (widget.booking.totalPrice * 0.10) + (widget.booking.totalPrice * 0.029) + 0.30).toStringAsFixed(2)}',
+                    isBold: true,
+                  ),
                 ],
               ),
             ),
@@ -107,11 +124,29 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           const SizedBox(height: 16),
 
           // Payment Method Selection
-          Text('Payment Method', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'Payment Method',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
-          _buildPaymentMethodTile(PaymentMethodType.card, 'Credit/Debit Card', Icons.credit_card, paymentMethod),
-          _buildPaymentMethodTile(PaymentMethodType.wallet, 'Wallet Balance', Icons.account_balance_wallet, paymentMethod),
-          _buildPaymentMethodTile(PaymentMethodType.bankTransfer, 'Bank Transfer', Icons.account_balance, paymentMethod),
+          _buildPaymentMethodTile(
+            PaymentMethodType.card,
+            'Credit/Debit Card',
+            Icons.credit_card,
+            paymentMethod,
+          ),
+          _buildPaymentMethodTile(
+            PaymentMethodType.wallet,
+            'Wallet Balance',
+            Icons.account_balance_wallet,
+            paymentMethod,
+          ),
+          _buildPaymentMethodTile(
+            PaymentMethodType.bankTransfer,
+            'Bank Transfer',
+            Icons.account_balance,
+            paymentMethod,
+          ),
           const SizedBox(height: 16),
 
           // Card Details (if card selected)
@@ -122,7 +157,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Card Details', style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      'Card Details',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _cardNumberController,
@@ -174,10 +212,16 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               onPressed: _isLoading ? null : () => _processPayment(userId),
               child: _isLoading
                   ? const SizedBox(
-                      height: 20, width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
-                  : Text('Pay \$${widget.booking.totalPrice.toStringAsFixed(2)}'),
+                  : Text(
+                      'Pay \$${widget.booking.totalPrice.toStringAsFixed(2)}',
+                    ),
             ),
           ),
         ],
@@ -191,25 +235,39 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: isBold ? const TextStyle(fontWeight: FontWeight.bold) : null),
-          Text(value, style: TextStyle(
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: isBold ? AppColors.primary : null,
-          )),
+          Text(
+            label,
+            style: isBold ? const TextStyle(fontWeight: FontWeight.bold) : null,
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+              color: isBold ? AppColors.primary : null,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPaymentMethodTile(PaymentMethodType type, String title, IconData icon, PaymentMethodState state) {
+  Widget _buildPaymentMethodTile(
+    PaymentMethodType type,
+    String title,
+    IconData icon,
+    PaymentMethodState state,
+  ) {
     final isSelected = state.selected == type;
     return Card(
       color: isSelected ? AppColors.primaryLight.withValues(alpha: 0.2) : null,
       child: ListTile(
         leading: Icon(icon, color: isSelected ? AppColors.primary : null),
         title: Text(title),
-        trailing: isSelected ? Icon(Icons.check_circle, color: AppColors.primary) : null,
-        onTap: () => ref.read(paymentMethodProvider.notifier).selectMethod(type),
+        trailing: isSelected
+            ? Icon(Icons.check_circle, color: AppColors.primary)
+            : null,
+        onTap: () =>
+            ref.read(paymentMethodProvider.notifier).selectMethod(type),
       ),
     );
   }
@@ -239,22 +297,27 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       if (mounted) {
         // Invalidate providers to refresh data
         ref.invalidate(userBookingsProvider);
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Payment successful! Check Matches tab for your booking.'),
+            content: Text(
+              'Payment successful! Check Matches tab for your booking.',
+            ),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 4),
           ),
         );
-        
+
         // Navigate back to home with Matches tab selected
         context.go('/home?tab=2'); // Tab index 2 is Matches
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Payment failed: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -262,4 +325,3 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     }
   }
 }
-

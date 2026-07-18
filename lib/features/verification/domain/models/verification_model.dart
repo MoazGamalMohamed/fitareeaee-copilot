@@ -4,7 +4,15 @@ part 'verification_model.freezed.dart';
 part 'verification_model.g.dart';
 
 enum VerificationStatus { pending, approved, rejected, expired }
-enum VerificationType { email, phone, identity, driverLicense, vehicle, selfieWithId }
+
+enum VerificationType {
+  email,
+  phone,
+  identity,
+  driverLicense,
+  vehicle,
+  selfieWithId,
+}
 
 @freezed
 class VerificationModel with _$VerificationModel {
@@ -86,13 +94,18 @@ class UserVerification with _$UserVerification {
   }
 
   /// Check if user can be a driver (requires driver license)
-  bool get canBeDriver => identityVerified && selfieWithIdVerified && driverLicenseVerified;
+  bool get canBeDriver =>
+      identityVerified && selfieWithIdVerified && driverLicenseVerified;
 
   /// Check if user can be a courier (requires vehicle registration)
-  bool get canBeCourier => identityVerified && selfieWithIdVerified && vehicleVerified;
+  bool get canBeCourier =>
+      identityVerified && selfieWithIdVerified && vehicleVerified;
 
   /// Check if user can be matched - requires all basic verifications
   /// Driver/vehicle verification is checked separately based on user's role
-  bool get canBeMatched => emailVerified && phoneVerified && identityVerified && selfieWithIdVerified;
+  bool get canBeMatched =>
+      emailVerified &&
+      phoneVerified &&
+      identityVerified &&
+      selfieWithIdVerified;
 }
-

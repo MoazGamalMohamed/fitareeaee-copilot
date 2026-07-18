@@ -21,10 +21,12 @@ class TripModel with _$TripModel {
     required int totalSeats,
     required int availableSeats,
     required List<String> passengerIds,
-    required String status, // 'pending', 'in_progress', 'completed', 'cancelled'
+    required String
+    status, // 'pending', 'in_progress', 'completed', 'cancelled'
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _TripModel;
 
-  factory TripModel.fromJson(Map<String, dynamic> json) => _$TripModelFromJson(json);
+  factory TripModel.fromJson(Map<String, dynamic> json) =>
+      _$TripModelFromJson(json);
 }

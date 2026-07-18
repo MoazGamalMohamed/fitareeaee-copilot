@@ -5,7 +5,10 @@ import '../../domain/models/rating_model.dart';
 final _firestore = FirebaseFirestore.instance;
 
 // Submit rating
-final submitRatingProvider = FutureProvider.family<RatingModel, RatingModel>((ref, rating) async {
+final submitRatingProvider = FutureProvider.family<RatingModel, RatingModel>((
+  ref,
+  rating,
+) async {
   final docRef = _firestore.collection('ratings').doc();
   final ratingWithId = RatingModel(
     id: docRef.id,
@@ -17,12 +20,12 @@ final submitRatingProvider = FutureProvider.family<RatingModel, RatingModel>((re
     tags: rating.tags,
     createdAt: DateTime.now(),
   );
-  
+
   await docRef.set(ratingWithId.toJson());
-  
+
   // Update user's average rating
   await _updateUserAverageRating(rating.ratedUserId);
-  
+
   return ratingWithId;
 });
 
@@ -32,15 +35,15 @@ Future<void> _updateUserAverageRating(String userId) async {
       .collection('ratings')
       .where('ratedUserId', isEqualTo: userId)
       .get();
-  
+
   if (ratingsSnapshot.docs.isEmpty) return;
-  
+
   final ratings = ratingsSnapshot.docs
       .map((doc) => doc.data()['rating'] as int)
       .toList();
-  
+
   final averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
-  
+
   await _firestore.collection('users').doc(userId).update({
     'averageRating': averageRating,
     'totalRatings': ratings.length,
@@ -48,24 +51,32 @@ Future<void> _updateUserAverageRating(String userId) async {
 }
 
 // Get user ratings
-final userRatingsProvider = StreamProvider.family<List<RatingModel>, String>((ref, userId) {
+final userRatingsProvider = StreamProvider.family<List<RatingModel>, String>((
+  ref,
+  userId,
+) {
   return _firestore
       .collection('ratings')
       .where('ratedUserId', isEqualTo: userId)
       .orderBy('createdAt', descending: true)
       .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) => RatingModel.fromJson({...doc.data(), 'id': doc.id}))
-          .toList());
+      .map(
+        (snapshot) => snapshot.docs
+            .map((doc) => RatingModel.fromJson({...doc.data(), 'id': doc.id}))
+            .toList(),
+      );
 });
 
 // Get trip ratings
-final tripRatingsProvider = FutureProvider.family<List<RatingModel>, String>((ref, tripId) async {
+final tripRatingsProvider = FutureProvider.family<List<RatingModel>, String>((
+  ref,
+  tripId,
+) async {
   final snapshot = await _firestore
       .collection('ratings')
       .where('tripId', isEqualTo: tripId)
       .get();
-  
+
   return snapshot.docs
       .map((doc) => RatingModel.fromJson({...doc.data(), 'id': doc.id}))
       .toList();
@@ -77,17 +88,9 @@ class RatingState {
   final String review;
   final List<String> tags;
 
-  const RatingState({
-    this.rating = 0,
-    this.review = '',
-    this.tags = const [],
-  });
+  const RatingState({this.rating = 0, this.review = '', this.tags = const []});
 
-  RatingState copyWith({
-    int? rating,
-    String? review,
-    List<String>? tags,
-  }) {
+  RatingState copyWith({int? rating, String? review, List<String>? tags}) {
     return RatingState(
       rating: rating ?? this.rating,
       review: review ?? this.review,
@@ -110,10 +113,11 @@ class RatingStateNotifier extends StateNotifier<RatingState> {
     }
     state = state.copyWith(tags: tags);
   }
+
   void reset() => state = const RatingState();
 }
 
-final ratingStateProvider = StateNotifierProvider<RatingStateNotifier, RatingState>((ref) {
-  return RatingStateNotifier();
-});
-
+final ratingStateProvider =
+    StateNotifierProvider<RatingStateNotifier, RatingState>((ref) {
+      return RatingStateNotifier();
+    });

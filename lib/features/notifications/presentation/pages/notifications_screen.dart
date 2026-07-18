@@ -23,7 +23,9 @@ class NotificationsScreen extends ConsumerWidget {
                 await markAllNotificationsAsRead(user.uid);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('All notifications marked as read')),
+                    const SnackBar(
+                      content: Text('All notifications marked as read'),
+                    ),
                   );
                 }
               }
@@ -40,9 +42,16 @@ class NotificationsScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.notifications_none, size: 64, color: Colors.grey),
+                    Icon(
+                      Icons.notifications_none,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
                     SizedBox(height: 16),
-                    Text('No notifications yet', style: TextStyle(color: Colors.grey)),
+                    Text(
+                      'No notifications yet',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               )
@@ -84,16 +93,28 @@ class _NotificationTile extends StatelessWidget {
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: _getAvatarColor(),
-            child: Icon(_getTypeIcon(notification.type), color: Colors.white, size: 20),
+            child: Icon(
+              _getTypeIcon(notification.type),
+              color: Colors.white,
+              size: 20,
+            ),
           ),
           title: Text(
             notification.title,
-            style: TextStyle(fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold),
+            style: TextStyle(
+              fontWeight: notification.isRead
+                  ? FontWeight.normal
+                  : FontWeight.bold,
+            ),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(notification.body, maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text(
+                notification.body,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 4),
               Text(
                 _formatTime(notification.createdAt),
@@ -115,20 +136,28 @@ class _NotificationTile extends StatelessWidget {
 
   IconData _getTypeIcon(NotificationType type) {
     switch (type) {
-      case NotificationType.booking: return Icons.calendar_today;
-      case NotificationType.chat: return Icons.chat;
-      case NotificationType.payment: return Icons.payment;
-      case NotificationType.trip: return Icons.directions_car;
-      case NotificationType.rating: return Icons.star;
-      case NotificationType.promo: return Icons.local_offer;
-      case NotificationType.system: return Icons.info;
-      case NotificationType.verification: return Icons.verified_user;
+      case NotificationType.booking:
+        return Icons.calendar_today;
+      case NotificationType.chat:
+        return Icons.chat;
+      case NotificationType.payment:
+        return Icons.payment;
+      case NotificationType.trip:
+        return Icons.directions_car;
+      case NotificationType.rating:
+        return Icons.star;
+      case NotificationType.promo:
+        return Icons.local_offer;
+      case NotificationType.system:
+        return Icons.info;
+      case NotificationType.verification:
+        return Icons.verified_user;
     }
   }
 
   bool _isRejectionNotification() {
     return notification.type == NotificationType.verification &&
-           notification.data?['status'] == 'rejected';
+        notification.data?['status'] == 'rejected';
   }
 
   Color? _getCardColor() {
@@ -147,14 +176,22 @@ class _NotificationTile extends StatelessWidget {
 
   Color _getTypeColor(NotificationType type) {
     switch (type) {
-      case NotificationType.booking: return Colors.blue;
-      case NotificationType.chat: return Colors.green;
-      case NotificationType.payment: return Colors.orange;
-      case NotificationType.trip: return Colors.purple;
-      case NotificationType.rating: return Colors.amber;
-      case NotificationType.promo: return Colors.pink;
-      case NotificationType.system: return Colors.grey;
-      case NotificationType.verification: return Colors.teal;
+      case NotificationType.booking:
+        return Colors.blue;
+      case NotificationType.chat:
+        return Colors.green;
+      case NotificationType.payment:
+        return Colors.orange;
+      case NotificationType.trip:
+        return Colors.purple;
+      case NotificationType.rating:
+        return Colors.amber;
+      case NotificationType.promo:
+        return Colors.pink;
+      case NotificationType.system:
+        return Colors.grey;
+      case NotificationType.verification:
+        return Colors.teal;
     }
   }
 
@@ -169,7 +206,10 @@ class _NotificationTile extends StatelessWidget {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
-  void _handleNotificationTap(BuildContext context, NotificationModel notification) {
+  void _handleNotificationTap(
+    BuildContext context,
+    NotificationModel notification,
+  ) {
     if (notification.actionUrl != null) {
       // Navigate to action URL
       ScaffoldMessenger.of(context).showSnackBar(
@@ -178,4 +218,3 @@ class _NotificationTile extends StatelessWidget {
     }
   }
 }
-

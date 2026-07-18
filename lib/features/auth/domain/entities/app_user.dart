@@ -89,8 +89,12 @@ class AppUser {
       totalRatings: json['totalRatings'] as int? ?? 0,
       totalTrips: json['totalTrips'] as int? ?? 0,
       isVerified: json['isVerified'] as bool? ?? false,
-      createdAt: DateTime.parse(json['createdAt'] as String? ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] as String? ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] as String? ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 

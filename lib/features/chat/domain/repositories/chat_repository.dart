@@ -20,7 +20,9 @@ abstract class ChatRepository {
   /// Stream messages in a conversation for real-time updates
   /// Returns messages in reverse chronological order (newest first)
   /// conversationId format: "userId1_userId2" (IDs are sorted alphabetically)
-  Stream<Either<Failure, List<Message>>> streamConversation(String conversationId);
+  Stream<Either<Failure, List<Message>>> streamConversation(
+    String conversationId,
+  );
 
   /// Stream all conversations for a user for real-time updates
   /// Each conversation is represented by the most recent message

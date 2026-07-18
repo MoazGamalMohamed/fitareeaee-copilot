@@ -46,7 +46,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
     if (source == null) return;
 
-    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
+    final pickedFile = await _picker.pickImage(
+      source: source,
+      imageQuality: 80,
+    );
     if (pickedFile == null) return;
 
     setState(() {
@@ -60,7 +63,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
       // Upload to Firebase Storage
       final params = UploadDocumentParams(file: file, type: type);
-      final downloadUrl = await ref.read(uploadVerificationDocumentProvider(params).future);
+      final downloadUrl = await ref.read(
+        uploadVerificationDocumentProvider(params).future,
+      );
 
       // Submit verification request
       await submitVerification(
@@ -71,13 +76,18 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
       if (type != VerificationType.identity && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title uploaded successfully. Pending review.')),
+          SnackBar(
+            content: Text('$title uploaded successfully. Pending review.'),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Upload failed: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -95,9 +105,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     final userAsync = ref.watch(authStateProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verification Center'),
-      ),
+      appBar: AppBar(title: const Text('Verification Center')),
       body: verificationAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -116,7 +124,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     final isCourier = user?.hasRole('courier') ?? false;
     // Both driver license and vehicle registration required for anyone using vehicles
     final needsVehicleVerification = isDriver || isCourier;
-    
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -176,8 +184,11 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           icon: Icons.badge,
           isVerified: verification?.identityVerified ?? false,
           isUploading: _uploadingType == VerificationType.identity.name,
-          isPending: (verification?.identityDocumentUrl != null && !(verification?.identityVerified ?? false)),
-          onTap: () => _uploadDocument(VerificationType.identity, 'Identity Document'),
+          isPending:
+              (verification?.identityDocumentUrl != null &&
+              !(verification?.identityVerified ?? false)),
+          onTap: () =>
+              _uploadDocument(VerificationType.identity, 'Identity Document'),
         ),
         _buildVerificationItem(
           title: 'Selfie with ID',
@@ -185,21 +196,28 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           icon: Icons.face,
           isVerified: verification?.selfieWithIdVerified ?? false,
           isUploading: _uploadingType == VerificationType.selfieWithId.name,
-          isPending: (verification?.selfieWithIdUrl != null && !(verification?.selfieWithIdVerified ?? false)),
-          onTap: () => _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
+          isPending:
+              (verification?.selfieWithIdUrl != null &&
+              !(verification?.selfieWithIdVerified ?? false)),
+          onTap: () =>
+              _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
         ),
         if (needsVehicleVerification)
           Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                backgroundColor:
+                    (verification?.driverLicenseVerified ?? false) &&
+                        (verification?.vehicleVerified ?? false)
                     ? Colors.green
-                    : (verification?.driverLicenseUrl != null || verification?.vehicleRegistrationUrl != null)
-                        ? Colors.orange
-                        : Colors.blue,
+                    : (verification?.driverLicenseUrl != null ||
+                          verification?.vehicleRegistrationUrl != null)
+                    ? Colors.orange
+                    : Colors.blue,
                 child: Icon(
-                  (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                  (verification?.driverLicenseVerified ?? false) &&
+                          (verification?.vehicleVerified ?? false)
                       ? Icons.check_circle
                       : Icons.drive_eta,
                   color: Colors.white,
@@ -207,13 +225,17 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
               ),
               title: const Text('Driver/Vehicle Verification'),
               subtitle: Text(
-                (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                (verification?.driverLicenseVerified ?? false) &&
+                        (verification?.vehicleVerified ?? false)
                     ? 'Driver profile verified'
-                    : (verification?.driverLicenseUrl != null || verification?.vehicleRegistrationUrl != null)
-                        ? 'Complete your driver profile'
-                        : 'Set up your driver profile and upload documents',
+                    : (verification?.driverLicenseUrl != null ||
+                          verification?.vehicleRegistrationUrl != null)
+                    ? 'Complete your driver profile'
+                    : 'Set up your driver profile and upload documents',
                 style: TextStyle(
-                  color: (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                  color:
+                      (verification?.driverLicenseVerified ?? false) &&
+                          (verification?.vehicleVerified ?? false)
                       ? Colors.green
                       : null,
                 ),
@@ -246,29 +268,42 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: isVerified ? Colors.green : (isPending ? Colors.orange : Colors.grey[300]),
+          backgroundColor: isVerified
+              ? Colors.green
+              : (isPending ? Colors.orange : Colors.grey[300]),
           child: isUploading
               ? const SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
-              : Icon(icon, color: isVerified || isPending ? Colors.white : Colors.grey[600]),
+              : Icon(
+                  icon,
+                  color: isVerified || isPending
+                      ? Colors.white
+                      : Colors.grey[600],
+                ),
         ),
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: isVerified
             ? const Icon(Icons.check_circle, color: Colors.green)
-            : (isPending 
-                ? const Chip(
-                    label: Text('Pending Approval', style: TextStyle(fontSize: 12)),
-                    backgroundColor: Colors.orange,
-                    labelStyle: TextStyle(color: Colors.white),
-                  )
-                : TextButton(
-                    onPressed: isUploading ? null : onTap,
-                    child: Text(isUploading ? 'Uploading...' : 'Verify'),
-                  )),
+            : (isPending
+                  ? const Chip(
+                      label: Text(
+                        'Pending Approval',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      backgroundColor: Colors.orange,
+                      labelStyle: TextStyle(color: Colors.white),
+                    )
+                  : TextButton(
+                      onPressed: isUploading ? null : onTap,
+                      child: Text(isUploading ? 'Uploading...' : 'Verify'),
+                    )),
         onTap: isVerified || isUploading ? null : onTap,
       ),
     );
@@ -276,21 +311,31 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
   IconData _getLevelIcon(int level) {
     switch (level) {
-      case 0: return Icons.shield_outlined;
-      case 1: return Icons.verified_user_outlined;
-      case 2: return Icons.verified_user;
-      case 3: return Icons.verified;
-      default: return Icons.shield_outlined;
+      case 0:
+        return Icons.shield_outlined;
+      case 1:
+        return Icons.verified_user_outlined;
+      case 2:
+        return Icons.verified_user;
+      case 3:
+        return Icons.verified;
+      default:
+        return Icons.shield_outlined;
     }
   }
 
   Color _getLevelColor(int level) {
     switch (level) {
-      case 0: return Colors.grey;
-      case 1: return Colors.blue;
-      case 2: return Colors.orange;
-      case 3: return Colors.green;
-      default: return Colors.grey;
+      case 0:
+        return Colors.grey;
+      case 1:
+        return Colors.blue;
+      case 2:
+        return Colors.orange;
+      case 3:
+        return Colors.green;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -302,13 +347,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       // Reload user to get latest verification status
       await user.reload();
       final updatedUser = FirebaseAuth.instance.currentUser;
-      
+
       if (updatedUser?.emailVerified ?? false) {
         // Update Firestore if email is verified
-        final docRef = FirebaseFirestore.instance.collection('verifications').doc(user.uid);
+        final docRef = FirebaseFirestore.instance
+            .collection('verifications')
+            .doc(user.uid);
         final docSnapshot = await docRef.get();
         final now = DateTime.now().toIso8601String();
-        
+
         if (!docSnapshot.exists) {
           // Create new document with all required fields
           await docRef.set({
@@ -324,12 +371,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           });
         } else {
           // Update existing document
-          await docRef.update({
-            'emailVerified': true,
-            'updatedAt': now,
-          });
+          await docRef.update({'emailVerified': true, 'updatedAt': now});
         }
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -394,10 +438,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     } catch (e) {
       // Use default
     }
-    
+
     Country selectedCountry = CountryParser.parseCountryCode(countryCode);
     final phoneController = TextEditingController();
-    
+
     final phoneNumber = await showDialog<String>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -424,7 +468,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                   selectedCountry.flagEmoji,
                   style: const TextStyle(fontSize: 24),
                 ),
-                label: Text('+${selectedCountry.phoneCode} ${selectedCountry.name}'),
+                label: Text(
+                  '+${selectedCountry.phoneCode} ${selectedCountry.name}',
+                ),
               ),
               const SizedBox(height: 16),
               // Phone Number Input
@@ -449,7 +495,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                final fullNumber = '+${selectedCountry.phoneCode}${phoneController.text.trim()}';
+                final fullNumber =
+                    '+${selectedCountry.phoneCode}${phoneController.text.trim()}';
                 Navigator.pop(context, fullNumber);
               },
               child: const Text('Send Code'),
@@ -467,7 +514,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         verificationCompleted: (PhoneAuthCredential credential) async {
           // Auto-verification (Android only)
           try {
-            await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
+            await FirebaseAuth.instance.currentUser?.updatePhoneNumber(
+              credential,
+            );
             await _updatePhoneVerificationStatus(phoneNumber);
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -514,10 +563,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -567,10 +613,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         verificationId: _verificationId!,
         smsCode: code,
       );
-      
+
       await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
       await _updatePhoneVerificationStatus(phoneNumber);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -599,11 +645,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         .collection('verifications')
         .doc(user.uid)
         .set({
-      'userId': user.uid,
-      'phoneVerified': true,
-      'updatedAt': DateTime.now().toIso8601String(),
-      if (await FirebaseFirestore.instance.collection('verifications').doc(user.uid).get().then((doc) => !doc.exists))
-        'createdAt': DateTime.now().toIso8601String(),
-    }, SetOptions(merge: true));
+          'userId': user.uid,
+          'phoneVerified': true,
+          'updatedAt': DateTime.now().toIso8601String(),
+          if (await FirebaseFirestore.instance
+              .collection('verifications')
+              .doc(user.uid)
+              .get()
+              .then((doc) => !doc.exists))
+            'createdAt': DateTime.now().toIso8601String(),
+        }, SetOptions(merge: true));
   }
 }

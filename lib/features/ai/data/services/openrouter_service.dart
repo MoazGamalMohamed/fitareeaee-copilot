@@ -10,8 +10,8 @@ class OpenRouterService {
   OpenRouterService({
     required String apiKey,
     String model = 'openai/gpt-3.5-turbo',
-  })  : _apiKey = apiKey,
-        _model = model;
+  }) : _apiKey = apiKey,
+       _model = model;
 
   /// Send a chat completion request
   Future<String> chatCompletion({
@@ -62,7 +62,8 @@ class OpenRouterService {
 Generate a brief, friendly trip description for a ride offer.
 Keep it under 100 words and include relevant details about the route.''';
 
-    final userMessage = '''
+    final userMessage =
+        '''
 Generate a trip description for:
 - From: $origin
 - To: $destination
@@ -88,7 +89,8 @@ ${additionalNotes != null ? '- Notes: $additionalNotes' : ''}
 Based on the trip details, suggest a fair price range.
 Return JSON with format: {"minPrice": number, "maxPrice": number, "suggestedPrice": number, "currency": "USD"}''';
 
-    final userMessage = '''
+    final userMessage =
+        '''
 Estimate price for:
 - Distance: $distanceKm km
 - Type: $tripType
@@ -117,7 +119,10 @@ Return ONLY valid JSON.''';
     }
   }
 
-  Map<String, dynamic> _calculateDefaultPrice(double distanceKm, String tripType) {
+  Map<String, dynamic> _calculateDefaultPrice(
+    double distanceKm,
+    String tripType,
+  ) {
     final basePrice = tripType == 'package' ? 5.0 : 3.0;
     final pricePerKm = tripType == 'package' ? 0.8 : 0.5;
     final calculated = basePrice + (distanceKm * pricePerKm);
@@ -131,7 +136,8 @@ Return ONLY valid JSON.''';
 
   /// FAQ Assistant - Answer common questions
   Future<String> answerFAQ(String question) async {
-    const systemPrompt = '''You are a customer support assistant for Fitareeaee, a ride-sharing and package delivery app.
+    const systemPrompt =
+        '''You are a customer support assistant for Fitareeaee, a ride-sharing and package delivery app.
 Answer user questions helpfully and concisely. If you don't know the answer, suggest contacting support.
 Keep responses under 150 words.''';
 
@@ -151,7 +157,8 @@ Keep responses under 150 words.''';
     const systemPrompt = '''You are an assistant helping admins review disputes.
 Summarize the situation objectively, highlighting key points and potential resolutions.''';
 
-    final userMessage = '''
+    final userMessage =
+        '''
 Trip Details: $tripDetails
 
 Chat History:
@@ -169,4 +176,3 @@ Please summarize this dispute and suggest possible resolutions.''';
     );
   }
 }
-

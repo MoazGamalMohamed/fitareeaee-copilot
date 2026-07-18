@@ -70,10 +70,7 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                 value: 'match_score',
                 child: Text('Sort by Match'),
               ),
-              const PopupMenuItem(
-                value: 'price',
-                child: Text('Sort by Price'),
-              ),
+              const PopupMenuItem(value: 'price', child: Text('Sort by Price')),
               const PopupMenuItem(
                 value: 'distance',
                 child: Text('Sort by Distance'),
@@ -93,10 +90,10 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
       body: searchState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : searchState.error != null
-              ? _buildErrorState(searchState.error!)
-              : searchState.results.isEmpty
-                  ? _buildEmptyState()
-                  : _buildResultsList(searchState, context),
+          ? _buildErrorState(searchState.error!)
+          : searchState.results.isEmpty
+          ? _buildEmptyState()
+          : _buildResultsList(searchState, context),
       bottomSheet: _showAdvancedFilters ? _buildFilterSheet(context) : null,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -138,16 +135,16 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
           const SizedBox(height: 16),
           Text(
             'No matching trips found',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Try adjusting your search criteria',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey[500],
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
           ElevatedButton(
@@ -176,15 +173,15 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
               Text(
                 '${state.results.length} trips found',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 'Sorted by ${_sortBy.replaceAll('_', ' ')}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.primary,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: AppColors.primary),
               ),
             ],
           ),
@@ -237,16 +234,16 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       Text(
                         _getMatchLabel(matchScore),
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${matchScore.toStringAsFixed(0)}% match',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.white70,
-                            ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: Colors.white70),
                       ),
                     ],
                   ),
@@ -273,9 +270,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       Text(
                         trip.priceDisplay,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -293,7 +290,11 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.location_on, size: 20, color: AppColors.primary),
+                      Icon(
+                        Icons.location_on,
+                        size: 20,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -310,9 +311,8 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                               '→ ${trip.destinationAddress}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                           ],
                         ),
@@ -358,23 +358,23 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
                       spacing: 6,
                       runSpacing: 6,
                       children: matchReasons
-                          .map((reason) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  reason,
-                                  style:
-                                      Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: Colors.grey[700],
-                                      ),
-                                ),
-                              ))
+                          .map(
+                            (reason) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                reason,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(color: Colors.grey[700]),
+                              ),
+                            ),
+                          )
                           .toList(),
                     ),
                 ],
@@ -422,9 +422,9 @@ class _SearchResultsScreenState extends ConsumerState<SearchResultsScreen> {
         children: [
           Text(
             'Filter Results',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Text(

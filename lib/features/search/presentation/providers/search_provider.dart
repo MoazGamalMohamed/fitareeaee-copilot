@@ -45,10 +45,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
   final SearchRepository searchRepository;
   final dynamic tripRepository; // Use dynamic to avoid type mismatch
 
-  SearchNotifier({
-    required this.searchRepository,
-    required this.tripRepository,
-  }) : super(SearchState());
+  SearchNotifier({required this.searchRepository, required this.tripRepository})
+    : super(SearchState());
 
   /// Perform search and matching
   Future<void> searchTrips(SearchCriteria criteria) async {
@@ -59,7 +57,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
       final allTrips = await tripRepository.getAllTrips();
 
       // Filter, score, and sort
-      final matchResults = (searchRepository as SearchRepositoryImpl).filterAndScoreTrips(allTrips, criteria);
+      final matchResults = (searchRepository as SearchRepositoryImpl)
+          .filterAndScoreTrips(allTrips, criteria);
 
       state = state.copyWith(
         results: matchResults,
@@ -89,13 +88,17 @@ class SearchNotifier extends StateNotifier<SearchState> {
         sorted.sort((a, b) => b.matchScore.compareTo(a.matchScore));
         break;
       case 'price':
-        sorted.sort((a, b) => a.trip.pricePerSeat.compareTo(b.trip.pricePerSeat));
+        sorted.sort(
+          (a, b) => a.trip.pricePerSeat.compareTo(b.trip.pricePerSeat),
+        );
         break;
       case 'distance':
         sorted.sort((a, b) => a.distance.compareTo(b.distance));
         break;
       case 'departure_time':
-        sorted.sort((a, b) => a.trip.departureTime.compareTo(b.trip.departureTime));
+        sorted.sort(
+          (a, b) => a.trip.departureTime.compareTo(b.trip.departureTime),
+        );
         break;
     }
 
@@ -131,7 +134,9 @@ class SearchNotifier extends StateNotifier<SearchState> {
 }
 
 /// Search provider
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
+final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((
+  ref,
+) {
   final searchRepository = ref.watch(searchRepositoryProvider);
   final tripRepository = ref.watch(tripRepositoryProvider);
 

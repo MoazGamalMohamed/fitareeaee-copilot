@@ -14,10 +14,7 @@ import 'package:flutter/services.dart';
 class ChatScreen extends ConsumerStatefulWidget {
   final String recipientId;
 
-  const ChatScreen({
-    super.key,
-    required this.recipientId,
-  });
+  const ChatScreen({super.key, required this.recipientId});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -34,12 +31,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.initState();
     _messageController = TextEditingController();
     _scrollController = ScrollController();
-    
+
     // Listen to manual scrolling
     _scrollController.addListener(() {
       if (_scrollController.hasClients) {
         // If user scrolls away from bottom, disable auto-scroll
-        final isAtBottom = _scrollController.position.pixels >= 
+        final isAtBottom =
+            _scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100;
         if (!isAtBottom && _shouldAutoScroll) {
           setState(() => _shouldAutoScroll = false);
@@ -69,17 +67,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = ref.watch(authStateProvider).maybeWhen(
-          data: (user) => user,
-          orElse: () => null,
-        );
+    final currentUser = ref
+        .watch(authStateProvider)
+        .maybeWhen(data: (user) => user, orElse: () => null);
 
     if (currentUser == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text('Please log in'),
-        ),
-      );
+      return const Scaffold(body: Center(child: Text('Please log in')));
     }
 
     final conversationId = Message.getConversationId(
@@ -90,10 +83,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messagesAsync = ref.watch(
       conversationMessagesProvider(conversationId),
     );
-    final typingAsync = ref.watch(typingStatusProvider({
-      'conversationId': conversationId,
-      'userId': widget.recipientId,
-    }));
+    final typingAsync = ref.watch(
+      typingStatusProvider({
+        'conversationId': conversationId,
+        'userId': widget.recipientId,
+      }),
+    );
     final otherUserAsync = ref.watch(userProfileProvider(widget.recipientId));
 
     return Scaffold(
@@ -113,8 +108,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             (profile != null && profile.name.isNotEmpty)
                 ? profile.name
                 : (profile != null && profile.email.isNotEmpty)
-                    ? profile.email
-                    : 'User',
+                ? profile.email
+                : 'User',
           ),
           orElse: () => const Text('Chat'),
         ),
@@ -127,7 +122,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: messagesAsync.when(
               data: (messages) {
                 // Only auto-scroll if enabled and message count changed
-                if (_shouldAutoScroll && messages.length != _previousMessageCount) {
+                if (_shouldAutoScroll &&
+                    messages.length != _previousMessageCount) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _scrollToBottom();
                   });
@@ -147,16 +143,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'No messages yet',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: Colors.grey[600]),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Start the conversation!',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[500],
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.grey[500]),
                         ),
                       ],
                     ),
@@ -165,12 +159,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 final typingWidget = typingAsync.maybeWhen(
                   data: (isTyping) => isTyping
                       ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               'Typing...',
-                              style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           ),
                         )
@@ -185,7 +185,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           '${messages.length} messages',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     typingWidget,
@@ -205,67 +208,64 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             vertical: 12,
                           ),
                           itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          // Access messages in reverse order for newest-at-bottom display
-                          final reversedIndex = messages.length - 1 - index;
-                          final message = messages[reversedIndex];
-                          final isSentByUser = message.senderId == currentUser.id;
+                          itemBuilder: (context, index) {
+                            // Access messages in reverse order for newest-at-bottom display
+                            final reversedIndex = messages.length - 1 - index;
+                            final message = messages[reversedIndex];
+                            final isSentByUser =
+                                message.senderId == currentUser.id;
 
-                          // Auto-mark as read
-                          if (!message.isRead && !isSentByUser) {
-                            Future.microtask(() {
-                              ref
-                                  .read(markAsReadProvider.notifier)
-                                  .markAsRead(message.id);
-                            });
-                          }
+                            // Auto-mark as read
+                            if (!message.isRead && !isSentByUser) {
+                              Future.microtask(() {
+                                ref
+                                    .read(markAsReadProvider.notifier)
+                                    .markAsRead(message.id);
+                              });
+                            }
 
-                          // Get sender name - 'You' for sent, other user's name for received
-                          final senderName = isSentByUser
-                              ? 'You'
-                              : otherUserAsync.maybeWhen(
-                                  data: (profile) {
-                                    if (profile != null && profile.name.isNotEmpty) {
-                                      return profile.name;
-                                    } else if (profile != null && profile.email.isNotEmpty) {
-                                      return profile.email;
-                                    }
-                                    return 'User';
-                                  },
-                                  loading: () {
-                                    return 'Loading...';
-                                  },
-                                  error: (error, stack) {
-                                    print('❌ Profile error: $error');
-                                    return 'User';
-                                  },
-                                  orElse: () => 'User',
-                                );
-                          
-                          return _MessageBubble(
-                            message: message,
-                            isSentByUser: isSentByUser,
-                            senderName: senderName,
-                          );
-                        },
+                            // Get sender name - 'You' for sent, other user's name for received
+                            final senderName = isSentByUser
+                                ? 'You'
+                                : otherUserAsync.maybeWhen(
+                                    data: (profile) {
+                                      if (profile != null &&
+                                          profile.name.isNotEmpty) {
+                                        return profile.name;
+                                      } else if (profile != null &&
+                                          profile.email.isNotEmpty) {
+                                        return profile.email;
+                                      }
+                                      return 'User';
+                                    },
+                                    loading: () {
+                                      return 'Loading...';
+                                    },
+                                    error: (error, stack) {
+                                      print('❌ Profile error: $error');
+                                      return 'User';
+                                    },
+                                    orElse: () => 'User',
+                                  );
+
+                            return _MessageBubble(
+                              message: message,
+                              isSentByUser: isSentByUser,
+                              senderName: senderName,
+                            );
+                          },
                         ),
                       ),
                     ),
                   ],
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red[400],
-                    ),
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
                     const SizedBox(height: 16),
                     Text('Error loading messages'),
                   ],
@@ -303,13 +303,16 @@ class _MessageBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messageText = message.isDeleted ? '[Message deleted]' : message.content;
+    final messageText = message.isDeleted
+        ? '[Message deleted]'
+        : message.content;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment:
-            isSentByUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isSentByUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           if (!isSentByUser) const SizedBox(width: 8),
           Flexible(
@@ -337,7 +340,9 @@ class _MessageBubble extends ConsumerWidget {
                     Text(
                       senderName,
                       style: TextStyle(
-                        color: isSentByUser ? Colors.white70 : Colors.grey.shade700,
+                        color: isSentByUser
+                            ? Colors.white70
+                            : Colors.grey.shade700,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -400,9 +405,7 @@ class _MessageBubble extends ConsumerWidget {
                         if (isSentByUser) ...[
                           const SizedBox(width: 4),
                           Icon(
-                            message.isRead
-                                ? Icons.done_all
-                                : Icons.done,
+                            message.isRead ? Icons.done_all : Icons.done,
                             size: 12,
                             color: message.isRead
                                 ? Colors.white
@@ -455,14 +458,15 @@ class _MessageBubble extends ConsumerWidget {
                           .read(deleteMessageProvider.notifier)
                           .deleteMessage(message.id)
                           .then((_) {
-                        messenger.showSnackBar(
-                          const SnackBar(content: Text('Message deleted')),
-                        );
-                      }).catchError((e) {
-                        messenger.showSnackBar(
-                          SnackBar(content: Text('Delete failed: $e')),
-                        );
-                      });
+                            messenger.showSnackBar(
+                              const SnackBar(content: Text('Message deleted')),
+                            );
+                          })
+                          .catchError((e) {
+                            messenger.showSnackBar(
+                              SnackBar(content: Text('Delete failed: $e')),
+                            );
+                          });
                     },
                   ),
                 ListTile(
@@ -531,14 +535,14 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
       List<String> uploadedUrls = [];
       if (_selectedImagePaths.isNotEmpty) {
         final storage = firebase_storage.FirebaseStorage.instance;
-        
+
         for (final imagePath in _selectedImagePaths) {
           try {
             // Create unique filename
             final timestamp = DateTime.now().millisecondsSinceEpoch;
             final fileName = 'chat_${widget.currentUserId}_$timestamp.jpg';
             final storageRef = storage.ref('chat_attachments/$fileName');
-            
+
             // Upload file
             print('📤 Uploading image: $imagePath');
             final bytes = await XFile(imagePath).readAsBytes();
@@ -546,7 +550,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
               bytes,
               firebase_storage.SettableMetadata(contentType: 'image/jpeg'),
             );
-            
+
             // Get download URL
             final downloadUrl = await storageRef.getDownloadURL();
             uploadedUrls.add(downloadUrl);
@@ -607,9 +611,9 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick images: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pick images: $e')));
     }
   }
 
@@ -619,9 +623,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        border: Border(
-          top: BorderSide(color: Colors.grey[300]!),
-        ),
+        border: Border(top: BorderSide(color: Colors.grey[300]!)),
       ),
       child: SafeArea(
         child: Column(

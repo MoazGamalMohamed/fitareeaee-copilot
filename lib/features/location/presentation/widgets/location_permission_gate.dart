@@ -4,17 +4,15 @@ import '../../../../core/services/location_permission_service.dart';
 class LocationPermissionGate extends StatefulWidget {
   final Widget child;
 
-  const LocationPermissionGate({
-    super.key,
-    required this.child,
-  });
+  const LocationPermissionGate({super.key, required this.child});
 
   @override
   State<LocationPermissionGate> createState() => _LocationPermissionGateState();
 }
 
 class _LocationPermissionGateState extends State<LocationPermissionGate> {
-  final LocationPermissionService _locationService = LocationPermissionService();
+  final LocationPermissionService _locationService =
+      LocationPermissionService();
   bool _isChecking = true;
   bool _hasPermission = false;
   String _errorMessage = '';
@@ -36,10 +34,11 @@ class _LocationPermissionGateState extends State<LocationPermissionGate> {
     setState(() {
       _isChecking = false;
       _hasPermission = status == LocationPermissionStatus.granted;
-      
+
       if (!_hasPermission) {
         if (status == LocationPermissionStatus.serviceDisabled) {
-          _errorMessage = 'Location services are disabled. Please enable location services to use this app.';
+          _errorMessage =
+              'Location services are disabled. Please enable location services to use this app.';
         } else {
           _errorMessage = 'Location permission is required to use this app.';
         }
@@ -58,9 +57,10 @@ class _LocationPermissionGateState extends State<LocationPermissionGate> {
     setState(() {
       _isChecking = false;
       _hasPermission = hasPermission;
-      
+
       if (!hasPermission) {
-        _errorMessage = 'Location permission is required. Please grant location access in your device settings.';
+        _errorMessage =
+            'Location permission is required. Please grant location access in your device settings.';
       }
     });
   }

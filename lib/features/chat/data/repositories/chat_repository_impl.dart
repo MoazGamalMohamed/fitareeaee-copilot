@@ -12,9 +12,8 @@ import '../../../../core/utils/firestore_helpers.dart';
 class ChatRepositoryImpl implements ChatRepository {
   final FirebaseFirestore _firebaseFirestore;
 
-  ChatRepositoryImpl({
-    required FirebaseFirestore firebaseFirestore,
-  }) : _firebaseFirestore = firebaseFirestore;
+  ChatRepositoryImpl({required FirebaseFirestore firebaseFirestore})
+    : _firebaseFirestore = firebaseFirestore;
 
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
@@ -91,8 +90,12 @@ class ChatRepositoryImpl implements ChatRepository {
           .where('recipient_id', isEqualTo: userId1)
           .where('is_deleted', isEqualTo: false);
 
-      final snapshot1 = await query1.orderBy('created_at', descending: true).get();
-      final snapshot2 = await query2.orderBy('created_at', descending: true).get();
+      final snapshot1 = await query1
+          .orderBy('created_at', descending: true)
+          .get();
+      final snapshot2 = await query2
+          .orderBy('created_at', descending: true)
+          .get();
 
       final allDocs = [...snapshot1.docs, ...snapshot2.docs];
       allDocs.sort((a, b) {
@@ -101,30 +104,26 @@ class ChatRepositoryImpl implements ChatRepository {
         return timeB.compareTo(timeA);
       });
 
-      final messages = allDocs
-          .map((doc) {
-            final data = FirestoreHelpers.convertTimestamps({
-              ...doc.data(),
-              'id': doc.id,
-            });
-            return MessageModel.fromJson(data).toEntity();
-          })
-          .toList();
+      final messages = allDocs.map((doc) {
+        final data = FirestoreHelpers.convertTimestamps({
+          ...doc.data(),
+          'id': doc.id,
+        });
+        return MessageModel.fromJson(data).toEntity();
+      }).toList();
 
       return Right(messages);
     } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(
-        message: e.message ?? 'Failed to get conversation',
-      ));
+      return Left(
+        FirebaseFailure(message: e.message ?? 'Failed to get conversation'),
+      );
     } catch (e) {
       return Left(FirebaseFailure(message: 'Failed to get conversation: $e'));
     }
   }
 
   @override
-  Future<Either<Failure, List<Message>>> getConversations(
-    String userId,
-  ) async {
+  Future<Either<Failure, List<Message>>> getConversations(String userId) async {
     try {
       // Get all conversations where user is sender
       final sentSnapshots = await _messagesCollection
@@ -142,7 +141,8 @@ class ChatRepositoryImpl implements ChatRepository {
 
       // Combine and deduplicate by conversation ID
       final allDocs = [...sentSnapshots.docs, ...receivedSnapshots.docs];
-      final conversationMap = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+      final conversationMap =
+          <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
 
       for (final doc in allDocs) {
         final data = doc.data();
@@ -156,22 +156,19 @@ class ChatRepositoryImpl implements ChatRepository {
       }
 
       // Convert to messages and sort by date
-      final messages = conversationMap.values
-          .map((doc) {
-            final data = FirestoreHelpers.convertTimestamps({
-              ...doc.data(),
-              'id': doc.id,
-            });
-            return MessageModel.fromJson(data).toEntity();
-          })
-          .toList()
-        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      final messages = conversationMap.values.map((doc) {
+        final data = FirestoreHelpers.convertTimestamps({
+          ...doc.data(),
+          'id': doc.id,
+        });
+        return MessageModel.fromJson(data).toEntity();
+      }).toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       return Right(messages);
     } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(
-        message: e.message ?? 'Failed to get conversations',
-      ));
+      return Left(
+        FirebaseFailure(message: e.message ?? 'Failed to get conversations'),
+      );
     } catch (e) {
       return Left(FirebaseFailure(message: 'Failed to get conversations: $e'));
     }
@@ -183,45 +180,49 @@ class ChatRepositoryImpl implements ChatRepository {
   ) {
     try {
       print('🔍 Querying messages for conversation: $conversationId');
-      
+
       return _messagesCollection
           .where('conversation_id', isEqualTo: conversationId)
           .orderBy('created_at', descending: true)
           .snapshots()
           .map((snapshot) {
-        print('📨 Received ${snapshot.docs.length} messages from Firestore');
-        
-        final messages = snapshot.docs
-            .map((doc) {
-              try {
-                final rawData = doc.data();
-                final data = FirestoreHelpers.convertTimestamps({
-                  ...rawData,
-                  'id': doc.id,
-                });
-                return MessageModel.fromJson(data).toEntity();
-              } catch (e) {
-                print('❌ Error parsing message ${doc.id}: $e');
-                return null;
-              }
-            })
-            .whereType<Message>()
-            .where((msg) => !msg.isDeleted)
-            .toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-            
-        print('✅ Returning ${messages.length} valid messages');
-        return Right<Failure, List<Message>>(messages);
-      }).handleError((error) {
-        print('❌ Firestore error: $error');
-        return Left<Failure, List<Message>>(
-          FirebaseFailure(
-            message: error is FirebaseException
-                ? error.message ?? 'Failed to stream conversation'
-                : 'Failed to stream conversation: $error',
-          ),
-        );
-      });
+            print(
+              '📨 Received ${snapshot.docs.length} messages from Firestore',
+            );
+
+            final messages =
+                snapshot.docs
+                    .map((doc) {
+                      try {
+                        final rawData = doc.data();
+                        final data = FirestoreHelpers.convertTimestamps({
+                          ...rawData,
+                          'id': doc.id,
+                        });
+                        return MessageModel.fromJson(data).toEntity();
+                      } catch (e) {
+                        print('❌ Error parsing message ${doc.id}: $e');
+                        return null;
+                      }
+                    })
+                    .whereType<Message>()
+                    .where((msg) => !msg.isDeleted)
+                    .toList()
+                  ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+            print('✅ Returning ${messages.length} valid messages');
+            return Right<Failure, List<Message>>(messages);
+          })
+          .handleError((error) {
+            print('❌ Firestore error: $error');
+            return Left<Failure, List<Message>>(
+              FirebaseFailure(
+                message: error is FirebaseException
+                    ? error.message ?? 'Failed to stream conversation'
+                    : 'Failed to stream conversation: $error',
+              ),
+            );
+          });
     } catch (e) {
       print('❌ Exception in streamConversation: $e');
       return Stream.value(
@@ -238,63 +239,61 @@ class ChatRepositoryImpl implements ChatRepository {
       return _messagesCollection
           .snapshots()
           .map((snapshot) {
-        final allDocs = snapshot.docs;
+            final allDocs = snapshot.docs;
 
-        // Filter to only messages involving this user
-        final relevantDocs = allDocs
-            .where((doc) {
+            // Filter to only messages involving this user
+            final relevantDocs = allDocs.where((doc) {
               final data = doc.data();
               final senderId = data['sender_id'] as String?;
               final recipientId = data['recipient_id'] as String?;
               final isDeleted = data['is_deleted'] as bool? ?? false;
               return !isDeleted &&
                   (senderId == userId || recipientId == userId);
-            })
-            .toList();
+            }).toList();
 
-        // Sort by created_at descending
-        relevantDocs.sort((a, b) {
-          final timeA = a.data()['created_at'];
-          final timeB = b.data()['created_at'];
-          if (timeA == null && timeB == null) return 0;
-          if (timeA == null) return 1;
-          if (timeB == null) return -1;
-          if (timeA is Timestamp && timeB is Timestamp) {
-            return timeB.compareTo(timeA);
-          }
-          return 0;
-        });
+            // Sort by created_at descending
+            relevantDocs.sort((a, b) {
+              final timeA = a.data()['created_at'];
+              final timeB = b.data()['created_at'];
+              if (timeA == null && timeB == null) return 0;
+              if (timeA == null) return 1;
+              if (timeB == null) return -1;
+              if (timeA is Timestamp && timeB is Timestamp) {
+                return timeB.compareTo(timeA);
+              }
+              return 0;
+            });
 
-        // Get most recent message per conversation
-        final conversationMap = <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
-        for (final doc in relevantDocs) {
-          final data = doc.data();
-          final senderId = data['sender_id'] as String?;
-          final recipientId = data['recipient_id'] as String?;
-          if (senderId == null || recipientId == null) continue;
-          final conversationId = _getConversationId(senderId, recipientId);
+            // Get most recent message per conversation
+            final conversationMap =
+                <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+            for (final doc in relevantDocs) {
+              final data = doc.data();
+              final senderId = data['sender_id'] as String?;
+              final recipientId = data['recipient_id'] as String?;
+              if (senderId == null || recipientId == null) continue;
+              final conversationId = _getConversationId(senderId, recipientId);
 
-          if (!conversationMap.containsKey(conversationId)) {
-            conversationMap[conversationId] = doc;
-          }
-        }
+              if (!conversationMap.containsKey(conversationId)) {
+                conversationMap[conversationId] = doc;
+              }
+            }
 
-        // Convert to messages
-        final messages = conversationMap.values
-            .map((doc) {
+            // Convert to messages
+            final messages = conversationMap.values.map((doc) {
               final data = FirestoreHelpers.convertTimestamps({
                 ...doc.data(),
                 'id': doc.id,
               });
               return MessageModel.fromJson(data).toEntity();
-            })
-            .toList();
+            }).toList();
 
-        return Right<Failure, List<Message>>(messages);
-      }).handleError((error) {
-        // Return empty list on error instead of throwing
-        return Right<Failure, List<Message>>([]);
-      });
+            return Right<Failure, List<Message>>(messages);
+          })
+          .handleError((error) {
+            // Return empty list on error instead of throwing
+            return Right<Failure, List<Message>>([]);
+          });
     } catch (e) {
       // Return empty list on error
       return Stream.value(const Right<Failure, List<Message>>([]));
@@ -310,11 +309,13 @@ class ChatRepositoryImpl implements ChatRepository {
       });
       return const Right(null);
     } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(
-        message: e.message ?? 'Failed to mark message as read',
-      ));
+      return Left(
+        FirebaseFailure(message: e.message ?? 'Failed to mark message as read'),
+      );
     } catch (e) {
-      return Left(FirebaseFailure(message: 'Failed to mark message as read: $e'));
+      return Left(
+        FirebaseFailure(message: 'Failed to mark message as read: $e'),
+      );
     }
   }
 
@@ -322,14 +323,12 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<Either<Failure, void>> deleteMessage(String messageId) async {
     try {
       // Soft delete - just mark as deleted
-      await _messagesCollection.doc(messageId).update({
-        'is_deleted': true,
-      });
+      await _messagesCollection.doc(messageId).update({'is_deleted': true});
       return const Right(null);
     } on FirebaseException catch (e) {
-      return Left(FirebaseFailure(
-        message: e.message ?? 'Failed to delete message',
-      ));
+      return Left(
+        FirebaseFailure(message: e.message ?? 'Failed to delete message'),
+      );
     } catch (e) {
       return Left(FirebaseFailure(message: 'Failed to delete message: $e'));
     }

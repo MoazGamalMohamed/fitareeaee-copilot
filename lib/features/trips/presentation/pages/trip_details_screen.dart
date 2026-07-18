@@ -10,10 +10,7 @@ import '../../../booking/presentation/providers/booking_provider.dart';
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
 
-  const TripDetailsScreen({
-    super.key,
-    required this.tripId,
-  });
+  const TripDetailsScreen({super.key, required this.tripId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,10 +18,7 @@ class TripDetailsScreen extends ConsumerWidget {
     final bookingState = ref.watch(tripBookingProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trip Details'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Trip Details'), centerTitle: true),
       body: tripAsync.when(
         data: (trip) => SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -61,9 +55,7 @@ class TripDetailsScreen extends ConsumerWidget {
             ],
           ),
         ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, st) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -90,9 +82,12 @@ class TripDetailsScreen extends ConsumerWidget {
           );
           final userBookingsAsync = ref.watch(userBookingsProvider(userId));
           final hasBooked = userBookingsAsync.maybeWhen(
-            data: (bookings) => bookings.any((b) => 
-              b.tripId == trip.id && 
-              (b.status == 'confirmed' || b.status == 'paid' || b.status == 'pending')
+            data: (bookings) => bookings.any(
+              (b) =>
+                  b.tripId == trip.id &&
+                  (b.status == 'confirmed' ||
+                      b.status == 'paid' ||
+                      b.status == 'pending'),
             ),
             orElse: () => false,
           );
@@ -123,16 +118,17 @@ class TripDetailsScreen extends ConsumerWidget {
                       children: [
                         Icon(Icons.message, color: Colors.white),
                         SizedBox(width: 8),
-                        Text('Message Driver', style: TextStyle(color: Colors.white)),
+                        Text(
+                          'Message Driver',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ],
                     ),
                   )
                 else if (bookingState is AsyncLoading)
                   const SizedBox(
                     height: 50,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
                   )
                 else if (bookingState is AsyncError)
                   Column(
@@ -211,7 +207,10 @@ class TripDetailsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white30,
                   borderRadius: BorderRadius.circular(20),
@@ -225,7 +224,10 @@ class TripDetailsScreen extends ConsumerWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white30,
                   borderRadius: BorderRadius.circular(20),
@@ -252,10 +254,7 @@ class TripDetailsScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             trip.statusDisplay,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
         ],
       ),
@@ -265,9 +264,9 @@ class TripDetailsScreen extends ConsumerWidget {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
@@ -293,16 +292,16 @@ class TripDetailsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'From',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       trip.originAddress,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -321,8 +320,11 @@ class TripDetailsScreen extends ConsumerWidget {
                   shape: BoxShape.circle,
                   color: AppColors.primary,
                 ),
-                child: const Icon(Icons.expand_more,
-                    color: Colors.white, size: 16),
+                child: const Icon(
+                  Icons.expand_more,
+                  color: Colors.white,
+                  size: 16,
+                ),
               ),
               Expanded(
                 child: Container(
@@ -333,9 +335,9 @@ class TripDetailsScreen extends ConsumerWidget {
               ),
               Text(
                 trip.distanceDisplay,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
               ),
             ],
           ),
@@ -353,16 +355,16 @@ class TripDetailsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'To',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       trip.destinationAddress,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -382,18 +384,35 @@ class TripDetailsScreen extends ConsumerWidget {
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
-        _buildDetailItem(context, 'Departure', trip.timeDisplay, Icons.schedule),
-        _buildDetailItem(context, 'Duration', trip.durationDisplay, Icons.timer),
         _buildDetailItem(
-            context, 'Seats Available', '${trip.availableSeats}/${trip.totalSeats}',
-            Icons.people),
+          context,
+          'Departure',
+          trip.timeDisplay,
+          Icons.schedule,
+        ),
+        _buildDetailItem(
+          context,
+          'Duration',
+          trip.durationDisplay,
+          Icons.timer,
+        ),
+        _buildDetailItem(
+          context,
+          'Seats Available',
+          '${trip.availableSeats}/${trip.totalSeats}',
+          Icons.people,
+        ),
         _buildDetailItem(context, 'Per Seat', trip.priceDisplay, Icons.paid),
       ],
     );
   }
 
-  Widget _buildDetailItem(BuildContext context, String label, String value,
-      IconData icon) {
+  Widget _buildDetailItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[100],
@@ -407,17 +426,17 @@ class TripDetailsScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
         ],
@@ -441,16 +460,16 @@ class TripDetailsScreen extends ConsumerWidget {
             children: [
               Text(
                 'Seats Booked',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: Colors.grey[600]),
               ),
               const SizedBox(height: 4),
               Text(
                 '${trip.totalSeats - trip.availableSeats}/${trip.totalSeats} passengers',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -462,14 +481,14 @@ class TripDetailsScreen extends ConsumerWidget {
   Widget _buildDriverCard(BuildContext context, WidgetRef ref, Trip trip) {
     // Fetch driver info from users collection using proper provider
     final driverAsync = ref.watch(userByIdProvider(trip.driverId));
-    
+
     return driverAsync.when(
       data: (driver) {
         final driverName = driver?.name ?? 'Unknown Driver';
         final rating = driver?.rating ?? 0.0;
         final totalRatings = driver?.totalRatings ?? 0;
         final totalTrips = driver?.totalTrips ?? 0;
-        
+
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
@@ -495,8 +514,8 @@ class TripDetailsScreen extends ConsumerWidget {
                     Text(
                       driverName,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -505,9 +524,8 @@ class TripDetailsScreen extends ConsumerWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${rating.toStringAsFixed(1)} ($totalRatings ${totalRatings == 1 ? 'review' : 'reviews'})',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: Colors.grey[600]),
                         ),
                       ],
                     ),
@@ -515,9 +533,9 @@ class TripDetailsScreen extends ConsumerWidget {
                     Text(
                       '$totalTrips ${totalTrips == 1 ? 'trip' : 'trips'} completed',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.grey[500],
-                            fontSize: 11,
-                          ),
+                        color: Colors.grey[500],
+                        fontSize: 11,
+                      ),
                     ),
                   ],
                 ),
@@ -551,7 +569,7 @@ class TripDetailsScreen extends ConsumerWidget {
         // Log error for debugging
         print('Driver card error for ${trip.driverId}: $e');
         print('Stack trace: $st');
-        
+
         return Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
@@ -564,17 +582,17 @@ class TripDetailsScreen extends ConsumerWidget {
               Text(
                 'Error loading driver info',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.red,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 e.toString(),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.grey[600],
-                      fontSize: 10,
-                    ),
+                  color: Colors.grey[600],
+                  fontSize: 10,
+                ),
               ),
             ],
           ),

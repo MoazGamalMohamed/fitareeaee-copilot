@@ -9,18 +9,14 @@ class SearchRepositoryImpl implements SearchRepository {
   /// Haversine formula to calculate distance between two coordinates
   /// Returns distance in kilometers
   @override
-  double calculateDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
-  ) {
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const earthRadiusKm = 6371.0;
 
     final dLat = _degreesToRadians(lat2 - lat1);
     final dLon = _degreesToRadians(lon2 - lon1);
 
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_degreesToRadians(lat1)) *
             math.cos(_degreesToRadians(lat2)) *
             math.sin(dLon / 2) *
@@ -79,7 +75,8 @@ class SearchRepositoryImpl implements SearchRepository {
     }
 
     // Driver rating match (5 points)
-    if (criteria.minRating <= 0 || (trip.metadata['driverRating'] ?? 0.0) >= criteria.minRating) {
+    if (criteria.minRating <= 0 ||
+        (trip.metadata['driverRating'] ?? 0.0) >= criteria.minRating) {
       score += 5;
     }
 
@@ -138,12 +135,14 @@ class SearchRepositoryImpl implements SearchRepository {
           matchReasons.add('${trip.amenities.length} amenities');
         }
 
-        results.add(MatchResult(
-          trip: trip,
-          matchScore: matchScore,
-          matchReasons: matchReasons,
-          distance: distance,
-        ));
+        results.add(
+          MatchResult(
+            trip: trip,
+            matchScore: matchScore,
+            matchReasons: matchReasons,
+            distance: distance,
+          ),
+        );
       }
     }
 

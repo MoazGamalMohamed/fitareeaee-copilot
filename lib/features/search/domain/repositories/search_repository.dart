@@ -10,12 +10,7 @@ abstract class SearchRepository {
 
   /// Calculate distance between two locations (simple calculation)
   /// In production, use Google Maps Distance Matrix API
-  double calculateDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
-  );
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2);
 
   /// Calculate match score between trip and search criteria
   double calculateMatchScore(Trip trip, SearchCriteria criteria);

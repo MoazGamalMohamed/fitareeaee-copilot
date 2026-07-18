@@ -14,7 +14,7 @@ class LocationPermissionService {
         const Duration(seconds: 5),
         onTimeout: () => false,
       );
-      
+
       if (!serviceEnabled) {
         return LocationPermissionStatus.serviceDisabled;
       }
@@ -24,7 +24,7 @@ class LocationPermissionService {
         const Duration(seconds: 5),
         onTimeout: () => PermissionStatus.denied,
       );
-      
+
       if (permissionGranted == PermissionStatus.denied) {
         return LocationPermissionStatus.permissionDenied;
       }
@@ -43,7 +43,7 @@ class LocationPermissionService {
         const Duration(seconds: 5),
         onTimeout: () => false,
       );
-      
+
       if (!serviceEnabled) {
         serviceEnabled = await _location.requestService().timeout(
           const Duration(seconds: 10),
@@ -55,11 +55,13 @@ class LocationPermissionService {
       }
 
       // Then request permission
-      PermissionStatus permissionGranted = await _location.hasPermission().timeout(
-        const Duration(seconds: 5),
-        onTimeout: () => PermissionStatus.denied,
-      );
-      
+      PermissionStatus permissionGranted = await _location
+          .hasPermission()
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => PermissionStatus.denied,
+          );
+
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await _location.requestPermission().timeout(
           const Duration(seconds: 30),
@@ -87,8 +89,4 @@ class LocationPermissionService {
   }
 }
 
-enum LocationPermissionStatus {
-  granted,
-  permissionDenied,
-  serviceDisabled,
-}
+enum LocationPermissionStatus { granted, permissionDenied, serviceDisabled }

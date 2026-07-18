@@ -8,7 +8,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -32,7 +33,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Reset Email Sent'),
-              content: const Text('Check your email for password reset instructions.'),
+              content: const Text(
+                'Check your email for password reset instructions.',
+              ),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -107,9 +110,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       ? null
                       : () {
                           if (_formKey.currentState!.validate()) {
-                            ref.read(passwordResetProvider.notifier).resetPassword(
-                                  email: _emailController.text,
-                                );
+                            ref
+                                .read(passwordResetProvider.notifier)
+                                .resetPassword(email: _emailController.text);
                           }
                         },
                   child: resetState.isLoading

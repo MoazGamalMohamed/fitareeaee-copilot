@@ -16,10 +16,11 @@ enum TripStatus { pending, accepted, inProgress, completed, cancelled }
 @freezed
 class Trip with _$Trip {
   const Trip._();
-  
+
   const factory Trip({
     required String id,
-    @JsonKey(name: 'type') required String type, // 'person', 'package', or 'both'
+    @JsonKey(name: 'type')
+    required String type, // 'person', 'package', or 'both'
     @JsonKey(name: 'role') required String role, // 'offer' or 'request'
     required String driverId,
     String? passengerId,
@@ -31,7 +32,8 @@ class Trip with _$Trip {
     @JsonKey(name: 'destination_lng') required double destinationLng,
     @JsonKey(name: 'departure_time') required DateTime departureTime,
     required double distance, // km
-    @JsonKey(name: 'estimated_duration') required int estimatedDuration, // minutes
+    @JsonKey(name: 'estimated_duration')
+    required int estimatedDuration, // minutes
     @JsonKey(name: 'price_per_seat') required double pricePerSeat,
     @JsonKey(name: 'total_seats') required int totalSeats,
     @JsonKey(name: 'available_seats') required int availableSeats,
@@ -52,7 +54,9 @@ class Trip with _$Trip {
     // Package-specific fields
     @JsonKey(name: 'package_weight') double? packageWeight, // kg
     @JsonKey(name: 'package_description') String? packageDescription,
-    @JsonKey(name: 'package_photo_urls') @Default([]) List<String> packagePhotoUrls,
+    @JsonKey(name: 'package_photo_urls')
+    @Default([])
+    List<String> packagePhotoUrls,
   }) = _Trip;
 
   factory Trip.fromJson(Map<String, dynamic> json) => _$TripFromJson(json);
@@ -65,20 +69,23 @@ class Trip with _$Trip {
   bool get isRequest => role == 'request';
   bool get isFull => availableSeats <= 0;
   bool get isPast => departureTime.isBefore(DateTime.now());
-  
+
   String get typeDisplay => isPerson ? 'Person Transport' : 'Package Delivery';
   String get directionDisplay => isOffer ? 'Offering' : 'Requesting';
-  String get statusDisplay => status.replaceFirst(status[0], status[0].toUpperCase());
+  String get statusDisplay =>
+      status.replaceFirst(status[0], status[0].toUpperCase());
   String get priceDisplay => '\$${pricePerSeat.toStringAsFixed(2)}/seat';
   String get distanceDisplay => '${distance.toStringAsFixed(1)} km';
-  String get durationDisplay => '${(estimatedDuration / 60).toStringAsFixed(0)}h ${estimatedDuration % 60}m';
-  
+  String get durationDisplay =>
+      '${(estimatedDuration / 60).toStringAsFixed(0)}h ${estimatedDuration % 60}m';
+
   Duration get timeUntilDeparture => departureTime.difference(DateTime.now());
-  bool get isDepartingSoon => timeUntilDeparture.inMinutes <= 60 && timeUntilDeparture.inMinutes > 0;
-  
+  bool get isDepartingSoon =>
+      timeUntilDeparture.inMinutes <= 60 && timeUntilDeparture.inMinutes > 0;
+
   bool isCreatedBy(String userId) => driverId == userId;
   bool hasPassenger(String userId) => passengerIds.contains(userId);
-  
+
   String get timeDisplay {
     if (isPast) return 'Departed';
     final duration = timeUntilDeparture;

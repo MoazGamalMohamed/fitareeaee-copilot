@@ -48,18 +48,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return authState.when(
       data: (user) {
         if (user == null) {
-          return const Scaffold(
-            body: Center(child: Text('Please log in')),
-          );
+          return const Scaffold(body: Center(child: Text('Please log in')));
         }
         return _buildProfileContent(context, user.id);
       },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, _) => Scaffold(
-        body: Center(child: Text('Error: $error')),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, _) => Scaffold(body: Center(child: Text('Error: $error'))),
     );
   }
 
@@ -109,11 +104,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.person_outline, size: 80, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   const Text('Profile not found'),
                 ],
@@ -145,10 +136,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 3,
-                          ),
+                          border: Border.all(color: Colors.white, width: 3),
                           image: profile.photoUrl != null
                               ? DecorationImage(
                                   image: NetworkImage(profile.photoUrl!),
@@ -157,18 +145,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               : null,
                         ),
                         child: profile.photoUrl == null
-                            ? Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.white,
-                              )
+                            ? Icon(Icons.person, size: 50, color: Colors.white)
                             : null,
                       ),
                       const SizedBox(height: 16),
                       // Name
                       Text(
                         profile.name,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -180,17 +165,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         children: [
                           Text(
                             profile.email,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white70,
-                                ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.white70),
                           ),
                           if (profile.isEmailVerified) ...[
                             const SizedBox(width: 6),
-                            Icon(
-                              Icons.verified,
-                              size: 16,
-                              color: Colors.green,
-                            ),
+                            Icon(Icons.verified, size: 16, color: Colors.green),
                           ],
                         ],
                       ),
@@ -204,9 +184,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             const SizedBox(width: 4),
                             Text(
                               profile.phone!,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.white70,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.white70),
                             ),
                             if (profile.isPhoneVerified) ...[
                               const SizedBox(width: 6),
@@ -227,9 +206,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           const SizedBox(width: 4),
                           Text(
                             '${profile.rating.toStringAsFixed(1)} (${profile.totalRatings})',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white,
-                                ),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.white),
                           ),
                         ],
                       ),
@@ -259,7 +237,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               minHeight: 8,
                               backgroundColor: Colors.grey[300],
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                completion == 100 ? Colors.green : AppColors.primary,
+                                completion == 100
+                                    ? Colors.green
+                                    : AppColors.primary,
                               ),
                             ),
                           ),
@@ -295,11 +275,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         'Trips',
                         profile.totalTrips.toString(),
                       ),
-                      _buildStatTile(
-                        context,
-                        'Rating',
-                        profile.ratingDisplay,
-                      ),
+                      _buildStatTile(context, 'Rating', profile.ratingDisplay),
                       _buildStatTile(
                         context,
                         'Reviews',
@@ -330,7 +306,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               .map(
                                 (role) => Chip(
                                   label: Text(role),
-                                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                                  backgroundColor: AppColors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   labelStyle: TextStyle(
                                     color: AppColors.primary,
                                   ),
@@ -380,18 +358,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 80,
-                color: Colors.red[300],
-              ),
+              Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
               const SizedBox(height: 16),
               Text('Error loading profile: $error'),
               const SizedBox(height: 16),
@@ -408,26 +380,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildStatTile(
-    BuildContext context,
-    String label,
-    String value,
-  ) {
+  Widget _buildStatTile(BuildContext context, String label, String value) {
     return Column(
       children: [
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
         ),
       ],
     );

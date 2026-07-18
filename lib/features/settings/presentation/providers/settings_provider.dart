@@ -28,7 +28,8 @@ class SettingsState {
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       darkModeEnabled: darkModeEnabled ?? this.darkModeEnabled,
       language: language ?? this.language,
-      locationSharingEnabled: locationSharingEnabled ?? this.locationSharingEnabled,
+      locationSharingEnabled:
+          locationSharingEnabled ?? this.locationSharingEnabled,
       soundEnabled: soundEnabled ?? this.soundEnabled,
     );
   }
@@ -83,7 +84,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 }
 
 // Provider
-final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
-  return SettingsNotifier();
-});
-
+final settingsProvider = StateNotifierProvider<SettingsNotifier, SettingsState>(
+  (ref) {
+    return SettingsNotifier();
+  },
+);

@@ -34,7 +34,9 @@ class MessageModel with _$MessageModel {
     @JsonKey(name: 'recipient_id') required String recipientId,
     @Default('') String content,
     @Default(<String>[]) List<String> attachments,
-    @JsonKey(name: 'created_at') @TimestampConverter() required DateTime createdAt,
+    @JsonKey(name: 'created_at')
+    @TimestampConverter()
+    required DateTime createdAt,
     @JsonKey(name: 'is_read') @Default(false) bool isRead,
     @JsonKey(name: 'read_at') @TimestampConverter() DateTime? readAt,
     @JsonKey(name: 'is_deleted') @Default(false) bool isDeleted,
@@ -44,16 +46,16 @@ class MessageModel with _$MessageModel {
 
   /// Convert to domain entity
   Message toEntity() => Message(
-        id: id,
-        senderId: senderId,
-        recipientId: recipientId,
-        content: content,
-        attachments: attachments,
-        createdAt: createdAt,
-        isRead: isRead,
-        readAt: readAt,
-        isDeleted: isDeleted,
-      );
+    id: id,
+    senderId: senderId,
+    recipientId: recipientId,
+    content: content,
+    attachments: attachments,
+    createdAt: createdAt,
+    isRead: isRead,
+    readAt: readAt,
+    isDeleted: isDeleted,
+  );
 
   /// Convert to Firestore document format
   Map<String, dynamic> toFirestore() {
@@ -74,20 +76,19 @@ class MessageModel with _$MessageModel {
 
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
       _$MessageModelFromJson(json);
- 
 }
 
 /// Extension to convert Message to MessageModel
 extension MessageToModel on Message {
   MessageModel toModel() => MessageModel(
-        id: id,
-        senderId: senderId,
-        recipientId: recipientId,
-        content: content,
-      attachments: attachments,
-        createdAt: createdAt,
-        isRead: isRead,
-        readAt: readAt,
-        isDeleted: isDeleted,
-      );
+    id: id,
+    senderId: senderId,
+    recipientId: recipientId,
+    content: content,
+    attachments: attachments,
+    createdAt: createdAt,
+    isRead: isRead,
+    readAt: readAt,
+    isDeleted: isDeleted,
+  );
 }

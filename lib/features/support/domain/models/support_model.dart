@@ -3,21 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'support_model.freezed.dart';
 part 'support_model.g.dart';
 
-enum TicketStatus {
-  open,
-  inProgress,
-  resolved,
-  closed,
-}
+enum TicketStatus { open, inProgress, resolved, closed }
 
-enum TicketCategory {
-  payment,
-  trip,
-  account,
-  safety,
-  technical,
-  other,
-}
+enum TicketCategory { payment, trip, account, safety, technical, other }
 
 @freezed
 class SupportTicket with _$SupportTicket {
@@ -41,7 +29,8 @@ class SupportTicket with _$SupportTicket {
   factory SupportTicket.fromJson(Map<String, dynamic> json) =>
       _$SupportTicketFromJson(json);
 
-  bool get isOpen => status == TicketStatus.open || status == TicketStatus.inProgress;
+  bool get isOpen =>
+      status == TicketStatus.open || status == TicketStatus.inProgress;
 }
 
 @freezed
@@ -95,4 +84,3 @@ class Dispute with _$Dispute {
   factory Dispute.fromJson(Map<String, dynamic> json) =>
       _$DisputeFromJson(json);
 }
-

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import '../providers/trip_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../widgets/location_picker_with_search.dart';
@@ -43,7 +41,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   late TextEditingController _packageDescriptionController;
 
   // Form values
-  bool _includesPerson = true;  // Whether trip includes person transport
+  bool _includesPerson = true; // Whether trip includes person transport
   bool _includesPackage = false; // Whether trip includes package delivery
   String _role = 'offer'; // 'offer' or 'request' - may be preset from role
   DateTime? _selectedDate;
@@ -104,10 +102,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     final createTripState = ref.watch(createTripProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_tripTitle),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(_tripTitle), centerTitle: true),
       body: createTripState is AsyncLoading
           ? const Center(child: CircularProgressIndicator())
           : Form(
@@ -132,7 +127,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                         children: [
                           Icon(
                             _role == 'offer' ? Icons.drive_eta : Icons.search,
-                            color: _role == 'offer' ? Colors.green : Colors.blue,
+                            color: _role == 'offer'
+                                ? Colors.green
+                                : Colors.blue,
                           ),
                           const SizedBox(width: 12),
                           Text(
@@ -141,7 +138,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                                 : 'You are requesting a trip',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: _role == 'offer' ? Colors.green : Colors.blue,
+                              color: _role == 'offer'
+                                  ? Colors.green
+                                  : Colors.blue,
                             ),
                           ),
                         ],
@@ -296,7 +295,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                           child: TextFormField(
                             controller: _seatsController,
                             decoration: InputDecoration(
-                              labelText: _role == 'offer' ? 'Available seats' : 'Seats needed',
+                              labelText: _role == 'offer'
+                                  ? 'Available seats'
+                                  : 'Seats needed',
                               hintText: '1',
                               prefixIcon: const Icon(Icons.people),
                               border: OutlineInputBorder(
@@ -432,8 +433,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
 
                   // Submit button
                   ElevatedButton(
-                    onPressed:
-                        createTripState is AsyncLoading ? null : _submitForm,
+                    onPressed: createTripState is AsyncLoading
+                        ? null
+                        : _submitForm,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -443,7 +445,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Text(_role == 'offer' ? 'Create Offer' : 'Create Request'),
+                        : Text(
+                            _role == 'offer'
+                                ? 'Create Offer'
+                                : 'Create Request',
+                          ),
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -455,9 +461,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
     );
   }
 
@@ -490,9 +496,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             ),
           ],
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       validator: (value) =>
           value?.isEmpty ?? true ? 'Please enter $label location' : null,
@@ -508,7 +512,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
         initialLat: isOrigin ? _originLat : _destinationLat,
         initialLng: isOrigin ? _originLng : _destinationLng,
         title: isOrigin ? 'Pick Origin Location' : 'Pick Destination Location',
-        apiKey: const String.fromEnvironment('GOOGLE_MAPS_API_KEY', defaultValue: 'YOUR_GOOGLE_MAPS_API_KEY'),
+        apiKey: const String.fromEnvironment(
+          'GOOGLE_MAPS_API_KEY',
+          defaultValue: 'YOUR_GOOGLE_MAPS_API_KEY',
+        ),
       ),
     );
 
@@ -584,10 +591,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
               label,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: isSelected ? AppColors.primary : Colors.grey[600],
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
+                color: isSelected ? AppColors.primary : Colors.grey[600],
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ],
         ),
@@ -595,8 +601,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     );
   }
 
-  Widget _buildDirectionCard(BuildContext context, String label, IconData icon,
-      bool isSelected, VoidCallback onTap) {
+  Widget _buildDirectionCard(
+    BuildContext context,
+    String label,
+    IconData icon,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -621,10 +632,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
               label,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: isSelected ? AppColors.primary : Colors.grey[600],
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
+                color: isSelected ? AppColors.primary : Colors.grey[600],
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ],
         ),
@@ -656,8 +666,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
 
   /// Calculate approximate distance between origin and destination (in km)
   double _calculateDistance() {
-    if (_originLat == null || _originLng == null ||
-        _destinationLat == null || _destinationLng == null) {
+    if (_originLat == null ||
+        _originLng == null ||
+        _destinationLat == null ||
+        _destinationLng == null) {
       return 0.0;
     }
 
@@ -668,8 +680,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
 
     final double a =
         _sin(dLat / 2) * _sin(dLat / 2) +
-        _cos(_toRadians(_originLat!)) * _cos(_toRadians(_destinationLat!)) *
-        _sin(dLng / 2) * _sin(dLng / 2);
+        _cos(_toRadians(_originLat!)) *
+            _cos(_toRadians(_destinationLat!)) *
+            _sin(dLng / 2) *
+            _sin(dLng / 2);
 
     final double c = 2 * _atan2(_sqrt(a), _sqrt(1 - a));
     return earthRadius * c;
@@ -738,15 +752,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a date')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a date')));
       return;
     }
     if (_selectedTime == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a time')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a time')));
       return;
     }
 
@@ -797,15 +811,21 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       totalSeats: int.tryParse(_seatsController.text) ?? 1,
       availableSeats: int.tryParse(_seatsController.text) ?? 1,
       status: 'pending', // Explicitly set status
-      description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+      description: _descriptionController.text.isEmpty
+          ? null
+          : _descriptionController.text,
       allowPets: _allowPets,
       allowSmoking: _allowSmoking,
       createdAt: now,
       updatedAt: now,
       includesPerson: _includesPerson,
       includesPackage: _includesPackage,
-      packageWeight: _includesPackage ? double.tryParse(_packageWeightController.text) : null,
-      packageDescription: _includesPackage ? _packageDescriptionController.text : null,
+      packageWeight: _includesPackage
+          ? double.tryParse(_packageWeightController.text)
+          : null,
+      packageDescription: _includesPackage
+          ? _packageDescriptionController.text
+          : null,
     );
 
     // Create trip via provider
@@ -825,9 +845,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_role == 'offer'
-              ? 'Trip offer created successfully!'
-              : 'Trip request created successfully!'),
+          content: Text(
+            _role == 'offer'
+                ? 'Trip offer created successfully!'
+                : 'Trip request created successfully!',
+          ),
           backgroundColor: Colors.green,
         ),
       );

@@ -14,8 +14,8 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   const UserProfileRepositoryImpl({
     required FirebaseFirestore firestore,
     required FirebaseStorage storage,
-  })  : _firestore = firestore,
-        _storage = storage;
+  }) : _firestore = firestore,
+       _storage = storage;
 
   @override
   Future<UserProfile> getUserProfile(String userId) async {
@@ -62,9 +62,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   Future<void> createUserProfile(UserProfile profile) async {
     try {
       final model = profile.toModel();
-      await _firestore.collection('users').doc(profile.userId).set(
-        model.toFirestore(),
-      );
+      await _firestore
+          .collection('users')
+          .doc(profile.userId)
+          .set(model.toFirestore());
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -76,9 +77,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   Future<void> updateUserProfile(UserProfile profile) async {
     try {
       final model = profile.toModel();
-      await _firestore.collection('users').doc(profile.userId).update(
-            model.toFirestore(),
-          );
+      await _firestore
+          .collection('users')
+          .doc(profile.userId)
+          .update(model.toFirestore());
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -92,13 +94,13 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       final ref = _storage.ref('avatars/$userId/profile.jpg');
       await ref.putFile(imageFile);
       final downloadUrl = await ref.getDownloadURL();
-      
+
       // Update the profile with new photo URL
       await _firestore.collection('users').doc(userId).update({
         'photoUrl': downloadUrl,
         'updated_at': DateTime.now(),
       });
-      
+
       return downloadUrl;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
@@ -153,10 +155,13 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       }
 
       return combined.values
-          .map((doc) =>
-              // ignore: unnecessary_cast
-              UserProfileModel.fromJson(doc.data() as Map<String, dynamic>)
-                  .toEntity())
+          .map(
+            (doc) =>
+                // ignore: unnecessary_cast
+                UserProfileModel.fromJson(
+                  doc.data() as Map<String, dynamic>,
+                ).toEntity(),
+          )
           .toList();
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
@@ -178,8 +183,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         return null;
       }
 
-      final model = UserProfileModel.fromJson(
-          query.docs.first.data());
+      final model = UserProfileModel.fromJson(query.docs.first.data());
       return model.toEntity();
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
@@ -190,11 +194,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
   @override
   Stream<UserProfile?> streamUserProfile(String userId) {
-    return _firestore
-        .collection('users')
-        .doc(userId)
-        .snapshots()
-        .map((doc) {
+    return _firestore.collection('users').doc(userId).snapshots().map((doc) {
       if (!doc.exists || doc.data() == null) {
         return null;
       }

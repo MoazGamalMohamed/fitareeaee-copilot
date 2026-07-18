@@ -71,4 +71,3 @@ class LocationHistory with _$LocationHistory {
   factory LocationHistory.fromJson(Map<String, dynamic> json) =>
       _$LocationHistoryFromJson(json);
 }
-

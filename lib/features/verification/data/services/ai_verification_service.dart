@@ -3,9 +3,11 @@ import 'package:http/http.dart' as http;
 
 /// AI-powered verification service for ID documents and face matching
 class AIVerificationService {
-  static const String _openRouterApiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  static const String _apiKey = 'YOUR_OPENROUTER_API_KEY'; // TODO: Move to environment variable
-  
+  static const String _openRouterApiUrl =
+      'https://openrouter.ai/api/v1/chat/completions';
+  static const String _apiKey =
+      'YOUR_OPENROUTER_API_KEY'; // TODO: Move to environment variable
+
   /// Verify selfie with ID using AI vision model
   /// Returns detailed verification results including confidence scores
   Future<IDVerificationResult> verifySelfieWithID({
@@ -15,7 +17,7 @@ class AIVerificationService {
     try {
       // Prepare the AI prompt
       final prompt = _buildVerificationPrompt();
-      
+
       // Call OpenRouter with vision model
       final response = await http.post(
         Uri.parse(_openRouterApiUrl),
@@ -34,11 +36,11 @@ class AIVerificationService {
                 {'type': 'text', 'text': prompt},
                 {
                   'type': 'image_url',
-                  'image_url': {'url': selfieImageUrl}
+                  'image_url': {'url': selfieImageUrl},
                 },
                 {
                   'type': 'image_url',
-                  'image_url': {'url': idDocumentUrl}
+                  'image_url': {'url': idDocumentUrl},
                 },
               ],
             },
@@ -54,7 +56,7 @@ class AIVerificationService {
 
       final data = jsonDecode(response.body);
       final aiResponse = data['choices'][0]['message']['content'] as String;
-      
+
       // Parse AI response
       return _parseAIResponse(aiResponse);
     } catch (e) {
@@ -70,10 +72,12 @@ class AIVerificationService {
   }
 
   /// Verify ID document authenticity only
-  Future<DocumentValidationResult> validateIDDocument(String idDocumentUrl) async {
+  Future<DocumentValidationResult> validateIDDocument(
+    String idDocumentUrl,
+  ) async {
     try {
       final prompt = _buildDocumentValidationPrompt();
-      
+
       final response = await http.post(
         Uri.parse(_openRouterApiUrl),
         headers: {
@@ -91,7 +95,7 @@ class AIVerificationService {
                 {'type': 'text', 'text': prompt},
                 {
                   'type': 'image_url',
-                  'image_url': {'url': idDocumentUrl}
+                  'image_url': {'url': idDocumentUrl},
                 },
               ],
             },
@@ -107,7 +111,7 @@ class AIVerificationService {
 
       final data = jsonDecode(response.body);
       final aiResponse = data['choices'][0]['message']['content'] as String;
-      
+
       return _parseDocumentValidationResponse(aiResponse);
     } catch (e) {
       return DocumentValidationResult(
@@ -200,9 +204,11 @@ Set "authentic" to false and list concerns if you detect any issues.''';
 
       String message;
       if (verified && overallScore >= 80) {
-        message = 'Identity verified successfully! Face matches the ID document.';
+        message =
+            'Identity verified successfully! Face matches the ID document.';
       } else if (verified && overallScore >= 60) {
-        message = 'Identity verified with moderate confidence. Manual review recommended.';
+        message =
+            'Identity verified with moderate confidence. Manual review recommended.';
       } else {
         message = issues.isNotEmpty
             ? 'Verification failed: ${issues.join(", ")}'
@@ -296,7 +302,8 @@ class IDVerificationResult {
   });
 
   bool get shouldAutoApprove => success && overallConfidence >= 0.80;
-  bool get requiresManualReview => success && overallConfidence >= 0.60 && overallConfidence < 0.80;
+  bool get requiresManualReview =>
+      success && overallConfidence >= 0.60 && overallConfidence < 0.80;
   bool get shouldReject => !success || overallConfidence < 0.60;
 }
 
@@ -321,6 +328,7 @@ class DocumentValidationResult {
   });
 
   bool get shouldAutoApprove => isValid && confidence >= 0.80;
-  bool get requiresManualReview => isValid && confidence >= 0.60 && confidence < 0.80;
+  bool get requiresManualReview =>
+      isValid && confidence >= 0.60 && confidence < 0.80;
   bool get shouldReject => !isValid || confidence < 0.60;
 }

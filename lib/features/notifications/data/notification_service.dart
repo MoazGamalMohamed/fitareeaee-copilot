@@ -43,10 +43,7 @@ class NotificationService {
       type: 'verification',
       title: title,
       body: body,
-      data: {
-        'documentType': documentType,
-        'status': 'approved',
-      },
+      data: {'documentType': documentType, 'status': 'approved'},
       actionUrl: '/verification',
     );
   }
@@ -90,9 +87,7 @@ class NotificationService {
       type: 'booking',
       title: title,
       body: body,
-      data: {
-        'type': 'match',
-      },
+      data: {'type': 'match'},
       actionUrl: '/matches',
     );
   }
@@ -110,9 +105,7 @@ class NotificationService {
       type: 'booking',
       title: title,
       body: body,
-      data: {
-        'type': 'confirmed',
-      },
+      data: {'type': 'confirmed'},
       actionUrl: '/matches',
     );
   }
@@ -124,16 +117,15 @@ class NotificationService {
     required int minutesUntilStart,
   }) async {
     String title = 'Trip Starting Soon';
-    String body = 'Your trip starts in $minutesUntilStart minutes: $tripDetails';
+    String body =
+        'Your trip starts in $minutesUntilStart minutes: $tripDetails';
 
     await createNotification(
       userId: userId,
       type: 'trip',
       title: title,
       body: body,
-      data: {
-        'minutesUntil': minutesUntilStart,
-      },
+      data: {'minutesUntil': minutesUntilStart},
       actionUrl: '/trips',
     );
   }

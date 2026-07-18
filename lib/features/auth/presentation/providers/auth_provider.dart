@@ -38,56 +38,61 @@ final currentUserProvider = FutureProvider<AppUser?>((ref) async {
 
 // Provider to fetch any user by ID
 // AutoDispose ensures this provider is disposed when no longer watched
-final userByIdProvider = StreamProvider.autoDispose.family<AppUser?, String>((ref, userId) {
+final userByIdProvider = StreamProvider.autoDispose.family<AppUser?, String>((
+  ref,
+  userId,
+) {
   // Watch auth state to invalidate this provider when user signs out
   final authState = ref.watch(authStateProvider);
-  
+
   // If no authenticated user, return null stream
   if (!authState.hasValue || authState.value == null) {
     return Stream.value(null);
   }
-  
+
   final firestore = ref.watch(firestoreProvider);
-  return firestore
-      .collection('users')
-      .doc(userId)
-      .snapshots()
-      .map((doc) {
-        if (!doc.exists) return null;
-        var data = doc.data()!;
-        // Add the document ID if it's not in the data
-        if (!data.containsKey('id')) {
-          data['id'] = doc.id;
-        }
-        // Convert timestamps
-        data = FirestoreHelpers.convertTimestamps(data);
-        return AppUser.fromJson(data);
-      });
+  return firestore.collection('users').doc(userId).snapshots().map((doc) {
+    if (!doc.exists) return null;
+    var data = doc.data()!;
+    // Add the document ID if it's not in the data
+    if (!data.containsKey('id')) {
+      data['id'] = doc.id;
+    }
+    // Convert timestamps
+    data = FirestoreHelpers.convertTimestamps(data);
+    return AppUser.fromJson(data);
+  });
 });
 
 // Sign up state notifier
-final signUpProvider = StateNotifierProvider.autoDispose<
-    SignUpStateNotifier,
-    AsyncValue<AppUser?>>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return SignUpStateNotifier(repo);
-});
+final signUpProvider =
+    StateNotifierProvider.autoDispose<
+      SignUpStateNotifier,
+      AsyncValue<AppUser?>
+    >((ref) {
+      final repo = ref.watch(authRepositoryProvider);
+      return SignUpStateNotifier(repo);
+    });
 
 // Sign in state notifier
-final signInProvider = StateNotifierProvider.autoDispose<
-    SignInStateNotifier,
-    AsyncValue<AppUser?>>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return SignInStateNotifier(repo);
-});
+final signInProvider =
+    StateNotifierProvider.autoDispose<
+      SignInStateNotifier,
+      AsyncValue<AppUser?>
+    >((ref) {
+      final repo = ref.watch(authRepositoryProvider);
+      return SignInStateNotifier(repo);
+    });
 
 // Password reset state notifier
-final passwordResetProvider = StateNotifierProvider.autoDispose<
-    PasswordResetStateNotifier,
-    AsyncValue<void>>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return PasswordResetStateNotifier(repo);
-});
+final passwordResetProvider =
+    StateNotifierProvider.autoDispose<
+      PasswordResetStateNotifier,
+      AsyncValue<void>
+    >((ref) {
+      final repo = ref.watch(authRepositoryProvider);
+      return PasswordResetStateNotifier(repo);
+    });
 
 // Sign out provider
 final signOutProvider = FutureProvider.autoDispose((ref) async {
@@ -115,7 +120,10 @@ class SignUpStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
     try {
       if (password != confirmPassword) {
         if (mounted) {
-          state = AsyncValue.error('Passwords do not match', StackTrace.current);
+          state = AsyncValue.error(
+            'Passwords do not match',
+            StackTrace.current,
+          );
         }
         return;
       }
@@ -145,18 +153,12 @@ class SignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
 
   SignInStateNotifier(this._repository) : super(const AsyncValue.data(null));
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     if (!mounted) return;
     state = const AsyncValue.loading();
 
     try {
-      final user = await _repository.signIn(
-        email: email,
-        password: password,
-      );
+      final user = await _repository.signIn(email: email, password: password);
 
       if (mounted) {
         state = AsyncValue.data(user);
@@ -173,7 +175,8 @@ class SignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
 class PasswordResetStateNotifier extends StateNotifier<AsyncValue<void>> {
   final AuthRepositoryImpl _repository;
 
-  PasswordResetStateNotifier(this._repository) : super(const AsyncValue.data(null));
+  PasswordResetStateNotifier(this._repository)
+    : super(const AsyncValue.data(null));
 
   Future<void> resetPassword({required String email}) async {
     state = const AsyncValue.loading();
@@ -188,17 +191,20 @@ class PasswordResetStateNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Google Sign In state notifier
-final googleSignInProvider = StateNotifierProvider.autoDispose<
-    GoogleSignInStateNotifier,
-    AsyncValue<AppUser?>>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return GoogleSignInStateNotifier(repo);
-});
+final googleSignInProvider =
+    StateNotifierProvider.autoDispose<
+      GoogleSignInStateNotifier,
+      AsyncValue<AppUser?>
+    >((ref) {
+      final repo = ref.watch(authRepositoryProvider);
+      return GoogleSignInStateNotifier(repo);
+    });
 
 class GoogleSignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
   final AuthRepositoryImpl _repository;
 
-  GoogleSignInStateNotifier(this._repository) : super(const AsyncValue.data(null));
+  GoogleSignInStateNotifier(this._repository)
+    : super(const AsyncValue.data(null));
 
   Future<void> signInWithGoogle() async {
     state = const AsyncValue.loading();

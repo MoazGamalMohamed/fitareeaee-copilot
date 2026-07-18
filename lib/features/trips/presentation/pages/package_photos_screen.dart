@@ -9,8 +9,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Photo type for package delivery
 enum PackagePhotoType {
-  pickup,   // Photo taken at pickup
-  dropoff,  // Photo taken at delivery
+  pickup, // Photo taken at pickup
+  dropoff, // Photo taken at delivery
 }
 
 /// Screen for capturing package photos at pickup/dropoff
@@ -27,7 +27,8 @@ class PackagePhotosScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PackagePhotosScreen> createState() => _PackagePhotosScreenState();
+  ConsumerState<PackagePhotosScreen> createState() =>
+      _PackagePhotosScreenState();
 }
 
 class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
@@ -39,7 +40,7 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
   @override
   Widget build(BuildContext context) {
     final isPickup = widget.photoType == PackagePhotoType.pickup;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isPickup ? 'Pickup Photos' : 'Delivery Photos'),
@@ -54,7 +55,7 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isPickup 
+                color: isPickup
                     ? Colors.blue.withValues(alpha: 0.1)
                     : Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
@@ -73,7 +74,9 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        isPickup ? 'Document Package Pickup' : 'Document Package Delivery',
+                        isPickup
+                            ? 'Document Package Pickup'
+                            : 'Document Package Delivery',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isPickup ? Colors.blue : Colors.green,
@@ -106,7 +109,7 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
             TextField(
               decoration: InputDecoration(
                 labelText: 'Notes (optional)',
-                hintText: isPickup 
+                hintText: isPickup
                     ? 'Any notes about package condition...'
                     : 'Delivery notes (e.g., left at door)...',
                 border: OutlineInputBorder(
@@ -175,7 +178,10 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
           children: [
             Icon(Icons.add_a_photo, size: 32, color: Colors.grey),
             SizedBox(height: 4),
-            Text('Add Photo', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              'Add Photo',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
       ),
@@ -258,9 +264,9 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to capture photo: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to capture photo: $e')));
       }
     }
   }
@@ -280,8 +286,11 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
 
       // Upload all photos
       for (int i = 0; i < _photos.length; i++) {
-        final fileName = '${widget.photoType.name}_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
-        final ref = storage.ref().child('package_photos/${widget.bookingId}/$fileName');
+        final fileName =
+            '${widget.photoType.name}_${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+        final ref = storage.ref().child(
+          'package_photos/${widget.bookingId}/$fileName',
+        );
 
         final uploadTask = await ref.putFile(_photos[i]);
         final url = await uploadTask.ref.getDownloadURL();
@@ -289,7 +298,9 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
       }
 
       // Update booking with photos
-      final fieldPrefix = widget.photoType == PackagePhotoType.pickup ? 'pickup' : 'dropoff';
+      final fieldPrefix = widget.photoType == PackagePhotoType.pickup
+          ? 'pickup'
+          : 'dropoff';
       await firestore.collection('bookings').doc(widget.bookingId).update({
         '${fieldPrefix}PhotoUrls': photoUrls,
         '${fieldPrefix}Notes': _notes,
@@ -309,9 +320,11 @@ class _PackagePhotosScreenState extends ConsumerState<PackagePhotosScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.photoType == PackagePhotoType.pickup
-                ? 'Pickup confirmed!'
-                : 'Delivery confirmed!'),
+            content: Text(
+              widget.photoType == PackagePhotoType.pickup
+                  ? 'Pickup confirmed!'
+                  : 'Delivery confirmed!',
+            ),
             backgroundColor: Colors.green,
           ),
         );

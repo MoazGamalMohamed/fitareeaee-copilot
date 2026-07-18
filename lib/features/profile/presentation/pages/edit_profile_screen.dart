@@ -7,10 +7,7 @@ import '../../domain/entities/user_profile.dart';
 class EditProfileScreen extends ConsumerStatefulWidget {
   final String userId;
 
-  const EditProfileScreen({
-    super.key,
-    required this.userId,
-  });
+  const EditProfileScreen({super.key, required this.userId});
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -23,16 +20,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _cityController;
   late TextEditingController _countryController;
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isPhoneVerified = false;
   String? _originalPhone;
   bool _isVerifying = false;
   String _countryCode = '+20'; // Default to Egypt
   String? _verificationId;
-  
+
   Set<String> _selectedRoles = {};
   final List<String> _availableRoles = ['rider', 'sender', 'driver', 'courier'];
-  
+
   final Map<String, String> _countryCodes = {
     '+1': '🇺🇸 US',
     '+20': '🇪🇬 EG',
@@ -86,7 +83,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _selectedRoles.remove(role);
       } else {
         _selectedRoles.add(role);
-        
+
         // Show verification requirement for driver/courier
         if (role == 'driver' || role == 'courier') {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +128,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             _originalPhone = phone;
             _isVerifying = false;
           });
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -143,7 +140,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         },
         verificationFailed: (FirebaseAuthException e) {
           setState(() => _isVerifying = false);
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -158,7 +155,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             _verificationId = verificationId;
             _isVerifying = false;
           });
-          
+
           // Show dialog to enter SMS code
           _showCodeInputDialog(phone);
         },
@@ -169,13 +166,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       );
     } catch (e) {
       setState(() => _isVerifying = false);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -184,7 +178,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _showCodeInputDialog(String phone) {
     final codeController = TextEditingController();
     bool isVerifying = false;
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -218,102 +212,113 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: isVerifying ? null : () {
-                Navigator.of(dialogContext).pop();
-                codeController.dispose();
-              },
+              onPressed: isVerifying
+                  ? null
+                  : () {
+                      Navigator.of(dialogContext).pop();
+                      codeController.dispose();
+                    },
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: isVerifying ? null : () async {
-                final code = codeController.text.trim();
-                if (code.isEmpty) {
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    const SnackBar(content: Text('Please enter the code')),
-                  );
-                  return;
-                }
+              onPressed: isVerifying
+                  ? null
+                  : () async {
+                      final code = codeController.text.trim();
+                      if (code.isEmpty) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter the code'),
+                          ),
+                        );
+                        return;
+                      }
 
-                if (code.length != 6) {
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    const SnackBar(
-                      content: Text('Code must be 6 digits'),
-                      backgroundColor: Colors.orange,
-                    ),
-                  );
-                  return;
-                }
+                      if (code.length != 6) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text('Code must be 6 digits'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
 
-                if (_verificationId == null) {
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    const SnackBar(
-                      content: Text('Verification ID not found. Please try again.'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
+                      if (_verificationId == null) {
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Verification ID not found. Please try again.',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
 
-                setDialogState(() => isVerifying = true);
+                      setDialogState(() => isVerifying = true);
 
-                try {
-                  // Create credential with verification ID and SMS code
-                  final credential = PhoneAuthProvider.credential(
-                    verificationId: _verificationId!,
-                    smsCode: code,
-                  );
+                      try {
+                        // Create credential with verification ID and SMS code
+                        final credential = PhoneAuthProvider.credential(
+                          verificationId: _verificationId!,
+                          smsCode: code,
+                        );
 
-                  // Verify the credential (don't link to account, just verify)
-                  await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
+                        // Verify the credential (don't link to account, just verify)
+                        await FirebaseAuth.instance.currentUser
+                            ?.updatePhoneNumber(credential);
 
-                  // Close dialog first
-                  Navigator.of(dialogContext).pop();
+                        // Close dialog first
+                        Navigator.of(dialogContext).pop();
 
-                  // Wait a moment for dialog to close completely
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  
-                  // Dispose controller after dialog is closed
-                  codeController.dispose();
+                        // Wait a moment for dialog to close completely
+                        await Future.delayed(const Duration(milliseconds: 100));
 
-                  // Then update state
-                  if (mounted) {
-                    setState(() {
-                      _isPhoneVerified = true;
-                      _originalPhone = phone;
-                    });
+                        // Dispose controller after dialog is closed
+                        codeController.dispose();
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('$phone verified successfully!'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  setDialogState(() => isVerifying = false);
-                  
-                  String errorMessage = 'Invalid verification code';
-                  if (e is FirebaseAuthException) {
-                    switch (e.code) {
-                      case 'invalid-verification-code':
-                        errorMessage = 'Invalid code. Please check and try again.';
-                        break;
-                      case 'session-expired':
-                        errorMessage = 'Code expired. Please request a new one.';
-                        break;
-                      default:
-                        errorMessage = e.message ?? 'Verification failed';
-                    }
-                  }
-                  
-                  ScaffoldMessenger.of(dialogContext).showSnackBar(
-                    SnackBar(
-                      content: Text(errorMessage),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
+                        // Then update state
+                        if (mounted) {
+                          setState(() {
+                            _isPhoneVerified = true;
+                            _originalPhone = phone;
+                          });
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('$phone verified successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        setDialogState(() => isVerifying = false);
+
+                        String errorMessage = 'Invalid verification code';
+                        if (e is FirebaseAuthException) {
+                          switch (e.code) {
+                            case 'invalid-verification-code':
+                              errorMessage =
+                                  'Invalid code. Please check and try again.';
+                              break;
+                            case 'session-expired':
+                              errorMessage =
+                                  'Code expired. Please request a new one.';
+                              break;
+                            default:
+                              errorMessage = e.message ?? 'Verification failed';
+                          }
+                        }
+
+                        ScaffoldMessenger.of(dialogContext).showSnackBar(
+                          SnackBar(
+                            content: Text(errorMessage),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
               child: const Text('Verify'),
             ),
           ],
@@ -325,7 +330,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void _saveProfile(UserProfile currentProfile) {
     if (_formKey.currentState!.validate()) {
       final phone = _phoneController.text.trim();
-      
+
       // Check if phone changed and not verified
       if (phone.isNotEmpty && phone != _originalPhone && !_isPhoneVerified) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -358,10 +363,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final updateState = ref.watch(updateProfileProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Edit Profile'), centerTitle: true),
       body: profileAsync.when(
         data: (profile) {
           if (profile == null) {
@@ -375,11 +377,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             _addressController.text = profile.address ?? '';
             _cityController.text = profile.city ?? '';
             _countryController.text = profile.country ?? '';
-            
+
             // Initialize phone verification status
             _isPhoneVerified = profile.isPhoneVerified;
             _originalPhone = profile.phone;
-            
+
             // Initialize roles
             _selectedRoles = profile.roles.toSet();
           }
@@ -423,14 +425,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       labelText: 'Email',
                       prefixIcon: const Icon(Icons.email),
                       suffixIcon: profile.isEmailVerified
-                          ? const Icon(Icons.verified, color: Colors.green, size: 20)
+                          ? const Icon(
+                              Icons.verified,
+                              color: Colors.green,
+                              size: 20,
+                            )
                           : null,
-                      helperText: profile.isEmailVerified 
-                          ? 'Verified' 
+                      helperText: profile.isEmailVerified
+                          ? 'Verified'
                           : 'Not verified',
                       helperStyle: TextStyle(
-                        color: profile.isEmailVerified 
-                            ? Colors.green 
+                        color: profile.isEmailVerified
+                            ? Colors.green
                             : Colors.orange,
                       ),
                     ),
@@ -445,7 +451,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       // Country code dropdown
                       Container(
                         width: 90,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade400),
                           borderRadius: BorderRadius.circular(4),
@@ -481,15 +490,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             hintText: '1234567890',
                             prefixIcon: const Icon(Icons.phone),
                             suffixIcon: _isPhoneVerified
-                                ? const Icon(Icons.verified, color: Colors.green, size: 20)
+                                ? const Icon(
+                                    Icons.verified,
+                                    color: Colors.green,
+                                    size: 20,
+                                  )
                                 : null,
                             helperText: _isPhoneVerified
                                 ? 'Verified'
-                                : _phoneController.text.isNotEmpty && _phoneController.text != _originalPhone
-                                    ? 'Not verified - Click verify button below'
-                                    : null,
+                                : _phoneController.text.isNotEmpty &&
+                                      _phoneController.text != _originalPhone
+                                ? 'Not verified - Click verify button below'
+                                : null,
                             helperStyle: TextStyle(
-                              color: _isPhoneVerified ? Colors.green : Colors.orange,
+                              color: _isPhoneVerified
+                                  ? Colors.green
+                                  : Colors.orange,
                             ),
                           ),
                           keyboardType: TextInputType.phone,
@@ -498,21 +514,28 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                     ],
                   ),
-                  if (_phoneController.text.isNotEmpty && !_isPhoneVerified) ...[
+                  if (_phoneController.text.isNotEmpty &&
+                      !_isPhoneVerified) ...[
                     const SizedBox(height: 8),
                     ElevatedButton.icon(
                       onPressed: _isVerifying ? null : _verifyPhoneNumber,
-                      icon: _isVerifying 
+                      icon: _isVerifying
                           ? const SizedBox(
                               width: 16,
                               height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Icon(Icons.verified_user),
-                      label: Text(_isVerifying ? 'Sending Code...' : 'Verify Phone Number'),
+                      label: Text(
+                        _isVerifying
+                            ? 'Sending Code...'
+                            : 'Verify Phone Number',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                       ),
@@ -542,8 +565,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             runSpacing: 8,
                             children: _availableRoles.map((role) {
                               final isSelected = _selectedRoles.contains(role);
-                              final requiresVerification = role == 'driver' || role == 'courier';
-                              
+                              final requiresVerification =
+                                  role == 'driver' || role == 'courier';
+
                               return FilterChip(
                                 label: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -556,14 +580,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                       Icon(
                                         Icons.verified_user,
                                         size: 16,
-                                        color: isSelected ? Colors.white : Colors.orange,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.orange,
                                       ),
                                     ],
                                   ],
                                 ),
                                 selected: isSelected,
                                 onSelected: (selected) => _toggleRole(role),
-                                selectedColor: requiresVerification ? Colors.orange : Colors.blue,
+                                selectedColor: requiresVerification
+                                    ? Colors.orange
+                                    : Colors.blue,
                                 checkmarkColor: Colors.white,
                               );
                             }).toList(),
@@ -660,12 +688,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, st) => Center(
-          child: Text('Error: $error'),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, st) => Center(child: Text('Error: $error')),
       ),
     );
   }

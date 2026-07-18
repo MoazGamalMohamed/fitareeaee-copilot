@@ -12,30 +12,31 @@ final firebaseMessagingProvider = Provider((ref) => FirebaseMessaging.instance);
 /// COMPOSITE INDEX REQUIRED:
 /// Collection: notifications
 /// Fields: userId (ASCENDING), createdAt (DESCENDING)
-final notificationsProvider = StreamProvider.autoDispose<List<NotificationModel>>((ref) {
-  // Watch auth state to automatically refresh when user signs in/out
-  final authState = ref.watch(authStateProvider);
-  final user = authState.value;
-  if (user == null) return Stream.value([]);
+final notificationsProvider =
+    StreamProvider.autoDispose<List<NotificationModel>>((ref) {
+      // Watch auth state to automatically refresh when user signs in/out
+      final authState = ref.watch(authStateProvider);
+      final user = authState.value;
+      if (user == null) return Stream.value([]);
 
-  return FirebaseFirestore.instance
-      .collection('notifications')
-      .where('userId', isEqualTo: user.id)
-      .orderBy('createdAt', descending: true)
-      .limit(50)
-      .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) {
-            final data = doc.data();
-            // Convert all Timestamp fields to ISO8601 strings for JSON parsing
-            final jsonData = FirestoreHelpers.convertTimestamps({
-              ...data,
-              'id': doc.id,
-            });
-            return NotificationModel.fromJson(jsonData);
-          })
-          .toList());
-});
+      return FirebaseFirestore.instance
+          .collection('notifications')
+          .where('userId', isEqualTo: user.id)
+          .orderBy('createdAt', descending: true)
+          .limit(50)
+          .snapshots()
+          .map(
+            (snapshot) => snapshot.docs.map((doc) {
+              final data = doc.data();
+              // Convert all Timestamp fields to ISO8601 strings for JSON parsing
+              final jsonData = FirestoreHelpers.convertTimestamps({
+                ...data,
+                'id': doc.id,
+              });
+              return NotificationModel.fromJson(jsonData);
+            }).toList(),
+          );
+    });
 
 /// Provider for unread notification count
 final unreadNotificationCountProvider = StreamProvider.autoDispose<int>((ref) {
@@ -57,17 +58,14 @@ Future<void> markNotificationAsRead(String notificationId) async {
   await FirebaseFirestore.instance
       .collection('notifications')
       .doc(notificationId)
-      .update({
-    'isRead': true,
-    'readAt': DateTime.now().toIso8601String(),
-  });
+      .update({'isRead': true, 'readAt': DateTime.now().toIso8601String()});
 }
 
 /// Mark all notifications as read
 Future<void> markAllNotificationsAsRead(String userId) async {
   final firestore = FirebaseFirestore.instance;
   final batch = firestore.batch();
-  
+
   final unreadDocs = await firestore
       .collection('notifications')
       .where('userId', isEqualTo: userId)
@@ -150,16 +148,16 @@ class FCMService {
         .collection('fcm_tokens')
         .doc(token)
         .set({
-      'token': token,
-      'createdAt': FieldValue.serverTimestamp(),
-      'platform': 'android', // or detect platform
-    });
+          'token': token,
+          'createdAt': FieldValue.serverTimestamp(),
+          'platform': 'android', // or detect platform
+        });
   }
 
   Future<void> removeToken() async {
     final user = FirebaseAuth.instance.currentUser;
     final token = await _messaging.getToken();
-    
+
     if (user != null && token != null) {
       await FirebaseFirestore.instance
           .collection('users')
@@ -170,4 +168,3 @@ class FCMService {
     }
   }
 }
-

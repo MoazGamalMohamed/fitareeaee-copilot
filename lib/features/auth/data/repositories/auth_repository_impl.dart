@@ -11,8 +11,8 @@ class AuthRepositoryImpl {
   AuthRepositoryImpl({
     required firebase_auth.FirebaseAuth firebaseAuth,
     required FirebaseUserService userService,
-  })  : _firebaseAuth = firebaseAuth,
-        _userService = userService;
+  }) : _firebaseAuth = firebaseAuth,
+       _userService = userService;
 
   /// Sign up with email and password
   Future<AppUser> signUp({
@@ -28,7 +28,9 @@ class AuthRepositoryImpl {
         throw AuthException(message: 'Invalid email format');
       }
       if (password.length < 6) {
-        throw WeakPasswordException(message: 'Password must be at least 6 characters');
+        throw WeakPasswordException(
+          message: 'Password must be at least 6 characters',
+        );
       }
 
       // Create user in Firebase Auth
@@ -230,7 +232,9 @@ class AuthRepositoryImpl {
     try {
       // For web, use Firebase Auth's Google provider directly
       final googleProvider = firebase_auth.GoogleAuthProvider();
-      final userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
+      final userCredential = await _firebaseAuth.signInWithPopup(
+        googleProvider,
+      );
       final firebaseUser = userCredential.user;
 
       if (firebaseUser == null) {
@@ -285,20 +289,31 @@ class AuthRepositoryImpl {
   }
 
   /// Handle Firebase Auth exceptions
-  Exception _handleFirebaseAuthException(firebase_auth.FirebaseAuthException e) {
+  Exception _handleFirebaseAuthException(
+    firebase_auth.FirebaseAuthException e,
+  ) {
     switch (e.code) {
       case 'weak-password':
-        return WeakPasswordException(message: e.message ?? 'Password is too weak');
+        return WeakPasswordException(
+          message: e.message ?? 'Password is too weak',
+        );
       case 'email-already-in-use':
-        return EmailAlreadyInUseException(message: e.message ?? 'Email already in use');
+        return EmailAlreadyInUseException(
+          message: e.message ?? 'Email already in use',
+        );
       case 'invalid-email':
         return AuthException(message: 'Invalid email address', code: e.code);
       case 'user-disabled':
-        return AuthException(message: 'User account has been disabled', code: e.code);
+        return AuthException(
+          message: 'User account has been disabled',
+          code: e.code,
+        );
       case 'user-not-found':
         return UserNotFoundException(message: e.message ?? 'User not found');
       case 'wrong-password':
-        return InvalidCredentialsException(message: e.message ?? 'Invalid credentials');
+        return InvalidCredentialsException(
+          message: e.message ?? 'Invalid credentials',
+        );
       case 'network-request-failed':
         return NetworkException(message: e.message ?? 'Network error');
       default:

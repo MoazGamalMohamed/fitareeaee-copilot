@@ -15,29 +15,37 @@ final isAIAvailableProvider = Provider<bool>((ref) {
 });
 
 /// Provider for generating trip description
-final tripDescriptionProvider = FutureProvider.family<String, TripDescriptionParams>((ref, params) async {
-  final service = ref.read(openRouterServiceProvider);
-  return service.generateTripDescription(
-    origin: params.origin,
-    destination: params.destination,
-    tripType: params.tripType,
-    additionalNotes: params.notes,
-  );
-});
+final tripDescriptionProvider =
+    FutureProvider.family<String, TripDescriptionParams>((ref, params) async {
+      final service = ref.read(openRouterServiceProvider);
+      return service.generateTripDescription(
+        origin: params.origin,
+        destination: params.destination,
+        tripType: params.tripType,
+        additionalNotes: params.notes,
+      );
+    });
 
 /// Provider for price estimation
-final priceEstimationProvider = FutureProvider.family<Map<String, dynamic>, PriceEstimationParams>((ref, params) async {
-  final service = ref.read(openRouterServiceProvider);
-  return service.estimatePrice(
-    distanceKm: params.distanceKm,
-    tripType: params.tripType,
-    passengers: params.passengers,
-    packageWeightKg: params.packageWeightKg,
-  );
-});
+final priceEstimationProvider =
+    FutureProvider.family<Map<String, dynamic>, PriceEstimationParams>((
+      ref,
+      params,
+    ) async {
+      final service = ref.read(openRouterServiceProvider);
+      return service.estimatePrice(
+        distanceKm: params.distanceKm,
+        tripType: params.tripType,
+        passengers: params.passengers,
+        packageWeightKg: params.packageWeightKg,
+      );
+    });
 
 /// Provider for FAQ answers
-final faqAnswerProvider = FutureProvider.family<String, String>((ref, question) async {
+final faqAnswerProvider = FutureProvider.family<String, String>((
+  ref,
+  question,
+) async {
   final service = ref.read(openRouterServiceProvider);
   return service.answerFAQ(question);
 });
@@ -57,10 +65,7 @@ class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
     if (!_isAvailable) {
       state = [
         ...state,
-        ChatMessage(
-          role: 'assistant',
-          content: _getOfflineResponse(message),
-        ),
+        ChatMessage(role: 'assistant', content: _getOfflineResponse(message)),
       ];
       return;
     }
@@ -73,7 +78,8 @@ class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
         ...state,
         ChatMessage(
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again later or contact support.',
+          content:
+              'Sorry, I encountered an error. Please try again later or contact support.',
         ),
       ];
     }
@@ -105,11 +111,13 @@ class AIChatNotifier extends StateNotifier<List<ChatMessage>> {
   }
 }
 
-final aiChatProvider = StateNotifierProvider<AIChatNotifier, List<ChatMessage>>((ref) {
-  final service = ref.read(openRouterServiceProvider);
-  final isAvailable = ref.read(isAIAvailableProvider);
-  return AIChatNotifier(service, isAvailable);
-});
+final aiChatProvider = StateNotifierProvider<AIChatNotifier, List<ChatMessage>>(
+  (ref) {
+    final service = ref.read(openRouterServiceProvider);
+    final isAvailable = ref.read(isAIAvailableProvider);
+    return AIChatNotifier(service, isAvailable);
+  },
+);
 
 // Parameter classes
 class TripDescriptionParams {
@@ -145,10 +153,6 @@ class ChatMessage {
   final String content;
   final DateTime timestamp;
 
-  ChatMessage({
-    required this.role,
-    required this.content,
-    DateTime? timestamp,
-  }) : timestamp = timestamp ?? DateTime.now();
+  ChatMessage({required this.role, required this.content, DateTime? timestamp})
+    : timestamp = timestamp ?? DateTime.now();
 }
-

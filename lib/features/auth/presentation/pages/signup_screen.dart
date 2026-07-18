@@ -145,7 +145,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -174,10 +176,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
-                        setState(() => _obscureConfirmPassword = !_obscureConfirmPassword);
+                        setState(
+                          () => _obscureConfirmPassword =
+                              !_obscureConfirmPassword,
+                        );
                       },
                     ),
                   ),
@@ -202,24 +209,24 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
-                  children: ['driver', 'courier', 'rider', 'sender']
-                      .map((role) {
-                        final isSelected = _selectedRoles.contains(role);
-                        return FilterChip(
-                          label: Text(role.toUpperCase()),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                _selectedRoles.add(role);
-                              } else {
-                                _selectedRoles.remove(role);
-                              }
-                            });
-                          },
-                        );
-                      })
-                      .toList(),
+                  children: ['driver', 'courier', 'rider', 'sender'].map((
+                    role,
+                  ) {
+                    final isSelected = _selectedRoles.contains(role);
+                    return FilterChip(
+                      label: Text(role.toUpperCase()),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          if (selected) {
+                            _selectedRoles.add(role);
+                          } else {
+                            _selectedRoles.remove(role);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 32),
 
@@ -231,14 +238,21 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           if (_formKey.currentState!.validate()) {
                             if (_selectedRoles.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Please select at least one role')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Please select at least one role',
+                                  ),
+                                ),
                               );
                               return;
                             }
-                            ref.read(signUpProvider.notifier).signUp(
+                            ref
+                                .read(signUpProvider.notifier)
+                                .signUp(
                                   email: _emailController.text,
                                   password: _passwordController.text,
-                                  confirmPassword: _confirmPasswordController.text,
+                                  confirmPassword:
+                                      _confirmPasswordController.text,
                                   name: _nameController.text,
                                   phone: _phoneController.text,
                                   roles: _selectedRoles,

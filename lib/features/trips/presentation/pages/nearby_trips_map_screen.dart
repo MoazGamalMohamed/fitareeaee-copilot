@@ -11,7 +11,8 @@ class NearbyTripsMapScreen extends ConsumerStatefulWidget {
   const NearbyTripsMapScreen({super.key});
 
   @override
-  ConsumerState<NearbyTripsMapScreen> createState() => _NearbyTripsMapScreenState();
+  ConsumerState<NearbyTripsMapScreen> createState() =>
+      _NearbyTripsMapScreenState();
 }
 
 class _NearbyTripsMapScreenState extends ConsumerState<NearbyTripsMapScreen> {
@@ -142,7 +143,10 @@ class _NearbyTripsMapScreenState extends ConsumerState<NearbyTripsMapScreen> {
     return Stack(
       children: [
         GoogleMap(
-          initialCameraPosition: CameraPosition(target: initialPosition, zoom: 12),
+          initialCameraPosition: CameraPosition(
+            target: initialPosition,
+            zoom: 12,
+          ),
           markers: markers,
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
@@ -157,18 +161,22 @@ class _NearbyTripsMapScreenState extends ConsumerState<NearbyTripsMapScreen> {
   Set<Marker> _buildMarkers(List<Trip> trips) {
     final markers = <Marker>{};
     for (final trip in trips) {
-      markers.add(Marker(
-        markerId: MarkerId('trip_${trip.id}'),
-        position: LatLng(trip.originLat, trip.originLng),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          trip.isOffer ? BitmapDescriptor.hueBlue : BitmapDescriptor.hueOrange,
+      markers.add(
+        Marker(
+          markerId: MarkerId('trip_${trip.id}'),
+          position: LatLng(trip.originLat, trip.originLng),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            trip.isOffer
+                ? BitmapDescriptor.hueBlue
+                : BitmapDescriptor.hueOrange,
+          ),
+          infoWindow: InfoWindow(
+            title: trip.isOffer ? 'Offering' : 'Requesting',
+            snippet: '${trip.originAddress} → ${trip.destinationAddress}',
+          ),
+          onTap: () => setState(() => _selectedTrip = trip),
         ),
-        infoWindow: InfoWindow(
-          title: trip.isOffer ? 'Offering' : 'Requesting',
-          snippet: '${trip.originAddress} → ${trip.destinationAddress}',
-        ),
-        onTap: () => setState(() => _selectedTrip = trip),
-      ));
+      );
     }
     return markers;
   }
@@ -190,34 +198,70 @@ class _NearbyTripsMapScreenState extends ConsumerState<NearbyTripsMapScreen> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: trip.isOffer ? Colors.blue : Colors.orange,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       trip.isOffer ? 'OFFERING' : 'REQUESTING',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Chip(label: Text(trip.typeDisplay, style: const TextStyle(fontSize: 10)), visualDensity: VisualDensity.compact),
+                  Chip(
+                    label: Text(
+                      trip.typeDisplay,
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    visualDensity: VisualDensity.compact,
+                  ),
                   const Spacer(),
-                  IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _selectedTrip = null), visualDensity: VisualDensity.compact),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => setState(() => _selectedTrip = null),
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
-              Text('${trip.originAddress} → ${trip.destinationAddress}', style: Theme.of(context).textTheme.bodyMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text(
+                '${trip.originAddress} → ${trip.destinationAddress}',
+                style: Theme.of(context).textTheme.bodyMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(trip.priceDisplay, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(trip.timeDisplay, style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    trip.priceDisplay,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    trip.timeDisplay,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              SizedBox(width: double.infinity, child: ElevatedButton(onPressed: () => context.push('/trips/${trip.id}'), child: const Text('View Details'))),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => context.push('/trips/${trip.id}'),
+                  child: const Text('View Details'),
+                ),
+              ),
             ],
           ),
         ),
@@ -227,7 +271,9 @@ class _NearbyTripsMapScreenState extends ConsumerState<NearbyTripsMapScreen> {
 
   void _centerOnCurrentLocation() {
     if (_currentLocation != null && _mapController != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(_currentLocation!, 14));
+      _mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentLocation!, 14),
+      );
     }
   }
 }

@@ -8,29 +8,41 @@ import '../../../../core/utils/firestore_helpers.dart';
 final locationServiceProvider = Provider((ref) => Location());
 
 /// Provider for trip tracking data
-final tripTrackingProvider = StreamProvider.family<TripTracking?, String>((ref, tripId) {
+final tripTrackingProvider = StreamProvider.family<TripTracking?, String>((
+  ref,
+  tripId,
+) {
   return FirebaseFirestore.instance
       .collection('trip_tracking')
       .doc(tripId)
       .snapshots()
       .map((doc) {
-    if (!doc.exists) return null;
-    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'tripId': tripId});
-    return TripTracking.fromJson(data);
-  });
+        if (!doc.exists) return null;
+        final data = FirestoreHelpers.convertTimestamps({
+          ...doc.data()!,
+          'tripId': tripId,
+        });
+        return TripTracking.fromJson(data);
+      });
 });
 
 /// Provider for live location updates
-final liveLocationProvider = StreamProvider.family<LiveLocation?, String>((ref, tripId) {
+final liveLocationProvider = StreamProvider.family<LiveLocation?, String>((
+  ref,
+  tripId,
+) {
   return FirebaseFirestore.instance
       .collection('live_locations')
       .doc(tripId)
       .snapshots()
       .map((doc) {
-    if (!doc.exists) return null;
-    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'tripId': tripId});
-    return LiveLocation.fromJson(data);
-  });
+        if (!doc.exists) return null;
+        final data = FirestoreHelpers.convertTimestamps({
+          ...doc.data()!,
+          'tripId': tripId,
+        });
+        return LiveLocation.fromJson(data);
+      });
 });
 
 /// Start tracking for a trip
@@ -175,4 +187,3 @@ class LocationTrackingService {
     _currentUserId = null;
   }
 }
-

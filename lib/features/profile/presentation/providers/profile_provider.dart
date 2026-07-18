@@ -13,84 +13,81 @@ final userProfileRepositoryProvider = Provider((ref) {
   final firestore = FirebaseFirestore.instance;
   final storage = FirebaseStorage.instance;
 
-  return UserProfileRepositoryImpl(
-    firestore: firestore,
-    storage: storage,
-  );
+  return UserProfileRepositoryImpl(firestore: firestore, storage: storage);
 });
 
 // Stream Providers
 // AutoDispose ensures this provider is disposed when no longer watched
-final userProfileProvider = StreamProvider.autoDispose.family<UserProfile?, String>((
-  ref,
-  String userId,
-) async* {
-  // Import auth provider to watch auth state
-  final authState = ref.watch(authStateProvider);
-  
-  // If no authenticated user, return null stream to avoid permission errors
-  if (!authState.hasValue || authState.value == null) {
-    yield null;
-    return;
-  }
-  
-  final repository = ref.watch(userProfileRepositoryProvider);
-  final firebaseAuth = ref.watch(firebaseAuthProvider);
-  
-  // Get Firebase Auth user for email verification status
-  final firebaseUser = firebaseAuth.currentUser;
-  
-  // Listen to verification changes using ref.listen
-  UserVerification? latestVerification;
-  ref.listen(userVerificationProvider(userId), (previous, next) {
-    next.whenData((verification) {
-      latestVerification = verification;
+final userProfileProvider = StreamProvider.autoDispose
+    .family<UserProfile?, String>((ref, String userId) async* {
+      // Import auth provider to watch auth state
+      final authState = ref.watch(authStateProvider);
+
+      // If no authenticated user, return null stream to avoid permission errors
+      if (!authState.hasValue || authState.value == null) {
+        yield null;
+        return;
+      }
+
+      final repository = ref.watch(userProfileRepositoryProvider);
+      final firebaseAuth = ref.watch(firebaseAuthProvider);
+
+      // Get Firebase Auth user for email verification status
+      final firebaseUser = firebaseAuth.currentUser;
+
+      // Listen to verification changes using ref.listen
+      UserVerification? latestVerification;
+      ref.listen(userVerificationProvider(userId), (previous, next) {
+        next.whenData((verification) {
+          latestVerification = verification;
+        });
+      });
+
+      // Get initial verification value
+      final verificationAsync = ref.read(userVerificationProvider(userId));
+      verificationAsync.whenData((verification) {
+        latestVerification = verification;
+      });
+
+      // Stream the profile and sync verification status
+      await for (final profile in repository.streamUserProfile(userId)) {
+        if (profile == null) {
+          yield null;
+          continue;
+        }
+
+        bool needsUpdate = false;
+        var updatedProfile = profile;
+
+        // Sync email verification status from Firebase Auth
+        if (firebaseUser != null &&
+            profile.isEmailVerified != firebaseUser.emailVerified) {
+          updatedProfile = updatedProfile.copyWith(
+            isEmailVerified: firebaseUser.emailVerified,
+          );
+          needsUpdate = true;
+        }
+
+        // Sync phone verification status from verification system
+        // Only mark as verified if verification document exists AND phoneVerified is true
+        final shouldBePhoneVerified =
+            latestVerification?.phoneVerified ?? false;
+        if (profile.isPhoneVerified != shouldBePhoneVerified) {
+          updatedProfile = updatedProfile.copyWith(
+            isPhoneVerified: shouldBePhoneVerified,
+          );
+          needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+          // Update in Firestore
+          await repository.updateUserProfile(updatedProfile);
+          yield updatedProfile;
+        } else {
+          yield profile;
+        }
+      }
     });
-  });
-  
-  // Get initial verification value
-  final verificationAsync = ref.read(userVerificationProvider(userId));
-  verificationAsync.whenData((verification) {
-    latestVerification = verification;
-  });
-  
-  // Stream the profile and sync verification status
-  await for (final profile in repository.streamUserProfile(userId)) {
-    if (profile == null) {
-      yield null;
-      continue;
-    }
-    
-    bool needsUpdate = false;
-    var updatedProfile = profile;
-    
-    // Sync email verification status from Firebase Auth
-    if (firebaseUser != null && profile.isEmailVerified != firebaseUser.emailVerified) {
-      updatedProfile = updatedProfile.copyWith(
-        isEmailVerified: firebaseUser.emailVerified,
-      );
-      needsUpdate = true;
-    }
-    
-    // Sync phone verification status from verification system
-    // Only mark as verified if verification document exists AND phoneVerified is true
-    final shouldBePhoneVerified = latestVerification?.phoneVerified ?? false;
-    if (profile.isPhoneVerified != shouldBePhoneVerified) {
-      updatedProfile = updatedProfile.copyWith(
-        isPhoneVerified: shouldBePhoneVerified,
-      );
-      needsUpdate = true;
-    }
-    
-    if (needsUpdate) {
-      // Update in Firestore
-      await repository.updateUserProfile(updatedProfile);
-      yield updatedProfile;
-    } else {
-      yield profile;
-    }
-  }
-});
 
 // Future Providers
 final userProfileFutureProvider = FutureProvider.family<UserProfile?, String>((
@@ -107,7 +104,7 @@ class UpdateProfileStateNotifier
   final UserProfileRepositoryImpl _repository;
 
   UpdateProfileStateNotifier(this._repository)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> updateProfile(UserProfile profile) async {
     state = const AsyncValue.loading();
@@ -124,7 +121,7 @@ class AvatarUploadStateNotifier extends StateNotifier<AsyncValue<String?>> {
   final UserProfileRepositoryImpl _repository;
 
   AvatarUploadStateNotifier(this._repository)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   Future<void> uploadAvatar(String userId, File imageFile) async {
     state = const AsyncValue.loading();
@@ -147,11 +144,11 @@ class AvatarUploadStateNotifier extends StateNotifier<AsyncValue<String?>> {
   }
 }
 
-class SearchUsersStateNotifier extends StateNotifier<AsyncValue<List<UserProfile>>> {
+class SearchUsersStateNotifier
+    extends StateNotifier<AsyncValue<List<UserProfile>>> {
   final UserProfileRepositoryImpl _repository;
 
-  SearchUsersStateNotifier(this._repository)
-      : super(const AsyncValue.data([]));
+  SearchUsersStateNotifier(this._repository) : super(const AsyncValue.data([]));
 
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
@@ -175,28 +172,31 @@ class SearchUsersStateNotifier extends StateNotifier<AsyncValue<List<UserProfile
 
 // State Notifier Providers
 final updateProfileProvider =
-    StateNotifierProvider.autoDispose<UpdateProfileStateNotifier, AsyncValue<UserProfile?>>((
-  ref,
-) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  return UpdateProfileStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      UpdateProfileStateNotifier,
+      AsyncValue<UserProfile?>
+    >((ref) {
+      final repository = ref.watch(userProfileRepositoryProvider);
+      return UpdateProfileStateNotifier(repository);
+    });
 
 final avatarUploadProvider =
-    StateNotifierProvider.autoDispose<AvatarUploadStateNotifier, AsyncValue<String?>>((
-  ref,
-) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  return AvatarUploadStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      AvatarUploadStateNotifier,
+      AsyncValue<String?>
+    >((ref) {
+      final repository = ref.watch(userProfileRepositoryProvider);
+      return AvatarUploadStateNotifier(repository);
+    });
 
 final searchUsersProvider =
-    StateNotifierProvider.autoDispose<SearchUsersStateNotifier, AsyncValue<List<UserProfile>>>((
-  ref,
-) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  return SearchUsersStateNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<
+      SearchUsersStateNotifier,
+      AsyncValue<List<UserProfile>>
+    >((ref) {
+      final repository = ref.watch(userProfileRepositoryProvider);
+      return SearchUsersStateNotifier(repository);
+    });
 
 // Utility Providers
 final profileCompletionProvider = FutureProvider.family<int, String>((

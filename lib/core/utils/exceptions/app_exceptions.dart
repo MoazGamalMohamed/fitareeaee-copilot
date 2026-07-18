@@ -8,9 +8,11 @@ class AppException implements Exception {
 }
 
 class NetworkException extends AppException {
-  NetworkException([String message = 'Network error']) : super(message: message);
+  NetworkException([String message = 'Network error'])
+    : super(message: message);
 }
 
 class UserNotFoundException extends AppException {
-  UserNotFoundException([String message = 'User not found']) : super(message: message);
+  UserNotFoundException([String message = 'User not found'])
+    : super(message: message);
 }

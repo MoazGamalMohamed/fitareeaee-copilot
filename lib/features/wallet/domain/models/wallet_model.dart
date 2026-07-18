@@ -4,6 +4,7 @@ part 'wallet_model.freezed.dart';
 part 'wallet_model.g.dart';
 
 enum TransactionType { deposit, withdrawal, payment, refund, payout, fee }
+
 enum TransactionStatus { pending, completed, failed, cancelled }
 
 @freezed
@@ -35,9 +36,9 @@ class WalletModel with _$WalletModel {
   bool canWithdraw(double amount) => availableBalance >= amount;
 
   /// Check if has payout method
-  bool get hasPayoutMethod => 
-      bankAccountNumber != null && 
-      bankName != null && 
+  bool get hasPayoutMethod =>
+      bankAccountNumber != null &&
+      bankName != null &&
       bankAccountNumber!.isNotEmpty;
 }
 
@@ -85,4 +86,3 @@ class PayoutRequest with _$PayoutRequest {
   factory PayoutRequest.fromJson(Map<String, dynamic> json) =>
       _$PayoutRequestFromJson(json);
 }
-

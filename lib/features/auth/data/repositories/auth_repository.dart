@@ -12,10 +12,7 @@ abstract class AuthRepository {
   });
 
   /// Sign in with email and password
-  Future<void> signIn({
-    required String email,
-    required String password,
-  });
+  Future<void> signIn({required String email, required String password});
 
   /// Sign out
   Future<void> signOut();
@@ -40,7 +37,8 @@ abstract class AuthRepository {
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
 
-  AuthRepositoryImpl({required FirebaseAuth firebaseAuth}) : _firebaseAuth = firebaseAuth;
+  AuthRepositoryImpl({required FirebaseAuth firebaseAuth})
+    : _firebaseAuth = firebaseAuth;
 
   @override
   Future<void> signUp({
@@ -61,10 +59,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     try {
       // TODO: Implement sign in logic
     } catch (e) {

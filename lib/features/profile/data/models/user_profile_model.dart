@@ -66,98 +66,107 @@ class UserProfileModel {
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalRatings: json['totalRatings'] as int? ?? 0,
       totalTrips: json['totalTrips'] as int? ?? 0,
-      isEmailVerified: json['isEmailVerified'] as bool? ?? json['isVerified'] as bool? ?? false,
+      isEmailVerified:
+          json['isEmailVerified'] as bool? ??
+          json['isVerified'] as bool? ??
+          false,
       isPhoneVerified: json['isPhoneVerified'] as bool? ?? false,
       isProfileComplete: json['isProfileComplete'] as bool? ?? false,
-      metadata: json['metadata'] != null ? Map<String, dynamic>.from(json['metadata']) : {},
-      createdAt: json['createdAt'] is DateTime 
+      metadata: json['metadata'] != null
+          ? Map<String, dynamic>.from(json['metadata'])
+          : {},
+      createdAt: json['createdAt'] is DateTime
           ? json['createdAt'] as DateTime
-          : (json['created_at'] is DateTime 
-              ? json['created_at'] as DateTime
-              : DateTime.parse((json['createdAt'] ?? json['created_at']) as String)),
-      updatedAt: json['updatedAt'] is DateTime 
+          : (json['created_at'] is DateTime
+                ? json['created_at'] as DateTime
+                : DateTime.parse(
+                    (json['createdAt'] ?? json['created_at']) as String,
+                  )),
+      updatedAt: json['updatedAt'] is DateTime
           ? json['updatedAt'] as DateTime
-          : (json['updated_at'] is DateTime 
-              ? json['updated_at'] as DateTime
-              : DateTime.parse((json['updatedAt'] ?? json['updated_at']) as String)),
+          : (json['updated_at'] is DateTime
+                ? json['updated_at'] as DateTime
+                : DateTime.parse(
+                    (json['updatedAt'] ?? json['updated_at']) as String,
+                  )),
     );
   }
 
   /// Convert to JSON for Firestore
   Map<String, dynamic> toFirestore() => {
-        'userId': userId,
-        'email': email,
-        'name': name,
-        'phone': phone,
-        'photoUrl': photoUrl,
-        'bio': bio,
-        'address': address,
-        'city': city,
-        'country': country,
-        'latitude': latitude,
-        'longitude': longitude,
-        'roles': roles,
-        'rating': rating,
-        'totalRatings': totalRatings,
-        'totalTrips': totalTrips,
-        'isEmailVerified': isEmailVerified,
-        'isPhoneVerified': isPhoneVerified,
-        'isProfileComplete': isProfileComplete,
-        'metadata': metadata,
-        'created_at': createdAt,
-        'updated_at': updatedAt,
-      };
+    'userId': userId,
+    'email': email,
+    'name': name,
+    'phone': phone,
+    'photoUrl': photoUrl,
+    'bio': bio,
+    'address': address,
+    'city': city,
+    'country': country,
+    'latitude': latitude,
+    'longitude': longitude,
+    'roles': roles,
+    'rating': rating,
+    'totalRatings': totalRatings,
+    'totalTrips': totalTrips,
+    'isEmailVerified': isEmailVerified,
+    'isPhoneVerified': isPhoneVerified,
+    'isProfileComplete': isProfileComplete,
+    'metadata': metadata,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
 
   /// Convert model to domain entity
   UserProfile toEntity() => UserProfile(
-        userId: userId,
-        email: email,
-        name: name,
-        phone: phone,
-        photoUrl: photoUrl,
-        bio: bio,
-        address: address,
-        city: city,
-        country: country,
-        latitude: latitude,
-        longitude: longitude,
-        roles: roles,
-        rating: rating,
-        totalRatings: totalRatings,
-        totalTrips: totalTrips,
-        isEmailVerified: isEmailVerified,
-        isPhoneVerified: isPhoneVerified,
-        isProfileComplete: isProfileComplete,
-        metadata: metadata,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+    userId: userId,
+    email: email,
+    name: name,
+    phone: phone,
+    photoUrl: photoUrl,
+    bio: bio,
+    address: address,
+    city: city,
+    country: country,
+    latitude: latitude,
+    longitude: longitude,
+    roles: roles,
+    rating: rating,
+    totalRatings: totalRatings,
+    totalTrips: totalTrips,
+    isEmailVerified: isEmailVerified,
+    isPhoneVerified: isPhoneVerified,
+    isProfileComplete: isProfileComplete,
+    metadata: metadata,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }
 
 /// Extension to convert entity to model
 extension UserProfileToModel on UserProfile {
   /// Convert entity to model
   UserProfileModel toModel() => UserProfileModel(
-        userId: userId,
-        email: email,
-        name: name,
-        phone: phone,
-        photoUrl: photoUrl,
-        bio: bio,
-        address: address,
-        city: city,
-        country: country,
-        latitude: latitude,
-        longitude: longitude,
-        roles: roles,
-        rating: rating,
-        totalRatings: totalRatings,
-        totalTrips: totalTrips,
-        isEmailVerified: isEmailVerified,
-        isPhoneVerified: isPhoneVerified,
-        isProfileComplete: isProfileComplete,
-        metadata: metadata,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+    userId: userId,
+    email: email,
+    name: name,
+    phone: phone,
+    photoUrl: photoUrl,
+    bio: bio,
+    address: address,
+    city: city,
+    country: country,
+    latitude: latitude,
+    longitude: longitude,
+    roles: roles,
+    rating: rating,
+    totalRatings: totalRatings,
+    totalTrips: totalTrips,
+    isEmailVerified: isEmailVerified,
+    isPhoneVerified: isPhoneVerified,
+    isProfileComplete: isProfileComplete,
+    metadata: metadata,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }

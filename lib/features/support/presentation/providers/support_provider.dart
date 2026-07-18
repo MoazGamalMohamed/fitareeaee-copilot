@@ -6,7 +6,9 @@ import '../../../../core/utils/firestore_helpers.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Provider for user's support tickets
-final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((ref) {
+final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((
+  ref,
+) {
   // Watch auth state to automatically refresh when user signs in/out
   final authState = ref.watch(authStateProvider);
   final user = authState.value;
@@ -18,12 +20,13 @@ final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((ref
       .where('userId', isEqualTo: user.id)
       .snapshots()
       .map((snapshot) {
-        final tickets = snapshot.docs
-            .map((doc) {
-              final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
-              return SupportTicket.fromJson(data);
-            })
-            .toList();
+        final tickets = snapshot.docs.map((doc) {
+          final data = FirestoreHelpers.convertTimestamps({
+            ...doc.data(),
+            'id': doc.id,
+          });
+          return SupportTicket.fromJson(data);
+        }).toList();
         // Sort client-side
         tickets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         return tickets;
@@ -35,20 +38,24 @@ final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((ref
 });
 
 /// Provider for ticket messages
-final ticketMessagesProvider = StreamProvider.family<List<TicketMessage>, String>((ref, ticketId) {
-  return FirebaseFirestore.instance
-      .collection('support_tickets')
-      .doc(ticketId)
-      .collection('messages')
-      .orderBy('createdAt')
-      .snapshots()
-      .map((snapshot) => snapshot.docs
-          .map((doc) {
-            final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
-            return TicketMessage.fromJson(data);
-          })
-          .toList());
-});
+final ticketMessagesProvider =
+    StreamProvider.family<List<TicketMessage>, String>((ref, ticketId) {
+      return FirebaseFirestore.instance
+          .collection('support_tickets')
+          .doc(ticketId)
+          .collection('messages')
+          .orderBy('createdAt')
+          .snapshots()
+          .map(
+            (snapshot) => snapshot.docs.map((doc) {
+              final data = FirestoreHelpers.convertTimestamps({
+                ...doc.data(),
+                'id': doc.id,
+              });
+              return TicketMessage.fromJson(data);
+            }).toList(),
+          );
+    });
 
 /// Default FAQ items when Firestore collection is empty
 List<FAQItem> _getDefaultFAQs() {
@@ -56,31 +63,36 @@ List<FAQItem> _getDefaultFAQs() {
     FAQItem(
       id: 'faq_1',
       question: 'How do I book a ride?',
-      answer: 'Browse available trips, select one that matches your route, and tap "Book" to request a seat. The driver will confirm your booking.',
+      answer:
+          'Browse available trips, select one that matches your route, and tap "Book" to request a seat. The driver will confirm your booking.',
       category: 'Booking',
     ),
     FAQItem(
       id: 'faq_2',
       question: 'How do payments work?',
-      answer: 'Payments are held in escrow until the trip is completed. Once the driver confirms arrival, funds are released to them.',
+      answer:
+          'Payments are held in escrow until the trip is completed. Once the driver confirms arrival, funds are released to them.',
       category: 'Payments',
     ),
     FAQItem(
       id: 'faq_3',
       question: 'How do I become a driver?',
-      answer: 'Go to your profile, tap "Become a Driver", and complete the verification process including uploading your ID and vehicle information.',
+      answer:
+          'Go to your profile, tap "Become a Driver", and complete the verification process including uploading your ID and vehicle information.',
       category: 'Drivers',
     ),
     FAQItem(
       id: 'faq_4',
       question: 'What if I need to cancel?',
-      answer: 'You can cancel a booking from your trips page. Cancellation policies vary - check the trip details for specific terms.',
+      answer:
+          'You can cancel a booking from your trips page. Cancellation policies vary - check the trip details for specific terms.',
       category: 'Booking',
     ),
     FAQItem(
       id: 'faq_5',
       question: 'How do I contact support?',
-      answer: 'Submit a support ticket from this Help Center. Our team typically responds within 24 hours.',
+      answer:
+          'Submit a support ticket from this Help Center. Our team typically responds within 24 hours.',
       category: 'Support',
     ),
   ];
@@ -89,9 +101,7 @@ List<FAQItem> _getDefaultFAQs() {
 /// Provider for FAQ items
 final faqProvider = FutureProvider<List<FAQItem>>((ref) async {
   try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('faq')
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('faq').get();
 
     if (snapshot.docs.isEmpty) {
       return _getDefaultFAQs();
@@ -120,15 +130,17 @@ Future<SupportTicket> createTicket({
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) throw Exception('Not authenticated');
 
-  final ticketRef = await FirebaseFirestore.instance.collection('support_tickets').add({
-    'userId': user.uid,
-    'tripId': tripId,
-    'category': category.name,
-    'status': TicketStatus.open.name,
-    'subject': subject,
-    'description': description,
-    'createdAt': DateTime.now().toIso8601String(),
-  });
+  final ticketRef = await FirebaseFirestore.instance
+      .collection('support_tickets')
+      .add({
+        'userId': user.uid,
+        'tripId': tripId,
+        'category': category.name,
+        'status': TicketStatus.open.name,
+        'subject': subject,
+        'description': description,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
 
   // Add initial message
   await ticketRef.collection('messages').add({
@@ -165,13 +177,13 @@ Future<void> sendTicketMessage({
       .doc(ticketId)
       .collection('messages')
       .add({
-    'ticketId': ticketId,
-    'senderId': user.uid,
-    'senderName': user.displayName ?? 'User',
-    'isStaff': false,
-    'message': message,
-    'createdAt': DateTime.now().toIso8601String(),
-  });
+        'ticketId': ticketId,
+        'senderId': user.uid,
+        'senderName': user.displayName ?? 'User',
+        'isStaff': false,
+        'message': message,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
 
   // Update ticket timestamp
   await FirebaseFirestore.instance
@@ -186,9 +198,9 @@ Future<void> closeTicket(String ticketId) async {
       .collection('support_tickets')
       .doc(ticketId)
       .update({
-    'status': TicketStatus.closed.name,
-    'resolvedAt': DateTime.now().toIso8601String(),
-  });
+        'status': TicketStatus.closed.name,
+        'resolvedAt': DateTime.now().toIso8601String(),
+      });
 }
 
 /// Create dispute
@@ -215,9 +227,7 @@ Future<void> createDispute({
 /// Mark FAQ as helpful
 Future<void> markFAQHelpful(String faqId, bool helpful) async {
   final field = helpful ? 'helpfulCount' : 'notHelpfulCount';
-  await FirebaseFirestore.instance
-      .collection('faq')
-      .doc(faqId)
-      .update({field: FieldValue.increment(1)});
+  await FirebaseFirestore.instance.collection('faq').doc(faqId).update({
+    field: FieldValue.increment(1),
+  });
 }
-

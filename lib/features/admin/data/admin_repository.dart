@@ -5,11 +5,9 @@ class AdminRepository {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
 
-  AdminRepository({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? auth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+  AdminRepository({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
 
   /// Check if the current user is an admin
   Future<bool> isCurrentUserAdmin() async {
@@ -21,7 +19,7 @@ class AdminRepository {
           .collection('admins')
           .doc(currentUser.uid)
           .get();
-      
+
       return doc.exists && (doc.data()?['isAdmin'] == true);
     } catch (e) {
       print('Error checking admin status: $e');

@@ -82,9 +82,15 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
           children: [
             Icon(Icons.smart_toy, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            Text("Hi! I'm your AI assistant.", style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              "Hi! I'm your AI assistant.",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
-            Text('Ask me anything about Fitareeaee!', style: TextStyle(color: Colors.grey[600])),
+            Text(
+              'Ask me anything about Fitareeaee!',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
             const SizedBox(height: 24),
             Wrap(
               spacing: 8,
@@ -119,7 +125,11 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
           SizedBox(width: 8),
           Text('Thinking...'),
         ],
@@ -132,7 +142,13 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, -2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Row(
@@ -142,15 +158,23 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                 controller: _messageController,
                 decoration: InputDecoration(
                   hintText: 'Ask me anything...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
                 onSubmitted: (_) => _sendMessage(),
                 textInputAction: TextInputAction.send,
               ),
             ),
             const SizedBox(width: 8),
-            IconButton.filled(onPressed: _isLoading ? null : _sendMessage, icon: const Icon(Icons.send)),
+            IconButton.filled(
+              onPressed: _isLoading ? null : _sendMessage,
+              icon: const Icon(Icons.send),
+            ),
           ],
         ),
       ),
@@ -174,7 +198,9 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
         decoration: BoxDecoration(
           color: isUser ? Theme.of(context).primaryColor : Colors.grey[200],
           borderRadius: BorderRadius.circular(16).copyWith(
@@ -182,7 +208,10 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
             bottomLeft: !isUser ? const Radius.circular(4) : null,
           ),
         ),
-        child: Text(message.content, style: TextStyle(color: isUser ? Colors.white : Colors.black87)),
+        child: Text(
+          message.content,
+          style: TextStyle(color: isUser ? Colors.white : Colors.black87),
+        ),
       ),
     );
   }

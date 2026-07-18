@@ -47,10 +47,7 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
     final ratingState = ref.watch(ratingStateProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rate Your Trip'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Rate Your Trip'), centerTitle: true),
       body: authState.when(
         data: (user) {
           if (user == null) return const Center(child: Text('Please log in'));
@@ -62,7 +59,11 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
     );
   }
 
-  Widget _buildRatingForm(BuildContext context, String userId, RatingState ratingState) {
+  Widget _buildRatingForm(
+    BuildContext context,
+    String userId,
+    RatingState ratingState,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -73,7 +74,9 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
             radius: 40,
             backgroundColor: AppColors.primaryLight,
             child: Text(
-              widget.ratedUserName.isNotEmpty ? widget.ratedUserName[0].toUpperCase() : '?',
+              widget.ratedUserName.isNotEmpty
+                  ? widget.ratedUserName[0].toUpperCase()
+                  : '?',
               style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
           ),
@@ -84,7 +87,9 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
           ),
           Text(
             widget.ratedUserName,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
 
@@ -94,9 +99,12 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
             children: List.generate(5, (index) {
               final starValue = index + 1;
               return IconButton(
-                onPressed: () => ref.read(ratingStateProvider.notifier).setRating(starValue),
+                onPressed: () =>
+                    ref.read(ratingStateProvider.notifier).setRating(starValue),
                 icon: Icon(
-                  starValue <= ratingState.rating ? Icons.star : Icons.star_border,
+                  starValue <= ratingState.rating
+                      ? Icons.star
+                      : Icons.star_border,
                   color: Colors.amber,
                   size: 40,
                 ),
@@ -107,13 +115,18 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
             _getRatingText(ratingState.rating),
             style: TextStyle(
               fontSize: 16,
-              color: ratingState.rating > 0 ? AppColors.primary : AppColors.textSecondary,
+              color: ratingState.rating > 0
+                  ? AppColors.primary
+                  : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 24),
 
           // Tags
-          Text('What did you like?', style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            'What did you like?',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -124,7 +137,8 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
               return FilterChip(
                 label: Text(tag),
                 selected: isSelected,
-                onSelected: (_) => ref.read(ratingStateProvider.notifier).toggleTag(tag),
+                onSelected: (_) =>
+                    ref.read(ratingStateProvider.notifier).toggleTag(tag),
                 selectedColor: AppColors.primaryLight,
                 checkmarkColor: AppColors.primary,
               );
@@ -141,7 +155,8 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
               hintText: 'Share your experience...',
               alignLabelWithHint: true,
             ),
-            onChanged: (value) => ref.read(ratingStateProvider.notifier).setReview(value),
+            onChanged: (value) =>
+                ref.read(ratingStateProvider.notifier).setReview(value),
           ),
           const SizedBox(height: 24),
 
@@ -154,8 +169,12 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
                   : null,
               child: _isLoading
                   ? const SizedBox(
-                      height: 20, width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Text('Submit Rating'),
             ),
@@ -174,12 +193,18 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
 
   String _getRatingText(int rating) {
     switch (rating) {
-      case 1: return 'Poor';
-      case 2: return 'Fair';
-      case 3: return 'Good';
-      case 4: return 'Very Good';
-      case 5: return 'Excellent';
-      default: return 'Tap to rate';
+      case 1:
+        return 'Poor';
+      case 2:
+        return 'Fair';
+      case 3:
+        return 'Good';
+      case 4:
+        return 'Very Good';
+      case 5:
+        return 'Excellent';
+      default:
+        return 'Tap to rate';
     }
   }
 
@@ -193,7 +218,9 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
         ratedByUserId: userId,
         ratedUserId: widget.ratedUserId,
         rating: ratingState.rating,
-        review: _reviewController.text.isNotEmpty ? _reviewController.text : null,
+        review: _reviewController.text.isNotEmpty
+            ? _reviewController.text
+            : null,
         tags: ratingState.tags.isNotEmpty ? ratingState.tags : null,
         createdAt: DateTime.now(),
       );
@@ -213,7 +240,10 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit rating: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Failed to submit rating: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -221,4 +251,3 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
     }
   }
 }
-

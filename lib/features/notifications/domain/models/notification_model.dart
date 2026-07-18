@@ -76,4 +76,3 @@ class NotificationPreferences with _$NotificationPreferences {
   factory NotificationPreferences.fromJson(Map<String, dynamic> json) =>
       _$NotificationPreferencesFromJson(json);
 }
-

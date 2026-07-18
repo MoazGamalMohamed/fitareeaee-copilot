@@ -16,10 +16,7 @@ class SettingsScreen extends ConsumerWidget {
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
       body: ListView(
         children: [
           // Notifications Section
@@ -28,7 +25,8 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Push Notifications'),
             subtitle: const Text('Receive trip updates and messages'),
             value: settings.notificationsEnabled,
-            onChanged: (value) => settingsNotifier.setNotificationsEnabled(value),
+            onChanged: (value) =>
+                settingsNotifier.setNotificationsEnabled(value),
             secondary: const Icon(Icons.notifications_outlined),
           ),
           SwitchListTile(
@@ -46,7 +44,8 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Location Sharing'),
             subtitle: const Text('Share location during trips'),
             value: settings.locationSharingEnabled,
-            onChanged: (value) => settingsNotifier.setLocationSharingEnabled(value),
+            onChanged: (value) =>
+                settingsNotifier.setLocationSharingEnabled(value),
             secondary: const Icon(Icons.location_on_outlined),
           ),
           const Divider(),
@@ -142,7 +141,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: Icon(Icons.delete_forever, color: AppColors.error),
-            title: Text('Delete Account', style: TextStyle(color: AppColors.error)),
+            title: Text(
+              'Delete Account',
+              style: TextStyle(color: AppColors.error),
+            ),
             onTap: () => _showDeleteAccountDialog(context),
           ),
           const SizedBox(height: 24),
@@ -176,10 +178,14 @@ class SettingsScreen extends ConsumerWidget {
 
   String _getLanguageName(String code) {
     switch (code) {
-      case 'en': return 'English';
-      case 'ar': return 'العربية';
-      case 'fr': return 'Français';
-      default: return 'English';
+      case 'en':
+        return 'English';
+      case 'ar':
+        return 'العربية';
+      case 'fr':
+        return 'Français';
+      default:
+        return 'English';
     }
   }
 
@@ -200,11 +206,18 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLanguageOption(BuildContext ctx, WidgetRef ref, String code, String name) {
+  Widget _buildLanguageOption(
+    BuildContext ctx,
+    WidgetRef ref,
+    String code,
+    String name,
+  ) {
     final current = ref.watch(settingsProvider).language;
     return ListTile(
       title: Text(name),
-      trailing: current == code ? Icon(Icons.check, color: AppColors.primary) : null,
+      trailing: current == code
+          ? Icon(Icons.check, color: AppColors.primary)
+          : null,
       onTap: () {
         ref.read(settingsProvider.notifier).setLanguage(code);
         Navigator.pop(ctx);
@@ -213,9 +226,9 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Coming soon!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Coming soon!')));
   }
 
   Widget _buildPaymentSettingsItem({
@@ -243,8 +256,8 @@ class SettingsScreen extends ConsumerWidget {
           subtitle: Text(
             hasMethod
                 ? (type == 'card'
-                    ? '•••• ${method?.last4 ?? '****'}'
-                    : 'Account ending in ${method?.last4 ?? '****'}')
+                      ? '•••• ${method?.last4 ?? '****'}'
+                      : 'Account ending in ${method?.last4 ?? '****'}')
                 : subtitle,
           ),
           trailing: Row(
@@ -264,7 +277,8 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(title),
         subtitle: const Text('Loading...'),
         trailing: const SizedBox(
-          width: 20, height: 20,
+          width: 20,
+          height: 20,
           child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
@@ -278,7 +292,11 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showPaymentSettingsSheet(BuildContext context, WidgetRef ref, String type) {
+  void _showPaymentSettingsSheet(
+    BuildContext context,
+    WidgetRef ref,
+    String type,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -290,9 +308,7 @@ class SettingsScreen extends ConsumerWidget {
     // Navigate to the proper verification screen with camera support
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const VerificationScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const VerificationScreen()),
     );
   }
 
@@ -357,7 +373,8 @@ class PaymentSettingsSheet extends ConsumerStatefulWidget {
   const PaymentSettingsSheet({super.key, required this.type});
 
   @override
-  ConsumerState<PaymentSettingsSheet> createState() => _PaymentSettingsSheetState();
+  ConsumerState<PaymentSettingsSheet> createState() =>
+      _PaymentSettingsSheetState();
 }
 
 class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
@@ -469,7 +486,8 @@ class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
                   onPressed: _isSaving ? null : _savePaymentMethod,
                   child: _isSaving
                       ? const SizedBox(
-                          height: 20, width: 20,
+                          height: 20,
+                          width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Text(isCard ? 'Save Card' : 'Save Bank Account'),
@@ -603,7 +621,9 @@ class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
         accountNumber: !isCard ? _accountNumberController.text : null,
         routingNumber: !isCard ? _routingNumberController.text : null,
         bankName: !isCard ? _bankNameController.text : null,
-        holderName: isCard ? _cardholderController.text : _accountHolderController.text,
+        holderName: isCard
+            ? _cardholderController.text
+            : _accountHolderController.text,
       );
 
       ref.invalidate(savedPaymentMethodsProvider);
@@ -611,7 +631,11 @@ class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${isCard ? 'Card' : 'Bank account'} saved successfully')),
+          SnackBar(
+            content: Text(
+              '${isCard ? 'Card' : 'Bank account'} saved successfully',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -624,6 +648,4 @@ class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
       if (mounted) setState(() => _isSaving = false);
     }
   }
-
 }
-

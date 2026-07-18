@@ -12,7 +12,8 @@ class BookingModel with _$BookingModel {
     required String driverId, // Driver who owns the trip
     required int seatsBooked,
     required double totalPrice,
-    required String status, // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
+    required String
+    status, // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
     required String paymentStatus, // 'unpaid', 'paid', 'refunded', 'escrow'
     required String? pickupLocation,
     required String? dropoffLocation,
@@ -22,5 +23,6 @@ class BookingModel with _$BookingModel {
     required DateTime updatedAt,
   }) = _BookingModel;
 
-  factory BookingModel.fromJson(Map<String, dynamic> json) => _$BookingModelFromJson(json);
+  factory BookingModel.fromJson(Map<String, dynamic> json) =>
+      _$BookingModelFromJson(json);
 }

@@ -47,7 +47,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
     final hasPermission = await _trackingService.requestPermission();
     if (!hasPermission && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location permission required for tracking')),
+        const SnackBar(
+          content: Text('Location permission required for tracking'),
+        ),
       );
     }
   }
@@ -93,7 +95,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
             child: trackingAsync.when(
               loading: () => const SizedBox(),
               error: (e, _) => const SizedBox(),
-              data: (tracking) => _buildInfoPanel(tracking, liveLocationAsync.value),
+              data: (tracking) =>
+                  _buildInfoPanel(tracking, liveLocationAsync.value),
             ),
           ),
         ],
@@ -125,48 +128,66 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
     // Origin marker
     if (widget.originLat != null && widget.originLng != null) {
-      markers.add(Marker(
-        markerId: const MarkerId('origin'),
-        position: LatLng(widget.originLat!, widget.originLng!),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        infoWindow: InfoWindow(title: 'Pickup', snippet: widget.originName ?? 'Origin'),
-      ));
+      markers.add(
+        Marker(
+          markerId: const MarkerId('origin'),
+          position: LatLng(widget.originLat!, widget.originLng!),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+          infoWindow: InfoWindow(
+            title: 'Pickup',
+            snippet: widget.originName ?? 'Origin',
+          ),
+        ),
+      );
     }
 
     // Destination marker
     if (widget.destLat != null && widget.destLng != null) {
-      markers.add(Marker(
-        markerId: const MarkerId('destination'),
-        position: LatLng(widget.destLat!, widget.destLng!),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: InfoWindow(title: 'Dropoff', snippet: widget.destName ?? 'Destination'),
-      ));
+      markers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: LatLng(widget.destLat!, widget.destLng!),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(
+            title: 'Dropoff',
+            snippet: widget.destName ?? 'Destination',
+          ),
+        ),
+      );
     }
 
     // Driver location marker
     if (location != null) {
-      markers.add(Marker(
-        markerId: const MarkerId('driver'),
-        position: LatLng(location.latitude, location.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: const InfoWindow(title: 'Driver Location'),
-      ));
+      markers.add(
+        Marker(
+          markerId: const MarkerId('driver'),
+          position: LatLng(location.latitude, location.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow: const InfoWindow(title: 'Driver Location'),
+        ),
+      );
     }
 
     // Build route polyline
     final polylines = <Polyline>{};
-    if (widget.originLat != null && widget.originLng != null &&
-        widget.destLat != null && widget.destLng != null) {
-      polylines.add(Polyline(
-        polylineId: const PolylineId('route'),
-        points: [
-          LatLng(widget.originLat!, widget.originLng!),
-          LatLng(widget.destLat!, widget.destLng!),
-        ],
-        color: Colors.blue,
-        width: 4,
-        patterns: [PatternItem.dash(20), PatternItem.gap(10)],
-      ));
+    if (widget.originLat != null &&
+        widget.originLng != null &&
+        widget.destLat != null &&
+        widget.destLng != null) {
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('route'),
+          points: [
+            LatLng(widget.originLat!, widget.originLng!),
+            LatLng(widget.destLat!, widget.destLng!),
+          ],
+          color: Colors.blue,
+          width: 4,
+          patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+        ),
+      );
     }
 
     return GoogleMap(
@@ -216,7 +237,11 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
         ],
       ),
       child: Column(
@@ -225,14 +250,23 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: tracking?.isActive == true ? Colors.green : Colors.grey,
+                  color: tracking?.isActive == true
+                      ? Colors.green
+                      : Colors.grey,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   tracking?.isActive == true ? 'LIVE' : 'INACTIVE',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -249,9 +283,21 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildInfoItem(Icons.speed, '${(location.speed ?? 0).toStringAsFixed(1)} km/h', 'Speed'),
-                _buildInfoItem(Icons.explore, '${(location.heading ?? 0).toStringAsFixed(0)}°', 'Heading'),
-                _buildInfoItem(Icons.gps_fixed, '${(location.accuracy ?? 0).toStringAsFixed(0)}m', 'Accuracy'),
+                _buildInfoItem(
+                  Icons.speed,
+                  '${(location.speed ?? 0).toStringAsFixed(1)} km/h',
+                  'Speed',
+                ),
+                _buildInfoItem(
+                  Icons.explore,
+                  '${(location.heading ?? 0).toStringAsFixed(0)}°',
+                  'Heading',
+                ),
+                _buildInfoItem(
+                  Icons.gps_fixed,
+                  '${(location.accuracy ?? 0).toStringAsFixed(0)}m',
+                  'Accuracy',
+                ),
               ],
             ),
           ],
@@ -293,9 +339,8 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
   void _shareLocation() {
     // Share tracking link
     final trackingLink = 'https://fitareeaee.app/track/${widget.tripId}';
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Share link: $trackingLink')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Share link: $trackingLink')));
   }
 }
-
