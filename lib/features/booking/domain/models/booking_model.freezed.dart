@@ -24,12 +24,14 @@ mixin _$BookingModel {
   String get id => throw _privateConstructorUsedError;
   String get tripId => throw _privateConstructorUsedError;
   String get passengerId => throw _privateConstructorUsedError;
+  String get driverId =>
+      throw _privateConstructorUsedError; // Driver who owns the trip
   int get seatsBooked => throw _privateConstructorUsedError;
   double get totalPrice => throw _privateConstructorUsedError;
   String get status =>
-      throw _privateConstructorUsedError; // 'pending', 'confirmed', 'completed', 'cancelled'
+      throw _privateConstructorUsedError; // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
   String get paymentStatus =>
-      throw _privateConstructorUsedError; // 'unpaid', 'paid', 'refunded'
+      throw _privateConstructorUsedError; // 'unpaid', 'paid', 'refunded', 'escrow'
   String? get pickupLocation => throw _privateConstructorUsedError;
   String? get dropoffLocation => throw _privateConstructorUsedError;
   DateTime? get pickupTime => throw _privateConstructorUsedError;
@@ -58,6 +60,7 @@ abstract class $BookingModelCopyWith<$Res> {
     String id,
     String tripId,
     String passengerId,
+    String driverId,
     int seatsBooked,
     double totalPrice,
     String status,
@@ -89,6 +92,7 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
     Object? id = null,
     Object? tripId = null,
     Object? passengerId = null,
+    Object? driverId = null,
     Object? seatsBooked = null,
     Object? totalPrice = null,
     Object? status = null,
@@ -113,6 +117,10 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
             passengerId: null == passengerId
                 ? _value.passengerId
                 : passengerId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            driverId: null == driverId
+                ? _value.driverId
+                : driverId // ignore: cast_nullable_to_non_nullable
                       as String,
             seatsBooked: null == seatsBooked
                 ? _value.seatsBooked
@@ -173,6 +181,7 @@ abstract class _$$BookingModelImplCopyWith<$Res>
     String id,
     String tripId,
     String passengerId,
+    String driverId,
     int seatsBooked,
     double totalPrice,
     String status,
@@ -203,6 +212,7 @@ class __$$BookingModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? tripId = null,
     Object? passengerId = null,
+    Object? driverId = null,
     Object? seatsBooked = null,
     Object? totalPrice = null,
     Object? status = null,
@@ -227,6 +237,10 @@ class __$$BookingModelImplCopyWithImpl<$Res>
         passengerId: null == passengerId
             ? _value.passengerId
             : passengerId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        driverId: null == driverId
+            ? _value.driverId
+            : driverId // ignore: cast_nullable_to_non_nullable
                   as String,
         seatsBooked: null == seatsBooked
             ? _value.seatsBooked
@@ -280,6 +294,7 @@ class _$BookingModelImpl implements _BookingModel {
     required this.id,
     required this.tripId,
     required this.passengerId,
+    required this.driverId,
     required this.seatsBooked,
     required this.totalPrice,
     required this.status,
@@ -302,15 +317,18 @@ class _$BookingModelImpl implements _BookingModel {
   @override
   final String passengerId;
   @override
+  final String driverId;
+  // Driver who owns the trip
+  @override
   final int seatsBooked;
   @override
   final double totalPrice;
   @override
   final String status;
-  // 'pending', 'confirmed', 'completed', 'cancelled'
+  // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
   @override
   final String paymentStatus;
-  // 'unpaid', 'paid', 'refunded'
+  // 'unpaid', 'paid', 'refunded', 'escrow'
   @override
   final String? pickupLocation;
   @override
@@ -326,7 +344,7 @@ class _$BookingModelImpl implements _BookingModel {
 
   @override
   String toString() {
-    return 'BookingModel(id: $id, tripId: $tripId, passengerId: $passengerId, seatsBooked: $seatsBooked, totalPrice: $totalPrice, status: $status, paymentStatus: $paymentStatus, pickupLocation: $pickupLocation, dropoffLocation: $dropoffLocation, pickupTime: $pickupTime, dropoffTime: $dropoffTime, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'BookingModel(id: $id, tripId: $tripId, passengerId: $passengerId, driverId: $driverId, seatsBooked: $seatsBooked, totalPrice: $totalPrice, status: $status, paymentStatus: $paymentStatus, pickupLocation: $pickupLocation, dropoffLocation: $dropoffLocation, pickupTime: $pickupTime, dropoffTime: $dropoffTime, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -338,6 +356,8 @@ class _$BookingModelImpl implements _BookingModel {
             (identical(other.tripId, tripId) || other.tripId == tripId) &&
             (identical(other.passengerId, passengerId) ||
                 other.passengerId == passengerId) &&
+            (identical(other.driverId, driverId) ||
+                other.driverId == driverId) &&
             (identical(other.seatsBooked, seatsBooked) ||
                 other.seatsBooked == seatsBooked) &&
             (identical(other.totalPrice, totalPrice) ||
@@ -366,6 +386,7 @@ class _$BookingModelImpl implements _BookingModel {
     id,
     tripId,
     passengerId,
+    driverId,
     seatsBooked,
     totalPrice,
     status,
@@ -397,6 +418,7 @@ abstract class _BookingModel implements BookingModel {
     required final String id,
     required final String tripId,
     required final String passengerId,
+    required final String driverId,
     required final int seatsBooked,
     required final double totalPrice,
     required final String status,
@@ -419,13 +441,15 @@ abstract class _BookingModel implements BookingModel {
   @override
   String get passengerId;
   @override
+  String get driverId; // Driver who owns the trip
+  @override
   int get seatsBooked;
   @override
   double get totalPrice;
   @override
-  String get status; // 'pending', 'confirmed', 'completed', 'cancelled'
+  String get status; // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
   @override
-  String get paymentStatus; // 'unpaid', 'paid', 'refunded'
+  String get paymentStatus; // 'unpaid', 'paid', 'refunded', 'escrow'
   @override
   String? get pickupLocation;
   @override

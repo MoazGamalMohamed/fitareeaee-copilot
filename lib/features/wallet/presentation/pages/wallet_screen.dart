@@ -119,8 +119,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _requestPayout(wallet),
-                  icon: const Icon(Icons.account_balance_wallet),
-                  label: const Text('Withdraw'),
+                  icon: const Icon(Icons.account_balance),
+                  label: const Text('Transfer to Bank'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),

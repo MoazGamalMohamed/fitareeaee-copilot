@@ -3,15 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:location/location.dart';
 import '../../domain/models/emergency_model.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Provider for user's emergency contacts
-final emergencyContactsProvider = StreamProvider<List<EmergencyContact>>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final emergencyContactsProvider = StreamProvider.autoDispose<List<EmergencyContact>>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value([]);
 
   return FirebaseFirestore.instance
       .collection('users')
-      .doc(user.uid)
+      .doc(user.id)
       .collection('emergency_contacts')
       .where('isActive', isEqualTo: true)
       .snapshots()
@@ -21,13 +24,15 @@ final emergencyContactsProvider = StreamProvider<List<EmergencyContact>>((ref) {
 });
 
 /// Provider for active emergency alerts
-final activeEmergencyProvider = StreamProvider<EmergencyAlert?>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final activeEmergencyProvider = StreamProvider.autoDispose<EmergencyAlert?>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value(null);
 
   return FirebaseFirestore.instance
       .collection('emergency_alerts')
-      .where('userId', isEqualTo: user.uid)
+      .where('userId', isEqualTo: user.id)
       .where('status', isEqualTo: 'active')
       .limit(1)
       .snapshots()

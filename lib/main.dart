@@ -33,9 +33,6 @@ class MyApp extends StatelessWidget {
             themeMode: ThemeMode.light,
             routerConfig: appRouter,
             debugShowCheckedModeBanner: false,
-            builder: (context, child) {
-              return child ?? const SizedBox();
-            },
           );
         },
       ),

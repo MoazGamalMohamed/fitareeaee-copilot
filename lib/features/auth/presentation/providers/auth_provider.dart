@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/app_user.dart';
+import '../../../../core/utils/firestore_helpers.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/services/firebase_user_service.dart';
 
@@ -33,6 +34,35 @@ final authStateProvider = StreamProvider<AppUser?>((ref) {
 final currentUserProvider = FutureProvider<AppUser?>((ref) async {
   final repo = ref.watch(authRepositoryProvider);
   return repo.getCurrentUser();
+});
+
+// Provider to fetch any user by ID
+// AutoDispose ensures this provider is disposed when no longer watched
+final userByIdProvider = StreamProvider.autoDispose.family<AppUser?, String>((ref, userId) {
+  // Watch auth state to invalidate this provider when user signs out
+  final authState = ref.watch(authStateProvider);
+  
+  // If no authenticated user, return null stream
+  if (!authState.hasValue || authState.value == null) {
+    return Stream.value(null);
+  }
+  
+  final firestore = ref.watch(firestoreProvider);
+  return firestore
+      .collection('users')
+      .doc(userId)
+      .snapshots()
+      .map((doc) {
+        if (!doc.exists) return null;
+        var data = doc.data()!;
+        // Add the document ID if it's not in the data
+        if (!data.containsKey('id')) {
+          data['id'] = doc.id;
+        }
+        // Convert timestamps
+        data = FirestoreHelpers.convertTimestamps(data);
+        return AppUser.fromJson(data);
+      });
 });
 
 // Sign up state notifier
@@ -79,11 +109,14 @@ class SignUpStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
     required String phone,
     required List<String> roles,
   }) async {
+    if (!mounted) return;
     state = const AsyncValue.loading();
 
     try {
       if (password != confirmPassword) {
-        state = AsyncValue.error('Passwords do not match', StackTrace.current);
+        if (mounted) {
+          state = AsyncValue.error('Passwords do not match', StackTrace.current);
+        }
         return;
       }
 
@@ -95,9 +128,13 @@ class SignUpStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
         roles: roles,
       );
 
-      state = AsyncValue.data(user);
+      if (mounted) {
+        state = AsyncValue.data(user);
+      }
     } catch (error, stackTrace) {
-      state = AsyncValue.error(error.toString(), stackTrace);
+      if (mounted) {
+        state = AsyncValue.error(error.toString(), stackTrace);
+      }
     }
   }
 }
@@ -112,6 +149,7 @@ class SignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
     required String email,
     required String password,
   }) async {
+    if (!mounted) return;
     state = const AsyncValue.loading();
 
     try {
@@ -120,9 +158,13 @@ class SignInStateNotifier extends StateNotifier<AsyncValue<AppUser?>> {
         password: password,
       );
 
-      state = AsyncValue.data(user);
+      if (mounted) {
+        state = AsyncValue.data(user);
+      }
     } catch (error, stackTrace) {
-      state = AsyncValue.error(error.toString(), stackTrace);
+      if (mounted) {
+        state = AsyncValue.error(error.toString(), stackTrace);
+      }
     }
   }
 }

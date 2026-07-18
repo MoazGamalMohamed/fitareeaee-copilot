@@ -60,8 +60,9 @@ final processPaymentProvider = FutureProvider.family<PaymentModel, PaymentModel>
 
   await docRef.set(paymentWithId.toJson());
 
-  // Update booking payment status
+  // Update booking payment status AND status to 'paid'
   await _firestore.collection('bookings').doc(payment.bookingId).update({
+    'status': 'paid', // Move to Matches tab
     'paymentStatus': 'escrow',
     'paymentId': docRef.id,
     'updatedAt': FieldValue.serverTimestamp(),
@@ -208,6 +209,9 @@ class RefundRequest {
 }
 
 // Get user payments
+// COMPOSITE INDEX REQUIRED:
+// Collection: payments
+// Fields: payerId (ASCENDING), createdAt (DESCENDING)
 final userPaymentsProvider = StreamProvider.family<List<PaymentModel>, String>((ref, userId) {
   return _firestore
       .collection('payments')

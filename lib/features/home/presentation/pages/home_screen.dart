@@ -122,9 +122,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Expanded(
                     child: _buildQuickLink(
                       context,
-                      icon: Icons.map,
-                      label: 'Map',
-                      onTap: () => context.push('/trips/map'),
+                      icon: Icons.people,
+                      label: 'Matches',
+                      onTap: () => context.push('/trips'),
                     ),
                   ),
                   const SizedBox(width: 12),

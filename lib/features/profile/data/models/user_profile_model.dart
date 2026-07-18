@@ -51,27 +51,35 @@ class UserProfileModel {
   /// Factory to create from JSON
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
-      userId: json['userId'] as String,
-      email: json['email'] as String,
-      name: json['name'] as String,
+      userId: json['userId'] as String? ?? json['id'] as String,
+      email: json['email'] as String? ?? '',
+      name: json['name'] as String? ?? '',
       phone: json['phone'] as String?,
       photoUrl: json['photoUrl'] as String?,
       bio: json['bio'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,
       country: json['country'] as String?,
-      latitude: json['latitude'] as double?,
-      longitude: json['longitude'] as double?,
-      roles: List<String>.from(json['roles'] ?? []),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      roles: json['roles'] != null ? List<String>.from(json['roles']) : [],
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       totalRatings: json['totalRatings'] as int? ?? 0,
       totalTrips: json['totalTrips'] as int? ?? 0,
-      isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+      isEmailVerified: json['isEmailVerified'] as bool? ?? json['isVerified'] as bool? ?? false,
       isPhoneVerified: json['isPhoneVerified'] as bool? ?? false,
       isProfileComplete: json['isProfileComplete'] as bool? ?? false,
-      metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      metadata: json['metadata'] != null ? Map<String, dynamic>.from(json['metadata']) : {},
+      createdAt: json['createdAt'] is DateTime 
+          ? json['createdAt'] as DateTime
+          : (json['created_at'] is DateTime 
+              ? json['created_at'] as DateTime
+              : DateTime.parse((json['createdAt'] ?? json['created_at']) as String)),
+      updatedAt: json['updatedAt'] is DateTime 
+          ? json['updatedAt'] as DateTime
+          : (json['updated_at'] is DateTime 
+              ? json['updated_at'] as DateTime
+              : DateTime.parse((json['updatedAt'] ?? json['updated_at']) as String)),
     );
   }
 

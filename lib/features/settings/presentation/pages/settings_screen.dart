@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../payment/presentation/providers/payment_provider.dart';
+import '../../../verification/presentation/pages/verification_screen.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -67,6 +68,17 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Bank Account',
             subtitle: 'Account to receive payouts',
             type: 'bank',
+          ),
+          const Divider(),
+
+          // Vehicle & Carrier Details Section
+          _buildSectionHeader(context, 'Driver/Courier Profile'),
+          ListTile(
+            leading: const Icon(Icons.directions_car),
+            title: const Text('Vehicle & License Details'),
+            subtitle: const Text('Required to offer rides or deliveries'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/driver-profile'),
           ),
           const Divider(),
 
@@ -275,11 +287,12 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showIdVerificationFlow(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const IdVerificationSheet(),
+    // Navigate to the proper verification screen with camera support
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VerificationScreen(),
+      ),
     );
   }
 
@@ -609,326 +622,6 @@ class _PaymentSettingsSheetState extends ConsumerState<PaymentSettingsSheet> {
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
-    }
-  }
-
-}
-
-/// ID Verification Sheet with Selfie and ID Photo Capture
-class IdVerificationSheet extends StatefulWidget {
-  const IdVerificationSheet({super.key});
-
-  @override
-  State<IdVerificationSheet> createState() => _IdVerificationSheetState();
-}
-
-class _IdVerificationSheetState extends State<IdVerificationSheet> {
-  int _currentStep = 0; // 0: Intro, 1: Selfie, 2: ID Photo, 3: Review
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'ID Verification',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-          const Divider(),
-
-          // Content based on step
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: _buildStepContent(),
-            ),
-          ),
-
-          // Navigation buttons
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                if (_currentStep > 0)
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => setState(() => _currentStep--),
-                      child: const Text('Back'),
-                    ),
-                  ),
-                if (_currentStep > 0) const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _handleNextStep,
-                    child: Text(_currentStep == 2 ? 'Complete' : 'Next'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepContent() {
-    switch (_currentStep) {
-      case 0:
-        return _buildIntroStep();
-      case 1:
-        return _buildSelfieStep();
-      case 2:
-        return _buildIdPhotoStep();
-      case 3:
-        return _buildReviewStep();
-      default:
-        return Container();
-    }
-  }
-
-  Widget _buildIntroStep() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.verified_user, size: 80, color: Colors.green[700]),
-        const SizedBox(height: 24),
-        const Text(
-          'ID Verification',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          'We need to verify your identity for safety.\n\nYou will take:',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-        const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.blue[50],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildVerificationItem('1', 'Selfie Photo', 'Take a clear selfie of yourself'),
-              const SizedBox(height: 12),
-              _buildVerificationItem('2', 'ID Photo', 'Photo of your ID document'),
-              const SizedBox(height: 12),
-              _buildVerificationItem('3', 'AI Verification', 'Instant verification using AI'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVerificationItem(String number, String title, String desc) {
-    return Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue,
-          ),
-          child: Center(
-            child: Text(
-              number,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text(desc, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelfieStep() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.camera_alt, size: 80, color: Colors.blue[700]),
-        const SizedBox(height: 24),
-        const Text(
-          'Take a Selfie',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          'Position your face in the center of the frame.\nMake sure:\n• Face is clearly visible\n• Good lighting\n• No glasses or sunglasses\n• No head coverings',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 24),
-        ElevatedButton.icon(
-          onPressed: () {
-            // In production, this would use image_picker to capture selfie
-            setState(() => _currentStep = 1);
-          },
-          icon: const Icon(Icons.camera_alt),
-          label: const Text('Open Camera'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildIdPhotoStep() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.credit_card, size: 80, color: Colors.green[700]),
-        const SizedBox(height: 24),
-        const Text(
-          'Capture ID Document',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          'Photograph your ID document:\n• Passport\n• Driver\'s License\n• National ID Card\n\nMake sure:\n• Document is fully visible\n• Text is clear and readable\n• No reflections or shadows',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 24),
-        ElevatedButton.icon(
-          onPressed: () {
-            // In production, this would use image_picker to capture ID
-            setState(() => _currentStep = 2);
-          },
-          icon: const Icon(Icons.camera_alt),
-          label: const Text('Capture ID'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildReviewStep() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.green[50],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green[300]!),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green[700], size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Verification In Progress',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const Text(
-                        'Our AI is analyzing your photos...',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          const CircularProgressIndicator(),
-          const SizedBox(height: 24),
-          const Text(
-            'This usually takes 2-5 minutes',
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'What happens next:',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                _buildNextStepItem('✓', 'AI verifies your identity'),
-                const SizedBox(height: 8),
-                _buildNextStepItem('✓', 'Match face with ID document'),
-                const SizedBox(height: 8),
-                _buildNextStepItem('✓', 'Badge added to your profile'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNextStepItem(String icon, String text) {
-    return Row(
-      children: [
-        Text(icon, style: const TextStyle(fontSize: 16)),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(text, style: const TextStyle(fontSize: 14)),
-        ),
-      ],
-    );
-  }
-
-  void _handleNextStep() {
-    if (_currentStep < 3) {
-      setState(() => _currentStep++);
-    } else {
-      // Verification complete
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ID verification submitted! You will be notified when complete.'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      Navigator.pop(context);
     }
   }
 

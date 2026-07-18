@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../providers/trip_provider.dart';
 import '../../domain/entities/trip.dart';
+import '../widgets/location_picker_with_search.dart';
 import '../../../../core/theme/app_colors.dart';
 
 /// Provider for current user ID
@@ -498,15 +499,16 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     );
   }
 
-  /// Show location picker dialog with map
+  /// Show location picker dialog with map and search
   Future<void> _showLocationPicker(bool isOrigin) async {
     final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _LocationPickerSheet(
+      builder: (context) => LocationPickerWithSearch(
         initialLat: isOrigin ? _originLat : _destinationLat,
         initialLng: isOrigin ? _originLng : _destinationLng,
-        title: isOrigin ? 'Pick Origin' : 'Pick Destination',
+        title: isOrigin ? 'Pick Origin Location' : 'Pick Destination Location',
+        apiKey: const String.fromEnvironment('GOOGLE_MAPS_API_KEY', defaultValue: 'YOUR_GOOGLE_MAPS_API_KEY'),
       ),
     );
 
@@ -831,233 +833,5 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       );
       context.pop();
     }
-  }
-}
-
-/// Location picker sheet with map
-class _LocationPickerSheet extends StatefulWidget {
-  final double? initialLat;
-  final double? initialLng;
-  final String title;
-
-  const _LocationPickerSheet({
-    this.initialLat,
-    this.initialLng,
-    required this.title,
-  });
-
-  @override
-  State<_LocationPickerSheet> createState() => _LocationPickerSheetState();
-}
-
-class _LocationPickerSheetState extends State<_LocationPickerSheet> {
-  GoogleMapController? _mapController;
-  LatLng? _selectedLocation;
-  bool _isLoading = true;
-  String? _selectedAddress;
-  final _searchController = TextEditingController();
-
-  // Default to a central location (can be changed based on user's region)
-  static const _defaultLocation = LatLng(25.2048, 55.2708); // Dubai
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedLocation = widget.initialLat != null && widget.initialLng != null
-        ? LatLng(widget.initialLat!, widget.initialLng!)
-        : null;
-    _getCurrentLocation();
-  }
-
-  Future<void> _getCurrentLocation() async {
-    try {
-      final location = Location();
-
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          setState(() => _isLoading = false);
-          return;
-        }
-      }
-
-      PermissionStatus permission = await location.hasPermission();
-      if (permission == PermissionStatus.denied) {
-        permission = await location.requestPermission();
-        if (permission != PermissionStatus.granted) {
-          setState(() => _isLoading = false);
-          return;
-        }
-      }
-
-      final locationData = await location.getLocation();
-      if (mounted && _selectedLocation == null) {
-        setState(() {
-          _selectedLocation = LatLng(
-            locationData.latitude ?? _defaultLocation.latitude,
-            locationData.longitude ?? _defaultLocation.longitude,
-          );
-          _isLoading = false;
-        });
-        _mapController?.animateCamera(
-          CameraUpdate.newLatLng(_selectedLocation!),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-          ),
-
-          // Search field
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search location...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              onSubmitted: (value) {
-                // In production, this would use Google Places API
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Tap on the map to select a location'),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Map
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: _selectedLocation ?? _defaultLocation,
-                      zoom: 14,
-                    ),
-                    onMapCreated: (controller) => _mapController = controller,
-                    onTap: (latLng) {
-                      setState(() {
-                        _selectedLocation = latLng;
-                        _selectedAddress = '${latLng.latitude.toStringAsFixed(4)}, ${latLng.longitude.toStringAsFixed(4)}';
-                      });
-                    },
-                    markers: _selectedLocation != null
-                        ? {
-                            Marker(
-                              markerId: const MarkerId('selected'),
-                              position: _selectedLocation!,
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                BitmapDescriptor.hueRed,
-                              ),
-                            ),
-                          }
-                        : {},
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    zoomControlsEnabled: true,
-                  ),
-          ),
-
-          // Selected location info and confirm button
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                if (_selectedLocation != null) ...[
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _selectedAddress ??
-                            '${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)}',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _selectedLocation != null
-                        ? () {
-                            Navigator.pop(context, {
-                              'lat': _selectedLocation!.latitude,
-                              'lng': _selectedLocation!.longitude,
-                              'address': _selectedAddress,
-                            });
-                          }
-                        : null,
-                    child: const Text('Confirm Location'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _mapController?.dispose();
-    super.dispose();
   }
 }

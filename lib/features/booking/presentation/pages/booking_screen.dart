@@ -229,6 +229,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         id: '',
         tripId: widget.trip.id,
         passengerId: userId,
+        driverId: widget.trip.driverId, // Add driver ID from trip
         seatsBooked: _seatsToBook,
         totalPrice: _totalPrice,
         status: 'pending',
@@ -240,6 +241,8 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
+      
+      print('🎫 Creating booking: passenger=$userId, driver=${widget.trip.driverId}, trip=${widget.trip.id}');
 
       await ref.read(createBookingProvider(booking).future);
 

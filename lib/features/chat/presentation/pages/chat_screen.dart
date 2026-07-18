@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:go_router/go_router.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
@@ -25,12 +26,28 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   late TextEditingController _messageController;
   late ScrollController _scrollController;
+  bool _shouldAutoScroll = true;
+  int _previousMessageCount = 0;
 
   @override
   void initState() {
     super.initState();
     _messageController = TextEditingController();
     _scrollController = ScrollController();
+    
+    // Listen to manual scrolling
+    _scrollController.addListener(() {
+      if (_scrollController.hasClients) {
+        // If user scrolls away from bottom, disable auto-scroll
+        final isAtBottom = _scrollController.position.pixels >= 
+            _scrollController.position.maxScrollExtent - 100;
+        if (!isAtBottom && _shouldAutoScroll) {
+          setState(() => _shouldAutoScroll = false);
+        } else if (isAtBottom && !_shouldAutoScroll) {
+          setState(() => _shouldAutoScroll = true);
+        }
+      }
+    });
   }
 
   @override
@@ -43,7 +60,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        _scrollController.position.minScrollExtent,
+        _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -81,9 +98,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
         title: otherUserAsync.maybeWhen(
           data: (profile) => Text(
-            (profile != null && profile.name.isNotEmpty) ? profile.name : 'User',
+            (profile != null && profile.name.isNotEmpty)
+                ? profile.name
+                : (profile != null && profile.email.isNotEmpty)
+                    ? profile.email
+                    : 'User',
           ),
           orElse: () => const Text('Chat'),
         ),
@@ -95,9 +126,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           Expanded(
             child: messagesAsync.when(
               data: (messages) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToBottom();
-                });
+                // Only auto-scroll if enabled and message count changed
+                if (_shouldAutoScroll && messages.length != _previousMessageCount) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scrollToBottom();
+                  });
+                  _previousMessageCount = messages.length;
+                }
 
                 if (messages.isEmpty) {
                   return Center(
@@ -145,18 +180,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
                 return Column(
                   children: [
+                    if (messages.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '${messages.length} messages',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                        ),
+                      ),
                     typingWidget,
                     Expanded(
-                      child: ListView.builder(
+                      child: Scrollbar(
                         controller: _scrollController,
-                        reverse: true,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        itemCount: messages.length,
+                        thumbVisibility: true,
+                        thickness: 8.0,
+                        radius: const Radius.circular(10),
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          reverse: false,
+                          shrinkWrap: false,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          itemCount: messages.length,
                         itemBuilder: (context, index) {
-                          final message = messages[index];
+                          // Access messages in reverse order for newest-at-bottom display
+                          final reversedIndex = messages.length - 1 - index;
+                          final message = messages[reversedIndex];
                           final isSentByUser = message.senderId == currentUser.id;
 
                           // Auto-mark as read
@@ -168,11 +220,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             });
                           }
 
+                          // Get sender name - 'You' for sent, other user's name for received
+                          final senderName = isSentByUser
+                              ? 'You'
+                              : otherUserAsync.maybeWhen(
+                                  data: (profile) {
+                                    if (profile != null && profile.name.isNotEmpty) {
+                                      return profile.name;
+                                    } else if (profile != null && profile.email.isNotEmpty) {
+                                      return profile.email;
+                                    }
+                                    return 'User';
+                                  },
+                                  loading: () {
+                                    return 'Loading...';
+                                  },
+                                  error: (error, stack) {
+                                    print('❌ Profile error: $error');
+                                    return 'User';
+                                  },
+                                  orElse: () => 'User',
+                                );
+                          
                           return _MessageBubble(
                             message: message,
                             isSentByUser: isSentByUser,
+                            senderName: senderName,
                           );
                         },
+                        ),
                       ),
                     ),
                   ],
@@ -200,17 +276,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           // Input field
           _ChatInputField(
             controller: _messageController,
-            onSend: (message) {
-              if (message.trim().isEmpty) return;
-
-              ref
-                  .read(sendMessageProvider(widget.recipientId).notifier)
-                  .sendMessage(
-                    recipientId: widget.recipientId,
-                    content: message.trim(),
-                  );
-
-              _messageController.clear();
+            currentUserId: currentUser.id,
+            recipientId: widget.recipientId,
+            onMessageSent: () {
+              setState(() => _shouldAutoScroll = true);
               _scrollToBottom();
             },
           ),
@@ -224,10 +293,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 class _MessageBubble extends ConsumerWidget {
   final Message message;
   final bool isSentByUser;
+  final String senderName;
 
   const _MessageBubble({
     required this.message,
     required this.isSentByUser,
+    required this.senderName,
   });
 
   @override
@@ -262,6 +333,16 @@ class _MessageBubble extends ConsumerWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
+                    // Sender name (always show)
+                    Text(
+                      senderName,
+                      style: TextStyle(
+                        color: isSentByUser ? Colors.white70 : Colors.grey.shade700,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     // Attachments display
                     if (message.attachments.isNotEmpty)
                       Column(
@@ -417,11 +498,15 @@ class _MessageBubble extends ConsumerWidget {
 /// Chat input field
 class _ChatInputField extends ConsumerStatefulWidget {
   final TextEditingController controller;
-  final Function(String) onSend;
+  final String currentUserId;
+  final String recipientId;
+  final VoidCallback onMessageSent;
 
   const _ChatInputField({
     required this.controller,
-    required this.onSend,
+    required this.currentUserId,
+    required this.recipientId,
+    required this.onMessageSent,
   });
 
   @override
@@ -431,6 +516,81 @@ class _ChatInputField extends ConsumerStatefulWidget {
 class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
   final ImagePicker _imagePicker = ImagePicker();
   final List<String> _selectedImagePaths = [];
+  bool _isUploading = false;
+
+  Future<void> _sendMessage() async {
+    final content = widget.controller.text.trim();
+    if (content.isEmpty && _selectedImagePaths.isEmpty) return;
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      // Upload images to Firebase Storage if any
+      List<String> uploadedUrls = [];
+      if (_selectedImagePaths.isNotEmpty) {
+        final storage = firebase_storage.FirebaseStorage.instance;
+        
+        for (final imagePath in _selectedImagePaths) {
+          try {
+            // Create unique filename
+            final timestamp = DateTime.now().millisecondsSinceEpoch;
+            final fileName = 'chat_${widget.currentUserId}_$timestamp.jpg';
+            final storageRef = storage.ref('chat_attachments/$fileName');
+            
+            // Upload file
+            print('📤 Uploading image: $imagePath');
+            final bytes = await XFile(imagePath).readAsBytes();
+            await storageRef.putData(
+              bytes,
+              firebase_storage.SettableMetadata(contentType: 'image/jpeg'),
+            );
+            
+            // Get download URL
+            final downloadUrl = await storageRef.getDownloadURL();
+            uploadedUrls.add(downloadUrl);
+            print('✅ Uploaded: $downloadUrl');
+          } catch (e) {
+            print('❌ Failed to upload image: $e');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Failed to upload image: $e')),
+              );
+            }
+          }
+        }
+      }
+
+      // Send message with attachments
+      await ref
+          .read(sendMessageProvider(widget.recipientId).notifier)
+          .sendMessage(
+            recipientId: widget.recipientId,
+            content: content,
+            attachments: uploadedUrls,
+          );
+
+      widget.controller.clear();
+      setState(() {
+        _selectedImagePaths.clear();
+        _isUploading = false;
+      });
+      widget.onMessageSent();
+    } catch (e) {
+      setState(() {
+        _isUploading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send message: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _pickImages() async {
     try {
@@ -467,7 +627,37 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Selected images preview
+            // Selected images preview (disabled for web compatibility)
+            if (_selectedImagePaths.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.image, color: Colors.blue.shade700),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_selectedImagePaths.length} image(s) selected',
+                      style: TextStyle(color: Colors.blue.shade700),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20),
+                      onPressed: () {
+                        setState(() {
+                          _selectedImagePaths.clear();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            /*
+            // TODO: Enable image preview when web support is added
             if (_selectedImagePaths.isNotEmpty)
               SizedBox(
                 height: 80,
@@ -484,10 +674,10 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                           height: 80,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: FileImage(File(imagePath)),
-                              fit: BoxFit.cover,
-                            ),
+                            // image: DecorationImage(
+                            //   image: FileImage(File(imagePath)),
+                            //   fit: BoxFit.cover,
+                            // ),
                           ),
                         ),
                         Positioned(
@@ -518,6 +708,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                   },
                 ),
               ),
+            */
             // Input row
             Row(
               children: [
@@ -549,16 +740,26 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
                 const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: _isUploading ? Colors.grey : Colors.blue,
                     shape: BoxShape.circle,
                   ),
-                  child: IconButton(
-                    icon: const Icon(Icons.send),
-                    color: Colors.white,
-                    onPressed: () {
-                      widget.onSend(widget.controller.text);
-                    },
-                  ),
+                  child: _isUploading
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        )
+                      : IconButton(
+                          icon: const Icon(Icons.send),
+                          color: Colors.white,
+                          onPressed: _isUploading ? null : _sendMessage,
+                        ),
                 ),
               ],
             ),

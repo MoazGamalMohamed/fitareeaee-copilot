@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import '../../domain/models/tracking_model.dart';
+import '../../../../core/utils/firestore_helpers.dart';
 
 final locationServiceProvider = Provider((ref) => Location());
 
@@ -14,7 +15,8 @@ final tripTrackingProvider = StreamProvider.family<TripTracking?, String>((ref, 
       .snapshots()
       .map((doc) {
     if (!doc.exists) return null;
-    return TripTracking.fromJson({...doc.data()!, 'tripId': tripId});
+    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'tripId': tripId});
+    return TripTracking.fromJson(data);
   });
 });
 
@@ -26,7 +28,8 @@ final liveLocationProvider = StreamProvider.family<LiveLocation?, String>((ref, 
       .snapshots()
       .map((doc) {
     if (!doc.exists) return null;
-    return LiveLocation.fromJson({...doc.data()!, 'tripId': tripId});
+    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'tripId': tripId});
+    return LiveLocation.fromJson(data);
   });
 });
 

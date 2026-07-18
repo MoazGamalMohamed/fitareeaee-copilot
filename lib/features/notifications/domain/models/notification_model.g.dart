@@ -48,6 +48,7 @@ const _$NotificationTypeEnumMap = {
   NotificationType.rating: 'rating',
   NotificationType.promo: 'promo',
   NotificationType.system: 'system',
+  NotificationType.verification: 'verification',
 };
 
 _$NotificationPreferencesImpl _$$NotificationPreferencesImplFromJson(
@@ -60,6 +61,7 @@ _$NotificationPreferencesImpl _$$NotificationPreferencesImplFromJson(
   ratingNotifications: json['ratingNotifications'] as bool? ?? true,
   promoNotifications: json['promoNotifications'] as bool? ?? false,
   systemNotifications: json['systemNotifications'] as bool? ?? true,
+  verificationNotifications: json['verificationNotifications'] as bool? ?? true,
   soundEnabled: json['soundEnabled'] as bool? ?? true,
   vibrationEnabled: json['vibrationEnabled'] as bool? ?? true,
 );
@@ -74,6 +76,7 @@ Map<String, dynamic> _$$NotificationPreferencesImplToJson(
   'ratingNotifications': instance.ratingNotifications,
   'promoNotifications': instance.promoNotifications,
   'systemNotifications': instance.systemNotifications,
+  'verificationNotifications': instance.verificationNotifications,
   'soundEnabled': instance.soundEnabled,
   'vibrationEnabled': instance.vibrationEnabled,
 };

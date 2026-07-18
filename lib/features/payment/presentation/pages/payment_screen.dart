@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
+import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../domain/models/payment_model.dart';
 import '../providers/payment_provider.dart';
 
@@ -236,13 +237,19 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       await ref.read(processPaymentProvider(payment).future);
 
       if (mounted) {
+        // Invalidate providers to refresh data
+        ref.invalidate(userBookingsProvider);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Payment successful!'),
+            content: Text('Payment successful! Check Matches tab for your booking.'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 4),
           ),
         );
-        context.pop(true); // Return success
+        
+        // Navigate back to home with Matches tab selected
+        context.go('/home?tab=2'); // Tab index 2 is Matches
       }
     } catch (e) {
       if (mounted) {

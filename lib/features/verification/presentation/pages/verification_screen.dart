@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:country_picker/country_picker.dart';
 import '../../domain/models/verification_model.dart';
 import '../providers/verification_provider.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import 'driver_profile_screen.dart';
 
 class VerificationScreen extends ConsumerStatefulWidget {
   const VerificationScreen({super.key});
@@ -17,6 +20,7 @@ class VerificationScreen extends ConsumerStatefulWidget {
 class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   final _picker = ImagePicker();
   String? _uploadingType;
+  String? _verificationId; // For phone verification
 
   Future<void> _uploadDocument(VerificationType type, String title) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -65,7 +69,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         documentUrl: downloadUrl,
       );
 
-      if (mounted) {
+      if (type != VerificationType.identity && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$title uploaded successfully. Pending review.')),
         );
@@ -88,6 +92,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     final verificationAsync = ref.watch(currentUserVerificationProvider);
+    final userAsync = ref.watch(authStateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,13 +101,21 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       body: verificationAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
-        data: (verification) => _buildContent(verification),
+        data: (verification) => userAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+          data: (user) => _buildContent(verification, user),
+        ),
       ),
     );
   }
 
-  Widget _buildContent(UserVerification? verification) {
+  Widget _buildContent(UserVerification? verification, user) {
     final level = verification?.verificationLevel ?? 0;
+    final isDriver = user?.hasRole('driver') ?? false;
+    final isCourier = user?.hasRole('courier') ?? false;
+    // Both driver license and vehicle registration required for anyone using vehicles
+    final needsVehicleVerification = isDriver || isCourier;
     
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -163,42 +176,59 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           icon: Icons.badge,
           isVerified: verification?.identityVerified ?? false,
           isUploading: _uploadingType == VerificationType.identity.name,
+          isPending: (verification?.identityDocumentUrl != null && !(verification?.identityVerified ?? false)),
           onTap: () => _uploadDocument(VerificationType.identity, 'Identity Document'),
         ),
         _buildVerificationItem(
-          title: "Driver's License",
-          subtitle: 'Required to offer rides',
-          icon: Icons.drive_eta,
-          isVerified: verification?.driverLicenseVerified ?? false,
-          isUploading: _uploadingType == VerificationType.driverLicense.name,
-          onTap: () => _uploadDocument(VerificationType.driverLicense, "Driver's License"),
-        ),
-        _buildVerificationItem(
-          title: 'Vehicle Registration',
-          subtitle: 'Verify your vehicle details',
-          icon: Icons.directions_car,
-          isVerified: verification?.vehicleVerified ?? false,
-          isUploading: _uploadingType == VerificationType.vehicle.name,
-          onTap: () => _uploadDocument(VerificationType.vehicle, 'Vehicle Registration'),
-        ),
-        const SizedBox(height: 16),
-        const Divider(),
-        const SizedBox(height: 8),
-        Text(
-          'Required for Matching',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        _buildVerificationItem(
           title: 'Selfie with ID',
-          subtitle: 'Take a selfie holding your ID for AI verification',
+          subtitle: 'Upload a selfie holding your ID',
           icon: Icons.face,
           isVerified: verification?.selfieWithIdVerified ?? false,
           isUploading: _uploadingType == VerificationType.selfieWithId.name,
-          onTap: () => _startSelfieVerification(),
+          isPending: (verification?.selfieWithIdUrl != null && !(verification?.selfieWithIdVerified ?? false)),
+          onTap: () => _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
         ),
+        if (needsVehicleVerification)
+          Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                    ? Colors.green
+                    : (verification?.driverLicenseUrl != null || verification?.vehicleRegistrationUrl != null)
+                        ? Colors.orange
+                        : Colors.blue,
+                child: Icon(
+                  (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                      ? Icons.check_circle
+                      : Icons.drive_eta,
+                  color: Colors.white,
+                ),
+              ),
+              title: const Text('Driver/Vehicle Verification'),
+              subtitle: Text(
+                (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                    ? 'Driver profile verified'
+                    : (verification?.driverLicenseUrl != null || verification?.vehicleRegistrationUrl != null)
+                        ? 'Complete your driver profile'
+                        : 'Set up your driver profile and upload documents',
+                style: TextStyle(
+                  color: (verification?.driverLicenseVerified ?? false) && (verification?.vehicleVerified ?? false)
+                      ? Colors.green
+                      : null,
+                ),
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const DriverProfileScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
@@ -209,29 +239,36 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     required IconData icon,
     required bool isVerified,
     bool isUploading = false,
+    bool isPending = false,
     required VoidCallback onTap,
   }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: isVerified ? Colors.green : Colors.grey[300],
+          backgroundColor: isVerified ? Colors.green : (isPending ? Colors.orange : Colors.grey[300]),
           child: isUploading
               ? const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 )
-              : Icon(icon, color: isVerified ? Colors.white : Colors.grey[600]),
+              : Icon(icon, color: isVerified || isPending ? Colors.white : Colors.grey[600]),
         ),
         title: Text(title),
         subtitle: Text(subtitle),
         trailing: isVerified
             ? const Icon(Icons.check_circle, color: Colors.green)
-            : TextButton(
-                onPressed: isUploading ? null : onTap,
-                child: Text(isUploading ? 'Uploading...' : 'Verify'),
-              ),
+            : (isPending 
+                ? const Chip(
+                    label: Text('Pending Approval', style: TextStyle(fontSize: 12)),
+                    backgroundColor: Colors.orange,
+                    labelStyle: TextStyle(color: Colors.white),
+                  )
+                : TextButton(
+                    onPressed: isUploading ? null : onTap,
+                    child: Text(isUploading ? 'Uploading...' : 'Verify'),
+                  )),
         onTap: isVerified || isUploading ? null : onTap,
       ),
     );
@@ -262,17 +299,64 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
 
-      if (user.emailVerified) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email already verified')),
-        );
+      // Reload user to get latest verification status
+      await user.reload();
+      final updatedUser = FirebaseAuth.instance.currentUser;
+      
+      if (updatedUser?.emailVerified ?? false) {
+        // Update Firestore if email is verified
+        final docRef = FirebaseFirestore.instance.collection('verifications').doc(user.uid);
+        final docSnapshot = await docRef.get();
+        final now = DateTime.now().toIso8601String();
+        
+        if (!docSnapshot.exists) {
+          // Create new document with all required fields
+          await docRef.set({
+            'userId': user.uid,
+            'emailVerified': true,
+            'phoneVerified': false,
+            'identityVerified': false,
+            'driverLicenseVerified': false,
+            'vehicleVerified': false,
+            'selfieWithIdVerified': false,
+            'createdAt': now,
+            'updatedAt': now,
+          });
+        } else {
+          // Update existing document
+          await docRef.update({
+            'emailVerified': true,
+            'updatedAt': now,
+          });
+        }
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email already verified'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
         return;
       }
 
       await user.sendEmailVerification();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification email sent. Check your inbox.')),
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Verification Email Sent'),
+            content: const Text(
+              'Please check your inbox and click the verification link. Then return here and tap the Email Verification item again to refresh your status.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
         );
       }
     } catch (e) {
@@ -285,20 +369,183 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   }
 
   Future<void> _verifyPhone() async {
-    // Show phone verification dialog
-    final phoneController = TextEditingController();
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Verify Phone'),
-        content: TextField(
-          controller: phoneController,
-          keyboardType: TextInputType.phone,
-          decoration: const InputDecoration(
-            labelText: 'Phone Number',
-            hintText: '+1234567890',
-            prefixIcon: Icon(Icons.phone),
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Check if user already has a phone number linked
+    if (user.phoneNumber != null && user.phoneNumber!.isNotEmpty) {
+      await _updatePhoneVerificationStatus(user.phoneNumber!);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Phone already verified'),
+            backgroundColor: Colors.green,
           ),
+        );
+      }
+      return;
+    }
+
+    // Detect user's country from locale
+    String countryCode = 'US'; // Default
+    try {
+      final locale = WidgetsBinding.instance.platformDispatcher.locale;
+      countryCode = locale.countryCode ?? 'US';
+    } catch (e) {
+      // Use default
+    }
+    
+    Country selectedCountry = CountryParser.parseCountryCode(countryCode);
+    final phoneController = TextEditingController();
+    
+    final phoneNumber = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Enter Phone Number'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Country Picker Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  showCountryPicker(
+                    context: context,
+                    showPhoneCode: true,
+                    onSelect: (Country country) {
+                      setState(() {
+                        selectedCountry = country;
+                      });
+                    },
+                  );
+                },
+                icon: Text(
+                  selectedCountry.flagEmoji,
+                  style: const TextStyle(fontSize: 24),
+                ),
+                label: Text('+${selectedCountry.phoneCode} ${selectedCountry.name}'),
+              ),
+              const SizedBox(height: 16),
+              // Phone Number Input
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  hintText: 'Enter phone number',
+                  helperText: 'Without country code',
+                  prefixText: '+${selectedCountry.phoneCode} ',
+                  prefixIcon: const Icon(Icons.phone),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final fullNumber = '+${selectedCountry.phoneCode}${phoneController.text.trim()}';
+                Navigator.pop(context, fullNumber);
+              },
+              child: const Text('Send Code'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (phoneNumber == null || phoneNumber.isEmpty) return;
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-verification (Android only)
+          try {
+            await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
+            await _updatePhoneVerificationStatus(phoneNumber);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Phone verified successfully!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Verification failed: $e'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Verification failed: ${e.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            _verificationId = verificationId;
+          });
+          _showCodeInputDialog(phoneNumber);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          setState(() {
+            _verificationId = verificationId;
+          });
+        },
+        timeout: const Duration(seconds: 60),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showCodeInputDialog(String phoneNumber) async {
+    final codeController = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter Verification Code'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Enter the 6-digit code sent to $phoneNumber'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: codeController,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              decoration: const InputDecoration(
+                labelText: 'Verification Code',
+                hintText: '123456',
+                prefixIcon: Icon(Icons.sms),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -306,188 +553,57 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, phoneController.text),
-            child: const Text('Send Code'),
+            onPressed: () => Navigator.pop(context, codeController.text.trim()),
+            child: const Text('Verify'),
           ),
         ],
       ),
     );
 
-    if (result != null && result.isNotEmpty && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Phone verification code sent')),
-      );
-    }
-  }
-
-  Future<void> _startSelfieVerification() async {
-    // Show instructions dialog first
-    final proceed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Selfie with ID Verification'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'To verify your identity, please take a selfie while holding your ID card next to your face.',
-              style: TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Tips for a successful verification:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildTip('• Good lighting on your face'),
-                  _buildTip('• Hold ID next to your face'),
-                  _buildTip('• Make sure ID text is readable'),
-                  _buildTip('• Face the camera directly'),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton.icon(
-            onPressed: () => Navigator.pop(context, true),
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Take Selfie'),
-          ),
-        ],
-      ),
-    );
-
-    if (proceed != true) return;
-
-    // Take the selfie
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-      imageQuality: 85,
-    );
-
-    if (pickedFile == null) return;
-
-    setState(() {
-      _uploadingType = VerificationType.selfieWithId.name;
-    });
+    if (code == null || code.isEmpty) return;
 
     try {
-      final file = File(pickedFile.path);
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) throw Exception('Not authenticated');
-
-      // Upload to Firebase Storage
-      final params = UploadDocumentParams(file: file, type: VerificationType.selfieWithId);
-      final downloadUrl = await ref.read(uploadVerificationDocumentProvider(params).future);
-
-      // Submit for AI verification
-      final verificationResult = await _performAIVerification(downloadUrl);
-
-      if (verificationResult['success'] == true) {
-        // Submit verification request
-        await submitVerification(
-          userId: userId,
-          type: VerificationType.selfieWithId,
-          documentUrl: downloadUrl,
+      final credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId!,
+        smsCode: code,
+      );
+      
+      await FirebaseAuth.instance.currentUser?.updatePhoneNumber(credential);
+      await _updatePhoneVerificationStatus(phoneNumber);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Phone verified successfully!'),
+            backgroundColor: Colors.green,
+          ),
         );
-
-        // Auto-approve if AI verification passed
-        if (verificationResult['confidence'] != null &&
-            (verificationResult['confidence'] as double) > 0.7) {
-          await _autoApproveSelfieVerification(userId, downloadUrl);
-        }
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(verificationResult['message'] ?? 'Selfie verification submitted'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(verificationResult['message'] ?? 'Verification failed. Please try again.'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verification failed: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Invalid code: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _uploadingType = null;
-        });
-      }
     }
   }
 
-  Widget _buildTip(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Text(text, style: const TextStyle(fontSize: 13)),
-    );
-  }
+  Future<void> _updatePhoneVerificationStatus(String phoneNumber) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-  Future<Map<String, dynamic>> _performAIVerification(String imageUrl) async {
-    // In production, this would call an AI service (OpenRouter vision model)
-    // For now, we simulate the verification with a basic check
-    try {
-      // Simulate AI processing delay
-      await Future.delayed(const Duration(seconds: 2));
-
-      // In production, you would:
-      // 1. Send the image to OpenRouter with a vision model (e.g., GPT-4 Vision)
-      // 2. Ask it to verify: "Does this image show a person holding an ID card next to their face?"
-      // 3. Check if the face in the selfie matches the face on the ID
-
-      // For demo purposes, we'll auto-approve
-      return {
-        'success': true,
-        'confidence': 0.85,
-        'message': 'Identity verified successfully! Your face matches the ID.',
-      };
-    } catch (e) {
-      return {
-        'success': false,
-        'confidence': 0.0,
-        'message': 'AI verification failed. Please try again.',
-      };
-    }
-  }
-
-  Future<void> _autoApproveSelfieVerification(String userId, String documentUrl) async {
-    final firestore = FirebaseFirestore.instance;
-    final now = DateTime.now();
-
-    await firestore.collection('verifications').doc(userId).set({
-      'selfieWithIdVerified': true,
-      'selfieWithIdVerifiedAt': now.toIso8601String(),
-      'selfieWithIdUrl': documentUrl,
-      'updatedAt': now.toIso8601String(),
+    await FirebaseFirestore.instance
+        .collection('verifications')
+        .doc(user.uid)
+        .set({
+      'userId': user.uid,
+      'phoneVerified': true,
+      'updatedAt': DateTime.now().toIso8601String(),
+      if (await FirebaseFirestore.instance.collection('verifications').doc(user.uid).get().then((doc) => !doc.exists))
+        'createdAt': DateTime.now().toIso8601String(),
     }, SetOptions(merge: true));
   }
 }
-

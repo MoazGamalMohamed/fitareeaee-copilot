@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as nodemailer from "nodemailer";
+import axios from "axios";
 
 admin.initializeApp();
 
@@ -11,6 +12,9 @@ admin.initializeApp();
 const PLATFORM_FEE_PERCENT = 0.10;
 const STRIPE_PERCENT_FEE = 0.029;
 const STRIPE_FIXED_FEE = 0.30;
+
+// Google Maps API key (store in Firebase config: firebase functions:config:set maps.api_key="YOUR_KEY")
+const MAPS_API_KEY = functions.config().maps?.api_key || "YOUR_GOOGLE_MAPS_API_KEY";
 
 // Configure email transporter
 // In production, use environment variables for credentials
@@ -700,4 +704,340 @@ export const refundPayment = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+/**
+ * Google Places Autocomplete Proxy
+ * Secure backend function to call Places API
+ */
+export const placesAutocomplete = functions.https.onCall(async (data, context) => {
+  // Authentication optional for location search
+  // TODO: Add rate limiting for unauthenticated users
+
+  const { input, components } = data;
+
+  if (!input || input.length < 2) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Input must be at least 2 characters"
+    );
+  }
+
+  try {
+    const url = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    const params = {
+      input,
+      key: MAPS_API_KEY,
+      components: components || "country:ae|country:eg|country:sa",
+    };
+
+    console.log(`🔍 Calling Places API with input: "${input}"`);
+    const response = await axios.get(url, { params });
+    console.log(`📡 Places API response status: ${response.data.status}`);
+    
+    if (response.data.status === "OK") {
+      console.log(`✅ Found ${response.data.predictions.length} predictions`);
+      return {
+        predictions: response.data.predictions,
+        status: "OK",
+      };
+    } else {
+      console.error("❌ Places API error:", response.data);
+      return {
+        predictions: [],
+        status: response.data.status,
+        error: response.data.error_message || response.data.status,
+      };
+    }
+  } catch (error) {
+    console.error("❌ Error calling Places API:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      `Failed to fetch place predictions: ${error}`
+    );
+  }
+});
+
+/**
+ * Google Place Details Proxy
+ * Get detailed information about a place by place_id
+ */
+export const placeDetails = functions.https.onCall(async (data, context) => {
+  // Authentication optional for location search
+  // TODO: Add rate limiting for unauthenticated users
+
+  const { placeId } = data;
+
+  if (!placeId) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Place ID is required"
+    );
+  }
+
+  try {
+    const url = "https://maps.googleapis.com/maps/api/place/details/json";
+    const params = {
+      place_id: placeId,
+      fields: "geometry,formatted_address,name,address_components",
+      key: MAPS_API_KEY,
+    };
+
+    const response = await axios.get(url, { params });
+    
+    if (response.data.status === "OK") {
+      const result = response.data.result;
+      return {
+        location: result.geometry.location,
+        address: result.formatted_address,
+        name: result.name,
+        addressComponents: result.address_components,
+        status: "OK",
+      };
+    } else {
+      console.error("Place Details API error:", response.data);
+      throw new functions.https.HttpsError(
+        "not-found",
+        response.data.error_message || "Place not found"
+      );
+    }
+  } catch (error) {
+    console.error("Error calling Place Details API:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to fetch place details"
+    );
+  }
+});
+
+/**
+ * Google Geocoding Proxy
+ * Convert coordinates to address (reverse geocoding)
+ */
+export const reverseGeocode = functions.https.onCall(async (data, context) => {
+  // Authentication optional for location search
+  // TODO: Add rate limiting for unauthenticated users
+
+  const { lat, lng } = data;
+
+  if (!lat || !lng) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Latitude and longitude are required"
+    );
+  }
+
+  try {
+    const url = "https://maps.googleapis.com/maps/api/geocode/json";
+    const params = {
+      latlng: `${lat},${lng}`,
+      key: MAPS_API_KEY,
+    };
+
+    const response = await axios.get(url, { params });
+    
+    if (response.data.status === "OK" && response.data.results.length > 0) {
+      return {
+        address: response.data.results[0].formatted_address,
+        addressComponents: response.data.results[0].address_components,
+        status: "OK",
+      };
+    } else {
+      return {
+        address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        status: response.data.status,
+      };
+    }
+  } catch (error) {
+    console.error("Error calling Geocoding API:", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Failed to reverse geocode"
+    );
+  }
+});
+
+/**
+ * Send email notification when a document is approved or rejected
+ */
+export const onNotificationCreated = functions.firestore
+  .document("notifications/{notificationId}")
+  .onCreate(async (snapshot, context) => {
+    const notification = snapshot.data();
+
+    // Only send emails for verification notifications
+    if (notification.type !== "verification") {
+      return null;
+    }
+
+    try {
+      // Get user details
+      const userDoc = await admin.firestore()
+        .collection("users")
+        .doc(notification.userId)
+        .get();
+
+      if (!userDoc.exists) {
+        console.log("User not found:", notification.userId);
+        return null;
+      }
+
+      const user = userDoc.data()!;
+      const userEmail = user.email;
+      const userName = user.fullName || user.name || "User";
+
+      if (!userEmail) {
+        console.log("No email found for user:", notification.userId);
+        return null;
+      }
+
+      // Determine if approved or rejected
+      const isApproved = notification.data?.status === "approved";
+      const documentType = notification.data?.documentType || "Document";
+
+      if (isApproved) {
+        await sendDocumentApprovedEmail(userEmail, userName, documentType);
+      } else {
+        const reason = notification.data?.reason || "Please check the requirements";
+        await sendDocumentRejectedEmail(userEmail, userName, documentType, reason);
+      }
+
+      console.log(`Verification email sent to ${userEmail} for ${documentType}`);
+      return null;
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      return null;
+    }
+  });
+
+/**
+ * Send email when document is approved
+ */
+async function sendDocumentApprovedEmail(
+  email: string,
+  userName: string,
+  documentType: string
+): Promise<void> {
+  const mailOptions = {
+    from: `Fitareeaee <${functions.config().email?.user || process.env.EMAIL_USER}>`,
+    to: email,
+    subject: `✓ ${documentType} Approved - Fitareeaee`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .success-icon { font-size: 48px; margin-bottom: 20px; }
+          .button { display: inline-block; padding: 12px 30px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="success-icon">✓</div>
+            <h1>Document Verified!</h1>
+          </div>
+          <div class="content">
+            <p>Hello ${userName},</p>
+            <p><strong>Great news!</strong> Your <strong>${documentType}</strong> has been verified and approved by our team.</p>
+            <p>You can now enjoy full access to all features on Fitareeaee.</p>
+            <p>If you're a driver, you can now:</p>
+            <ul>
+              <li>Create and publish trips</li>
+              <li>Accept booking requests</li>
+              <li>Receive payments</li>
+            </ul>
+            <a href="https://fitareeaee.app/verification" class="button">View Verification Status</a>
+          </div>
+          <div class="footer">
+            <p>© 2025 Fitareeaee. All rights reserved.</p>
+            <p>This is an automated email, please do not reply.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+/**
+ * Send email when document is rejected
+ */
+async function sendDocumentRejectedEmail(
+  email: string,
+  userName: string,
+  documentType: string,
+  reason: string
+): Promise<void> {
+  const mailOptions = {
+    from: `Fitareeaee <${functions.config().email?.user || process.env.EMAIL_USER}>`,
+    to: email,
+    subject: `Action Required: ${documentType} - Fitareeaee`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .warning-icon { font-size: 48px; margin-bottom: 20px; }
+          .reason-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px; }
+          .button { display: inline-block; padding: 12px 30px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+          .tips { background: white; padding: 20px; border-radius: 5px; margin-top: 20px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="warning-icon">⚠️</div>
+            <h1>Document Review Required</h1>
+          </div>
+          <div class="content">
+            <p>Hello ${userName},</p>
+            <p>Thank you for submitting your <strong>${documentType}</strong>. Unfortunately, we need you to resubmit it.</p>
+            
+            <div class="reason-box">
+              <strong>Reason for rejection:</strong><br>
+              ${reason}
+            </div>
+
+            <div class="tips">
+              <h3>📋 Tips for resubmitting:</h3>
+              <ul>
+                <li>Make sure the document is clear and readable</li>
+                <li>Ensure all corners of the document are visible</li>
+                <li>Use good lighting - avoid shadows or glare</li>
+                <li>Make sure the document is not expired</li>
+                <li>Verify all information is clearly visible</li>
+              </ul>
+            </div>
+
+            <a href="https://fitareeaee.app/verification" class="button">Resubmit Document</a>
+
+            <p style="margin-top: 30px; color: #666;">Need help? Contact our support team for assistance.</p>
+          </div>
+          <div class="footer">
+            <p>© 2025 Fitareeaee. All rights reserved.</p>
+            <p>This is an automated email, please do not reply.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+// Export reset verifications function
+export {resetAllVerifications} from "./resetVerifications";
 

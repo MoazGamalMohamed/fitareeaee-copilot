@@ -423,6 +423,7 @@ mixin _$NotificationPreferences {
   bool get ratingNotifications => throw _privateConstructorUsedError;
   bool get promoNotifications => throw _privateConstructorUsedError;
   bool get systemNotifications => throw _privateConstructorUsedError;
+  bool get verificationNotifications => throw _privateConstructorUsedError;
   bool get soundEnabled => throw _privateConstructorUsedError;
   bool get vibrationEnabled => throw _privateConstructorUsedError;
 
@@ -451,6 +452,7 @@ abstract class $NotificationPreferencesCopyWith<$Res> {
     bool ratingNotifications,
     bool promoNotifications,
     bool systemNotifications,
+    bool verificationNotifications,
     bool soundEnabled,
     bool vibrationEnabled,
   });
@@ -481,6 +483,7 @@ class _$NotificationPreferencesCopyWithImpl<
     Object? ratingNotifications = null,
     Object? promoNotifications = null,
     Object? systemNotifications = null,
+    Object? verificationNotifications = null,
     Object? soundEnabled = null,
     Object? vibrationEnabled = null,
   }) {
@@ -514,6 +517,10 @@ class _$NotificationPreferencesCopyWithImpl<
                 ? _value.systemNotifications
                 : systemNotifications // ignore: cast_nullable_to_non_nullable
                       as bool,
+            verificationNotifications: null == verificationNotifications
+                ? _value.verificationNotifications
+                : verificationNotifications // ignore: cast_nullable_to_non_nullable
+                      as bool,
             soundEnabled: null == soundEnabled
                 ? _value.soundEnabled
                 : soundEnabled // ignore: cast_nullable_to_non_nullable
@@ -545,6 +552,7 @@ abstract class _$$NotificationPreferencesImplCopyWith<$Res>
     bool ratingNotifications,
     bool promoNotifications,
     bool systemNotifications,
+    bool verificationNotifications,
     bool soundEnabled,
     bool vibrationEnabled,
   });
@@ -575,6 +583,7 @@ class __$$NotificationPreferencesImplCopyWithImpl<$Res>
     Object? ratingNotifications = null,
     Object? promoNotifications = null,
     Object? systemNotifications = null,
+    Object? verificationNotifications = null,
     Object? soundEnabled = null,
     Object? vibrationEnabled = null,
   }) {
@@ -608,6 +617,10 @@ class __$$NotificationPreferencesImplCopyWithImpl<$Res>
             ? _value.systemNotifications
             : systemNotifications // ignore: cast_nullable_to_non_nullable
                   as bool,
+        verificationNotifications: null == verificationNotifications
+            ? _value.verificationNotifications
+            : verificationNotifications // ignore: cast_nullable_to_non_nullable
+                  as bool,
         soundEnabled: null == soundEnabled
             ? _value.soundEnabled
             : soundEnabled // ignore: cast_nullable_to_non_nullable
@@ -632,6 +645,7 @@ class _$NotificationPreferencesImpl implements _NotificationPreferences {
     this.ratingNotifications = true,
     this.promoNotifications = false,
     this.systemNotifications = true,
+    this.verificationNotifications = true,
     this.soundEnabled = true,
     this.vibrationEnabled = true,
   });
@@ -662,6 +676,9 @@ class _$NotificationPreferencesImpl implements _NotificationPreferences {
   final bool systemNotifications;
   @override
   @JsonKey()
+  final bool verificationNotifications;
+  @override
+  @JsonKey()
   final bool soundEnabled;
   @override
   @JsonKey()
@@ -669,7 +686,7 @@ class _$NotificationPreferencesImpl implements _NotificationPreferences {
 
   @override
   String toString() {
-    return 'NotificationPreferences(bookingNotifications: $bookingNotifications, chatNotifications: $chatNotifications, paymentNotifications: $paymentNotifications, tripNotifications: $tripNotifications, ratingNotifications: $ratingNotifications, promoNotifications: $promoNotifications, systemNotifications: $systemNotifications, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled)';
+    return 'NotificationPreferences(bookingNotifications: $bookingNotifications, chatNotifications: $chatNotifications, paymentNotifications: $paymentNotifications, tripNotifications: $tripNotifications, ratingNotifications: $ratingNotifications, promoNotifications: $promoNotifications, systemNotifications: $systemNotifications, verificationNotifications: $verificationNotifications, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled)';
   }
 
   @override
@@ -691,6 +708,11 @@ class _$NotificationPreferencesImpl implements _NotificationPreferences {
                 other.promoNotifications == promoNotifications) &&
             (identical(other.systemNotifications, systemNotifications) ||
                 other.systemNotifications == systemNotifications) &&
+            (identical(
+                  other.verificationNotifications,
+                  verificationNotifications,
+                ) ||
+                other.verificationNotifications == verificationNotifications) &&
             (identical(other.soundEnabled, soundEnabled) ||
                 other.soundEnabled == soundEnabled) &&
             (identical(other.vibrationEnabled, vibrationEnabled) ||
@@ -708,6 +730,7 @@ class _$NotificationPreferencesImpl implements _NotificationPreferences {
     ratingNotifications,
     promoNotifications,
     systemNotifications,
+    verificationNotifications,
     soundEnabled,
     vibrationEnabled,
   );
@@ -738,6 +761,7 @@ abstract class _NotificationPreferences implements NotificationPreferences {
     final bool ratingNotifications,
     final bool promoNotifications,
     final bool systemNotifications,
+    final bool verificationNotifications,
     final bool soundEnabled,
     final bool vibrationEnabled,
   }) = _$NotificationPreferencesImpl;
@@ -759,6 +783,8 @@ abstract class _NotificationPreferences implements NotificationPreferences {
   bool get promoNotifications;
   @override
   bool get systemNotifications;
+  @override
+  bool get verificationNotifications;
   @override
   bool get soundEnabled;
   @override

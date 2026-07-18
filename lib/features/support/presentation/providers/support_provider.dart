@@ -2,20 +2,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/models/support_model.dart';
+import '../../../../core/utils/firestore_helpers.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Provider for user's support tickets
-final userTicketsProvider = StreamProvider<List<SupportTicket>>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value([]);
 
   // Simplified query without orderBy to avoid needing composite index
   return FirebaseFirestore.instance
       .collection('support_tickets')
-      .where('userId', isEqualTo: user.uid)
+      .where('userId', isEqualTo: user.id)
       .snapshots()
       .map((snapshot) {
         final tickets = snapshot.docs
-            .map((doc) => SupportTicket.fromJson({...doc.data(), 'id': doc.id}))
+            .map((doc) {
+              final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
+              return SupportTicket.fromJson(data);
+            })
             .toList();
         // Sort client-side
         tickets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -36,7 +43,10 @@ final ticketMessagesProvider = StreamProvider.family<List<TicketMessage>, String
       .orderBy('createdAt')
       .snapshots()
       .map((snapshot) => snapshot.docs
-          .map((doc) => TicketMessage.fromJson({...doc.data(), 'id': doc.id}))
+          .map((doc) {
+            final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
+            return TicketMessage.fromJson(data);
+          })
           .toList());
 });
 

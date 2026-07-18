@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/forgot_password_screen.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/login_screen.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/signup_screen.dart';
@@ -6,12 +7,17 @@ import 'package:fitareeaee/features/chat/presentation/pages/chat_list_screen.dar
 import 'package:fitareeaee/features/chat/presentation/pages/chat_screen.dart';
 import 'package:fitareeaee/features/home/presentation/pages/home_screen.dart';
 import 'package:fitareeaee/features/profile/presentation/pages/profile_screen.dart';
+import 'package:fitareeaee/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:fitareeaee/features/settings/presentation/pages/settings_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/booking_confirmation_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/nearby_trips_map_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
 import 'package:fitareeaee/features/safety/presentation/pages/sos_screen.dart';
+import 'package:fitareeaee/features/verification/presentation/pages/driver_profile_screen.dart';
+import 'package:fitareeaee/features/admin/presentation/pages/admin_verifications_screen.dart';
+import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -80,6 +86,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'profile',
         builder: (context, state) => const ProfileScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        name: 'edit-profile',
+        builder: (context, state) {
+          final userId = state.extra as String? ?? '';
+          return EditProfileScreen(userId: userId);
+        },
+      ),
 
       // Trips Routes
       GoRoute(
@@ -113,6 +127,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return TripDetailsScreen(tripId: tripId);
         },
       ),
+      GoRoute(
+        path: '${AppRoutes.trips}/:id/booking',
+        name: 'booking-confirmation',
+        builder: (context, state) {
+          final tripId = state.pathParameters['id'] ?? '';
+          if (tripId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Trip ID not found')),
+            );
+          }
+          return BookingConfirmationScreen(tripId: tripId);
+        },
+      ),
 
       // Chat Routes
       GoRoute(
@@ -136,6 +163,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
 
+      // Notifications Route
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+
+      // Driver Profile Route
+      GoRoute(
+        path: AppRoutes.driverProfile,
+        name: 'driver-profile',
+        builder: (context, state) {
+          final required = state.uri.queryParameters['required'] == 'true';
+          return DriverProfileScreen(isRequired: required);
+        },
+      ),
+
       // SOS Route
       GoRoute(
         path: AppRoutes.sos,
@@ -144,6 +188,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final tripId = state.extra as String?;
           return SOSScreen(tripId: tripId);
         },
+      ),
+
+      // Admin Routes
+      GoRoute(
+        path: '/admin/verifications',
+        name: 'admin-verifications',
+        builder: (context, state) => const AdminVerificationsScreen(),
       ),
     ],
     redirect: (context, state) {

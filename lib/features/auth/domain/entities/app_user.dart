@@ -11,6 +11,7 @@ class AppUser {
   final bool isEmailVerified;
   final bool isPhoneVerified;
   final double rating;
+  final int totalRatings;
   final int totalTrips;
   final bool isVerified;
   final DateTime createdAt;
@@ -26,6 +27,7 @@ class AppUser {
     required this.isEmailVerified,
     required this.isPhoneVerified,
     required this.rating,
+    required this.totalRatings,
     required this.totalTrips,
     required this.isVerified,
     required this.createdAt,
@@ -44,6 +46,7 @@ class AppUser {
       isEmailVerified: user.emailVerified,
       isPhoneVerified: user.phoneNumber != null,
       rating: 5.0,
+      totalRatings: 0,
       totalTrips: 0,
       isVerified: false,
       createdAt: user.metadata.creationTime ?? DateTime.now(),
@@ -63,6 +66,7 @@ class AppUser {
       'isEmailVerified': isEmailVerified,
       'isPhoneVerified': isPhoneVerified,
       'rating': rating,
+      'totalRatings': totalRatings,
       'totalTrips': totalTrips,
       'isVerified': isVerified,
       'createdAt': createdAt.toIso8601String(),
@@ -82,6 +86,7 @@ class AppUser {
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,
       isPhoneVerified: json['isPhoneVerified'] as bool? ?? false,
       rating: (json['rating'] as num?)?.toDouble() ?? 5.0,
+      totalRatings: json['totalRatings'] as int? ?? 0,
       totalTrips: json['totalTrips'] as int? ?? 0,
       isVerified: json['isVerified'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String? ?? DateTime.now().toIso8601String()),
@@ -100,6 +105,7 @@ class AppUser {
     bool? isEmailVerified,
     bool? isPhoneVerified,
     double? rating,
+    int? totalRatings,
     int? totalTrips,
     bool? isVerified,
     DateTime? createdAt,
@@ -115,6 +121,7 @@ class AppUser {
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
       rating: rating ?? this.rating,
+      totalRatings: totalRatings ?? this.totalRatings,
       totalTrips: totalTrips ?? this.totalTrips,
       isVerified: isVerified ?? this.isVerified,
       createdAt: createdAt ?? this.createdAt,

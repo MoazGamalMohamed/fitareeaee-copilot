@@ -22,15 +22,21 @@ MessageModel _$MessageModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$MessageModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sender_id')
   String get senderId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'recipient_id')
   String get recipientId => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
   List<String> get attachments => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
+  @TimestampConverter()
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_read')
   bool get isRead => throw _privateConstructorUsedError;
   @JsonKey(name: 'read_at')
+  @TimestampConverter()
   DateTime? get readAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_deleted')
   bool get isDeleted => throw _privateConstructorUsedError;
 
   /// Serializes this MessageModel to a JSON map.
@@ -52,14 +58,14 @@ abstract class $MessageModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String senderId,
-    String recipientId,
+    @JsonKey(name: 'sender_id') String senderId,
+    @JsonKey(name: 'recipient_id') String recipientId,
     String content,
     List<String> attachments,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    bool isRead,
-    @JsonKey(name: 'read_at') DateTime? readAt,
-    bool isDeleted,
+    @JsonKey(name: 'created_at') @TimestampConverter() DateTime createdAt,
+    @JsonKey(name: 'is_read') bool isRead,
+    @JsonKey(name: 'read_at') @TimestampConverter() DateTime? readAt,
+    @JsonKey(name: 'is_deleted') bool isDeleted,
   });
 }
 
@@ -143,14 +149,14 @@ abstract class _$$MessageModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String senderId,
-    String recipientId,
+    @JsonKey(name: 'sender_id') String senderId,
+    @JsonKey(name: 'recipient_id') String recipientId,
     String content,
     List<String> attachments,
-    @JsonKey(name: 'created_at') DateTime createdAt,
-    bool isRead,
-    @JsonKey(name: 'read_at') DateTime? readAt,
-    bool isDeleted,
+    @JsonKey(name: 'created_at') @TimestampConverter() DateTime createdAt,
+    @JsonKey(name: 'is_read') bool isRead,
+    @JsonKey(name: 'read_at') @TimestampConverter() DateTime? readAt,
+    @JsonKey(name: 'is_deleted') bool isDeleted,
   });
 }
 
@@ -226,14 +232,14 @@ class __$$MessageModelImplCopyWithImpl<$Res>
 class _$MessageModelImpl extends _MessageModel {
   const _$MessageModelImpl({
     required this.id,
-    required this.senderId,
-    required this.recipientId,
-    required this.content,
+    @JsonKey(name: 'sender_id') required this.senderId,
+    @JsonKey(name: 'recipient_id') required this.recipientId,
+    this.content = '',
     final List<String> attachments = const <String>[],
-    @JsonKey(name: 'created_at') required this.createdAt,
-    this.isRead = false,
-    @JsonKey(name: 'read_at') this.readAt,
-    this.isDeleted = false,
+    @JsonKey(name: 'created_at') @TimestampConverter() required this.createdAt,
+    @JsonKey(name: 'is_read') this.isRead = false,
+    @JsonKey(name: 'read_at') @TimestampConverter() this.readAt,
+    @JsonKey(name: 'is_deleted') this.isDeleted = false,
   }) : _attachments = attachments,
        super._();
 
@@ -243,10 +249,13 @@ class _$MessageModelImpl extends _MessageModel {
   @override
   final String id;
   @override
+  @JsonKey(name: 'sender_id')
   final String senderId;
   @override
+  @JsonKey(name: 'recipient_id')
   final String recipientId;
   @override
+  @JsonKey()
   final String content;
   final List<String> _attachments;
   @override
@@ -259,15 +268,17 @@ class _$MessageModelImpl extends _MessageModel {
 
   @override
   @JsonKey(name: 'created_at')
+  @TimestampConverter()
   final DateTime createdAt;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_read')
   final bool isRead;
   @override
   @JsonKey(name: 'read_at')
+  @TimestampConverter()
   final DateTime? readAt;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_deleted')
   final bool isDeleted;
 
   @override
@@ -330,14 +341,16 @@ class _$MessageModelImpl extends _MessageModel {
 abstract class _MessageModel extends MessageModel {
   const factory _MessageModel({
     required final String id,
-    required final String senderId,
-    required final String recipientId,
-    required final String content,
+    @JsonKey(name: 'sender_id') required final String senderId,
+    @JsonKey(name: 'recipient_id') required final String recipientId,
+    final String content,
     final List<String> attachments,
-    @JsonKey(name: 'created_at') required final DateTime createdAt,
-    final bool isRead,
-    @JsonKey(name: 'read_at') final DateTime? readAt,
-    final bool isDeleted,
+    @JsonKey(name: 'created_at')
+    @TimestampConverter()
+    required final DateTime createdAt,
+    @JsonKey(name: 'is_read') final bool isRead,
+    @JsonKey(name: 'read_at') @TimestampConverter() final DateTime? readAt,
+    @JsonKey(name: 'is_deleted') final bool isDeleted,
   }) = _$MessageModelImpl;
   const _MessageModel._() : super._();
 
@@ -347,8 +360,10 @@ abstract class _MessageModel extends MessageModel {
   @override
   String get id;
   @override
+  @JsonKey(name: 'sender_id')
   String get senderId;
   @override
+  @JsonKey(name: 'recipient_id')
   String get recipientId;
   @override
   String get content;
@@ -356,13 +371,17 @@ abstract class _MessageModel extends MessageModel {
   List<String> get attachments;
   @override
   @JsonKey(name: 'created_at')
+  @TimestampConverter()
   DateTime get createdAt;
   @override
+  @JsonKey(name: 'is_read')
   bool get isRead;
   @override
   @JsonKey(name: 'read_at')
+  @TimestampConverter()
   DateTime? get readAt;
   @override
+  @JsonKey(name: 'is_deleted')
   bool get isDeleted;
 
   /// Create a copy of MessageModel

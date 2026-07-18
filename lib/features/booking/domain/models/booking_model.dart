@@ -9,10 +9,11 @@ class BookingModel with _$BookingModel {
     required String id,
     required String tripId,
     required String passengerId,
+    required String driverId, // Driver who owns the trip
     required int seatsBooked,
     required double totalPrice,
-    required String status, // 'pending', 'confirmed', 'completed', 'cancelled'
-    required String paymentStatus, // 'unpaid', 'paid', 'refunded'
+    required String status, // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
+    required String paymentStatus, // 'unpaid', 'paid', 'refunded', 'escrow'
     required String? pickupLocation,
     required String? dropoffLocation,
     required DateTime? pickupTime,

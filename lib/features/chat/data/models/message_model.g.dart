@@ -9,31 +9,37 @@ part of 'message_model.dart';
 _$MessageModelImpl _$$MessageModelImplFromJson(Map<String, dynamic> json) =>
     _$MessageModelImpl(
       id: json['id'] as String,
-      senderId: json['senderId'] as String,
-      recipientId: json['recipientId'] as String,
-      content: json['content'] as String,
+      senderId: json['sender_id'] as String,
+      recipientId: json['recipient_id'] as String,
+      content: json['content'] as String? ?? '',
       attachments:
           (json['attachments'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const <String>[],
-      createdAt: DateTime.parse(json['created_at'] as String),
-      isRead: json['isRead'] as bool? ?? false,
-      readAt: json['read_at'] == null
-          ? null
-          : DateTime.parse(json['read_at'] as String),
-      isDeleted: json['isDeleted'] as bool? ?? false,
+      createdAt: const TimestampConverter().fromJson(json['created_at']),
+      isRead: json['is_read'] as bool? ?? false,
+      readAt: const TimestampConverter().fromJson(json['read_at']),
+      isDeleted: json['is_deleted'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$MessageModelImplToJson(_$MessageModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'senderId': instance.senderId,
-      'recipientId': instance.recipientId,
+      'sender_id': instance.senderId,
+      'recipient_id': instance.recipientId,
       'content': instance.content,
       'attachments': instance.attachments,
-      'created_at': instance.createdAt.toIso8601String(),
-      'isRead': instance.isRead,
-      'read_at': instance.readAt?.toIso8601String(),
-      'isDeleted': instance.isDeleted,
+      'created_at': const TimestampConverter().toJson(instance.createdAt),
+      'is_read': instance.isRead,
+      'read_at': _$JsonConverterToJson<dynamic, DateTime>(
+        instance.readAt,
+        const TimestampConverter().toJson,
+      ),
+      'is_deleted': instance.isDeleted,
     };
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) => value == null ? null : toJson(value);

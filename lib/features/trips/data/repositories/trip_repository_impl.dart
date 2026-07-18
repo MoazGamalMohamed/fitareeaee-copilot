@@ -273,14 +273,42 @@ class TripRepositoryImpl implements TripRepository {
       final updatedPassengers = [...trip.passengerIds, userId];
       final updatedAvailable = trip.availableSeats - 1;
 
+      print('📝 Creating booking document for trip $tripId, passenger $userId');
+      
+      // Create booking document
+      final bookingRef = _firestore.collection('bookings').doc();
+      await bookingRef.set({
+        'id': bookingRef.id,
+        'tripId': tripId,
+        'passengerId': userId,
+        'driverId': trip.driverId,
+        'seatsBooked': 1,
+        'totalPrice': trip.pricePerSeat,
+        'status': 'confirmed', // Auto-confirm the booking
+        'paymentStatus': 'unpaid',
+        'pickupLocation': trip.originAddress,
+        'dropoffLocation': trip.destinationAddress,
+        'pickupTime': trip.departureTime.toIso8601String(),
+        'dropoffTime': null,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      });
+      
+      print('✅ Booking created: ${bookingRef.id}');
+
+      // Update trip document
       await _firestore.collection('trips').doc(tripId).update({
         'passenger_ids': updatedPassengers,
         'available_seats': updatedAvailable,
         'updated_at': DateTime.now(),
       });
+      
+      print('✅ Trip updated with passenger');
     } on FirebaseException catch (e) {
+      print('❌ Firebase error in bookTrip: $e');
       throw _handleFirebaseException(e);
     } catch (e) {
+      print('❌ Error in bookTrip: $e');
       throw AppException(message: 'Failed to book trip: $e');
     }
   }

@@ -4,6 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import '../../domain/entities/user_profile.dart';
 import '../../data/repositories/user_profile_repository_impl.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../verification/presentation/providers/verification_provider.dart';
+import '../../../verification/domain/models/verification_model.dart';
 
 // Repository Providers
 final userProfileRepositoryProvider = Provider((ref) {
@@ -17,12 +20,76 @@ final userProfileRepositoryProvider = Provider((ref) {
 });
 
 // Stream Providers
-final userProfileProvider = StreamProvider.family<UserProfile?, String>((
+// AutoDispose ensures this provider is disposed when no longer watched
+final userProfileProvider = StreamProvider.autoDispose.family<UserProfile?, String>((
   ref,
   String userId,
-) {
+) async* {
+  // Import auth provider to watch auth state
+  final authState = ref.watch(authStateProvider);
+  
+  // If no authenticated user, return null stream to avoid permission errors
+  if (!authState.hasValue || authState.value == null) {
+    yield null;
+    return;
+  }
+  
   final repository = ref.watch(userProfileRepositoryProvider);
-  return repository.streamUserProfile(userId);
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  
+  // Get Firebase Auth user for email verification status
+  final firebaseUser = firebaseAuth.currentUser;
+  
+  // Listen to verification changes using ref.listen
+  UserVerification? latestVerification;
+  ref.listen(userVerificationProvider(userId), (previous, next) {
+    next.whenData((verification) {
+      latestVerification = verification;
+    });
+  });
+  
+  // Get initial verification value
+  final verificationAsync = ref.read(userVerificationProvider(userId));
+  verificationAsync.whenData((verification) {
+    latestVerification = verification;
+  });
+  
+  // Stream the profile and sync verification status
+  await for (final profile in repository.streamUserProfile(userId)) {
+    if (profile == null) {
+      yield null;
+      continue;
+    }
+    
+    bool needsUpdate = false;
+    var updatedProfile = profile;
+    
+    // Sync email verification status from Firebase Auth
+    if (firebaseUser != null && profile.isEmailVerified != firebaseUser.emailVerified) {
+      updatedProfile = updatedProfile.copyWith(
+        isEmailVerified: firebaseUser.emailVerified,
+      );
+      needsUpdate = true;
+    }
+    
+    // Sync phone verification status from verification system
+    // Only mark as verified if verification document exists AND phoneVerified is true
+    final shouldBePhoneVerified = latestVerification?.phoneVerified ?? false;
+    if (profile.isPhoneVerified != shouldBePhoneVerified) {
+      updatedProfile = updatedProfile.copyWith(
+        isPhoneVerified: shouldBePhoneVerified,
+      );
+      needsUpdate = true;
+    }
+    
+    if (needsUpdate) {
+      // Update in Firestore
+      await repository.updateUserProfile(updatedProfile);
+      yield updatedProfile;
+    } else {
+      yield profile;
+    }
+  }
 });
 
 // Future Providers

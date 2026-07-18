@@ -203,7 +203,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         final model = UserProfileModel.fromJson(data);
         return model.toEntity();
       } catch (e) {
-        // If parsing fails, return null
+        print('❌ Error parsing profile for userId $userId: $e');
         return null;
       }
     });

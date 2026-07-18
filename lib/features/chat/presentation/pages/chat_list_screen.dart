@@ -144,12 +144,18 @@ class _ConversationTile extends ConsumerWidget {
                 ? Text(
                     (profile != null && profile.name.isNotEmpty)
                         ? profile.name[0].toUpperCase()
-                        : 'U',
+                        : (profile != null && profile.email.isNotEmpty)
+                            ? profile.email[0].toUpperCase()
+                            : 'U',
                   )
                 : null,
           ),
           title: Text(
-            (profile != null && profile.name.isNotEmpty) ? profile.name : 'Unknown User',
+            (profile != null && profile.name.isNotEmpty)
+                ? profile.name
+                : (profile != null && profile.email.isNotEmpty)
+                    ? profile.email
+                    : 'User',
             style: TextStyle(
               fontWeight: unreadCount > 0 ? FontWeight.bold : FontWeight.normal,
             ),

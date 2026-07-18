@@ -80,10 +80,10 @@ class _NotificationTile extends StatelessWidget {
       onDismissed: (_) => deleteNotification(notification.id),
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        color: notification.isRead ? null : Colors.blue.shade50,
+        color: _getCardColor(),
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: _getTypeColor(notification.type),
+            backgroundColor: _getAvatarColor(),
             child: Icon(_getTypeIcon(notification.type), color: Colors.white, size: 20),
           ),
           title: Text(
@@ -122,7 +122,27 @@ class _NotificationTile extends StatelessWidget {
       case NotificationType.rating: return Icons.star;
       case NotificationType.promo: return Icons.local_offer;
       case NotificationType.system: return Icons.info;
+      case NotificationType.verification: return Icons.verified_user;
     }
+  }
+
+  bool _isRejectionNotification() {
+    return notification.type == NotificationType.verification &&
+           notification.data?['status'] == 'rejected';
+  }
+
+  Color? _getCardColor() {
+    if (_isRejectionNotification()) {
+      return notification.isRead ? Colors.red.shade50 : Colors.red.shade100;
+    }
+    return notification.isRead ? null : Colors.blue.shade50;
+  }
+
+  Color _getAvatarColor() {
+    if (_isRejectionNotification()) {
+      return Colors.red;
+    }
+    return _getTypeColor(notification.type);
   }
 
   Color _getTypeColor(NotificationType type) {
@@ -134,6 +154,7 @@ class _NotificationTile extends StatelessWidget {
       case NotificationType.rating: return Colors.amber;
       case NotificationType.promo: return Colors.pink;
       case NotificationType.system: return Colors.grey;
+      case NotificationType.verification: return Colors.teal;
     }
   }
 

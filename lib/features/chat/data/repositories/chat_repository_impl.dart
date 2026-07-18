@@ -6,6 +6,7 @@ import '../models/message_model.dart';
 import '../../../../core/error/failures.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
+import '../../../../core/utils/firestore_helpers.dart';
 
 /// Implementation of ChatRepository using Firebase Firestore
 class ChatRepositoryImpl implements ChatRepository {
@@ -101,10 +102,13 @@ class ChatRepositoryImpl implements ChatRepository {
       });
 
       final messages = allDocs
-          .map((doc) => MessageModel.fromJson({
-                ...doc.data(),
-                'id': doc.id,
-              }).toEntity())
+          .map((doc) {
+            final data = FirestoreHelpers.convertTimestamps({
+              ...doc.data(),
+              'id': doc.id,
+            });
+            return MessageModel.fromJson(data).toEntity();
+          })
           .toList();
 
       return Right(messages);
@@ -153,10 +157,13 @@ class ChatRepositoryImpl implements ChatRepository {
 
       // Convert to messages and sort by date
       final messages = conversationMap.values
-          .map((doc) => MessageModel.fromJson({
-                ...doc.data(),
-                'id': doc.id,
-              }).toEntity())
+          .map((doc) {
+            final data = FirestoreHelpers.convertTimestamps({
+              ...doc.data(),
+              'id': doc.id,
+            });
+            return MessageModel.fromJson(data).toEntity();
+          })
           .toList()
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
@@ -175,20 +182,38 @@ class ChatRepositoryImpl implements ChatRepository {
     String conversationId,
   ) {
     try {
+      print('🔍 Querying messages for conversation: $conversationId');
+      
       return _messagesCollection
           .where('conversation_id', isEqualTo: conversationId)
-          .where('is_deleted', isEqualTo: false)
           .orderBy('created_at', descending: true)
           .snapshots()
           .map((snapshot) {
+        print('📨 Received ${snapshot.docs.length} messages from Firestore');
+        
         final messages = snapshot.docs
-            .map((doc) => MessageModel.fromJson({
-                  ...doc.data(),
+            .map((doc) {
+              try {
+                final rawData = doc.data();
+                final data = FirestoreHelpers.convertTimestamps({
+                  ...rawData,
                   'id': doc.id,
-                }).toEntity())
-            .toList();
+                });
+                return MessageModel.fromJson(data).toEntity();
+              } catch (e) {
+                print('❌ Error parsing message ${doc.id}: $e');
+                return null;
+              }
+            })
+            .whereType<Message>()
+            .where((msg) => !msg.isDeleted)
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            
+        print('✅ Returning ${messages.length} valid messages');
         return Right<Failure, List<Message>>(messages);
       }).handleError((error) {
+        print('❌ Firestore error: $error');
         return Left<Failure, List<Message>>(
           FirebaseFailure(
             message: error is FirebaseException
@@ -198,6 +223,7 @@ class ChatRepositoryImpl implements ChatRepository {
         );
       });
     } catch (e) {
+      print('❌ Exception in streamConversation: $e');
       return Stream.value(
         Left(FirebaseFailure(message: 'Failed to stream conversation: $e')),
       );
@@ -255,10 +281,13 @@ class ChatRepositoryImpl implements ChatRepository {
 
         // Convert to messages
         final messages = conversationMap.values
-            .map((doc) => MessageModel.fromJson({
-                  ...doc.data(),
-                  'id': doc.id,
-                }).toEntity())
+            .map((doc) {
+              final data = FirestoreHelpers.convertTimestamps({
+                ...doc.data(),
+                'id': doc.id,
+              });
+              return MessageModel.fromJson(data).toEntity();
+            })
             .toList();
 
         return Right<Failure, List<Message>>(messages);

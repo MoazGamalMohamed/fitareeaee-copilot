@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/trip_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/trip.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../booking/presentation/providers/booking_provider.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
@@ -54,7 +56,7 @@ class TripDetailsScreen extends ConsumerWidget {
               // Driver Info Card
               _buildSectionTitle(context, 'Driver Information'),
               const SizedBox(height: 12),
-              _buildDriverCard(context),
+              _buildDriverCard(context, ref, trip),
               const SizedBox(height: 32),
             ],
           ),
@@ -74,70 +76,117 @@ class TripDetailsScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: tripAsync.when(
-        data: (trip) => Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (bookingState is AsyncLoading)
-                const SizedBox(
-                  height: 50,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              else if (bookingState is AsyncError)
-                Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        border: Border.all(color: Colors.red),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline, color: Colors.red[700]),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Error occurred while booking',
-                              style: TextStyle(color: Colors.red[700]),
+        data: (trip) {
+          final currentUserAsync = ref.watch(authStateProvider);
+          final isOwnTrip = currentUserAsync.maybeWhen(
+            data: (user) => user?.id == trip.driverId,
+            orElse: () => false,
+          );
+
+          // Check if user has already booked this trip
+          final userId = currentUserAsync.maybeWhen(
+            data: (user) => user?.id ?? '',
+            orElse: () => '',
+          );
+          final userBookingsAsync = ref.watch(userBookingsProvider(userId));
+          final hasBooked = userBookingsAsync.maybeWhen(
+            data: (bookings) => bookings.any((b) => 
+              b.tripId == trip.id && 
+              (b.status == 'confirmed' || b.status == 'paid' || b.status == 'pending')
+            ),
+            orElse: () => false,
+          );
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isOwnTrip)
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: Colors.grey[300],
+                    ),
+                    child: const Text('Your Own Trip'),
+                  )
+                else if (hasBooked)
+                  ElevatedButton(
+                    onPressed: () => context.push('/chat/${trip.driverId}'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: AppColors.primary,
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.message, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text('Message Driver', style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  )
+                else if (bookingState is AsyncLoading)
+                  const SizedBox(
+                    height: 50,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (bookingState is AsyncError)
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          border: Border.all(color: Colors.red),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.error_outline, color: Colors.red[700]),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Error occurred while booking',
+                                style: TextStyle(color: Colors.red[700]),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: () => _bookTrip(context, trip),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () => _bookTrip(context, trip),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text('Try Again'),
                       ),
-                      child: const Text('Try Again'),
+                    ],
+                  )
+                else if (trip.availableSeats > 0)
+                  ElevatedButton(
+                    onPressed: () => _bookTrip(context, trip),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
                     ),
-                  ],
-                )
-              else if (trip.availableSeats > 0)
-                ElevatedButton(
-                  onPressed: () => _bookTrip(context, trip),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
+                    child: const Text('Book Trip'),
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text('Trip Full'),
                   ),
-                  child: const Text('Book Trip'),
-                )
-              else
-                ElevatedButton(
-                  onPressed: null,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Text('Trip Full'),
-                ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
         loading: () => const SizedBox.shrink(),
         error: (_, _) => const SizedBox.shrink(),
       ),
@@ -410,63 +459,131 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDriverCard(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primary,
-            ),
-            child: const Icon(Icons.person, color: Colors.white),
+  Widget _buildDriverCard(BuildContext context, WidgetRef ref, Trip trip) {
+    // Fetch driver info from users collection using proper provider
+    final driverAsync = ref.watch(userByIdProvider(trip.driverId));
+    
+    return driverAsync.when(
+      data: (driver) {
+        final driverName = driver?.name ?? 'Unknown Driver';
+        final rating = driver?.rating ?? 0.0;
+        final totalRatings = driver?.totalRatings ?? 0;
+        final totalTrips = driver?.totalTrips ?? 0;
+        
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Driver Name',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
                 ),
-                const SizedBox(height: 4),
-                Row(
+                child: const Icon(Icons.person, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.star, size: 16, color: Colors.amber),
-                    const SizedBox(width: 4),
                     Text(
-                      '4.8 (120 reviews)',
+                      driverName,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, size: 16, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${rating.toStringAsFixed(1)} ($totalRatings ${totalRatings == 1 ? 'review' : 'reviews'})',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$totalTrips ${totalTrips == 1 ? 'trip' : 'trips'} completed',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: Colors.grey[500],
+                            fontSize: 11,
                           ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chat_bubble_outline),
+                onPressed: () {
+                  // Navigate to chat
+                  context.push('/chat/${trip.driverId}');
+                },
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.chat_bubble_outline),
-            onPressed: () {
-              // Navigate to chat or show message
-            },
+        );
+      },
+      loading: () => Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: const Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
           ),
-        ],
+        ),
       ),
+      error: (e, st) {
+        // Log error for debugging
+        print('Driver card error for ${trip.driverId}: $e');
+        print('Stack trace: $st');
+        
+        return Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Error loading driver info',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                e.toString(),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: Colors.grey[600],
+                      fontSize: 10,
+                    ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   void _bookTrip(BuildContext context, Trip trip) {
-    context.push('/booking', extra: trip);
+    context.push('/trips/${trip.id}/booking');
   }
 }

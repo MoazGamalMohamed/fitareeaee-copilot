@@ -6,6 +6,7 @@ import '../../domain/entities/message.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../../data/repositories/chat_repository_impl.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../../core/utils/firestore_helpers.dart';
 
 /// Chat repository provider (singleton)
 final chatRepositoryProvider = Provider((ref) {
@@ -54,6 +55,7 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
   Future<void> sendMessage({
     required String recipientId,
     required String content,
+    List<String> attachments = const [],
   }) async {
     state = const AsyncValue.loading();
 
@@ -62,6 +64,7 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
       senderId: _userId,
       recipientId: recipientId,
       content: content,
+      attachments: attachments,
       createdAt: DateTime.now(),
       isRead: false,
       readAt: null,
@@ -97,12 +100,26 @@ final sendMessageProvider =
 final conversationMessagesProvider =
     StreamProvider.family<List<Message>, String>((ref, conversationId) {
   final chatRepository = ref.watch(chatRepositoryProvider);
-  return chatRepository.streamConversation(conversationId).asyncMap((result) {
-    return result.fold(
-      (failure) => throw Exception(failure.toString()),
-      (messages) => messages,
-    );
-  });
+  
+  // Stream messages with error handling
+  return chatRepository.streamConversation(conversationId)
+      .asyncMap((result) {
+        return result.fold(
+          (failure) {
+            print('❌ Chat error: ${failure.toString()}');
+            return <Message>[];
+          },
+          (messages) {
+            print('✅ Chat loaded: ${messages.length} messages');
+            return messages;
+          },
+        );
+      })
+      .handleError((error, stackTrace) {
+        // If anything goes wrong, return empty list
+        print('❌ Final error handler: $error');
+        return <Message>[];
+      });
 });
 
 /// Stream provider for all conversations

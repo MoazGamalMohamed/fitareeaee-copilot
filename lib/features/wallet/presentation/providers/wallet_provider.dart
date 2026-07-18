@@ -1,37 +1,46 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/models/wallet_model.dart';
+import '../../../../core/utils/firestore_helpers.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 /// Provider for current user's wallet
-final walletProvider = StreamProvider<WalletModel?>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final walletProvider = StreamProvider.autoDispose<WalletModel?>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value(null);
 
   return FirebaseFirestore.instance
       .collection('wallets')
-      .doc(user.uid)
+      .doc(user.id)
       .snapshots()
       .map((doc) {
     if (!doc.exists) return null;
-    return WalletModel.fromJson({...doc.data()!, 'userId': user.uid});
+    final data = FirestoreHelpers.convertTimestamps({...doc.data()!, 'userId': user.id});
+    return WalletModel.fromJson(data);
   });
 });
 
 /// Provider for wallet transactions
-final walletTransactionsProvider = StreamProvider<List<WalletTransaction>>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final walletTransactionsProvider = StreamProvider.autoDispose<List<WalletTransaction>>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value([]);
 
   // Simplified query without orderBy to avoid needing composite index
   return FirebaseFirestore.instance
       .collection('wallet_transactions')
-      .where('userId', isEqualTo: user.uid)
+      .where('userId', isEqualTo: user.id)
       .limit(50)
       .snapshots()
       .map((snapshot) {
         final transactions = snapshot.docs
-            .map((doc) => WalletTransaction.fromJson({...doc.data(), 'id': doc.id}))
+            .map((doc) {
+              final data = FirestoreHelpers.convertTimestamps({...doc.data(), 'id': doc.id});
+              return WalletTransaction.fromJson(data);
+            })
             .toList();
         // Sort client-side
         transactions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -119,7 +128,8 @@ Future<void> requestPayout({
   final walletDoc = await firestore.collection('wallets').doc(userId).get();
   if (!walletDoc.exists) throw Exception('Wallet not found');
 
-  final wallet = WalletModel.fromJson({...walletDoc.data()!, 'userId': userId});
+  final walletData = FirestoreHelpers.convertTimestamps({...walletDoc.data()!, 'userId': userId});
+  final wallet = WalletModel.fromJson(walletData);
   if (!wallet.canWithdraw(amount)) throw Exception('Insufficient balance');
   if (!wallet.hasPayoutMethod) throw Exception('No payout method configured');
 

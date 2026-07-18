@@ -1,10 +1,13 @@
+import 'dart:math' show cos, sin, asin, sqrt, pi;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/trip_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../booking/presentation/providers/booking_provider.dart';
+import '../../../booking/domain/models/booking_model.dart';
 import '../../domain/entities/trip.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class TripsListScreen extends ConsumerStatefulWidget {
   /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
@@ -26,7 +29,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -49,6 +52,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           tabs: const [
             Tab(text: 'Available'),
             Tab(text: 'My Trips'),
+            Tab(text: 'Matches'),
           ],
         ),
         actions: [
@@ -67,10 +71,69 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         controller: _tabController,
         children: [
           // Available Trips Tab
-          availableTrips.when(
-            data: (trips) {
-              final filtered = filterTrips(trips);
-              return _buildTripsList(filtered, isMyTrips: false);
+          currentUser.when(
+            data: (user) {
+              if (user == null) {
+                return availableTrips.when(
+                  data: (trips) {
+                    final filtered = filterTrips(trips);
+                    return _buildTripsList(filtered, isMyTrips: false);
+                  },
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (error, st) => Center(child: Text('Error: $error')),
+                );
+              }
+              
+              // Get user's bookings to filter out trips they've booked
+              final userBookings = ref.watch(userBookingsProvider(user.id));
+              
+              return availableTrips.when(
+                data: (trips) {
+                  return userBookings.when(
+                    data: (bookings) {
+                      // Get trip IDs that user has confirmed or paid bookings for
+                      final bookedTripIds = bookings
+                          .where((b) => b.status == 'confirmed' || b.status == 'paid')
+                          .map((b) => b.tripId)
+                          .toSet();
+                      
+                      // Filter out booked trips first, then apply other filters
+                      final availableFiltered = trips
+                          .where((trip) => !bookedTripIds.contains(trip.id))
+                          .toList();
+                      
+                      final filtered = filterTrips(availableFiltered);
+                      
+                      print('🚗 Total: ${trips.length}, After booking filter: ${availableFiltered.length}, After search: ${filtered.length}');
+                      return _buildTripsList(filtered, isMyTrips: false);
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, st) {
+                      // If bookings fail to load, show all available trips
+                      final filtered = filterTrips(trips);
+                      return _buildTripsList(filtered, isMyTrips: false);
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, st) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
+                      const SizedBox(height: 16),
+                      const Text('Failed to load trips'),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () {
+                          ref.invalidate(availableTripsProvider);
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
             loading: () => const Center(
               child: CircularProgressIndicator(),
@@ -81,7 +144,14 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                 children: [
                   Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
                   const SizedBox(height: 16),
-                  Text('Error: $error'),
+                  const Text('Failed to load trips'),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      ref.invalidate(availableTripsProvider);
+                    },
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             ),
@@ -112,6 +182,24 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                   ),
                 ),
               );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            error: (error, st) => Center(
+              child: Text('Error loading user: $error'),
+            ),
+          ),
+
+          // Matches Tab
+          currentUser.when(
+            data: (user) {
+              if (user == null) {
+                return const Center(
+                  child: Text('Please sign in to view your matches'),
+                );
+              }
+              return _buildMatchesTab(user.id);
             },
             loading: () => const Center(
               child: CircularProgressIndicator(),
@@ -471,6 +559,286 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMatchesTab(String userId) {
+    print('🎯 Building Matches tab for userId: $userId');
+    // Get user bookings (agreed deals)
+    final userBookingsAsync = ref.watch(userBookingsProvider(userId));
+    
+    // Get all available trips
+    final availableTripsAsync = ref.watch(availableTripsProvider);
+
+    return userBookingsAsync.when(
+      data: (bookings) {
+        return availableTripsAsync.when(
+          data: (allTrips) {
+            // Get trips created by current user
+            final myTrips = allTrips.where((trip) => trip.driverId == userId).toList();
+            
+            // Find matching trips based on user's trips
+            final matchingTrips = <Trip>[];
+            
+            for (final myTrip in myTrips) {
+              // If I'm offering a ride, find requests that match
+              if (myTrip.role == 'offer') {
+                final matchingRequests = allTrips.where((trip) {
+                  return trip.role == 'request' &&
+                         trip.driverId != userId && // Not my trip
+                         _isRouteMatch(myTrip, trip); // Routes match
+                }).toList();
+                matchingTrips.addAll(matchingRequests);
+              }
+              // If I'm requesting a ride, find offers that match
+              else if (myTrip.role == 'request') {
+                final matchingOffers = allTrips.where((trip) {
+                  return trip.role == 'offer' &&
+                         trip.driverId != userId && // Not my trip
+                         _isRouteMatch(myTrip, trip); // Routes match
+                }).toList();
+                matchingTrips.addAll(matchingOffers);
+              }
+            }
+
+            // Remove duplicates
+            final uniqueMatchingTrips = matchingTrips.toSet().toList();
+
+            // Filter bookings to show only confirmed or paid deals
+            final agreedDeals = bookings
+                .where((b) => b.status == 'confirmed' || b.status == 'paid')
+                .toList();
+            
+            print('📊 Matches tab: ${bookings.length} total bookings, ${agreedDeals.length} agreed deals');
+            if (bookings.isEmpty) {
+              print('⚠️ No bookings found for user $userId');
+              print('   Make sure:');
+              print('   1. User has created bookings');
+              print('   2. Bookings have passengerId = $userId');
+              print('   3. Firestore index is deployed');
+            } else {
+              for (final booking in bookings) {
+                print('   📋 Booking: ${booking.id} | status: ${booking.status} | payment: ${booking.paymentStatus}');
+              }
+            }
+            
+            // Build the matches UI with two sections
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // Agreed Deals Section
+                if (agreedDeals.isNotEmpty) ...[
+                  Text(
+                    'Agreed Deals',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Trips where you and another user have agreed',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...agreedDeals.map((booking) => _buildBookingCard(booking, allTrips)),
+                  const SizedBox(height: 32),
+                ],
+                
+                // Matching Trips Section
+                Text(
+                  'Potential Matches',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Trips that match your route and preferences',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (uniqueMatchingTrips.isEmpty)
+                  Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 32),
+                        Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No matching trips found',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Create a trip to find matches',
+                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  ...uniqueMatchingTrips.map((trip) => _buildTripCard(context, trip)),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, st) => Center(
+            child: Text('Error loading trips: $error'),
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, st) {
+        // Check if error is due to missing Firestore index
+        final errorMsg = error.toString();
+        final isMissingIndex = errorMsg.contains('failed-precondition') || 
+                               errorMsg.contains('requires an index');
+        
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isMissingIndex ? Icons.build_circle : Icons.error_outline,
+                  size: 64,
+                  color: isMissingIndex ? Colors.orange : Colors.red,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isMissingIndex 
+                    ? 'Database Setup Required'
+                    : 'Error Loading Matches',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isMissingIndex
+                    ? 'The matches feature requires additional database configuration. Please contact your administrator to set up Firestore indexes.'
+                    : 'Unable to load your matches at this time.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                ),
+                if (!isMissingIndex) ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Trigger a refresh
+                      ref.invalidate(userBookingsProvider);
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                // Show error details in debug mode
+                if (!isMissingIndex)
+                  ExpansionTile(
+                    title: const Text('Error Details'),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          errorMsg,
+                          style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  bool _isRouteMatch(Trip trip1, Trip trip2) {
+    // Simple distance-based matching (within 5km for origin and destination)
+    const double matchThresholdKm = 5.0;
+    
+    final originDistance = _calculateDistance(
+      trip1.originLat, trip1.originLng,
+      trip2.originLat, trip2.originLng,
+    );
+    
+    final destDistance = _calculateDistance(
+      trip1.destinationLat, trip1.destinationLng,
+      trip2.destinationLat, trip2.destinationLng,
+    );
+    
+    return originDistance <= matchThresholdKm && destDistance <= matchThresholdKm;
+  }
+
+  double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+    // Haversine formula for distance calculation
+    const double earthRadiusKm = 6371.0;
+    
+    final dLat = _toRadians(lat2 - lat1);
+    final dLng = _toRadians(lng2 - lng1);
+    
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+              cos(_toRadians(lat1)) * cos(_toRadians(lat2)) *
+              sin(dLng / 2) * sin(dLng / 2);
+    
+    final c = 2 * asin(sqrt(a));
+    
+    return earthRadiusKm * c;
+  }
+
+  double _toRadians(double degrees) {
+    return degrees * (pi / 180.0);
+  }
+
+  Widget _buildBookingCard(BookingModel booking, List<Trip> allTrips) {
+    // Find the trip associated with this booking
+    final trip = allTrips.firstWhere(
+      (t) => t.id == booking.tripId,
+      orElse: () => allTrips.first, // Fallback, should not happen
+    );
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: booking.status == 'confirmed' 
+            ? Colors.green 
+            : Colors.orange,
+          child: Icon(
+            booking.status == 'confirmed' 
+              ? Icons.check 
+              : Icons.pending,
+            color: Colors.white,
+          ),
+        ),
+        title: Text(
+          '${trip.originAddress} → ${trip.destinationAddress}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text('Status: ${booking.status}'),
+            Text('Seats: ${booking.seatsBooked} • \$${booking.totalPrice.toStringAsFixed(2)}'),
+          ],
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.arrow_forward_ios, size: 16),
+          onPressed: () => context.push('/trips/${trip.id}'),
+        ),
+        onTap: () => context.push('/trips/${trip.id}'),
       ),
     );
   }

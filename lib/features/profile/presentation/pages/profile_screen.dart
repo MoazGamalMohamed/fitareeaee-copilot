@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../admin/presentation/providers/admin_provider.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -65,12 +66,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildProfileContent(BuildContext context, String userId) {
     final profileAsync = ref.watch(userProfileProvider(userId));
     final completionAsync = ref.watch(profileCompletionProvider(userId));
+    final isAdminAsync = ref.watch(isAdminProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         centerTitle: true,
         actions: [
+          // Only show admin icon if user is admin
+          isAdminAsync.when(
+            data: (isAdmin) => isAdmin
+                ? IconButton(
+                    icon: const Icon(Icons.admin_panel_settings),
+                    onPressed: () {
+                      context.push('/admin/verifications');
+                    },
+                    tooltip: 'Admin Panel',
+                  )
+                : const SizedBox.shrink(),
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
@@ -158,13 +174,50 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                       ),
                       const SizedBox(height: 8),
-                      // Email
-                      Text(
-                        profile.email,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white70,
+                      // Email with verification status
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            profile.email,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white70,
+                                ),
+                          ),
+                          if (profile.isEmailVerified) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.verified,
+                              size: 16,
+                              color: Colors.green,
                             ),
+                          ],
+                        ],
                       ),
+                      const SizedBox(height: 6),
+                      // Phone with verification status
+                      if (profile.phone != null && profile.phone!.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.phone, color: Colors.white70, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              profile.phone!,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.white70,
+                                  ),
+                            ),
+                            if (profile.isPhoneVerified) ...[
+                              const SizedBox(width: 6),
+                              Icon(
+                                Icons.verified,
+                                size: 14,
+                                color: Colors.green,
+                              ),
+                            ],
+                          ],
+                        ),
                       const SizedBox(height: 12),
                       // Rating
                       Row(
@@ -231,93 +284,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                 const SizedBox(height: 24),
 
-                // Info Sections
+                // Stats (Trips, Rating, Reviews)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Phone
-                      if (profile.phone != null)
-                        _buildInfoTile(
-                          context,
-                          Icons.phone,
-                          'Phone',
-                          profile.phone!,
-                        ),
-
-                      // Address
-                      if (profile.address != null)
-                        _buildInfoTile(
-                          context,
-                          Icons.location_on,
-                          'Address',
-                          '${profile.address}${profile.city != null ? ', ${profile.city}' : ''}',
-                        ),
-
-                      // Bio
-                      if (profile.bio != null && profile.bio!.isNotEmpty)
-                        _buildInfoTile(
-                          context,
-                          Icons.description,
-                          'Bio',
-                          profile.bio!,
-                        ),
-
-                      // Roles
-                      if (profile.roles.isNotEmpty)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16),
-                            Text(
-                              'Roles',
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: profile.roleNames
-                                  .map(
-                                    (role) => Chip(
-                                      label: Text(role),
-                                      backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                                      labelStyle: TextStyle(
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ],
-                        ),
-
-                      // Stats
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildStatTile(
-                            context,
-                            'Trips',
-                            profile.totalTrips.toString(),
-                          ),
-                          _buildStatTile(
-                            context,
-                            'Rating',
-                            profile.ratingDisplay,
-                          ),
-                          _buildStatTile(
-                            context,
-                            'Reviews',
-                            profile.totalRatings.toString(),
-                          ),
-                        ],
+                      _buildStatTile(
+                        context,
+                        'Trips',
+                        profile.totalTrips.toString(),
+                      ),
+                      _buildStatTile(
+                        context,
+                        'Rating',
+                        profile.ratingDisplay,
+                      ),
+                      _buildStatTile(
+                        context,
+                        'Reviews',
+                        profile.totalRatings.toString(),
                       ),
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 24),
+
+                // Roles
+                if (profile.roles.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Roles',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: profile.roleNames
+                              .map(
+                                (role) => Chip(
+                                  label: Text(role),
+                                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                                  labelStyle: TextStyle(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
 
                 const SizedBox(height: 32),
 
@@ -329,7 +352,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () {
-                          context.push('/profile/edit');
+                          context.push('/profile/edit', extra: userId);
                         },
                         icon: const Icon(Icons.edit),
                         label: const Text('Edit Profile'),
@@ -382,44 +405,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoTile(
-    BuildContext context,
-    IconData icon,
-    String label,
-    String value,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Icon(icon, size: 20, color: AppColors.primary),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 

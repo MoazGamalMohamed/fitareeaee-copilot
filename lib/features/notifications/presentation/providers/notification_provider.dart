@@ -3,33 +3,50 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../domain/models/notification_model.dart';
+import '../../../../core/utils/firestore_helpers.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 final firebaseMessagingProvider = Provider((ref) => FirebaseMessaging.instance);
 
 /// Provider for user notifications
-final notificationsProvider = StreamProvider<List<NotificationModel>>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+/// COMPOSITE INDEX REQUIRED:
+/// Collection: notifications
+/// Fields: userId (ASCENDING), createdAt (DESCENDING)
+final notificationsProvider = StreamProvider.autoDispose<List<NotificationModel>>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value([]);
 
   return FirebaseFirestore.instance
       .collection('notifications')
-      .where('userId', isEqualTo: user.uid)
+      .where('userId', isEqualTo: user.id)
       .orderBy('createdAt', descending: true)
       .limit(50)
       .snapshots()
       .map((snapshot) => snapshot.docs
-          .map((doc) => NotificationModel.fromJson({...doc.data(), 'id': doc.id}))
+          .map((doc) {
+            final data = doc.data();
+            // Convert all Timestamp fields to ISO8601 strings for JSON parsing
+            final jsonData = FirestoreHelpers.convertTimestamps({
+              ...data,
+              'id': doc.id,
+            });
+            return NotificationModel.fromJson(jsonData);
+          })
           .toList());
 });
 
 /// Provider for unread notification count
-final unreadNotificationCountProvider = StreamProvider<int>((ref) {
-  final user = FirebaseAuth.instance.currentUser;
+final unreadNotificationCountProvider = StreamProvider.autoDispose<int>((ref) {
+  // Watch auth state to automatically refresh when user signs in/out
+  final authState = ref.watch(authStateProvider);
+  final user = authState.value;
   if (user == null) return Stream.value(0);
 
   return FirebaseFirestore.instance
       .collection('notifications')
-      .where('userId', isEqualTo: user.uid)
+      .where('userId', isEqualTo: user.id)
       .where('isRead', isEqualTo: false)
       .snapshots()
       .map((snapshot) => snapshot.docs.length);

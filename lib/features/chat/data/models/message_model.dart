@@ -1,22 +1,43 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/message.dart';
 
 part 'message_model.freezed.dart';
 part 'message_model.g.dart';
 
+/// Converter for Firestore Timestamp to DateTime
+class TimestampConverter implements JsonConverter<DateTime, dynamic> {
+  const TimestampConverter();
+
+  @override
+  DateTime fromJson(dynamic timestamp) {
+    if (timestamp is Timestamp) {
+      return timestamp.toDate();
+    } else if (timestamp is String) {
+      return DateTime.parse(timestamp);
+    } else if (timestamp is int) {
+      return DateTime.fromMillisecondsSinceEpoch(timestamp);
+    }
+    return DateTime.now();
+  }
+
+  @override
+  dynamic toJson(DateTime dateTime) => dateTime.toIso8601String();
+}
+
 /// Message model for JSON serialization
 @freezed
 class MessageModel with _$MessageModel {
   const factory MessageModel({
     required String id,
-    required String senderId,
-    required String recipientId,
-    required String content,
+    @JsonKey(name: 'sender_id') required String senderId,
+    @JsonKey(name: 'recipient_id') required String recipientId,
+    @Default('') String content,
     @Default(<String>[]) List<String> attachments,
-    @JsonKey(name: 'created_at') required DateTime createdAt,
-    @Default(false) bool isRead,
-    @JsonKey(name: 'read_at') DateTime? readAt,
-    @Default(false) bool isDeleted,
+    @JsonKey(name: 'created_at') @TimestampConverter() required DateTime createdAt,
+    @JsonKey(name: 'is_read') @Default(false) bool isRead,
+    @JsonKey(name: 'read_at') @TimestampConverter() DateTime? readAt,
+    @JsonKey(name: 'is_deleted') @Default(false) bool isDeleted,
   }) = _MessageModel;
 
   const MessageModel._();
@@ -36,10 +57,12 @@ class MessageModel with _$MessageModel {
 
   /// Convert to Firestore document format
   Map<String, dynamic> toFirestore() {
+    final conversationId = Message.getConversationId(senderId, recipientId);
     return {
       'id': id,
       'sender_id': senderId,
       'recipient_id': recipientId,
+      'conversation_id': conversationId,
       'content': content,
       'attachments': attachments,
       'created_at': createdAt,

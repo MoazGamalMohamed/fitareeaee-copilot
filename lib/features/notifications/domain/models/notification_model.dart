@@ -11,6 +11,7 @@ enum NotificationType {
   rating,
   promo,
   system,
+  verification,
 }
 
 @freezed
@@ -51,6 +52,8 @@ class NotificationModel with _$NotificationModel {
         return 'local_offer';
       case NotificationType.system:
         return 'info';
+      case NotificationType.verification:
+        return 'verified_user';
     }
   }
 }
@@ -65,6 +68,7 @@ class NotificationPreferences with _$NotificationPreferences {
     @Default(true) bool ratingNotifications,
     @Default(false) bool promoNotifications,
     @Default(true) bool systemNotifications,
+    @Default(true) bool verificationNotifications,
     @Default(true) bool soundEnabled,
     @Default(true) bool vibrationEnabled,
   }) = _NotificationPreferences;

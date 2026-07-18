@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../domain/models/verification_model.dart';
 import '../providers/verification_provider.dart';
 
@@ -26,8 +28,10 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
   late TextEditingController _plateNumberController;
   late TextEditingController _licenseNumberController;
   
+  String _vehicleType = 'car'; // car, van, motorcycle, truck, bike
   bool _isLoading = false;
   bool _hasExistingData = false;
+  String? _uploadingType; // Track which document is being uploaded
 
   @override
   void initState() {
@@ -74,6 +78,7 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
             _vehicleModelController.text = verification.vehicleModel ?? '';
             _vehicleColorController.text = verification.vehicleColor ?? '';
             _plateNumberController.text = verification.vehiclePlateNumber ?? '';
+            // Load vehicle type from metadata if available
             _hasExistingData = true;
           }
 
@@ -115,40 +120,91 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
                   // Vehicle Information Section
                   _buildSectionTitle('Vehicle Information'),
                   const SizedBox(height: 16),
+                  
+                  // Vehicle Type Selection
+                  _buildSectionTitle('Vehicle Type'),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _buildVehicleTypeChip('car', 'Car', Icons.directions_car),
+                      _buildVehicleTypeChip('van', 'Van', Icons.airport_shuttle),
+                      _buildVehicleTypeChip('motorcycle', 'Motorcycle', Icons.two_wheeler),
+                      _buildVehicleTypeChip('truck', 'Truck', Icons.local_shipping),
+                      _buildVehicleTypeChip('bike', 'Bicycle', Icons.pedal_bike),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
                   _buildTextField(
                     controller: _vehicleModelController,
-                    label: 'Vehicle Model',
-                    hint: 'e.g., Toyota Camry 2020',
-                    icon: Icons.directions_car,
+                    label: _vehicleType == 'bike' ? 'Bicycle Brand/Model' : 'Vehicle Model',
+                    hint: _vehicleType == 'bike' ? 'e.g., Trek Mountain Bike' : 'e.g., Toyota Camry 2020',
+                    icon: _vehicleType == 'bike' ? Icons.pedal_bike : Icons.directions_car,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   _buildTextField(
                     controller: _vehicleColorController,
-                    label: 'Vehicle Color',
+                    label: _vehicleType == 'bike' ? 'Bicycle Color' : 'Vehicle Color',
                     hint: 'e.g., Silver',
                     icon: Icons.color_lens,
                     validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                   ),
-                  const SizedBox(height: 12),
-                  _buildTextField(
-                    controller: _plateNumberController,
-                    label: 'License Plate Number',
-                    hint: 'e.g., ABC 1234',
-                    icon: Icons.confirmation_number,
-                    validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                  ),
+                  // Only show plate number for motorized vehicles
+                  if (_vehicleType != 'bike') ...[
+                    const SizedBox(height: 12),
+                    _buildTextField(
+                      controller: _plateNumberController,
+                      label: 'License Plate Number',
+                      hint: 'e.g., ABC 1234',
+                      icon: Icons.confirmation_number,
+                      validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
+                    ),
+                  ],
                   const SizedBox(height: 24),
 
-                  // License Section
-                  _buildSectionTitle('Driver\'s License'),
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: _licenseNumberController,
-                    label: 'License Number',
-                    hint: 'Enter your license number',
-                    icon: Icons.badge,
-                  ),
+                  // License Section - Only for motorized vehicles
+                  if (_vehicleType != 'bike') ...[
+                    _buildSectionTitle('Driver\'s License'),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _licenseNumberController,
+                      label: 'License Number',
+                      hint: 'Enter your license number',
+                      icon: Icons.badge,
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Driver's License Document Upload
+                    _buildDocumentUploadCard(
+                      title: "Driver's License Photo",
+                      subtitle: 'Upload a clear photo of your driver\'s license',
+                      icon: Icons.drive_eta,
+                      isVerified: verification?.driverLicenseVerified ?? false,
+                      isUploading: _uploadingType == 'driverLicense',
+                      isPending: (verification?.driverLicenseUrl != null && !(verification?.driverLicenseVerified ?? false)),
+                      documentUrl: verification?.driverLicenseUrl,
+                      onUpload: () => _uploadDocument(VerificationType.driverLicense, "Driver's License"),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // Vehicle Registration Section - Only for motorized vehicles
+                  if (_vehicleType != 'bike') ...[
+                    _buildSectionTitle('Vehicle Registration'),
+                    const SizedBox(height: 16),
+                    _buildDocumentUploadCard(
+                      title: 'Vehicle Registration Photo',
+                      subtitle: 'Upload a clear photo of your vehicle registration',
+                      icon: Icons.description,
+                      isVerified: verification?.vehicleVerified ?? false,
+                      isUploading: _uploadingType == 'vehicle',
+                      isPending: (verification?.vehicleRegistrationUrl != null && !(verification?.vehicleVerified ?? false)),
+                      documentUrl: verification?.vehicleRegistrationUrl,
+                      onUpload: () => _uploadDocument(VerificationType.vehicle, 'Vehicle Registration'),
+                    ),
+                  ],
                   const SizedBox(height: 32),
 
                   // Submit Button
@@ -203,6 +259,165 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
       ),
       validator: validator,
     );
+  }
+
+  Widget _buildVehicleTypeChip(String type, String label, IconData icon) {
+    final isSelected = _vehicleType == type;
+    return FilterChip(
+      selected: isSelected,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: isSelected ? Colors.white : Colors.grey),
+          const SizedBox(width: 4),
+          Text(label),
+        ],
+      ),
+      selectedColor: Colors.blue,
+      backgroundColor: Colors.grey[200],
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : Colors.black87,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      onSelected: (selected) {
+        if (selected) {
+          setState(() => _vehicleType = type);
+        }
+      },
+    );
+  }
+
+  Widget _buildDocumentUploadCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isVerified,
+    required bool isUploading,
+    required bool isPending,
+    String? documentUrl,
+    required VoidCallback onUpload,
+  }) {
+    return Card(
+      elevation: 2,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: isVerified
+              ? Colors.green
+              : isPending
+                  ? Colors.orange
+                  : Colors.grey[300],
+          child: Icon(
+            isVerified
+                ? Icons.check
+                : isPending
+                    ? Icons.pending
+                    : icon,
+            color: isVerified || isPending ? Colors.white : Colors.grey[600],
+          ),
+        ),
+        title: Text(title),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(subtitle),
+            if (isPending)
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Chip(
+                  label: Text(
+                    'Pending Approval',
+                    style: TextStyle(fontSize: 11, color: Colors.white),
+                  ),
+                  backgroundColor: Colors.orange,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            if (isVerified)
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Chip(
+                  label: Text(
+                    'Verified',
+                    style: TextStyle(fontSize: 11, color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+          ],
+        ),
+        trailing: isUploading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : IconButton(
+                icon: Icon(
+                  documentUrl != null ? Icons.refresh : Icons.camera_alt,
+                  color: isVerified ? Colors.green : Colors.blue,
+                ),
+                onPressed: isVerified ? null : onUpload,
+              ),
+      ),
+    );
+  }
+
+  Future<void> _uploadDocument(VerificationType type, String documentName) async {
+    try {
+      setState(() => _uploadingType = type.name);
+
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        preferredCameraDevice: CameraDevice.rear,
+      );
+
+      if (image == null) {
+        setState(() => _uploadingType = null);
+        return;
+      }
+
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('Not authenticated');
+
+      // Upload to Firebase Storage
+      final file = File(image.path);
+      final params = UploadDocumentParams(file: file, type: type);
+      final downloadUrl = await ref.read(uploadVerificationDocumentProvider(params).future);
+
+      // Submit verification request
+      await submitVerification(
+        userId: userId,
+        type: type,
+        documentUrl: downloadUrl,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$documentName uploaded successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Upload failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _uploadingType = null);
+      }
+    }
   }
 
   Widget _buildVerificationStatus(UserVerification? verification) {
@@ -294,6 +509,8 @@ class _DriverProfileScreenState extends ConsumerState<DriverProfileScreen> {
         'vehicleModel': _vehicleModelController.text.trim(),
         'vehicleColor': _vehicleColorController.text.trim(),
         'vehiclePlateNumber': _plateNumberController.text.trim(),
+        'vehicleType': _vehicleType, // Save vehicle type
+        'driverLicenseNumber': _licenseNumberController.text.trim(),
         'updatedAt': now.toIso8601String(),
         if (existing == null) 'createdAt': now.toIso8601String(),
       }, SetOptions(merge: true));

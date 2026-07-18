@@ -85,13 +85,14 @@ class UserVerification with _$UserVerification {
     }
   }
 
-  /// Check if user can be a driver
+  /// Check if user can be a driver (requires driver license)
   bool get canBeDriver => identityVerified && selfieWithIdVerified && driverLicenseVerified;
 
-  /// Check if user can be a courier
-  bool get canBeCourier => identityVerified && selfieWithIdVerified;
+  /// Check if user can be a courier (requires vehicle registration)
+  bool get canBeCourier => identityVerified && selfieWithIdVerified && vehicleVerified;
 
-  /// Check if user can be matched (has payment and selfie verification)
-  bool get canBeMatched => selfieWithIdVerified;
+  /// Check if user can be matched - requires all basic verifications
+  /// Driver/vehicle verification is checked separately based on user's role
+  bool get canBeMatched => emailVerified && phoneVerified && identityVerified && selfieWithIdVerified;
 }
 
