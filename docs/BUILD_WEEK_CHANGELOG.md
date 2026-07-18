@@ -79,17 +79,17 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
-The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The latest consolidated security checkpoint source is `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`.
+The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The consolidated security checkpoint source is `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`; the latest credential-independent release-cleanup source is `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`.
 
-- Flutter format gate: 118 files, 0 changes
+- Flutter format gate: 111 files, 0 changes
 - Flutter analysis: no issues
 - Flutter full-suite result: 18/18 passed (Copilot interaction coverage: two widget tests plus one focused route/unit test; chat notifier coverage: 2/2)
 - Functions contracts: 16/16 passed
 - Firestore/Storage rules contracts: 7/7 passed
 - Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
 - Functions TypeScript build: passed
-- Universal debug APK: rebuilt from the consolidated source; 154,895,270 bytes
-- Universal APK SHA-256: `4AC2FBAD53963817CB2A8F056520A981FD089CB07F0FC182250A7B6CBF64AA5C`
+- Universal debug APK: rebuilt from the release-cleanup source; 154,893,570 bytes
+- Universal APK SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
 - Same-source x86_64 APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
 - Hardened booking, verification, chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
 

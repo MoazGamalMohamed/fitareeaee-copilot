@@ -675,3 +675,52 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 - GitHub repository/push/PR/release remain pending owner-controlled GitHub CLI authentication.
 - Rollback point: sanitized `0abea666c667cf01989809bbdcb7725473989886`; private evidence `a297c73a2820958a7a0af75e143caebc6681c322`.
 - Next action: apply this mapping-only evidence commit to the sanitized clone and repeat the clean/tree/secret checks, then resume the credentialed Firebase and GitHub release work as soon as the owner completes the open secret/authentication actions.
+
+## 2026-07-18 03:32 CDT / 2026-07-18 01:32 PDT — Live-rule recheck and unreachable-stub cleanup
+
+### Objective and outcome
+
+- Re-read the live official rules, overview, updates, FAQ, and resources at `https://openai.devpost.com/` and `https://openai.devpost.com/rules` on July 18, 2026.
+- Confirmed the authoritative deadline remains July 21, 2026 at 5:00 PM PDT; the submission still requires a working project using Codex and GPT-5.6, clear pre-existing/new-work evidence, a public YouTube demo under three minutes with audio explaining the product/Codex/GPT-5.6, a testable build, a repository with relevant licensing, English materials, and the primary `/feedback` Session ID.
+- Found no new update that changes the implementation or release plan. The latest update reiterates having core functionality, the primary Session ID, a demo plan, and a repository ready.
+- Removed an unregistered legacy search UI whose search method was empty, its unused provider/repository layer, a duplicate stub Auth repository, and an unused service locator/`get_it` dependency. The tested search-domain value types remain because existing domain smoke coverage uses them.
+- Reworded the last application-shell localization TODO as an explicit product boundary: the shell is English while Copilot accepts Arabic input.
+- Confirmed no `TODO:` marker remains in handwritten Dart source and no removed file was reachable from the registered router or judge path.
+
+### Verification results
+
+- `flutter pub get`: PASS; unused `get_it` entry removed from `pubspec.lock`
+- First format check: correctly reported one comment needing formatting; `dart format lib/core/localization/app_localizations.dart` applied it
+- Final `dart format --output=none --set-exit-if-changed lib test`: PASS; 111 files, 0 changed
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 18/18
+- Initial sandboxed `npm test`: Functions TypeScript build passed but Node worker spawning failed with environment `EPERM`; authorized rerun passed
+- Final `npm test` in `functions/`: PASS; TypeScript build plus 16/16 contracts
+- First rules-emulator start: environment failure because `java` was not on process `PATH`; no contract ran
+- Rules emulator rerun with Android Studio JBR 21 on process `PATH`: PASS; 7/7
+- Auth/Functions/Firestore callable integration: PASS; 3/3; emulator warning about host Node 24 versus declared production Node 20 remains documented
+- `flutter build apk --debug`: PASS
+- `flutter build apk --debug --split-per-abi`: PASS
+- Emulator clean uninstall/install: PASS; both returned `Success`
+- Launch command returned Android wait status `timeout`, but application PID `14723` remained alive, UI semantics contained Login/Welcome Back/Email/Password/Sign In, and the error log contained no Fitareeaee fatal exception; smoke result PASS
+
+### APK record
+
+- Source commit: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16` (`chore(release): remove unreachable prototype search stubs`)
+- Universal debug APK: `build/app/outputs/flutter-apk/app-debug.apk`
+- Universal size/timestamp: 154,893,570 bytes / 2026-07-18 03:29:13 CDT
+- Universal SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
+- x86_64 size/timestamp/SHA-256: 71,564,128 bytes / 2026-07-18 03:30:02 CDT / `3949BCC4DFDF56CC9F11915CC66F9AD9419875F67B284E672BF5368420C8BE51`
+- arm64-v8a size/timestamp/SHA-256: 85,640,466 bytes / 2026-07-18 03:30:00 CDT / `4E0751BCEDB3D2C6C9616D4EAA16F27C31F0FE4D613EF22D5D500076E1A295E6`
+- armeabi-v7a size/timestamp/SHA-256: 64,898,642 bytes / 2026-07-18 03:30:01 CDT / `C125D97576A2C9A74748EA4C3D3FDE6C36D59C34422E5A59084B798612093CDB`
+- Tested device: Android API 36 `emulator-5554`; x86_64 fresh install and Login smoke PASS; no physical phone connected
+
+### Git, blockers, rollback, and next action
+
+- Branch/source: `build-week/final` / `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
+- Push/PR/tag/release: pending sanitized transfer and GitHub authentication; no force-push and no private-original remote
+- OpenAI secret check: secret resource still has zero versions; live calls/spend remain 0 / USD $0
+- GitHub CLI check: still unauthenticated; sanitized clone still has no remote
+- Android device check: only `emulator-5554`; physical-phone step remains external
+- Rollback point: `9b591e0`; no production deployment or data mutation occurred during this cleanup
+- Next action: commit this evidence, propagate the two passing commits to the sanitized clone, repeat the deep scan/tree comparison, and then request the smallest owner-only action bundle needed to unlock Copilot deployment, judge seeding, GitHub release, and endpoint retirement.

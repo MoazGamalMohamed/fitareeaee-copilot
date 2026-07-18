@@ -59,6 +59,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Deployment checkpoint gate passed on `28117b9`: format 119/0, analysis clean, Flutter 16/16, Functions 16/16, rules 7/7, integration 3/3, APK build/install/launch PASS.
 - [x] Final prototype-residue cleanup gate passed on `289209b`: format 117/0, analysis clean, Flutter 16/16, Functions 16/16, rules 7/7, APK build/install/launch PASS.
 - [x] Consolidated security gate passed on `85d73f0`: format 118/0, analysis clean, Flutter 18/18, Functions 16/16, rules 7/7, callable integration 3/3, scoped deploy/live unauthenticated probes, APK build/install/Login smoke PASS.
+- [x] Unreachable-stub cleanup gate passed on `9b591e0`: format 111/0, analysis clean, Flutter 18/18, Functions 16/16, rules 7/7, callable integration 3/3, APK build/install/Login smoke PASS.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [ ] Rerun the complete mandatory gate on the exact final release commit.
 - [ ] Complete two credentialed fresh-install end-to-end runs.

@@ -8,7 +8,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Consolidated hardened revision: 118 files, 0 changes |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Release-cleanup revision: 111 files, 0 changes |
 | Static analysis | `flutter analyze` | PASS | `No issues found!` |
 | Flutter suite | `flutter test` | PASS | Consolidated hardened revision: 18/18 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
@@ -17,7 +17,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts, including exact legacy-message participants, constrained avatar URLs, and owner withdrawal of raw verification uploads |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` | PASS | Universal and split debug APKs rebuilt from consolidated source `85d73f0` |
+| Android build | `flutter build apk --debug` | PASS | Universal and split debug APKs rebuilt from release-cleanup source `9b591e0` |
 
 ## Copilot behavior
 
@@ -97,14 +97,14 @@ the contest release.
 
 - Build type: universal debug judge candidate
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
-- Size: 154,895,270 bytes (147.72 MiB)
-- Build timestamp: July 18, 2026 at 03:01:26 CDT
-- Source commit: `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`
+- Size: 154,893,570 bytes (147.72 MiB)
+- Build timestamp: July 18, 2026 at 03:29:13 CDT
+- Source commit: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
 - Source tag: pending release-candidate tag after credentialed verification
-- SHA-256: `4AC2FBAD53963817CB2A8F056520A981FD089CB07F0FC182250A7B6CBF64AA5C`
+- SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
 - Universal installation: not counted on the low-storage emulator (`INSTALL_FAILED_INSUFFICIENT_STORAGE`)
-- Same-source x86_64 APK: 71,565,828 bytes; SHA-256 `CE78FBD85D00D0D9EE3FA22826D2ECF2FF8C48380AAB672350F953A751507A5F`
-- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `14247` alive, and no matched fatal Android/Flutter/Firebase logs
+- Same-source x86_64 APK: 71,564,128 bytes; SHA-256 `3949BCC4DFDF56CC9F11915CC66F9AD9419875F67B284E672BF5368420C8BE51`
+- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `14723` alive, and no matched fatal Android/Flutter/Firebase logs
 
 This is a local engineering checkpoint, not yet the published judge artifact.
 
