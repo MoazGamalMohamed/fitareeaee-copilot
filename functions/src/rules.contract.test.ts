@@ -88,6 +88,24 @@ test("private profiles stay private and trust fields are server-owned", async ()
   await assertSucceeds(getDoc(doc(outsider, "public_profiles/rider")));
   await assertFails(updateDoc(doc(rider, "users/rider"), {rating: 5.5}));
   await assertSucceeds(updateDoc(doc(rider, "users/rider"), {name: "Updated Rider"}));
+  await assertSucceeds(
+    updateDoc(doc(rider, "users/rider"), {
+      photoUrl: "https://firebasestorage.googleapis.com/v0/b/fitareeaee.firebasestorage.app/o/avatars%2Frider%2Fprofile.jpg?alt=media&token=judge_avatar-token",
+    })
+  );
+  await assertFails(
+    updateDoc(doc(rider, "users/rider"), {
+      photoUrl: "https://tracking.example/avatar.png",
+    })
+  );
+  await assertFails(
+    updateDoc(doc(rider, "users/rider"), {
+      photoUrl: "https://firebasestorage.googleapis.com/v0/b/fitareeaee.firebasestorage.app/o/avatars%2Foutsider%2Fprofile.jpg?alt=media&token=other_avatar-token",
+    })
+  );
+  await assertSucceeds(
+    updateDoc(doc(rider, "users/rider"), {photoUrl: null})
+  );
 });
 
 test("trip owners cannot change server-owned seat inventory", async () => {
