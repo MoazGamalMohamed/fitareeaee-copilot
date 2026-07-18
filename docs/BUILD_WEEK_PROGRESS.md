@@ -519,3 +519,46 @@ Deploy the credential-independent hardened backend to the confirmed `fitareeaee`
 ### Next action
 
 Propagate this passing checkpoint into the sanitized publication clone and re-run deep secret/history checks. Then request the minimal owner action bundle: managed OpenAI secret setup, two judge Auth UIDs, GitHub device authentication, credential rotation confirmation, and explicit approval for the enumerated inherited Function deletions.
+
+## 2026-07-18 02:32 CDT / 2026-07-18 00:32 PDT — Prototype-residue cleanup and APK correction
+
+### Objective and work completed
+
+- Completed the inherited-endpoint usage audit before requesting production deletion approval.
+- Removed two unreferenced client files that still called legacy Places and global verification-reset Functions.
+- Removed unused admin mutation stubs and the final three client debug/error-detail logs.
+- Preserved existing safe UI fallbacks; search now presents a generic retry message rather than an internal exception.
+- Confirmed no inherited Function name and no `print`/`debugPrint` call remains in the submitted Dart/Functions source.
+
+### Exact verification results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS after mechanical formatting; 117 files, 0 changed
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 16/16
+- `npm test` in `functions/`: PASS; TypeScript build plus 16/16 contracts
+- Firestore/Storage rules emulator contracts: PASS; 7/7
+- `flutter build apk --debug`: PASS
+- `flutter build apk --debug --split-per-abi`: PASS
+- Clean x86_64 emulator uninstall/install: PASS; both commands returned `Success`
+- Launch smoke: process PID `13848` alive, Login semantics present, no matched `FATAL EXCEPTION`, unhandled exception, Firebase exception, or Flutter error
+
+### Corrected latest APK record
+
+- Universal debug APK: `build/app/outputs/flutter-apk/app-debug.apk`
+- Universal size: 154,895,722 bytes
+- Universal timestamp: 2026-07-18 02:29:23 CDT
+- Universal SHA-256: `38E5978A914EDC22AD65B49CE93FF8405193A87810BEA338498F9443351D3E1C`
+- x86_64 debug APK: `build/app/outputs/flutter-apk/app-x86_64-debug.apk`
+- x86_64 size: 71,566,280 bytes
+- x86_64 timestamp: 2026-07-18 02:30:06 CDT
+- x86_64 SHA-256: `E1E44AAD88432A0A62C697B0B17042BC92FA9A82DF78EBEEFF267CEA591B193A`
+- Source commit: `289209b` (`chore(release): remove dormant prototype hooks`)
+- Tested device/result: Android API 36 `emulator-5554`; install and Login smoke PASS
+
+### Git, rollback, and next action
+
+- Branch: `build-week/final`
+- Cleanup source commit: `289209b`
+- Tag/push/PR: pending credentialed final verification and GitHub authentication
+- Rollback point: `289209b`; previous deployed backend source remains `28117b9`
+- Next action: update and deep-scan the sanitized clone, then obtain only the owner actions that cannot be performed autonomously.
