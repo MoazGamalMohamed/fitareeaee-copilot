@@ -20,6 +20,8 @@ evidence to the sanitized publication history:
 | Stage 3 evidence | `9015811b913291e6485be85c91fc3e0dcbd7103a` | `86b8e9d784d99a678cf54f6ac71e3af5127f8d88` |
 | Firebase deployment source | `28117b949a5d68eee9a80526d390bb3b3d0ce9ef` | `4df6e359fdf5e4097604fa8e9d132ec37e8dbe4a` |
 | Firebase deployment evidence | `4b33131ee4f51109f71d038ae16fb056139bf416` | `18c5660199c5e4a53a80df99b0a7bb319149445f` |
+| Prototype-residue cleanup source | `289209ba33ad14d3c767cff541ee19d154066f8c` | `4c6c46a39ff9d9d2332edd8e446a134e299323d5` |
+| Cleanup release evidence | `b45d0c587e380afefe01a0eca3e85237a2387959` | `c2551976691ff4081435409204c7144c7c1525e8` |
 
 The annotated tag names are preserved:
 
