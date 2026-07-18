@@ -123,8 +123,16 @@ firebase functions:secrets:set OPENAI_API_KEY --project fitareeaee
 Enter the key only in Firebase CLI's private prompt. Never place it in Dart, `.env`, documentation, Android resources, logs, or Git. Deploy only after tests pass:
 
 ```powershell
-firebase deploy --only functions,firestore:rules,firestore:indexes,storage --project fitareeaee
+firebase deploy --only "functions:planTripWithCopilot" --project fitareeaee
+firebase deploy --only "firestore:rules,storage" --project fitareeaee
 ```
+
+The live `fitareeaee` project contains inherited pre-Build-Week Functions and
+indexes. Do not use an unscoped `--only functions` deployment or deploy the
+index manifest there unless the resulting deletion plan has been explicitly
+reviewed and approved. The two judge-path message indexes were added
+non-destructively and are already `READY`. A full Functions/index deployment is
+appropriate only for a fresh project or after owner-approved legacy retirement.
 
 ### Run and verify
 
