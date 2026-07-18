@@ -242,3 +242,78 @@ Make booking, verification, chat, and data access server-authoritative for the d
 ### Next action
 
 Implement Stage 2: official OpenAI Responses API/GPT-5.6 callable with strict schema validation, authentication/rate limits, English/Arabic Copilot review flow, deterministic Firestore ranking, empty/retry/manual-fallback states, and focused tests.
+
+## 2026-07-17 22:56 CDT / 20:56 PDT — Stage 2 local Copilot checkpoint (deployment pending)
+
+### Objective
+
+Implement the meaningful Build Week extension: secure GPT-5.6 natural-language trip drafting plus review-first, deterministic live-trip matching, without exposing credentials or spending API credits in local tests.
+
+### Work completed
+
+- Added a prominent Home `Plan with AI` action and authenticated Copilot routes.
+- Added the official OpenAI server SDK and a Firebase callable using the Responses API with model `gpt-5.6`, `reasoning.effort: none`, strict JSON Schema structured output, bounded output tokens, 30-second SDK timeout, one retry, and a 45-second Function timeout.
+- The callable accepts only the natural-language request, locale, and timezone; it sends no app user ID, email, phone, chat, verification image, or other profile data to OpenAI. Likely email/phone content inside the request is redacted before model access.
+- Added authentication, 1,200-character input limit, 8-second cooldown, 12-calls-per-hour server-side throttle, private rate-limit documents, and safe non-PII error logging/mapping.
+- Added strict server validation after model output for every field, allowed keys, real calendar dates, 24-hour times, seat/count bounds, budget bounds, summary/preferences, missing fields, and English/Arabic language.
+- Added an English/Arabic Flutter planner with examples, AI limitations/privacy disclosure, visible `AI draft — review required` label, clarification display, editable draft fields, retry/error/manual-search fallbacks, and explicit confirmation.
+- Confirmation performs no write, booking, or trip creation. It passes the reviewed draft into deterministic ranking over actual Firestore trips only.
+- Added deterministic ranking and transparent reasons for route compatibility, departure date/time, seat availability, budget, and preferences. Empty Firestore data remains empty; the UI explicitly states that Fitareeaee never invents trips.
+- Added live-results error/retry/manual fallback and continuation into existing trip details → verification → server-authoritative booking → participant chat.
+
+### Files changed
+
+- `functions/src/copilot.ts`, `functions/src/copilot.contract.test.ts`, `functions/src/index.ts`
+- `functions/package.json`, `functions/package-lock.json`, `functions/src/rules.contract.test.ts`
+- `lib/features/copilot/` (draft/result models, repository, ranking, planner and results pages)
+- `lib/core/routing/app_router.dart`, `lib/features/home/presentation/pages/home_screen.dart`
+- `test/features/copilot/copilot_ranking_test.dart`, `test/features/copilot/copilot_screen_test.dart`
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 148 files, 0 changes
+- `flutter analyze`: PASS; `No issues found!`
+- `flutter test`: PASS; 11/11 tests
+- Focused Flutter Copilot tests: PASS; deterministic ranking, hard exclusions, no fabricated results, missing-field guard, and explicit confirmation-before-navigation
+- `npm test` in `functions/`: PASS; 13/13 booking, verification, Copilot validation, unauthenticated, redaction, Arabic, and throttling contracts
+- `npm run build` in `functions/`: PASS; TypeScript compiler exit 0
+- `firebase emulators:exec --only "firestore,storage" "npm --prefix functions run test:rules"`: PASS; 6/6 authorization contracts, including client denial of `copilot_rate_limits`
+- OpenAI API calls/cost: zero; no live key was available and no paid test was attempted
+- `flutter build apk --debug`: PASS in 47.9 seconds
+- Clean emulator uninstall/install: PASS; both commands returned `Success`
+- Android startup smoke: PASS; fresh app process PID `11593`, Login semantics present, no fatal Flutter/Firebase exception in the filtered recent logs
+
+### APK record
+
+- Build type: debug, universal
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 174,872,257 bytes / 166.77 MiB
+- SHA-256: `EA8128D31C0D33001F0FBB984AA8477D6230F8D6920A5CFEE2A344CDA3A6D01A`
+- Build timestamp: 2026-07-17 22:54:01 CDT
+- Source commit: `200ead32a1e075f28a32d117c6c8ee7113ddd212`
+- Tested device: Android emulator `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`
+- Installation result: PASS after clean uninstall/install
+- Smoke result: PASS to unauthenticated Login; Copilot rendering/confirmation is additionally covered by a passing widget test
+
+### Git and publication
+
+- Commit: `200ead32a1e075f28a32d117c6c8ee7113ddd212` (`feat(copilot): add GPT-5.6 structured trip planning`)
+- Branch: `build-week/final`
+- Tag: local checkpoint tag to be created after this record is committed
+- Push/PR: still blocked by missing GitHub CLI/authenticated sanitized remote
+- Deployment: pending; `OPENAI_API_KEY` is not configured as a managed secret and no Functions/rules deployment was attempted
+
+### External-state note
+
+- `firebase functions:secrets:get OPENAI_API_KEY --project fitareeaee` was selected as a metadata-only check. Firebase CLI automatically enabled the Google Secret Manager API before returning `404 Secret ... not found`. It did not create a secret, reveal a value, change the billing plan, deploy code, or call OpenAI. No further service or billing changes will be made without the user's required credential/action.
+
+### Known issues and rollback point
+
+- Live GPT-5.6 behavior is not claimed as tested until the user safely supplies `OPENAI_API_KEY`, the Function is deployed, and the authenticated English/Arabic smoke matrix is run within the USD $5 cap.
+- Credentialed Android judge-path and physical-phone testing remain unavailable without a judge account/phone interaction.
+- Release deployment, judge seed data, documentation polish, sanitized GitHub publication, and Devpost/video assets remain.
+- Rollback point: `200ead32a1e075f28a32d117c6c8ee7113ddd212`; last fully deployed-independent security checkpoint is tag `build-week-stage1`.
+
+### Next action
+
+Continue all credential-independent Stage 3/4 work: polish demonstrated screens, remove debug/prototype residue, add judge fixtures/instructions and privacy/limitations, prepare release documentation/demo copy, and produce the next APK. Then request the one safe secret/test-account action needed for live end-to-end verification and deployment.
