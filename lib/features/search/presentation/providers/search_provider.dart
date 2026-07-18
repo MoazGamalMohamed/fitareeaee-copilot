@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitareeaee/features/trips/presentation/providers/trip_provider.dart';
 import 'package:fitareeaee/features/search/data/repositories/search_repository_impl.dart';
@@ -65,12 +64,11 @@ class SearchNotifier extends StateNotifier<SearchState> {
         criteria: criteria,
         isLoading: false,
       );
-    } catch (e, st) {
+    } catch (_) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Search failed: ${e.toString()}',
+        error: 'Search is unavailable. Please try again.',
       );
-      debugPrint('Search error: $e\n$st');
     }
   }
 

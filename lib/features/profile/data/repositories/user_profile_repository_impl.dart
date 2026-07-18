@@ -202,8 +202,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         final data = {...doc.data()!, 'userId': userId};
         final model = UserProfileModel.fromJson(data);
         return model.toEntity();
-      } catch (e) {
-        print('❌ Error parsing profile for userId $userId: $e');
+      } catch (_) {
         return null;
       }
     });
