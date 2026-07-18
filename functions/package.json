@@ -12,6 +12,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
+    "provision:judge-users": "node scripts/provision-judge-users.cjs",
     "seed:judge": "node scripts/seed-judge-data.cjs"
   },
   "engines": {

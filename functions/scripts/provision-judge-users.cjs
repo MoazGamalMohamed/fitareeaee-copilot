@@ -1,0 +1,177 @@
+/*
+ * Owner-only Build Week judge account provisioner.
+ * Generates credentials into a Git-ignored local file and never logs passwords.
+ */
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const {execFileSync} = require("node:child_process");
+const {getApps, initializeApp} = require("firebase-admin/app");
+const {getAuth} = require("firebase-admin/auth");
+
+const EXPECTED_PROJECT = "fitareeaee";
+const confirmation = process.env.PROVISION_JUDGE_USERS;
+const credentialsPath = path.resolve(
+  __dirname,
+  "../../.judge-credentials.local.json",
+);
+
+function fail(message) {
+  process.stderr.write(`Judge provisioning refused: ${message}\n`);
+  process.exit(1);
+}
+
+if (confirmation !== EXPECTED_PROJECT) {
+  fail(`PROVISION_JUDGE_USERS must equal ${EXPECTED_PROJECT}.`);
+}
+
+function createCredentials() {
+  const stamp = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+  const password = () =>
+    `${crypto.randomBytes(24).toString("base64url")}Aa1!`;
+  return {
+    projectId: EXPECTED_PROJECT,
+    createdAt: new Date().toISOString(),
+    accounts: {
+      driver: {
+        email: `fitareeaee-judge-driver-${stamp}@example.test`,
+        password: password(),
+        uid: null,
+      },
+      rider: {
+        email: `fitareeaee-judge-rider-${stamp}@example.test`,
+        password: password(),
+        uid: null,
+      },
+    },
+  };
+}
+
+function validCredentials(value) {
+  if (value?.projectId !== EXPECTED_PROJECT) return false;
+  for (const role of ["driver", "rider"]) {
+    const account = value?.accounts?.[role];
+    if (
+      typeof account?.email !== "string" ||
+      !account.email.endsWith("@example.test") ||
+      typeof account?.password !== "string" ||
+      account.password.length < 20
+    ) return false;
+  }
+  return true;
+}
+
+function saveCredentials(value) {
+  fs.writeFileSync(
+    credentialsPath,
+    `${JSON.stringify(value, null, 2)}\n`,
+    {encoding: "utf8", mode: 0o600},
+  );
+}
+
+function loadOrCreateCredentials() {
+  if (!fs.existsSync(credentialsPath)) {
+    const created = createCredentials();
+    saveCredentials(created);
+    return created;
+  }
+  const existing = JSON.parse(fs.readFileSync(credentialsPath, "utf8"));
+  if (!validCredentials(existing)) {
+    fail("the existing local credential file is malformed or for another project.");
+  }
+  return existing;
+}
+
+function getOwnerAccessToken() {
+  const output = execFileSync(
+    "cmd.exe",
+    [
+      "/d",
+      "/s",
+      "/c",
+      `gcloud auth print-access-token --project ${EXPECTED_PROJECT}`,
+    ],
+    {
+      encoding: "utf8",
+      windowsHide: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  ).trim();
+  if (output.length < 20) fail("Google Cloud did not return an access token.");
+  return output;
+}
+
+async function ensureUser(auth, role, account) {
+  const displayName = role === "driver" ? "Judge Driver" : "Judge Rider";
+  let user;
+  try {
+    user = await auth.getUserByEmail(account.email);
+    if (user.displayName !== displayName) {
+      fail(`the existing ${role} email is not a Fitareeaee judge fixture.`);
+    }
+    user = await auth.updateUser(user.uid, {
+      password: account.password,
+      emailVerified: true,
+      disabled: false,
+    });
+  } catch (error) {
+    if (error?.code !== "auth/user-not-found") throw error;
+    user = await auth.createUser({
+      email: account.email,
+      password: account.password,
+      emailVerified: true,
+      displayName,
+      disabled: false,
+    });
+  }
+  return user.uid;
+}
+
+async function main() {
+  const credentials = loadOrCreateCredentials();
+  const accessToken = getOwnerAccessToken();
+  const credential = {
+    getAccessToken: async () => ({
+      access_token: accessToken,
+      expires_in: 3600,
+    }),
+  };
+  const app = getApps()[0] || initializeApp({
+    projectId: EXPECTED_PROJECT,
+    credential,
+  });
+  const auth = getAuth(app);
+
+  credentials.accounts.driver.uid = await ensureUser(
+    auth,
+    "driver",
+    credentials.accounts.driver,
+  );
+  saveCredentials(credentials);
+  credentials.accounts.rider.uid = await ensureUser(
+    auth,
+    "rider",
+    credentials.accounts.rider,
+  );
+  saveCredentials(credentials);
+
+  process.env.GOOGLE_CLOUD_PROJECT = EXPECTED_PROJECT;
+  process.env.JUDGE_DRIVER_UID = credentials.accounts.driver.uid;
+  process.env.JUDGE_RIDER_UID = credentials.accounts.rider.uid;
+  const {seedJudgeData} = require("./seed-judge-data.cjs");
+  await seedJudgeData();
+
+  process.stdout.write(
+    `Provisioned fictional judge users and fixtures. Credentials remain only at ${credentialsPath}.\n` +
+    `Driver UID: ${credentials.accounts.driver.uid}\n` +
+    `Rider UID: ${credentials.accounts.rider.uid}\n`,
+  );
+}
+
+main().catch((error) => {
+  process.stderr.write(
+    `Judge provisioning failed (${error?.code || error?.name || "Error"}). ` +
+    "No credentials were logged.\n",
+  );
+  process.exitCode = 1;
+});

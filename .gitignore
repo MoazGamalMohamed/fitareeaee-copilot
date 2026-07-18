@@ -56,3 +56,4 @@ android/key.properties
 *.keystore
 *.p12
 run_with_maps.ps1
+.judge-credentials.local.json

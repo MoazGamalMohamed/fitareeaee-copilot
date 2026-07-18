@@ -128,7 +128,11 @@ async function main() {
   process.stdout.write(`Upserted ${fixtures.length} private/public trip fixtures, two fictional verification summaries, and two public profiles in ${EXPECTED_PROJECT}.\n`);
 }
 
-main().catch((error) => {
-  process.stderr.write(`Judge seed failed (${error?.name || "Error"}). No credentials were logged.\n`);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    process.stderr.write(`Judge seed failed (${error?.name || "Error"}). No credentials were logged.\n`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {seedJudgeData: main};

@@ -752,3 +752,32 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 - Android devices: emulator only; no physical phone.
 - Local/sanitized source before this evidence entry: clean, matching trees; sanitized `main`/`build-week/final` at `73cb04db196681cb4fcca50866dd2b4d6fdf57d2`.
 - Next action: publish this evidence-only update to the sanitized clone and resume immediately when the owner completes the open Firebase/GitHub/Auth actions in `docs/OWNER_ACTIONS.md`.
+
+## 2026-07-18 03:48 CDT / 2026-07-18 01:48 PDT — Guarded judge provisioning preparation
+
+### Outcome
+
+- Added `functions/scripts/provision-judge-users.cjs`, guarded by the exact `PROVISION_JUDGE_USERS=fitareeaee` confirmation.
+- The provisioner obtains the already authenticated Google Cloud owner's short-lived access token internally, never prints it, generates two strong random account passwords, and writes credentials only to Git-ignored `.judge-credentials.local.json` with restricted file mode where supported.
+- Account creation is idempotent for its saved fictional emails. It creates or repairs exactly one `Judge Driver` and one `Judge Rider`, marks their fictional Auth emails verified, then invokes the existing project/UID-guarded seeder.
+- Refactored `seed-judge-data.cjs` to export its existing main operation while preserving standalone `npm run seed:judge` behavior.
+- Added the local credential path to `.gitignore` and the `provision:judge-users` package script.
+
+### Verification and production status
+
+- `node --check scripts/provision-judge-users.cjs`: PASS
+- `node --check scripts/seed-judge-data.cjs`: PASS
+- `git check-ignore -v .judge-credentials.local.json`: PASS; matched `.gitignore`
+- Final authorized `npm test`: PASS; TypeScript build plus 16/16 Functions contracts
+- Initial sandboxed `npm test`: environment-only `spawn EPERM`; no test assertion ran; authorized rerun passed
+- Production provisioning command: NOT RUN. The environment approval reviewer required a fresh explicit owner approval because prior handoffs treated account creation as owner-controlled.
+- `.judge-credentials.local.json`: absent
+- Production Auth users/Firestore fixtures created by this step: 0 / 0
+- No secret, password, access token, email address, or UID was logged or committed.
+
+### Required owner response and rollback
+
+- To authorize the guarded mutation, reply exactly: `APPROVE JUDGE PROVISIONING IN fitareeaee`.
+- Exact mutation scope: two fictional Firebase Auth users; four `trips`; four `public_trips`; two `verifications`; and two `public_profiles`, all identified as Build Week judge fixtures and idempotently upserted.
+- Rollback point before source preparation: private `82301b66d1e0aec7d3f8736a7c5829004add6521`; sanitized `30088781f6e2896ef4c24f4ab2b5f613a215de19`.
+- Next action after approval: provision/seed, verify the documents without exposing credentials, then run two credentialed Android flows after the OpenAI secret version is available.

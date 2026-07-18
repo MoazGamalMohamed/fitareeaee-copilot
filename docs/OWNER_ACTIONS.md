@@ -22,14 +22,32 @@ English/package/Arabic checks below the authorized USD $5 limit.
 
 ### 2. Create two dedicated Firebase Auth judge users
 
-In Firebase Console → project `fitareeaee` → Authentication → Users, create one
-fictional driver account and one fictional rider account. Use owner-controlled
-passwords that are not reused elsewhere. Send Codex only the two Firebase UIDs
-and identify which is driver/rider; do not send passwords in chat. The guarded
-seed script requires existing UIDs and will not create or store credentials.
+The repository now includes a guarded provisioner that generates strong random
+credentials into Git-ignored `.judge-credentials.local.json`, creates exactly
+one fictional driver and one fictional rider in Firebase Auth, and seeds four
+trip/public-trip fixtures, two fictional verification summaries, and two public
+profiles. It refuses any project other than `fitareeaee` and never prints
+passwords.
+
+Because this mutates the production Firebase project, reply with the exact
+statement **APPROVE JUDGE PROVISIONING IN fitareeaee** before Codex runs:
+
+```powershell
+$env:PROVISION_JUDGE_USERS='fitareeaee'
+npm --prefix functions run provision:judge-users
+```
+
+Alternatively, in Firebase Console → project `fitareeaee` → Authentication →
+Users, create one fictional driver account and one fictional rider account. Use
+owner-controlled passwords that are not reused elsewhere. Send Codex only the
+two Firebase UIDs and identify which is driver/rider; do not send passwords in
+chat. The original guarded seed script accepts existing UIDs and never accepts
+or stores account passwords.
 
 Keep the eventual judge login credentials only in the private Devpost testing
-field, not the public repository, video, screenshots, or progress log.
+field, not the public repository, video, screenshots, or progress log. If Codex
+provisions the accounts, retrieve them locally from
+`.judge-credentials.local.json`; never commit that file.
 
 ### 3. Authenticate GitHub CLI
 
