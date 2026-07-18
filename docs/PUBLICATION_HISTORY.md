@@ -18,6 +18,8 @@ evidence to the sanitized publication history:
 | Stage 2 local | `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9` | `38376087d21582877087a579f9909914d5ac65a4` |
 | Stage 3 APK source | `31deb8c8dc132f1768e19b55b3676fa712865678` | `7f48fd557bf462e83503a5132a217b2295c967ee` |
 | Stage 3 evidence | `9015811b913291e6485be85c91fc3e0dcbd7103a` | `86b8e9d784d99a678cf54f6ac71e3af5127f8d88` |
+| Firebase deployment source | `28117b949a5d68eee9a80526d390bb3b3d0ce9ef` | `4df6e359fdf5e4097604fa8e9d132ec37e8dbe4a` |
+| Firebase deployment evidence | `4b33131ee4f51109f71d038ae16fb056139bf416` | `18c5660199c5e4a53a80df99b0a7bb319149445f` |
 
 The annotated tag names are preserved:
 
