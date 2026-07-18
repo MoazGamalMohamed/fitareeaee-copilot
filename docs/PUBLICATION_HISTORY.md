@@ -22,6 +22,11 @@ evidence to the sanitized publication history:
 | Firebase deployment evidence | `4b33131ee4f51109f71d038ae16fb056139bf416` | `18c5660199c5e4a53a80df99b0a7bb319149445f` |
 | Prototype-residue cleanup source | `289209ba33ad14d3c767cff541ee19d154066f8c` | `4c6c46a39ff9d9d2332edd8e446a134e299323d5` |
 | Cleanup release evidence | `b45d0c587e380afefe01a0eca3e85237a2387959` | `c2551976691ff4081435409204c7144c7c1525e8` |
+| Constrained avatar authorization | `00f89ec8c4b644800f0e928ba9b73fd8248bb6c8` | `abf5df96eb0217aa659ee4322e1a2e961d10eebd` |
+| Authorized chat entry | `d80b6d3adc06427dc139463934b1842c493b155a` | `a8c42f42c5e9bb77e830251d0c0a65e854512f59` |
+| Verification data minimization | `3f3fedfd576110af4e4383da016ecfe321ee0142` | `d533c263f41939a381058e6ab6abedfe1073fe6d` |
+| Targeted deployment documentation | `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed` | `ba69b4837e4408aa102dcdf6851a5f6f29331d2b` |
+| Consolidated security evidence | `a297c73a2820958a7a0af75e143caebc6681c322` | `0abea666c667cf01989809bbdcb7725473989886` |
 
 The annotated tag names are preserved:
 

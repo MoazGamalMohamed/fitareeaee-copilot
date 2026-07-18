@@ -649,3 +649,29 @@ Integrate independent final code, security, and release-document reviews; close 
 ### Next action
 
 Commit this evidence, transfer the reviewed commit series into the separate sanitized publication clone, and re-run its complete secret/path/object/ref/tree scan. Then resume credentialed Copilot deployment, judge seeding, and publication immediately after the owner-only inputs are available.
+
+## 2026-07-18 03:12 CDT / 2026-07-18 01:12 PDT — Sanitized checkpoint reconciliation
+
+### Outcome
+
+- Applied the five reviewed commits after sanitized checkpoint `ce6f571` to the separate publication clone using `git format-patch` and `git am --3way`; no private-original remote or history was used for publication.
+- Updated sanitized `main` and `build-week/final` to the same checkpoint `0abea666c667cf01989809bbdcb7725473989886`.
+- Recorded all five original-to-sanitized commit mappings in `docs/PUBLICATION_HISTORY.md`.
+
+### Verification
+
+- Secret-signature scan across every reachable revision: PASS; 0 matches
+- Historical `.env` / `android/app/google-services.json` commit scan: PASS; 0 commits
+- Sensitive object-path scan: PASS; 0 objects
+- `refs/original/` scan: PASS; 0 refs
+- `git fsck --full --no-reflogs --unreachable`: PASS; 0 unreachable objects
+- Unsafe legacy verification guide scan at publication HEAD: PASS; 0 files
+- Sanitized worktree: clean
+- Sanitized branch equality: PASS; `main` and `build-week/final` both `0abea666c667cf01989809bbdcb7725473989886`
+- Private/sanitized current tree equality: PASS; both tree ID `20d4c61cb0a61f02d561c0abb9d0e68df4ed738d`
+
+### Publication status and next action
+
+- GitHub repository/push/PR/release remain pending owner-controlled GitHub CLI authentication.
+- Rollback point: sanitized `0abea666c667cf01989809bbdcb7725473989886`; private evidence `a297c73a2820958a7a0af75e143caebc6681c322`.
+- Next action: apply this mapping-only evidence commit to the sanitized clone and repeat the clean/tree/secret checks, then resume the credentialed Firebase and GitHub release work as soon as the owner completes the open secret/authentication actions.
