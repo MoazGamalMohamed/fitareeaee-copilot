@@ -781,3 +781,22 @@ Commit this evidence, transfer the reviewed commit series into the separate sani
 - Exact mutation scope: two fictional Firebase Auth users; four `trips`; four `public_trips`; two `verifications`; and two `public_profiles`, all identified as Build Week judge fixtures and idempotently upserted.
 - Rollback point before source preparation: private `82301b66d1e0aec7d3f8736a7c5829004add6521`; sanitized `30088781f6e2896ef4c24f4ab2b5f613a215de19`.
 - Next action after approval: provision/seed, verify the documents without exposing credentials, then run two credentialed Android flows after the OpenAI secret version is available.
+
+## 2026-07-18 03:51 CDT / 2026-07-18 01:51 PDT — Third-turn external blocker audit
+
+### Authoritative state
+
+- Managed Firebase secret `OPENAI_API_KEY`: resource exists; 0 versions; Copilot callable cannot be safely deployed or live-tested.
+- GitHub CLI: no authenticated host; the connected GitHub app cannot create a repository or Release; sanitized publication cannot proceed.
+- Judge provisioning: guarded source and tests pass, but the production mutation was rejected pending the owner's fresh explicit `APPROVE JUDGE PROVISIONING IN fitareeaee` response; 0 accounts and 0 fixtures were created.
+- Inherited Function retirement: no owner `DELETE`/`PRESERVE` decision for the exact 36-function set.
+- Legacy credential rotation: no owner confirmation.
+- Android devices: only `emulator-5554`; no physical phone.
+- Private worktree: clean at `a0650ef6d3b21b71638109d068851d35d38b6b8a`.
+- Sanitized worktree: clean; `main` and `build-week/final` both `ed0b9f47ee97de2ae1de8373f7f7e2c164b0dafd` before this evidence-only entry.
+
+### Blocked determination
+
+The same user-only credential, authentication, production-approval, and physical-action conditions have now persisted for three consecutive goal turns. All safe credential-independent implementation, security review, tests, APK construction/audit, sanitized history preparation, and submission drafting have been exhausted. The persistent goal is therefore marked blocked rather than complete. No requirement dependent on these actions is claimed as passing.
+
+Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not restart discovery or publish the private original history.
