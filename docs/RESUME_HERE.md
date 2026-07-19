@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-19 14:21 CDT / 2026-07-19 12:21 PDT
+Last updated: 2026-07-19 15:19 CDT / 2026-07-19 13:19 PDT
 
 ## Current objective
 
@@ -12,14 +12,17 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
 - Passing private source checkpoint: `832a543cd94c4f5a2a8c17163e73113da85aba24`.
-- The Chat-list correction, rule contract, deployed Firestore rule, APK, and phone
-  verification are complete. This release-evidence documentation update is the only
-  uncommitted intentional work.
+- Passing private submission-material checkpoint: `4e28060`.
+- The Chat-list correction, rule contract, deployed Firestore rule, APK, phone flow,
+  live-rule audit, anonymous-link audit, and v1.0.3 submission-copy alignment are
+  complete and committed.
 - `pubspec.yaml` may appear modified, but `git diff -- pubspec.yaml` is empty. Do not
   stage a line-ending-only phantom change.
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Published sanitized source checkpoint: `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`;
-  both `main` and `build-week/final` point to it before this final evidence append.
+  the v1.0.3 tag peels to this exact source.
+- Published sanitized submission-material checkpoint: `e17eac3`; both `main` and
+  `build-week/final` were confirmed at this commit before the final recovery append.
 - Never add a remote to or push the private original repository.
 
 ## Deployed Firebase state
@@ -102,10 +105,11 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
 
 ## Exact next action
 
-Complete the credential rotations and final signed-out link check, then run:
+Complete the credential rotations, then run:
 
 ```text
 /feedback
 ```
 
-Paste that Session ID into Devpost before the owner records the final demo and submits.
+Paste that Session ID into Devpost, record/upload the final demo, verify the new YouTube
+and Devpost-preview links signed out, then review and submit personally.

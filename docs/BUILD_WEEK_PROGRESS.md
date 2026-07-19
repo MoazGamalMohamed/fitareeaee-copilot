@@ -1829,3 +1829,18 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   asset changed. The v1.0.3 source and hash remain authoritative.
 - Rollback/source points before this documentation append: private evidence `68153eb`,
   public evidence `5c48900`, private source `832a543`, sanitized/tagged source `c42bc3f`.
+
+## 2026-07-19 15:19 CDT / 2026-07-19 13:19 PDT — audited submission materials published and publicly re-read
+
+- Private submission-material commit: `4e28060`.
+- Sanitized public submission-material commit: `e17eac33d92ad60aa1994b161c0426bf1555c5d4`.
+- Removed the temporary publication ref before scanning.
+- Sanitized reachable-history scan: PASS across 64 revisions; 0 secret-signature hits,
+  0 forbidden credential/config paths, and a clean publication worktree.
+- Fast-forward push: PASS; no force push. Remote `main` and `build-week/final` both
+  confirmed at `e17eac3`; v1.0.3 tag still peels to source `c42bc3f`.
+- Anonymous public raw reads: PASS. `docs/JUDGE_TESTING.md` and
+  `docs/DEVPOST_SUBMISSION.md` both contain v1.0.3 and the current SHA-256, with no
+  v1.0.1 reference.
+- No APK/source/backend change. Only this final recovery pointer follows the audited
+  publication checkpoint.
