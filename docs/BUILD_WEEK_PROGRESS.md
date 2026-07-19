@@ -1011,3 +1011,76 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   into the sanitized clone, then recheck secret/GitHub metadata. If the secret is enabled,
   deploy only `planTripWithCopilot` and run capped live tests. If GitHub is authenticated,
   publish only the sanitized clone and exact APK through a verified Release.
+
+## 2026-07-18 20:38 CDT / 2026-07-18 18:38 PDT — Exact release-gate and credentialed emulator attempt
+
+### Objective and outcome
+
+- Re-ran the complete credential-independent release gate at private checkpoint
+  `ba9c3436645195180120c012e286d033b2da21f6`; all source, authorization, transaction,
+  and Android build checks passed.
+- Rebuilt the universal debug APK. Its bytes and SHA-256 are identical to the prior
+  tested candidate, confirming the documentation-only checkpoint did not change the
+  Android payload.
+- The emulator lacked space for an in-place update. Verified the exact installed
+  package/version, removed only `com.fitareeaee.app` and its disposable emulator-local
+  data, then clean-installed successfully. No host or Firebase data was removed.
+- Launch reached the Login semantics and the activity was top-resumed. Android's
+  `am start -W` timed out waiting for an idle signal, but the rendered Login hierarchy
+  and running activity directly confirmed startup; no fatal Flutter/Android log matched.
+- Entered the fictional rider email exactly and the password entirely from the ignored
+  local credential file without printing either value. Firebase Auth returned a network
+  timeout/unreachable-host error rather than an invalid-credential response.
+- Diagnosed the emulator environment: direct IP ping failed, Firebase Auth DNS lookup
+  failed, Wi-Fi/profile resets did not restore egress, and the emulator console reported
+  zero throughput. The app remained responsive and displayed a safe error. The
+  credentialed flow is therefore not claimed as passed and moves to the physical-phone
+  test when the owner connects it.
+- A diagnostic screenshot used to identify that error contained the fictional judge
+  email. It was immediately deleted from both the host build folder and emulator; it is
+  not tracked or retained.
+
+### Commands and exact results
+
+- Initial sandboxed `npm test`: environment FAIL after TypeScript passed because Node
+  workers could not spawn (`EPERM`). Exact elevated retry: PASS; build + 18/18 contracts.
+- Initial sandboxed formatter/analyzer invocations stalled; no result was recorded.
+  Exact narrowly elevated retries completed successfully.
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 111 files, 0 changed
+- `flutter analyze`: PASS; no issues found (113.2 seconds)
+- `flutter test`: PASS; 18/18
+- `npm test` in `functions/`: PASS; TypeScript build + 18/18 contracts
+- Firestore/Storage emulator contracts with Android Studio JBR 21: PASS; 7/7
+- Auth/Functions/Firestore callable integration: PASS; 3/3
+- `flutter build apk --debug`: PASS
+- First `adb install -r`: environment FAIL, insufficient emulator storage
+- Verified existing target: exact package `com.fitareeaee.app`, version code `20260718`
+- Exact-package uninstall + clean APK install: PASS / PASS
+- Launch/UI smoke: Login present, activity top-resumed, no fatal log; PASS
+- Credential entry: email exact; password kept in memory and never printed
+- Credentialed sign-in: NOT PASSED; emulator IP and DNS egress unavailable
+- OpenAI calls/spend: 0 / USD $0
+
+### APK, Git, rollback, and next action
+
+- Build type: universal Flutter debug judge candidate
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 154,878,330 bytes
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Build timestamp: 2026-07-18 20:29:09 CDT / 18:29:09 PDT
+- Release-gate source: `ba9c3436645195180120c012e286d033b2da21f6`
+- Application source last changed at: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Sanitized equivalent before this evidence update:
+  `9af9064f25443f22464e91961c4423085aef0b19`; its 312-file staged tree was verified
+  identical to private `ba9c343`
+- Tested device: `emulator-5554`, API 36.1 x86_64; install/Login PASS;
+  authenticated live flow blocked by emulator network and not claimed
+- Intended release tag: `fitareeaee-copilot-rc1`
+- Physical-phone result: PENDING owner USB connection/RSA approval
+- GitHub push/PR/Release: pending completion of the open owner browser/device login
+- Copilot deployment/live tests: pending completion of the open private secret prompt;
+  metadata checks time out while that prompt holds the Firebase/gcloud configuration
+- Rollback: private `ba9c343` / sanitized `9af9064`
+- Next action: commit/replay this evidence, create matching RC1 tags, recheck GitHub and
+  secret metadata, then immediately publish or deploy whichever owner interaction has
+  completed. Use the physical phone for the credentialed end-to-end run when connected.

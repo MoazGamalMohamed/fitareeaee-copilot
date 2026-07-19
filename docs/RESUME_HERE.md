@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-18 20:10 CDT / 2026-07-18 18:10 PDT
+Last updated: 2026-07-18 20:38 CDT / 2026-07-18 18:38 PDT
 
 ## Current objective
 
@@ -11,11 +11,11 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `a4053e12bdcd1f484a54f06e412ffa2dcb141423`
-- Current private work: release-document metadata refresh and deployment/incident evidence
+- Last committed private checkpoint: `ba9c3436645195180120c012e286d033b2da21f6`
+- Current private work: final-gate evidence and release-candidate tagging
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Sanitized branch/checkpoint: `main` and `build-week/final` /
-  `5c78f8f04dffab66e438821e7092fdc044e3e801`
+  `9af9064f25443f22464e91961c4423085aef0b19`
 - Latest tested application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 
 ## Deployed Firebase state
@@ -49,6 +49,7 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 - Firestore/Storage emulator rules: PASS, 7/7
 - Auth/Functions/Firestore callable integration: PASS, 3/3
 - Corrected universal debug APK build and clean emulator install: PASS
+- Release-gate rerun at `ba9c343`: PASS for every mandatory local command
 
 ## Latest APK
 
@@ -56,10 +57,12 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 - Build type: universal debug-signed judge candidate
 - Size: `154,878,330` bytes
 - SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
-- Source: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Release-gate source: `ba9c3436645195180120c012e286d033b2da21f6`
+- Application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 - Android version code: `20260718`
 - Emulator: x86_64 clean install/Login startup PASS; credential injection was not
-  reliable and is not claimed as an authenticated-flow pass; physical phone pending
+  the blocker—the exact in-memory credentials reached Firebase Auth, but the emulator
+  had no IP/DNS egress and returned a safe network error. Physical phone pending.
 
 ## GitHub and release state
 

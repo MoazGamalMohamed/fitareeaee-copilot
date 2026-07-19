@@ -4,7 +4,7 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 
 > Release status: the stable APK URL and Copilot deployment must be added here only after they are verified. The hardened booking/verification/chat backend, rules, and fictional judge fixtures are deployed, but this July 18 APK remains a tested engineering checkpoint rather than the final distributed build.
 
-Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, application source `15baa237707b3115475b09ca7a586e1c171517a7`. It clean-installed after removing the older package data, reports version code `20260718`, and rendered Login successfully on the API 36.1 emulator without fatal Flutter/Android logs.
+Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, release-gate source `ba9c3436645195180120c012e286d033b2da21f6` (application code `15baa237707b3115475b09ca7a586e1c171517a7`). It clean-installed after removing the older package data, reports version code `20260718`, and rendered Login successfully on the API 36.1 emulator without fatal Flutter/Android logs.
 
 ## Final release information
 

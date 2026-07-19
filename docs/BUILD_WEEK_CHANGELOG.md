@@ -95,6 +95,7 @@ The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its pa
 - Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
 - Functions TypeScript build: passed
 - Universal debug APK: rebuilt from application source `15baa23`; 154,878,330 bytes; Android version code `20260718`
+- Release-gate source checkpoint: `ba9c3436645195180120c012e286d033b2da21f6`
 - Universal APK SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
 - Universal APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
 - Hardened booking, cancellation, verification, trip-scoped chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project

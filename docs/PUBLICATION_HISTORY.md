@@ -33,6 +33,7 @@ evidence to the sanitized publication history:
 | Hardened booking/chat/safety flow | `31d12dc48fcfb971717464a0b4b46b6d78f9371c` | `d4b2b645971e4c6dc1f972c1716fc7b999c1a64e` |
 | Android judge version code | `15baa237707b3115475b09ca7a586e1c171517a7` | `68ee892f7e55253046e808b7b5d6852e0f1e88af` |
 | Hardened Android checkpoint evidence | `a4053e12bdcd1f484a54f06e412ffa2dcb141423` | `5c78f8f04dffab66e438821e7092fdc044e3e801` |
+| Targeted deployment and release-document checkpoint | `ba9c3436645195180120c012e286d033b2da21f6` | `9af9064f25443f22464e91961c4423085aef0b19` |
 
 The annotated tag names are preserved:
 

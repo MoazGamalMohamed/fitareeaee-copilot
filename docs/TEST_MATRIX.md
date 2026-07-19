@@ -76,7 +76,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | --- | --- | --- |
 | Clean emulator install | PASS | Universal APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; exact current package was removed to reclaim storage, then installation succeeded |
 | Cold launch to Login | PASS | Login semantics present; no fatal Firebase/Flutter error |
-| Credentialed emulator sign-in | PENDING | Dedicated fictional judge accounts exist; reliable private credential entry remains to be completed |
+| Credentialed emulator sign-in | BLOCKED | Credentials entered exactly in memory, but the emulator had no IP/DNS egress and Firebase Auth returned a network error; no invalid-credential or app crash occurred |
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | BLOCKED | Judge fixtures are deployed; Copilot deployment and credentialed device run remain |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
@@ -98,11 +98,12 @@ the contest release.
 - Build type: universal debug judge candidate
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
 - Size: 154,878,330 bytes (147.70 MiB)
-- Build timestamp: July 18, 2026 at 19:35:31 CDT / 17:35:31 PDT
-- Application source commit: `15baa237707b3115475b09ca7a586e1c171517a7`
-- Source tag: pending release-candidate tag after credentialed verification
+- Build timestamp: July 18, 2026 at 20:29:09 CDT / 18:29:09 PDT
+- Release-gate source commit: `ba9c3436645195180120c012e286d033b2da21f6` (application code last changed at `15baa237707b3115475b09ca7a586e1c171517a7`)
+- Source tag: `fitareeaee-copilot-rc1` after local/public tag creation
 - SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
 - Universal installation/smoke: PASS after removing the exact older `com.fitareeaee.app` package and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
+- Credentialed attempt: NOT PASSED; exact in-memory entry reached Firebase Auth but the emulator could not reach `8.8.8.8` or resolve `identitytoolkit.googleapis.com`. The app displayed a safe network error and remained responsive. A credential-bearing diagnostic screenshot was immediately deleted from host and emulator.
 - APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
 - APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
 - Package metadata: `com.fitareeaee.app`, version `1.0.0` (`20260718`), label `Fitareeaee Copilot`, min API 24, target/compile API 36, ABIs `arm64-v8a`, `armeabi-v7a`, and `x86_64`

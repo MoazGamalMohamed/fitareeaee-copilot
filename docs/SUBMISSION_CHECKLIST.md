@@ -62,7 +62,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Unreachable-stub cleanup gate passed on `9b591e0`: format 111/0, analysis clean, Flutter 18/18, Functions 16/16, rules 7/7, callable integration 3/3, APK build/install/Login smoke PASS.
 - [x] Judge-path hardening gate passed on `15baa23`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, universal APK clean-install/Login smoke PASS with version code `20260718`.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
-- [ ] Rerun the complete mandatory gate on the exact final release commit.
+- [x] Rerun the complete mandatory gate on release-gate checkpoint `ba9c343`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, APK build/clean-install/Login smoke PASS.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
 - [ ] Install and smoke-test on the owner's physical Android phone.
 - [ ] Record any remaining known limitation without minimizing it.
