@@ -30,6 +30,9 @@ evidence to the sanitized publication history:
 | Unreachable-stub cleanup source | `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16` | `9b94427a30ac6f49098c66a7f7fb43971e16bbc0` |
 | Release-cleanup evidence | `46e80f5a61b5a976211faf282e071dcf64a8b807` | `9ff773ddb9fab8ed1dc9a638a53e888ea28eac61` |
 | Authorized resume, recovery, and judge provisioning | `867f96867ff54588cc07f9f009b657d046a2ccf6` | `d3e624c7666def3a05dd61a4e33bb66852feb904` |
+| Hardened booking/chat/safety flow | `31d12dc48fcfb971717464a0b4b46b6d78f9371c` | `d4b2b645971e4c6dc1f972c1716fc7b999c1a64e` |
+| Android judge version code | `15baa237707b3115475b09ca7a586e1c171517a7` | `68ee892f7e55253046e808b7b5d6852e0f1e88af` |
+| Hardened Android checkpoint evidence | `a4053e12bdcd1f484a54f06e412ffa2dcb141423` | `5c78f8f04dffab66e438821e7092fdc044e3e801` |
 
 The annotated tag names are preserved:
 

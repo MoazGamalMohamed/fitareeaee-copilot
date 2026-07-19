@@ -13,11 +13,11 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Flutter suite | `flutter test` | PASS | Consolidated hardened revision: 18/18 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
-| Functions contracts | Booking, conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling | PASS | 16/16 tests |
+| Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling | PASS | 18/18 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts, including exact legacy-message participants, constrained avatar URLs, and owner withdrawal of raw verification uploads |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` | PASS | Universal and split debug APKs rebuilt from release-cleanup source `9b591e0` |
+| Android build | `flutter build apk --debug` | PASS | Universal debug APK rebuilt from application source `15baa23`; version code `20260718` |
 
 ## Copilot behavior
 
@@ -68,16 +68,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1`; minimized verification submit/review versions were redeployed successfully |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
 | Copilot callable | BLOCKED | `OPENAI_API_KEY` secret resource has no usable version; no model call or spend has occurred |
-| Inherited prototype Functions retirement | BLOCKED | Exact production deletion set requires owner confirmation because removal can interrupt legacy clients |
+| Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
 
 | Check | Current status | Notes |
 | --- | --- | --- |
-| Clean emulator install | PASS | x86_64 APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; universal APK exceeded this emulator's remaining storage |
+| Clean emulator install | PASS | Universal APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; exact current package was removed to reclaim storage, then installation succeeded |
 | Cold launch to Login | PASS | Login semantics present; no fatal Firebase/Flutter error |
-| Credentialed emulator sign-in | BLOCKED | Judge/test account not supplied yet |
-| Full deployed Home → Copilot → matches → details → verification → booking → chat | BLOCKED | Requires deployment, test accounts, and seeded/live trips |
+| Credentialed emulator sign-in | PENDING | Dedicated fictional judge accounts exist; reliable private credential entry remains to be completed |
+| Full deployed Home → Copilot → matches → details → verification → booking → chat | BLOCKED | Judge fixtures are deployed; Copilot deployment and credentialed device run remain |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
 | Physical Android phone install | BLOCKED | No phone connected/owner interaction required |
@@ -97,17 +97,15 @@ the contest release.
 
 - Build type: universal debug judge candidate
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
-- Size: 154,893,570 bytes (147.72 MiB)
-- Build timestamp: July 18, 2026 at 03:29:13 CDT
-- Source commit: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
+- Size: 154,878,330 bytes (147.70 MiB)
+- Build timestamp: July 18, 2026 at 19:35:31 CDT / 17:35:31 PDT
+- Application source commit: `15baa237707b3115475b09ca7a586e1c171517a7`
 - Source tag: pending release-candidate tag after credentialed verification
-- SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
-- Universal installation: not counted on the low-storage emulator (`INSTALL_FAILED_INSUFFICIENT_STORAGE`)
-- Same-source x86_64 APK: 71,564,128 bytes; SHA-256 `3949BCC4DFDF56CC9F11915CC66F9AD9419875F67B284E672BF5368420C8BE51`
-- x86_64 installation/smoke: PASS after clean uninstall/install; Fitareeaee Login semantics present, process PID `14723` alive, and no matched fatal Android/Flutter/Firebase logs
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Universal installation/smoke: PASS after removing the exact older `com.fitareeaee.app` package and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
 - APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
 - APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
-- Package metadata: `com.fitareeaee.app`, version `1.0.0` (`1`), label `Fitareeaee Copilot`, min API 24, target/compile API 36, ABIs `arm64-v8a`, `armeabi-v7a`, and `x86_64`
+- Package metadata: `com.fitareeaee.app`, version `1.0.0` (`20260718`), label `Fitareeaee Copilot`, min API 24, target/compile API 36, ABIs `arm64-v8a`, `armeabi-v7a`, and `x86_64`
 
 This is a local engineering checkpoint, not yet the published judge artifact.
 

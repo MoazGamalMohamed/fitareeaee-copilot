@@ -36,7 +36,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [ ] Deploy `planTripWithCopilot` after the managed OpenAI secret is set.
 - [ ] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests.
 - [ ] Confirm OpenAI test spend remains below USD $5.
-- [ ] Create dedicated judge accounts and seeded demo trips; keep passwords out of Git.
+- [x] Create dedicated fictional judge accounts and fixed August 10 demo trips; keep passwords out of Git.
 - [ ] Verify backend/test access remains free and available through judging.
 
 ## Verification gates
@@ -60,6 +60,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Final prototype-residue cleanup gate passed on `289209b`: format 117/0, analysis clean, Flutter 16/16, Functions 16/16, rules 7/7, APK build/install/launch PASS.
 - [x] Consolidated security gate passed on `85d73f0`: format 118/0, analysis clean, Flutter 18/18, Functions 16/16, rules 7/7, callable integration 3/3, scoped deploy/live unauthenticated probes, APK build/install/Login smoke PASS.
 - [x] Unreachable-stub cleanup gate passed on `9b591e0`: format 111/0, analysis clean, Flutter 18/18, Functions 16/16, rules 7/7, callable integration 3/3, APK build/install/Login smoke PASS.
+- [x] Judge-path hardening gate passed on `15baa23`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, universal APK clean-install/Login smoke PASS with version code `20260718`.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [ ] Rerun the complete mandatory gate on the exact final release commit.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
@@ -115,8 +116,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 Exact owner steps and the inherited Function set are recorded in
 [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
 
-1. Owner privately sets the managed OpenAI key; Copilot deploy and capped live tests then resume.
-2. Owner creates two dedicated Firebase Auth users and supplies only their UIDs for judge-data seeding.
-3. Owner confirms deletion of the exact inherited live prototype Function set and rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-4. Owner completes GitHub CLI browser/device authentication for sanitized publication.
-5. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.
+1. Owner privately completes the open managed OpenAI-key prompt; Copilot deploy and capped live tests then resume.
+2. Owner completes the open GitHub CLI browser/device authentication for sanitized publication.
+3. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
+4. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.

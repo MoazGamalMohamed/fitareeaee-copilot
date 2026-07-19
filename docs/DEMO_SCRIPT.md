@@ -30,7 +30,7 @@ Do not record the final take until the live backend, test data, and exact publis
 
 ### 0:29–0:53 — Natural-language planning
 
-**On screen:** Enter: “I need a ride from Dallas to Austin tomorrow at 9 AM for two people under $40, no smoking.” Tap **Create AI draft**.
+**On screen:** Enter: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create AI draft**.
 
 **Say:** “I can describe a ride or package naturally in English or Arabic. The app sends only the redacted request, locale, timezone, and current date through an authenticated Firebase Function. Contact details and links in free text are filtered.”
 
@@ -74,7 +74,7 @@ Do not record the final take until the live backend, test data, and exact publis
 
 If the English flow is comfortably under time, replace 5–7 seconds of the natural-language section with this prompt and show that the same structured review appears:
 
-`أحتاج رحلة من دالاس إلى أوستن غداً الساعة التاسعة صباحاً لشخصين وبميزانية 40 دولار، بدون تدخين.`
+`أحتاج رحلة من دالاس إلى أوستن في 10 أغسطس 2026 الساعة التاسعة صباحًا لشخصين وبميزانية 40 دولارًا، بدون تدخين.`
 
 Do not show two full AI calls if network latency risks exceeding three minutes.
 

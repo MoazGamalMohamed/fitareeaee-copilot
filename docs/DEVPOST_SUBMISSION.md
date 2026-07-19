@@ -22,7 +22,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 ### Inspiration
 
-Community rides and informal package delivery often begin as a simple sentence: “I need to get from Dallas to Austin tomorrow morning,” or “Can someone carry a small package this weekend?” Existing flows make people translate that intent into rigid fields before they can even see whether a compatible trip exists. They also tend to hide why a result was selected.
+Community rides and informal package delivery often begin as a simple sentence: “I need to get from Dallas to Austin Monday morning,” or “Can someone carry a small package next week?” Existing flows make people translate that intent into rigid fields before they can even see whether a compatible trip exists. They also tend to hide why a result was selected.
 
 Fitareeaee Copilot starts with the way people naturally ask for help. It turns an English or Arabic request into a structured plan the user can inspect, correct, and explicitly confirm—then ranks real community trips with reasons the user can understand.
 
@@ -144,7 +144,7 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 
 ## Testing instructions summary
 
-Install the universal Android APK, sign in with the privately supplied judge account, tap **Plan with AI**, and use the documented Dallas-to-Austin prompt. Review/edit the AI draft, confirm it, inspect the transparent match reasons, and continue through details, verification context, booking, and chat. Then try the Arabic or package prompt. No payment or OpenAI account is required.
+Install the universal Android APK, sign in with the privately supplied judge account, tap **Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it, inspect the transparent match reasons, and continue through details, verification context, booking, and chat. Then try the fixed-date Arabic or package prompt in the judge guide. No payment or OpenAI account is required.
 
 Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 

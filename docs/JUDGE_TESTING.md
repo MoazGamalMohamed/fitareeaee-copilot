@@ -2,9 +2,9 @@
 
 Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
 
-> Release status: the stable APK URL, final SHA-256, Copilot deployment, and judge credentials must be added here only after they are verified. The hardened booking/verification/chat backend and rules are deployed, but this July 18 APK remains a tested engineering checkpoint rather than the final distributed build.
+> Release status: the stable APK URL and Copilot deployment must be added here only after they are verified. The hardened booking/verification/chat backend, rules, and fictional judge fixtures are deployed, but this July 18 APK remains a tested engineering checkpoint rather than the final distributed build.
 
-Latest local candidate: universal debug APK, 154,893,570 bytes, SHA-256 `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`, source `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`. Its same-source x86_64 split (71,564,128 bytes; SHA-256 `3949BCC4DFDF56CC9F11915CC66F9AD9419875F67B284E672BF5368420C8BE51`) clean-installed and rendered Login successfully on the API 36.1 emulator.
+Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, application source `15baa237707b3115475b09ca7a586e1c171517a7`. It clean-installed after removing the older package data, reports version code `20260718`, and rendered Login successfully on the API 36.1 emulator without fatal Flutter/Android logs.
 
 ## Final release information
 
@@ -13,7 +13,7 @@ Latest local candidate: universal debug APK, 154,893,570 bytes, SHA-256 `3E8C0D9
 - SHA-256: **PENDING — compute from the published artifact**
 - Source tag/commit: **PENDING — exact release tag and SHA**
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
-- Judge account: **PENDING — provide privately in Devpost testing instructions, never in Git**
+- Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
 ## Install
 
@@ -40,7 +40,7 @@ The app is sideloaded for judging and is not a Google Play release.
 
 From Home, tap **Plan with AI** and enter:
 
-> I need a ride from Dallas to Austin tomorrow at 9 AM for two people under $40, no smoking.
+> I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.
 
 Tap **Create AI draft**. Verify that:
 
@@ -85,11 +85,11 @@ listing is not itself booked.
 
 Return to **Plan with AI** and try either:
 
-> أحتاج رحلة من دالاس إلى أوستن غداً الساعة التاسعة صباحاً لشخصين وبميزانية 40 دولار، بدون تدخين.
+> أحتاج رحلة من دالاس إلى أوستن في 10 أغسطس 2026 الساعة التاسعة صباحًا لشخصين وبميزانية 40 دولارًا، بدون تدخين.
 
 or:
 
-> I need to send a 5 kg package from Chicago to Milwaukee this weekend under $30.
+> I need to send a 5 kg package from Chicago to Milwaukee on August 10, 2026 at 10:00 AM under $30.
 
 The same structured review and explicit confirmation rules should apply.
 

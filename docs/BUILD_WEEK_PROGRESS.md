@@ -948,3 +948,66 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: commit this append-only evidence, replay both passing commits into the
   durable sanitized repository, re-check the two interactive authentications, then deploy
   the verified backend/rules and complete live Copilot plus authenticated Android flows.
+
+## 2026-07-18 20:10 CDT / 2026-07-18 18:10 PDT — Targeted production deployment and release-document checkpoint
+
+### Objective and outcome
+
+- Deployed only the verified judge-path backend surface to the confirmed Firebase
+  project `fitareeaee`; no production data was deleted and no billing setting changed.
+- Firestore rules and Storage rules deployed successfully.
+- Eight named non-AI Functions deployed successfully: `createBooking`,
+  `cancelBooking`, `authorizeTripConversation`, `submitVerification`,
+  `reviewVerification`, `syncContactVerification`, `syncPublicProfile`, and
+  `syncPublicTrip`.
+- The Copilot callable was intentionally excluded because the managed
+  `OPENAI_API_KEY` still had zero enabled versions at the last successful metadata
+  check. OpenAI live calls/spend remain 0 / USD $0.
+- Existing required indexes were already `READY`; the index manifest was not deployed
+  because doing so could propose deletion of unrelated legacy indexes.
+- A machine guard confirmed exactly 44 live Functions: the eight retained judge-path
+  Functions plus the exact 36 inherited Gen 1 prototype Functions listed in
+  `OWNER_ACTIONS.md`, with no unexpected names and no inherited-name reference in the
+  submitted Flutter/Functions source.
+- Attempted retirement of that exact 36-function set was rejected by the environment
+  destructive-action reviewer because a fresh owner confirmation is still required.
+  The command was not retried or bypassed; all 36 remain live.
+- Firebase CLI diagnostic output unexpectedly displayed legacy Runtime Config values,
+  including a Stripe test credential and an email app password. No value was copied
+  into code, Git, evidence, or chat. Provider-side revocation/rotation is now an urgent
+  owner-only action. All subsequent Firebase CLI commands must set `DEBUG` to empty.
+- Refreshed the judge guide, test matrix, checklist, changelog, demo script, Devpost
+  copy, README, publication map, owner handoff, and recovery checkpoint with the
+  current APK metadata and fixed August 10, 2026 prompts.
+
+### Commands and exact results
+
+- Targeted Firestore/Storage deployment: PASS on `fitareeaee`
+- Targeted eight-Function deployment: PASS; 0 deployment errors
+- Live-function inventory/source guard: PASS; exact 36 inherited + exact 8 retained,
+  no unexpected Function, no submitted-source reference to inherited names
+- Exact inherited Function deletion: NOT EXECUTED; environment reviewer rejected the
+  destructive command pending fresh owner confirmation
+- `gh auth status`: unauthenticated; a new visible browser/device login window opened
+- Managed-secret metadata recheck in the sandbox: environment setup failure because
+  the sandbox could not access the owner's gcloud credential database; a new private
+  Firebase secret prompt opened instead and no secret value was read or logged
+- Git checks before documentation work: private `build-week/final` clean at `a4053e1`;
+  sanitized `main` clean at `5c78f8f`, no remote
+
+### APK, Git, rollback, and next action
+
+- APK remains the passing universal debug candidate from application source `15baa23`
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size/SHA-256: 154,878,330 bytes /
+  `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Android version code: `20260718`; emulator clean-install/Login smoke: PASS
+- Physical-phone result: PENDING; no physical device is connected yet
+- Tag/push/PR/Release: pending this documentation commit, sanitized replay, and owner
+  completion of the open GitHub browser/device authentication
+- Rollback point: private `a4053e12bdcd1f484a54f06e412ffa2dcb141423` /
+  sanitized `5c78f8f04dffab66e438821e7092fdc044e3e801`
+- Next action: validate all refreshed documentation, commit it, replay it byte-for-byte
+  into the sanitized clone, then recheck secret/GitHub metadata. If the secret is enabled,
+  deploy only `planTripWithCopilot` and run capped live tests. If GitHub is authenticated,
+  publish only the sanitized clone and exact APK through a verified Release.

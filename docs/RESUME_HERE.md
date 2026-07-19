@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-18 19:39 CDT / 2026-07-18 17:39 PDT
+Last updated: 2026-07-18 20:10 CDT / 2026-07-18 18:10 PDT
 
 ## Current objective
 
@@ -11,18 +11,19 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `15baa237707b3115475b09ca7a586e1c171517a7`
-- Current private work: append-only evidence and sanitized replay for the passing checkpoint
+- Last committed private checkpoint: `a4053e12bdcd1f484a54f06e412ffa2dcb141423`
+- Current private work: release-document metadata refresh and deployment/incident evidence
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
-- Sanitized branch/checkpoint before the pending replay: `main` and `build-week/final` /
-  `acfa5052183a0c53392f818b37dcb253c5a798a5`
+- Sanitized branch/checkpoint: `main` and `build-week/final` /
+  `5c78f8f04dffab66e438821e7092fdc044e3e801`
 - Latest tested application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 
 ## Deployed Firebase state
 
 - Confirmed project: `fitareeaee`
-- Hardened booking, cancellation, conversation authorization, verification, and
-  public-projection Functions are active from the earlier recorded deployment.
+- Eight retained judge-path Functions are active: booking, cancellation,
+  conversation authorization, verification submit/review/contact sync, and the
+  public-profile/public-trip projections.
 - Current Firestore and Storage rules are deployed; required chat indexes are `READY`.
 - `planTripWithCopilot` is not yet deployed because `OPENAI_API_KEY` still had zero
   enabled versions at the last metadata check.
@@ -34,6 +35,10 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
   never be copied into Git, logs, screenshots, or public documentation.
 - The exact 36 inherited prototype Functions are still live pending the authorized
   deletion gate; no production data has been deleted.
+- A Firebase CLI diagnostic unexpectedly exposed legacy Runtime Config credentials
+  in terminal output during deployment. No values were copied into source or docs;
+  provider-side rotation remains an urgent owner-only action. Future Firebase CLI
+  commands must keep `DEBUG` empty.
 
 ## Last directly passing commands
 
@@ -67,15 +72,17 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 ## Current blockers and owner interactions
 
-- Owner must finish the already-open private Firebase secret prompt.
-- Owner must finish the already-open GitHub browser/device login.
+- Owner must finish the private Firebase secret prompt reopened at 20:02 CDT.
+- Owner must finish the GitHub browser/device login reopened at 20:02 CDT.
+- Deleting the exact 36 inherited Functions requires a fresh explicit owner
+  confirmation; the environment safety reviewer rejected the earlier attempt.
 - Physical phone testing waits until the owner connects the phone and accepts USB RSA.
 - Provider credential rotation, YouTube upload, `/feedback`, legal review, and final
   Devpost submit remain owner-only actions.
 
 ## Exact next command
 
-After committing this evidence and replaying the passing commits into the durable
+After committing and replaying this documentation checkpoint into the durable
 sanitized clone, re-check the managed secret and GitHub authentication:
 
 ```powershell

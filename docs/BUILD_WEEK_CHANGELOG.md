@@ -60,6 +60,12 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 - Corrected request-versus-offer behavior, package capacity/price matching, stale/unavailable trip exclusion, Arabic city normalization, and safe retry/error states.
 - Added real callable integration coverage against Auth, Functions, and Firestore emulators; this caught and fixed a final-seat idempotency bug before release.
 - Added guarded judge-data seeding that requires the confirmed `fitareeaee` project and existing dedicated Auth UIDs, and never stores account passwords.
+- Provisioned two dedicated fictional judge accounts and fixed August 10, 2026 ride/package fixtures; credentials remain only in an ignored, owner-restricted local file.
+- Made chat authorization trip-scoped so the same two users receive a clean conversation for each new trip; cancelled-trip chat is readable but rejects new writes.
+- Added transactional self-service cancellation that restores seats and closes the associated conversation, while preventing cancellation after departure.
+- Corrected confirmed-booking UI state, request/offer labels, pet/smoking visibility, booked-match loading, and safe user-facing error mapping.
+- Constrained avatar and verification uploads to exact image paths, types, and a 5 MB maximum enforced by Storage rules and Functions.
+- Removed local-only settings and simulated-money controls from the submitted experience; the contest build explicitly uses English and USD while accepting Arabic Copilot input.
 - Added the MIT license, judge-ready README, test matrix, privacy/safety notes, Devpost copy, 2:40 demo script, judge instructions, and final checklist.
 
 ## Before and after
@@ -79,20 +85,20 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
-The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The consolidated security checkpoint source is `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`; the latest credential-independent release-cleanup source is `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`.
+The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The consolidated security checkpoint source is `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`; the latest tested application source is `15baa237707b3115475b09ca7a586e1c171517a7`.
 
 - Flutter format gate: 111 files, 0 changes
 - Flutter analysis: no issues
 - Flutter full-suite result: 18/18 passed (Copilot interaction coverage: two widget tests plus one focused route/unit test; chat notifier coverage: 2/2)
-- Functions contracts: 16/16 passed
+- Functions contracts: 18/18 passed
 - Firestore/Storage rules contracts: 7/7 passed
 - Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
 - Functions TypeScript build: passed
-- Universal debug APK: rebuilt from the release-cleanup source; 154,893,570 bytes
-- Universal APK SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
-- Same-source x86_64 APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
-- Hardened booking, verification, chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
+- Universal debug APK: rebuilt from application source `15baa23`; 154,878,330 bytes; Android version code `20260718`
+- Universal APK SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Universal APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
+- Hardened booking, cancellation, verification, trip-scoped chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
 
 ## Not yet claimed
 
-The managed `OPENAI_API_KEY` resource exists but has no usable secret version, so the Copilot callable and live GPT-5.6 calls remain pending. A credentialed end-to-end Android flow, public GitHub/APK URL, downloaded-artifact test, signed release, and physical-phone test are not claimed as complete. See the submission checklist for the release gate.
+At the last metadata check, the managed `OPENAI_API_KEY` resource had no usable secret version, so the Copilot callable and live GPT-5.6 calls remained pending. A credentialed end-to-end Android flow, public GitHub/APK URL, downloaded-artifact test, signed release, and physical-phone test are not claimed as complete. See the submission checklist for the release gate.

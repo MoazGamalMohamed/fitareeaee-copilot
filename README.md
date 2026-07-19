@@ -64,8 +64,8 @@ flowchart LR
 ```
 
 The code requires `OPENAI_API_KEY` only as a managed Firebase Functions secret;
-the Flutter app never receives it. The local checkpoint has no key and makes no
-live OpenAI call. After the owner sets the secret and deploys, the callable
+the Flutter app never receives it. The Copilot callable remains intentionally
+undeployed until an enabled secret version is confirmed. After that targeted deployment, the callable
 requires Firebase Authentication, limits input/output, redacts likely contact
 details, applies per-user throttling, validates the model result again on the
 server, and maps failures to safe messages.
@@ -168,7 +168,7 @@ fixtures, two explicitly fictional verification summaries, and two minimal
 public profiles. Rerunning may reset those fixture documents; it must never be
 used as a general production-data migration.
 
-The universal judge APK is produced at `build/app/outputs/flutter-apk/app-debug.apk`. It is clearly a debug-signed sideload build unless a private release signing configuration is supplied locally; no signing secret is committed.
+The universal judge APK is produced at `build/app/outputs/flutter-apk/app-debug.apk`. The current local candidate is version code `20260718`, 154,878,330 bytes, with SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`; it clean-installed and launched to Login on the API 36.1 emulator. It is clearly a debug-signed sideload build unless a private release signing configuration is supplied locally; no signing secret is committed.
 
 ## Codex collaboration
 
