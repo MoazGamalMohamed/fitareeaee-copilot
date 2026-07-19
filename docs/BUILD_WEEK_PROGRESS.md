@@ -1084,3 +1084,85 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: commit/replay this evidence, create matching RC1 tags, recheck GitHub and
   secret metadata, then immediately publish or deploy whichever owner interaction has
   completed. Use the physical phone for the credentialed end-to-end run when connected.
+
+## 2026-07-18 21:23 CDT / 2026-07-18 19:23 PDT — Copilot deployment, key containment, and public GitHub checkpoint
+
+### Objective and outcome
+
+- Confirmed managed secret metadata only: `OPENAI_API_KEY` version 1 was `ENABLED`;
+  the value was never read from Secret Manager.
+- Re-ran the Functions pre-deploy gate: TypeScript build plus 18/18 contracts passed.
+- Deployed only `planTripWithCopilot` to the confirmed `fitareeaee` project. The Gen 1
+  callable became active in `us-central1`, bound to managed secret version 1, with
+  public Cloud Functions invoker IAM and Firebase callable authentication enforced in
+  the handler.
+- A manual HTTP approximation failed to populate callable authentication and made no
+  model call. Replaced it with an ignored local harness using the official Firebase
+  JavaScript SDK; production Firebase Auth, token audience, issuer, and callable
+  verification all passed.
+- The authenticated OpenAI request failed safely. Added privacy-safe operational
+  diagnostics that record only error name, HTTP status, machine-readable code/type—no
+  message, prompt, key, token, user ID, or raw response. The expanded Functions suite
+  passed 19/19 and the targeted callable update deployed successfully.
+- One diagnostic retry conclusively returned OpenAI `401`, code `invalid_api_key`, type
+  `invalid_request_error`. Two authenticated attempts were rejected before inference;
+  recorded model-token spend remains USD $0.
+- The same key was subsequently pasted into the build conversation. It is now treated
+  as compromised regardless of its invalid status. Codex did not copy, reuse, print, or
+  store it. Owner action: revoke it in OpenAI, create a different key, and paste the
+  replacement only into Firebase CLI's hidden prompt. No further model call will occur
+  until a new secret version is confirmed.
+- The GitHub CLI browser flow repeatedly produced invalid keyring entries. Removed only
+  those exact invalid CLI entries; the separate existing `github.com` Git credential
+  remained untouched. Validated that credential entirely in memory as account
+  `MoazGamalMohamed` without displaying or persisting its token.
+- Created the public repository solely from the sanitized clone:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot`.
+- Pushed sanitized `main`, `build-week/final`, and all annotated baseline/stage/RC1 tags
+  without force. Both remote branches exactly match sanitized commit `9f58026`; RC1
+  peels to tree-equivalent APK source `9af9064`. GitHub connector independently confirms
+  public visibility and owner/admin access.
+- A draft PR is not applicable because `main` and `build-week/final` intentionally point
+  to the same verified commit. The final Release waits for a valid live Copilot result.
+
+### Commands and exact results
+
+- `firebase functions:secrets:get OPENAI_API_KEY --project fitareeaee`: PASS metadata;
+  version 1 `ENABLED`, value not accessed
+- Pre-deploy `npm test`: PASS; build + 18/18
+- Targeted initial `planTripWithCopilot` deployment: PASS
+- Cloud Function IAM check: PASS; `allUsers` has `roles/cloudfunctions.invoker`
+- Official Firebase SDK sign-in/token/callable verification: PASS
+- Initial authenticated model path: safe `functions/unavailable`; no draft returned
+- Privacy-safe diagnostics build/contracts: PASS; 19/19
+- Targeted diagnostic callable update: PASS
+- Diagnostic retry/log: OpenAI `401 invalid_api_key`; no prompt/key/raw response logged
+- Sanitized staged-tree comparison after diagnostics: PASS; 312/312 tracked files match
+  private `68b123e`
+- Repository creation: PASS; public `MoazGamalMohamed/fitareeaee-copilot`
+- Push `main`: PASS; push `build-week/final`: PASS; push annotated tags: PASS
+- Remote verification: PASS; both branch SHAs equal local `9f58026`; RC1 peels to
+  `9af9064`
+- GitHub connector repository check: PASS; visibility public; owner has admin/push
+- OpenAI spend: two requests rejected at authentication before inference; recorded USD $0
+
+### Git, deployment, rollback, and next action
+
+- Private diagnostics commit: `68b123e9ff29382636174fd6aa82e968dedc7827`
+- Sanitized equivalent: `9f5802683e3764b9737df2c7a38c4ef13c569d00`
+- Remote branches: both `9f5802683e3764b9737df2c7a38c4ef13c569d00`
+- Public repository: `https://github.com/MoazGamalMohamed/fitareeaee-copilot`
+- APK remains the byte-identical universal candidate from `ba9c343` / sanitized
+  `9af9064`, SHA-256
+  `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Deployed Copilot source: private `68b123e`; the callable is active but intentionally
+  not claimed working until the replacement key passes live tests
+- Production data deletion: none; inherited 36 Functions remain pending fresh owner
+  confirmation
+- Physical phone: not connected; only `emulator-5554` visible
+- Rollback: private `68b123e`, sanitized/remote `9f58026`, prior callable source
+  `ba9c343` if a code rollback is required
+- Next action: owner revokes the exposed key and privately creates secret version 2.
+  Then redeploy only `planTripWithCopilot`, run the three-case Firebase SDK smoke matrix,
+  destroy obsolete managed version 1, execute the full release gate, rebuild/tag/publish
+  the final APK, download/hash/install it, and complete the physical-phone flow.

@@ -64,8 +64,9 @@ flowchart LR
 ```
 
 The code requires `OPENAI_API_KEY` only as a managed Firebase Functions secret;
-the Flutter app never receives it. The Copilot callable remains intentionally
-undeployed until an enabled secret version is confirmed. After that targeted deployment, the callable
+the Flutter app never receives it. The Copilot callable is deployed with an
+authenticated, strict-schema boundary. Live model behavior is claimed only after
+a valid private secret version and the capped smoke matrix pass. The callable
 requires Firebase Authentication, limits input/output, redacts likely contact
 details, applies per-user throttling, validates the model result again on the
 server, and maps failures to safe messages.
@@ -194,6 +195,8 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - It does not implement real payments or emergency dispatch.
 - Verification indicates an admin-reviewed workflow, not a guarantee of personal safety.
 - Live GPT-5.6 and physical-phone results are recorded only after their corresponding credential/device checks actually pass.
+
+Public repository and support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot) and its Issues tab.
 
 ## License
 

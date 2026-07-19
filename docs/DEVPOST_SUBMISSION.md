@@ -10,7 +10,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Tagline:** Plan rides and packages in English or Arabic—with AI drafts you control and matches you can understand.
 
-**Repository:** **PENDING — sanitized public GitHub URL**
+**Repository:** https://github.com/MoazGamalMohamed/fitareeaee-copilot
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
@@ -169,10 +169,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 ## Final fields to replace
 
-- **PENDING:** public repository URL
+- **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **PENDING:** stable APK URL, size, and SHA-256
 - **PENDING:** exact release tag/commit
 - **PENDING:** private judge credential placement
-- **PENDING:** owner-approved support contact
+- **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID

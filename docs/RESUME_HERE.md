@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-18 20:38 CDT / 2026-07-18 18:38 PDT
+Last updated: 2026-07-18 21:23 CDT / 2026-07-18 19:23 PDT
 
 ## Current objective
 
@@ -11,11 +11,11 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `ba9c3436645195180120c012e286d033b2da21f6`
-- Current private work: final-gate evidence and release-candidate tagging
+- Last committed private checkpoint: `68b123e9ff29382636174fd6aa82e968dedc7827`
+- Current private work: live Copilot/key containment and GitHub publication evidence
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Sanitized branch/checkpoint: `main` and `build-week/final` /
-  `9af9064f25443f22464e91961c4423085aef0b19`
+  `9f5802683e3764b9737df2c7a38c4ef13c569d00`
 - Latest tested application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 
 ## Deployed Firebase state
@@ -25,8 +25,9 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
   conversation authorization, verification submit/review/contact sync, and the
   public-profile/public-trip projections.
 - Current Firestore and Storage rules are deployed; required chat indexes are `READY`.
-- `planTripWithCopilot` is not yet deployed because `OPENAI_API_KEY` still had zero
-  enabled versions at the last metadata check.
+- `planTripWithCopilot` is deployed and Firebase SDK authentication passes. Secret
+  version 1 is invalid and was exposed in the build conversation; it must be revoked
+  at OpenAI and replaced privately before any further model test.
 - Two fictional judge Auth users, their required private app profiles, and the
   approved four trip/public-trip fixtures, two verification summaries, and two
   public profiles were provisioned successfully. Fixture departures are fixed on
@@ -66,17 +67,17 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 ## GitHub and release state
 
-- GitHub CLI is installed at the temporary tool path recorded in the progress log,
-  but remains unauthenticated at the last check.
-- A private browser/device login window was opened for the owner.
-- Public repository, push, PR, Release, published download, and downloaded-APK
-  verification remain pending.
+- Public repository: `https://github.com/MoazGamalMohamed/fitareeaee-copilot`
+- Remote `main` and `build-week/final` exactly match sanitized `9f58026`; all staged
+  evidence/RC1 tags are pushed without force.
+- A draft PR is not applicable because both published branches intentionally point to
+  the same verified commit. GitHub Release/download verification remains pending.
 - Never add a remote to or push the private original repository.
 
 ## Current blockers and owner interactions
 
-- Owner must finish the private Firebase secret prompt reopened at 20:02 CDT.
-- Owner must finish the GitHub browser/device login reopened at 20:02 CDT.
+- Owner must revoke the key exposed in the build conversation, create a different
+  valid OpenAI API key, and paste it only into the open hidden Firebase prompt.
 - Deleting the exact 36 inherited Functions requires a fresh explicit owner
   confirmation; the environment safety reviewer rejected the earlier attempt.
 - Physical phone testing waits until the owner connects the phone and accepts USB RSA.

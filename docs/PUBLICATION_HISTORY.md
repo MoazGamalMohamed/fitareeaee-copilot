@@ -34,6 +34,7 @@ evidence to the sanitized publication history:
 | Android judge version code | `15baa237707b3115475b09ca7a586e1c171517a7` | `68ee892f7e55253046e808b7b5d6852e0f1e88af` |
 | Hardened Android checkpoint evidence | `a4053e12bdcd1f484a54f06e412ffa2dcb141423` | `5c78f8f04dffab66e438821e7092fdc044e3e801` |
 | Targeted deployment and release-document checkpoint | `ba9c3436645195180120c012e286d033b2da21f6` | `9af9064f25443f22464e91961c4423085aef0b19` |
+| Privacy-safe Copilot diagnostics | `68b123e9ff29382636174fd6aa82e968dedc7827` | `9f5802683e3764b9737df2c7a38c4ef13c569d00` |
 
 The annotated tag names are preserved:
 

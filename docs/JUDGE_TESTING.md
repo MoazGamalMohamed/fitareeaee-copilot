@@ -8,10 +8,11 @@ Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE07
 
 ## Final release information
 
+- Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
 - APK URL: **PENDING — add verified stable release URL**
-- Build type: **PENDING — signed release if safely available; otherwise clearly labeled universal debug judge APK**
-- SHA-256: **PENDING — compute from the published artifact**
-- Source tag/commit: **PENDING — exact release tag and SHA**
+- Build type: universal debug-signed Android judge APK
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414` (published download must match)
+- Source tag/commit: `fitareeaee-copilot-rc1` / sanitized `9af9064f25443f22464e91961c4423085aef0b19`; a final tag will supersede it only if source changes
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
@@ -129,4 +130,4 @@ Flutter Android app
 - **Sign-in fails:** confirm the exact judge credentials and network connection; report the time/error without posting the password.
 - **AI unavailable:** retry once, then use manual search. This is the designed fallback.
 - **No matches:** use the documented seeded prompt/account or adjust the draft; the app intentionally does not fabricate results.
-- **Support contact:** **PENDING — add owner-approved public support contact before submission.**
+- **Support contact:** use the public repository's GitHub Issues tab without posting credentials or private data.

@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — managed OpenAI secret pending |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — callable/auth pass, but secret version 1 is invalid and compromised; fresh private key required |
 
 ## Security and transactional behavior
 
@@ -67,7 +67,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
 | Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1`; minimized verification submit/review versions were redeployed successfully |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
-| Copilot callable | BLOCKED | `OPENAI_API_KEY` secret resource has no usable version; no model call or spend has occurred |
+| Copilot callable | PARTIAL | Deployed and Firebase SDK authentication passes; OpenAI rejected two attempts with `401 invalid_api_key`, before inference. Replace the compromised key and rerun the three-case matrix |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
@@ -83,8 +83,9 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Physical Android phone install | BLOCKED | No phone connected/owner interaction required |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
 | Final deployed/tagged judge APK | PENDING | Rebuild/tag after live backend verification |
-| Published APK download and hash comparison | BLOCKED | Stable public URL not created yet |
-| Published APK install | BLOCKED | Stable public URL not created yet |
+| Public sanitized repository | PASS | Both remote branches exactly match `9f58026`; RC1 and staged evidence tags pushed; original private repository has no remote |
+| Published APK download and hash comparison | BLOCKED | GitHub repository exists; final Release awaits valid live Copilot verification |
+| Published APK install | BLOCKED | Final GitHub Release awaits valid live Copilot verification |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,

@@ -28,7 +28,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
 - [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
-- [ ] Owner sets `OPENAI_API_KEY` as a managed Firebase secret without sharing or committing it.
+- [ ] Owner revokes the key exposed in the build conversation and sets a different valid `OPENAI_API_KEY` privately; version 1 is invalid/compromised and must not be reused.
 - [x] Deploy only to confirmed Firebase project `fitareeaee`.
 - [x] Deploy hardened booking, verification, chat, and public-projection Functions.
 - [x] Deploy Firestore and Storage rules.
@@ -69,11 +69,11 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 
 ## Repository and release
 
-- [ ] Create/configure sanitized GitHub repository `fitareeaee-copilot`.
+- [x] Create public sanitized GitHub repository `MoazGamalMohamed/fitareeaee-copilot`.
 - [x] Ensure old history containing tracked `.env` is not published; use only the separately sanitized publication clone.
 - [x] Add an open-source license and complete judge-ready README.
 - [x] Confirm sanitized publication clone contains no API keys, `.env`, service accounts, keystores, passwords, or private data.
-- [ ] Push passing stage commits/tags; no force-push.
+- [x] Push passing sanitized `main`, `build-week/final`, and evidence/RC1 tags; no force-push.
 - [ ] Open/update draft PR if appropriate; do not merge without owner confirmation.
 - [ ] Build signed universal release APK if safe signing exists; otherwise label the judge debug APK clearly.
 - [x] Record the latest local APK path, type, size, timestamp, commit, SHA-256, and tested emulator.
@@ -82,7 +82,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [ ] Download the APK from the public judge URL.
 - [ ] Confirm downloaded SHA-256 matches the release record.
 - [ ] Install and smoke-test the downloaded copy.
-- [ ] Confirm local and remote commits/tags match.
+- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `9f58026`; RC1 tag peels to `9af9064`.
 
 ## Devpost materials
 
@@ -92,7 +92,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [ ] Replace all pending links/build metadata with final verified values.
-- [ ] Add final repository URL.
+- [x] Add final repository URL.
 - [ ] Add final stable APK URL and SHA-256.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
 - [ ] Capture final screenshots with fictional data and no PII.

@@ -7,7 +7,7 @@ Codex chat, Git, documentation, screenshots, or the APK.
 
 ## Immediate unblock bundle
 
-### 1. Add the managed OpenAI secret version
+### 1. Replace the compromised/invalid managed OpenAI secret
 
 Run from the repository root in a private terminal:
 
@@ -15,10 +15,13 @@ Run from the repository root in a private terminal:
 firebase functions:secrets:set OPENAI_API_KEY --project fitareeaee
 ```
 
-Paste the OpenAI API key only into Firebase CLI's hidden prompt and submit it.
-The secret resource already exists but currently has zero versions. Codex will
-verify only the version state, deploy only `planTripWithCopilot`, and cap live
-English/package/Arabic checks below the authorized USD $5 limit.
+The first secret version was rejected by OpenAI with `invalid_api_key`, and the
+same key was later pasted into the build conversation. Revoke it in the OpenAI
+dashboard. Create a different key from the official OpenAI API Keys page, paste
+the replacement only into Firebase CLI's hidden prompt, and submit it. Never
+send the replacement in chat. Codex will verify only version metadata, deploy
+only `planTripWithCopilot`, destroy the obsolete managed version after the new
+deployment passes, and cap live English/package/Arabic checks below USD $5.
 
 ### 2. Judge users and fixtures — completed
 
@@ -28,18 +31,12 @@ exist only in owner-restricted, Git-ignored `.judge-credentials.local.json`.
 Keep the eventual judge login credentials only in the private Devpost testing
 field, not the public repository, video, screenshots, or progress log.
 
-### 3. Authenticate GitHub CLI
+### 3. GitHub publication — completed
 
-Run:
-
-```powershell
-gh auth login --hostname github.com --git-protocol https --web
-```
-
-Complete the owner-controlled browser/device flow for the intended account
-`MoazGamalMohamed`. Do not paste a GitHub token into chat. Codex will then create
-the public `fitareeaee-copilot` repository and publish only the separately
-sanitized clone, never the private original history.
+The existing `github.com` Git credential was validated in memory without
+printing it. The public repository exists at
+`https://github.com/MoazGamalMohamed/fitareeaee-copilot`; both sanitized branches
+and annotated tags are pushed. The private original still has no remote.
 
 ### 4. Approve or decline inherited Function retirement
 
