@@ -870,3 +870,81 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   window. Judge/demo prompts will use the exact date instead of “tomorrow.”
 - This correction touched no non-judge user, booking, message, Storage object, or
   unrelated production document.
+
+## 2026-07-18 19:39 CDT / 2026-07-18 17:39 PDT — Judge-path chat, booking, privacy, and Android checkpoint
+
+### Objective and outcome
+
+- Replaced participant-pair chat IDs with trip-scoped conversation IDs, so two users
+  receive a clean thread for each trip. Cancelled booking conversations remain readable
+  but reject new messages.
+- Removed the repeated booking confirmation action after a confirmed booking. Added
+  transactional self-service cancellation before scheduled departure, seat restoration,
+  and an explicit no-payment/no-refund disclosure.
+- Repaired Matches so user-owned requests participate in matching, trip owners see
+  incoming confirmed bookings, missing public trip records cannot crash the card, and
+  zero-coordinate fixtures fall back to deterministic address matching.
+- Added safe request/package labels, visible pet/smoking preferences, package details,
+  small-screen grid sizing, safe error states, and working filter application.
+- Hardened Copilot with `store: false`, Arabic-Indic and Eastern-Arabic phone redaction,
+  explicit UTC-offset handling, exact August 10 judge prompts, and no raw UI exception
+  disclosure.
+- Constrained avatars to `profile.jpg`; constrained verification uploads to four fixed
+  image names below 5 MB; aligned server metadata validation; rejected non-finite,
+  negative, string, and excessive booking prices.
+- Removed nonfunctional settings controls and simulated-money paths from the submitted
+  experience. Settings now explain manual verification, privacy/AI safety, English/USD
+  scope, and disabled payments.
+- Protected judge fixtures from accidental reseeding after a booking exists unless the
+  exact `RESET_JUDGE_DATA=fitareeaee` override is intentionally supplied.
+- Raised Android version code from `1` to `20260718` after the installation test exposed
+  an update/downgrade conflict.
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 111 files, 0 changed
+- `flutter analyze`: PASS; no issues
+- First full `flutter test`: FAIL; 17 passed and one safe-error assertion expected the
+  prior raw exception text. The test was corrected to require the generic message and
+  prove raw text is absent.
+- Final `flutter test`: PASS; 18/18
+- `cd functions && npm test`: PASS; TypeScript build plus 18/18 contracts
+- First direct `npm run test:rules`: environment setup FAIL because emulators were not
+  running. First emulator retry: environment setup FAIL because Java was not on PATH.
+- Firebase rules gate using Android Studio JBR 21: PASS; 7/7 Firestore/Storage contracts
+- Auth/Functions/Firestore callable integration: PASS; 3/3 concurrent booking,
+  idempotency/cancellation, inventory, verification, and conversation cases
+- `flutter build apk --debug`: PASS after source checkpoint
+- First emulator update install: FAIL with version downgrade (`1 < 4001`); source version
+  code corrected to `20260718`
+- Corrected `flutter build apk --debug`: PASS
+- Corrected in-place install: emulator storage setup FAIL at 544 MB free. Cache trimming
+  was insufficient; only `com.fitareeaee.app` and its local test data were removed.
+- Corrected fresh install: PASS; installed version code `20260718`
+- Correct-package launch/UI hierarchy: PASS; fresh install reached Login, activity was
+  top-resumed, and logcat contained no Flutter/Android fatal exception
+- ADB credential typing: NOT PASSED; the emulator input command mangled the fictional
+  email. No credentials were logged. This is not recorded as an application login pass.
+- OpenAI calls/spend in this checkpoint: 0 / USD $0
+
+### APK, Git, rollback, and next action
+
+- Build type: universal Flutter debug APK
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 154,878,330 bytes
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Build timestamp: 2026-07-18 19:35:31 CDT / 17:35:31 PDT
+- Artifact source commit: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Tested device: `emulator-5554`, Android x86_64; fresh install PASS; Login startup PASS;
+  authenticated judge flow still requires a reliable credential entry/manual test
+- Main judge-path commit: `31d12dc48fcfb971717464a0b4b46b6d78f9371c`
+- Version correction commit: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Tag: none yet
+- Push/PR/Release: pending GitHub authentication and sanitized-repository publication
+- Rollback point: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Known blockers: managed `OPENAI_API_KEY` still needs a version and GitHub CLI still
+  needs authentication if the two interactive owner prompts remain unfinished; physical
+  phone installation remains intentionally pending until the owner connects the phone
+- Next action: commit this append-only evidence, replay both passing commits into the
+  durable sanitized repository, re-check the two interactive authentications, then deploy
+  the verified backend/rules and complete live Copilot plus authenticated Android flows.

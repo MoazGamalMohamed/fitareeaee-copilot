@@ -41,3 +41,17 @@ append-only execution evidence in `BUILD_WEEK_PROGRESS.md`.
 - Placeholder examples in preserved pre-existing history are not credentials; they
   are recorded separately from real secret scans and must never be described as live keys.
 
+## 2026-07-18 — Submitted product boundary
+
+- Trip-scoped chat, transactional pre-departure cancellation, incoming/outgoing booking
+  visibility, manual verification, and deterministic live-trip matching ship in the
+  judge path.
+- Cancelled conversations remain readable but become write-closed. A new trip creates
+  a distinct authorization and an empty conversation.
+- The contest build exposes no payment, escrow, wallet, refund, bank payout, or cashback
+  control. Settings disclose that payments are disabled rather than simulating money.
+- Interface localization and currency conversion do not ship because they are not
+  end-to-end functional. English/USD remain explicit; Arabic natural-language Copilot
+  input remains supported and tested.
+- Android release updates use dated version code `20260718`; the stale version code `1`
+  discovered during emulator installation is not a release candidate.

@@ -1,25 +1,22 @@
 # Resume Here
 
-Last updated: 2026-07-18 18:34 CDT / 2026-07-18 16:34 PDT
+Last updated: 2026-07-18 19:39 CDT / 2026-07-18 17:39 PDT
 
 ## Current objective
 
-Finish the contest-critical Android path and release package: per-trip communication,
-booking/cancellation state, request-versus-offer semantics, live GPT-5.6 deployment,
-credentialed Android verification, sanitized GitHub publication, and final evidence.
+Deploy and live-test the now-hardened contest path, publish the sanitized repository
+and APK, complete authenticated emulator/phone flows, and finalize submission evidence.
 
 ## Source state
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `867f96867ff54588cc07f9f009b657d046a2ccf6`
-- Current private work: publication mapping for the completed provisioning checkpoint
+- Last committed private checkpoint: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Current private work: append-only evidence and sanitized replay for the passing checkpoint
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
-- Sanitized branch/checkpoint: `main` and `build-week/final` /
-  `d3e624c7666def3a05dd61a4e33bb66852feb904`
-- Current private/sanitized tree: `8c4d78fac7a9e8977e27dab67c406ddb1755c614`
-- Temporary and durable sanitized clones match at the recorded checkpoint
-- Latest tested application source: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
+- Sanitized branch/checkpoint before the pending replay: `main` and `build-week/final` /
+  `acfa5052183a0c53392f818b37dcb253c5a798a5`
+- Latest tested application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 
 ## Deployed Firebase state
 
@@ -40,25 +37,24 @@ credentialed Android verification, sanitized GitHub publication, and final evide
 
 ## Last directly passing commands
 
-- `node --check scripts/provision-judge-users.cjs`: PASS
-- `node --check scripts/seed-judge-data.cjs`: PASS
-- `npm test` in `functions/`: PASS, build plus 16/16 contracts
-- Guarded `npm run provision:judge-users`: PASS after the quota-project and
-  Firestore REST compatibility fix
-- Durable sanitized clone history/path/ref/object checks: PASS; only documented
-  placeholder key examples matched the broad signature scan
-
-The complete Flutter/rules/integration/APK gate last passed on application source
-`9b591e0`; it must be rerun on the next committed implementation checkpoint.
+- Dart format gate: PASS, 111 files / 0 changed
+- `flutter analyze`: PASS, no issues
+- `flutter test`: PASS, 18/18
+- `npm test` in `functions/`: PASS, build plus 18/18 contracts
+- Firestore/Storage emulator rules: PASS, 7/7
+- Auth/Functions/Firestore callable integration: PASS, 3/3
+- Corrected universal debug APK build and clean emulator install: PASS
 
 ## Latest APK
 
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
 - Build type: universal debug-signed judge candidate
-- Size: `154,893,570` bytes
-- SHA-256: `3E8C0D92B0A5A92AFF4BF8D50926A2E948E23B25F9F35B18B5318E8484F0FC53`
-- Source: `9b591e094bcbbbf3a8a9cbd55fec86908c9e5d16`
-- Emulator: x86_64 split install/Login smoke PASS; physical phone still pending
+- Size: `154,878,330` bytes
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Source: `15baa237707b3115475b09ca7a586e1c171517a7`
+- Android version code: `20260718`
+- Emulator: x86_64 clean install/Login startup PASS; credential injection was not
+  reliable and is not claimed as an authenticated-flow pass; physical phone pending
 
 ## GitHub and release state
 
@@ -79,11 +75,13 @@ The complete Flutter/rules/integration/APK gate last passed on application sourc
 
 ## Exact next command
 
-After the current code audit, implement and test trip-specific conversation identity.
-The first verification command for that checkpoint is:
+After committing this evidence and replaying the passing commits into the durable
+sanitized clone, re-check the managed secret and GitHub authentication:
 
 ```powershell
-npm --prefix functions test
+gcloud secrets versions list OPENAI_API_KEY --project fitareeaee --format=json
 ```
 
-Then run the complete mandatory gate before committing and syncing the sanitized clone.
+This checks metadata only and must not access or print the secret value. If an enabled
+version exists, deploy the verified rules/indexes/Functions to `fitareeaee`, probe the
+callable, and run the authenticated judge flow.
