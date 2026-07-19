@@ -36,6 +36,8 @@ evidence to the sanitized publication history:
 | Targeted deployment and release-document checkpoint | `ba9c3436645195180120c012e286d033b2da21f6` | `9af9064f25443f22464e91961c4423085aef0b19` |
 | Privacy-safe Copilot diagnostics | `68b123e9ff29382636174fd6aa82e968dedc7827` | `9f5802683e3764b9737df2c7a38c4ef13c569d00` |
 | Live GPT-5.6 verification evidence | `2495e70bc2cda0f162084441e2d55f7dfd742d63` | `f2dda9c00bfd6c58140602a8aded0adbfdce6a86` |
+| Public v1.0.0 release evidence | `8447d5f` | `4006dc0` |
+| Phone-found notification compatibility fix | `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0` | `865a5e8a6d6e581fbcd781e5a4ba936529406609` |
 
 The annotated tag names are preserved:
 

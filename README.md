@@ -169,7 +169,7 @@ fixtures, two explicitly fictional verification summaries, and two minimal
 public profiles. Rerunning may reset those fixture documents; it must never be
 used as a general production-data migration.
 
-The verified universal judge APK is available from the [GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.0). It was built from private release-gate source `837c11d` (sanitized public source `8e572ae`, tag `fitareeaee-copilot-v1.0.0`), uses version code `20260718`, is 154,878,330 bytes, and has SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`. The published copy was downloaded, hash-matched, clean-installed, and launched to Login on the API 36.1 emulator. It is clearly a debug-signed sideload build because no private release signing configuration was available; no signing secret is committed.
+The verified universal judge APK is available from the [GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.1). It was built from private release-gate source `c5b6736` (sanitized public source `865a5e8`, tag `fitareeaee-copilot-v1.0.1`), uses version code `20260718`, is 154,878,330 bytes, and has SHA-256 `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`. The published copy was downloaded, hash-matched, clean-installed on the API 36.1 emulator, and installed/cold-launched on a Motorola phone. The physical build returned a live reviewable GPT-5.6 draft. It is clearly a debug-signed sideload build because no private release signing configuration was available; no signing secret is committed.
 
 ## Codex collaboration
 

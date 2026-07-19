@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk — 154,878,330 bytes; SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk — 154,878,330 bytes; SHA-256 `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -156,7 +156,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
 - Maps/location autocomplete and broader Arabic UI are outside the core submission path unless stabilized.
-- The public APK passed download/hash/emulator verification. Physical-phone replacement remains pending because the installed older app uses an incompatible signing certificate and uninstalling it would delete that app's local phone data.
+- The superseding public APK passed download/hash verification, clean emulator installation, physical Motorola installation/cold launch, legacy-notification compatibility, and a live reviewable GPT-5.6 draft. The full booking/chat demo still requires deliberate use of the fictional judge accounts.
 
 ## Suggested screenshot/image captions
 
@@ -172,7 +172,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **DONE:** stable APK URL, size, and SHA-256
-- **DONE:** release tag `fitareeaee-copilot-v1.0.0` / sanitized commit `8e572aef98cbd238b28a401fa691080645d4e9e8`
+- **DONE:** release tag `fitareeaee-copilot-v1.0.1` / sanitized commit `865a5e8a6d6e581fbcd781e5a4ba936529406609`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID

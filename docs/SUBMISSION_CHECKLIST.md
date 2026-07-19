@@ -64,8 +64,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [x] Rerun the complete mandatory gate on release-gate checkpoint `ba9c343`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, APK build/clean-install/Login smoke PASS.
 - [x] Final release gate passed on private `837c11d` / sanitized `8e572ae`: format 111/0, analysis clean, Flutter 18/18, focused Copilot 10/10, Functions 19/19, rules 7/7, callable integration 3/3, APK build and public-download emulator smoke PASS.
+- [x] Phone-found notification fix gate passed on private `c5b6736` / sanitized `865a5e8`: format 112/0, analysis clean, Flutter 19/19, Functions 19/19, rules 7/7, callable integration 3/3, APK/public-download emulator and phone smoke PASS.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
-- [ ] Install and smoke-test on the owner's physical Android phone; current attempt is blocked by the differently signed older package and requires approval to delete its local app data.
+- [x] Install and smoke-test the downloaded public v1.0.1 APK on the owner's Motorola phone, including cold launch, notification regression, and live reviewable Copilot draft.
 - [x] Record remaining known limitations without minimizing them.
 
 ## Repository and release
@@ -83,7 +84,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Download the APK from the public judge URL.
 - [x] Confirm downloaded SHA-256 matches the release record.
 - [x] Install and smoke-test the downloaded copy on the API 36.1 emulator.
-- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `8e572ae`; final tag points to that commit.
+- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `865a5e8`; superseding v1.0.1 tag points to that commit.
 
 ## Devpost materials
 

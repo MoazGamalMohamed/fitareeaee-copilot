@@ -1309,3 +1309,77 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: commit/replay/push this final evidence. If the owner explicitly approves
   deleting the old phone package/data, uninstall exactly `com.fitareeaee.app`, install
   the hash-verified public APK, and complete the physical credentialed smoke.
+
+## 2026-07-18 22:56 CDT / 2026-07-18 20:56 PDT — physical test, notification fix, and v1.0.1 checkpoint
+
+### Objective and outcome
+
+- The owner removed the differently signed older phone app. The downloaded v1.0.0
+  artifact then installed and cold-launched successfully on a Motorola phone.
+- Physical testing exposed a real legacy-data defect: notification type
+  `tripCancellation` was not part of the submitted enum and the Notifications screen
+  displayed a raw parse error. Temporary private diagnostic screenshots were deleted
+  immediately and were never committed or published.
+- Added a source-controlled unknown-enum fallback to `NotificationType.system`, a
+  generic retryable notification error state that does not expose raw exceptions, and
+  a regression test proving legacy notification documents remain readable.
+- Re-ran the complete mandatory gate on private fix commit `c5b6736`; every check
+  passed. Replayed the exact 313-file tree as sanitized commit `865a5e8`.
+- Installed the rebuilt candidate on the phone. The legacy raw error was absent,
+  Plan with AI was visible, and the documented fictional Dallas–Austin request
+  returned a live reviewable AI draft without a matching fatal log. No booking or trip
+  persistence was triggered.
+- Preserved public v1.0.0 history and created non-rewritten superseding tag/release
+  `fitareeaee-copilot-v1.0.1`.
+- Downloaded the public v1.0.1 asset, proved its hash matches the gated local build,
+  installed it on the physical phone, and clean-installed it on the API 36.1 emulator.
+
+### Commands and exact results
+
+- Notification-focused format/analyze/test: PASS; 112 files / 0 changes, no analysis
+  issues, regression 1/1
+- Full `flutter test`: PASS; 19/19
+- Functions `npm run build` and `npm test`: PASS; 19/19 contracts
+- Firestore/Storage emulator rules: PASS; 7/7
+- Auth/Functions/Firestore callable integration: PASS; 3/3
+- `flutter build apk --debug`: PASS in 52.9 seconds
+- APK signature: PASS; Android Signature Scheme v2, one Android Debug signer
+- Private/sanitized Git tree comparison: PASS; 313/313 tracked blobs identical
+- Remote refs: PASS; `main` and `build-week/final` both sanitized `865a5e8`; v1.0.1
+  annotated tag peels to the same commit
+- Sanitized all-history scan: PASS; 0 token/private-key signature matches and 0
+  reachable sensitive credential/config/keystore paths
+- Local candidate phone update/cold launch: PASS; legacy notification raw error absent;
+  Plan with AI visible; no matching fatal logs
+- Physical live Copilot UI: PASS; documented fictional English ride request returned a
+  reviewable Dallas–Austin AI draft; no booking confirmation was tapped
+- Public v1.0.1 download: PASS; exact size and SHA-256 match
+- Downloaded v1.0.1 physical install/cold launch: PASS; legacy error absent, Plan with
+  AI visible, no matching fatal logs
+- Downloaded v1.0.1 emulator clean install/Login: PASS after the same transient
+  UI-automation null-root retry seen earlier. A first log check falsely matched a
+  lowercase `cache/flutter_engine` path; corrected case-sensitive `^E/flutter` and
+  fatal patterns returned 0 matches.
+
+### APK, GitHub, rollback, and next action
+
+- Build type: universal debug-signed Android judge APK
+- Local path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Downloaded verification path: `build/published-download-v101/app-debug.apk`
+- Public URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk`
+- Size: 154,878,330 bytes
+- SHA-256: `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
+- Build timestamp: 2026-07-18 22:46:23 CDT / 20:46:23 PDT
+- Private tested source/rollback: `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0`
+- Sanitized public source/rollback: `865a5e8a6d6e581fbcd781e5a4ba936529406609`
+- Tag/release: `fitareeaee-copilot-v1.0.1`, public, non-draft, non-prerelease
+- Tested devices: API 36.1 x86_64 emulator PASS; Motorola `moto g play - 2024` PASS
+- No production Firebase data was deleted. The exact 36 inherited prototype Functions
+  remain pending a separate explicit owner decision.
+- Remaining owner/external work: use fictional judge accounts for the deliberate
+  booking/chat demo, place credentials privately in Devpost, record/upload the video,
+  run `/feedback`, confirm provider credential revocations/rotations, review legal
+  eligibility, and personally submit Devpost.
+- Next action: commit/replay/push this evidence, confirm the public v1.0.1 links while
+  signed out, and hand off only the unavoidable owner actions.

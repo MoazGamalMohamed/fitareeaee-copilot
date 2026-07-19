@@ -10,7 +10,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | --- | --- | --- | --- |
 | Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Release-cleanup revision: 111 files, 0 changes |
 | Static analysis | `flutter analyze` | PASS | `No issues found!` |
-| Flutter suite | `flutter test` | PASS | Consolidated hardened revision: 18/18 tests |
+| Flutter suite | `flutter test` | PASS | Final phone-fixed revision: 19/19 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
 | Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | 19/19 tests |
@@ -80,10 +80,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | BLOCKED | Public APK install reached Android but failed `INSTALL_FAILED_UPDATE_INCOMPATIBLE`; replacing the differently signed older app requires owner approval because uninstall deletes its local phone data |
+| Physical Android phone install | PASS | Owner removed the older package; downloaded public v1.0.1 installed, cold-launched, exposed Plan with AI, and produced no matching fatal logs |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
-| Final deployed/tagged judge APK | PASS | Tag `fitareeaee-copilot-v1.0.0`; private tested source `837c11d`, sanitized source `8e572ae` |
-| Public sanitized repository | PASS | Both remote branches exactly match sanitized `8e572ae`; final tag and staged evidence tags pushed; original private repository has no remote |
+| Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.1`; private tested source `c5b6736`, sanitized source `865a5e8` |
+| Public sanitized repository | PASS | Both remote branches exactly match sanitized `865a5e8`; v1.0.1 and staged evidence tags pushed; original private repository has no remote |
 | Published APK download and hash comparison | PASS | Public asset downloaded; 154,878,330 bytes and SHA-256 exactly match local tested artifact |
 | Published APK install | PASS | Downloaded asset clean-installed on API 36.1 emulator; Login rendered, activity resumed, no matching fatal logs |
 
@@ -99,12 +99,13 @@ the contest release.
 - Build type: universal debug-signed judge APK
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
 - Size: 154,878,330 bytes (147.70 MiB)
-- Build timestamp: July 18, 2026 at 22:02:49 CDT / 20:02:49 PDT
-- Release-gate source commit: private `837c11dd42e0e08d8bd1761b44bf11e44e82c03c`; sanitized `8e572aef98cbd238b28a401fa691080645d4e9e8`
-- Source tag: `fitareeaee-copilot-v1.0.0`
-- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
-- Public URL: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk`
+- Build timestamp: July 18, 2026 at 22:46:23 CDT / 20:46:23 PDT
+- Release-gate source commit: private `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0`; sanitized `865a5e8a6d6e581fbcd781e5a4ba936529406609`
+- Source tag: `fitareeaee-copilot-v1.0.1`
+- SHA-256: `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
+- Public URL: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk`
 - Universal installation/smoke: PASS after downloading the public asset, verifying its exact hash, removing only the emulator's older `com.fitareeaee.app` package/data, and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
+- Physical installation/smoke: PASS on `moto g play - 2024`; public v1.0.1 cold-launched, the legacy `tripCancellation` record rendered without a raw error, Plan with AI was visible, and a documented Dallas–Austin request returned a reviewable AI draft
 - Credentialed attempt: NOT PASSED; exact in-memory entry reached Firebase Auth but the emulator could not reach `8.8.8.8` or resolve `identitytoolkit.googleapis.com`. The app displayed a safe network error and remained responsive. A credential-bearing diagnostic screenshot was immediately deleted from host and emulator.
 - APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
 - APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`

@@ -6,15 +6,15 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
 > published APK was downloaded, hash-matched, and clean-installed on the emulator.
 
-Final artifact: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, private release-gate source `837c11dd42e0e08d8bd1761b44bf11e44e82c03c` and tree-equivalent sanitized source `8e572aef98cbd238b28a401fa691080645d4e9e8`. It reports version code `20260718` and rendered Login on the API 36.1 emulator without fatal Flutter/Android logs.
+Final artifact: universal debug APK, 154,878,330 bytes, SHA-256 `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`, private release-gate source `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0` and tree-equivalent sanitized source `865a5e8a6d6e581fbcd781e5a4ba936529406609`. It reports version code `20260718`, rendered Login on the API 36.1 emulator, and cold-launched with a live reviewable Copilot draft on a Motorola phone without matching fatal logs.
 
 ## Final release information
 
 - Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk)
+- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk)
 - Build type: universal debug-signed Android judge APK
-- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414` (published download must match)
-- Source tag/commit: `fitareeaee-copilot-v1.0.0` / sanitized `8e572aef98cbd238b28a401fa691080645d4e9e8`
+- SHA-256: `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
+- Source tag/commit: `fitareeaee-copilot-v1.0.1` / sanitized `865a5e8a6d6e581fbcd781e5a4ba936529406609`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
