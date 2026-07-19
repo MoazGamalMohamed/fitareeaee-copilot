@@ -45,11 +45,13 @@ async function callable(name, token, data) {
   return {ok: response.ok, status: response.status, body: await response.json()};
 }
 
-async function seedVerified(uid) {
+async function seedVerified(uid, isDriver = false) {
   await db.collection("verifications").doc(uid).set({
     userId: uid,
     identityVerified: true,
     selfieWithIdVerified: true,
+    driverLicenseVerified: isDriver,
+    vehicleVerified: isDriver,
   });
 }
 
@@ -69,11 +71,31 @@ async function seedTrip(id, seats = 1) {
   });
 }
 
+async function seedRequest(id, seats = 2) {
+  await db.collection("trips").doc(id).set({
+    id,
+    driverId: riderA.uid,
+    role: "request",
+    status: "pending",
+    departure_time: Timestamp.fromDate(new Date(Date.now() + 86_400_000)),
+    available_seats: seats,
+    total_seats: seats,
+    passenger_ids: [],
+    price_per_seat: 30,
+    origin_address: "Dallas",
+    destination_address: "Austin",
+  });
+}
+
 before(async () => {
   [driver, riderA, riderB, unverified] = await Promise.all([
     account("driver"), account("rider-a"), account("rider-b"), account("unverified"),
   ]);
-  await Promise.all([seedVerified(driver.uid), seedVerified(riderA.uid), seedVerified(riderB.uid)]);
+  await Promise.all([
+    seedVerified(driver.uid, true),
+    seedVerified(riderA.uid),
+    seedVerified(riderB.uid),
+  ]);
 });
 
 after(async () => {
@@ -182,4 +204,66 @@ test("unverified rider is rejected without changing inventory", async () => {
   assert.equal(result.ok, false);
   const trip = await db.collection("trips").doc(tripId).get();
   assert.equal(trip.data().available_seats, 1);
+});
+
+test("driver proposal remains potential until the rider selects and pays", async () => {
+  const tripId = `integration-request-proposal-${Date.now()}`;
+  await seedRequest(tripId, 2);
+
+  const proposed = await callable("proposeForTripRequest", driver.token, {
+    schemaVersion: 1,
+    tripId,
+    proposedUnitPrice: 25,
+    message: "I can drive this route. Call 555-555-1212",
+  });
+  assert.equal(proposed.ok, true);
+  assert.equal(proposed.body.result.status, "potential");
+  assert.equal(proposed.body.result.paymentStatus, "awaiting_passenger");
+  const bookingId = proposed.body.result.bookingId;
+
+  const [potentialBooking, unchangedTrip] = await Promise.all([
+    db.collection("bookings").doc(bookingId).get(),
+    db.collection("trips").doc(tripId).get(),
+  ]);
+  assert.equal(potentialBooking.data().driverId, driver.uid);
+  assert.equal(potentialBooking.data().passengerId, riderA.uid);
+  assert.equal(potentialBooking.data().conversationId, null);
+  assert.equal(potentialBooking.data().seatsBooked, 2);
+  assert.equal(potentialBooking.data().totalPrice, 50);
+  assert.ok(!potentialBooking.data().negotiationMessage.includes("555-555-1212"));
+  assert.equal(unchangedTrip.data().available_seats, 2);
+
+  const chatBeforePayment = await callable(
+    "authorizeBookingConversation",
+    riderA.token,
+    {bookingId},
+  );
+  assert.equal(chatBeforePayment.ok, false);
+
+  const unauthorizedSelection = await callable(
+    "selectTripProposal",
+    riderB.token,
+    {schemaVersion: 1, bookingId},
+  );
+  assert.equal(unauthorizedSelection.ok, false);
+
+  const selected = await callable("selectTripProposal", riderA.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(selected.ok, true);
+  assert.equal(selected.body.result.status, "pending_payment");
+  assert.equal(selected.body.result.paymentStatus, "required");
+
+  const [selectedBooking, selectedTrip, authorizations] = await Promise.all([
+    db.collection("bookings").doc(bookingId).get(),
+    db.collection("trips").doc(tripId).get(),
+    db.collection("conversation_authorizations").where("tripId", "==", tripId).get(),
+  ]);
+  assert.equal(selectedBooking.data().status, "pending_payment");
+  assert.equal(selectedBooking.data().paymentStatus, "required");
+  assert.equal(selectedBooking.data().conversationId, null);
+  assert.equal(selectedTrip.data().selectedBookingId, bookingId);
+  assert.equal(selectedTrip.data().available_seats, 2);
+  assert.equal(authorizations.size, 0);
 });

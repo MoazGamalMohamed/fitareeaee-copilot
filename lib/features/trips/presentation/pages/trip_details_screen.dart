@@ -140,14 +140,21 @@ class TripDetailsScreen extends ConsumerWidget {
           );
           final pendingBooking = participantBookingsAsync.maybeWhen(
             data: (bookings) {
-              for (final booking in bookings) {
-                if (booking.tripId == trip.id &&
-                    (booking.status == 'pending' ||
-                        booking.status == 'pending_payment')) {
-                  return booking;
+              final pending = bookings
+                  .where(
+                    (booking) =>
+                        booking.tripId == trip.id &&
+                        (booking.status == 'pending' ||
+                            booking.status == 'potential' ||
+                            booking.status == 'pending_payment'),
+                  )
+                  .toList();
+              if (bookingId != null) {
+                for (final booking in pending) {
+                  if (booking.id == bookingId) return booking;
                 }
               }
-              return null;
+              return pending.isEmpty ? null : pending.first;
             },
             orElse: () => null,
           );
@@ -199,34 +206,13 @@ class TripDetailsScreen extends ConsumerWidget {
                     ],
                   )
                 else if (pendingBooking != null)
-                  Column(
-                    children: [
-                      FilledButton.icon(
-                        onPressed: () => context.push('/payments'),
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                        ),
-                        icon: const Icon(Icons.payment_outlined),
-                        label: const Text('Payment required - not confirmed'),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: bookingState is AsyncLoading
-                            ? null
-                            : () => _cancelBooking(context, ref, trip, userId),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                        icon: const Icon(Icons.cancel_outlined),
-                        label: const Text('Cancel payment request'),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Seats and chat unlock only after server-verified payment.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
+                  _buildPendingMatchActions(
+                    context,
+                    ref,
+                    trip,
+                    pendingBooking,
+                    userId,
+                    bookingState is AsyncLoading,
                   )
                 else if (isOwnTrip)
                   ElevatedButton(
@@ -239,12 +225,16 @@ class TripDetailsScreen extends ConsumerWidget {
                   )
                 else if (trip.isRequest)
                   ElevatedButton.icon(
-                    onPressed: null,
+                    onPressed: bookingState is AsyncLoading
+                        ? null
+                        : () => _proposeForRequest(context, ref, trip, userId),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    icon: const Icon(Icons.lock_outline),
-                    label: const Text('No direct chat before confirmation'),
+                    icon: const Icon(Icons.local_taxi_outlined),
+                    label: Text(
+                      trip.isPackage ? 'Offer to Deliver' : 'Offer to Drive',
+                    ),
                   )
                 else if (bookingState is AsyncLoading)
                   const SizedBox(
@@ -764,6 +754,236 @@ class TripDetailsScreen extends ConsumerWidget {
 
   void _bookTrip(BuildContext context, Trip trip) {
     context.push('/trips/${trip.id}/booking?seats=$requestedSeats');
+  }
+
+  Widget _buildPendingMatchActions(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+    String userId,
+    bool loading,
+  ) {
+    if (booking.status == 'potential') {
+      final isDriver = booking.driverId == userId;
+      return Column(
+        children: [
+          FilledButton.icon(
+            onPressed: loading || isDriver
+                ? null
+                : () => _selectProposal(context, ref, booking, userId),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            icon: Icon(
+              isDriver ? Icons.hourglass_top : Icons.person_search_outlined,
+            ),
+            label: Text(
+              isDriver
+                  ? 'Waiting for rider selection'
+                  : 'Choose driver - continue to payment',
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (isDriver)
+            OutlinedButton.icon(
+              onPressed: loading
+                  ? null
+                  : () => _withdrawProposal(context, ref, booking, userId),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
+              icon: const Icon(Icons.undo),
+              label: const Text('Withdraw proposal'),
+            ),
+          const SizedBox(height: 6),
+          Text(
+            isDriver
+                ? 'Drivers never pay. The rider must choose this proposal and complete payment before confirmation or chat.'
+                : 'Selecting this driver creates a payment requirement only. Chat stays locked until server-verified payment.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      );
+    }
+
+    final isPassenger = booking.passengerId == userId;
+    return Column(
+      children: [
+        FilledButton.icon(
+          onPressed: isPassenger ? () => context.push('/payments') : null,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+          ),
+          icon: const Icon(Icons.payment_outlined),
+          label: Text(
+            isPassenger
+                ? 'Payment required - not confirmed'
+                : 'Waiting for rider payment',
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (isPassenger)
+          OutlinedButton.icon(
+            onPressed: loading
+                ? null
+                : () => _cancelBooking(context, ref, trip, userId),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancel payment request'),
+          ),
+        const SizedBox(height: 6),
+        const Text(
+          'Seats and chat unlock only after server-verified payment.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _proposeForRequest(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    String userId,
+  ) async {
+    final priceController = TextEditingController(
+      text: trip.pricePerSeat.toStringAsFixed(2),
+    );
+    final noteController = TextEditingController();
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(trip.isPackage ? 'Delivery proposal' : 'Driver proposal'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'The rider budget is up to \$${trip.pricePerSeat.toStringAsFixed(2)} per seat. No direct contact details or chat are shared yet.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: priceController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Your price per seat',
+                prefixText: '\$',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: noteController,
+              maxLength: 300,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Short proposal note (optional)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Send proposal'),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true || !context.mounted) return;
+    final price = double.tryParse(priceController.text.trim());
+    if (price == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid proposal price.')),
+      );
+      return;
+    }
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('proposeForTripRequest')
+          .call({
+            'schemaVersion': 1,
+            'tripId': trip.id,
+            'proposedUnitPrice': price,
+            'message': noteController.text.trim(),
+          });
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Proposal sent. The rider must choose and pay next.'),
+        ),
+      );
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message ?? 'Proposal could not be sent.')),
+      );
+    }
+  }
+
+  Future<void> _selectProposal(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) async {
+    try {
+      await FirebaseFunctions.instance.httpsCallable('selectTripProposal').call(
+        {'schemaVersion': 1, 'bookingId': booking.id},
+      );
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Driver selected. Payment is required before confirmation.',
+          ),
+        ),
+      );
+      context.push('/payments');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Driver could not be selected.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _withdrawProposal(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('withdrawTripProposal')
+          .call({'schemaVersion': 1, 'bookingId': booking.id});
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Proposal withdrawn.')));
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Proposal could not be withdrawn.'),
+        ),
+      );
+    }
   }
 
   Future<void> _openBookedChat(

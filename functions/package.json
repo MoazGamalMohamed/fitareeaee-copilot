@@ -3,7 +3,7 @@
   "description": "Cloud Functions for Fitareeaee ride-sharing app",
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && node --test --test-isolation=none lib/booking.contract.test.js lib/verification.contract.test.js lib/copilot.contract.test.js lib/trip.contract.test.js lib/support.contract.test.js",
+    "test": "npm run build && node --test --test-isolation=none lib/booking.contract.test.js lib/verification.contract.test.js lib/copilot.contract.test.js lib/trip.contract.test.js lib/matching.contract.test.js lib/support.contract.test.js",
     "test:rules": "npm run build && node --test lib/rules.contract.test.js",
     "test:integration:booking": "node --test --test-isolation=none integration/booking.emulator.test.cjs",
     "build:watch": "tsc --watch",

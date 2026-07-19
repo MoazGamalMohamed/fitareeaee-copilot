@@ -681,7 +681,10 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                 .toList();
             final paymentPending = bookings
                 .where(
-                  (b) => b.status == 'pending' || b.status == 'pending_payment',
+                  (b) =>
+                      b.status == 'potential' ||
+                      b.status == 'pending' ||
+                      b.status == 'pending_payment',
                 )
                 .toList();
             final matchingTrips = matchingById.values.toList();
@@ -891,7 +894,9 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           children: [
             const SizedBox(height: 4),
             Text(
-              booking.status == 'pending_payment'
+              booking.status == 'potential'
+                  ? 'Driver proposal - rider selection pending'
+                  : booking.status == 'pending_payment'
                   ? 'Payment required - not confirmed'
                   : 'Status: ${booking.status} / ${booking.paymentStatus}',
             ),

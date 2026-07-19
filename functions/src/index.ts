@@ -8,6 +8,11 @@ export {cancelBooking, createBooking} from "./booking";
 export {planTripWithCopilot} from "./copilot";
 export {createTrip} from "./trip";
 export {
+  proposeForTripRequest,
+  selectTripProposal,
+  withdrawTripProposal,
+} from "./matching";
+export {
   contactSupport,
   escalateSupportTicket,
   sendSupportMessage,

@@ -13,7 +13,7 @@ class BookingModel with _$BookingModel {
     required int seatsBooked,
     required double totalPrice,
     required String
-    status, // 'pending_payment', 'confirmed', 'completed', 'cancelled'
+    status, // 'potential', 'pending_payment', 'confirmed', 'completed', 'cancelled'
     required String paymentStatus, // 'required', 'paid', 'refunded'
     String? conversationId,
     required String? pickupLocation,
