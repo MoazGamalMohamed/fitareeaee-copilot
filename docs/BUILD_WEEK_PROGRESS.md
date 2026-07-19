@@ -1729,3 +1729,51 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Owner-only remaining work: final fictional demo, private judge credential placement,
   screenshots/video, `/feedback`, eligibility/legal review, and the final Devpost submit.
 - Rollback point: private `832a543`; sanitized/tagged `c42bc3f`.
+
+## 2026-07-19 15:04 CDT / 2026-07-19 13:04 PDT — live fictional phone path passed; fresh-install rerun interrupted by disconnect
+
+### Directly observed passing flow
+
+- On the exact public-download v1.0.3 APK, Home opened Plan with AI and selected the
+  built-in fictional Dallas-to-Austin August 10 request.
+- The authenticated deployed Function returned a live GPT-5.6 structured draft with
+  Dallas, Austin, and 2026-08-10; the review confirmation action was enabled. No model
+  output was persisted before explicit confirmation.
+- Confirmation produced exactly one live transparent match. The screen visibly
+  explained route, time, availability, and price ranking; no trip was fabricated.
+- A stable continuity rerun directly observed Home -> Copilot draft -> one live match ->
+  Trip Details -> `Open Confirmed Chat` -> an enabled conversation field. No
+  `FirebaseFailure` or loading error appeared.
+- In the same fictional test session, a visible Available trip opened Trip Details,
+  `Book Trip`, and `Confirm Booking`. The server-authoritative transaction then opened
+  its authorized conversation. A message containing only the fictional judge-test
+  label rendered through the realtime stream and the composer cleared.
+- The judge account's verification prerequisites were already satisfied. The test did
+  not process or claim real payment; simulated financial UI remains hidden.
+- Final AndroidRuntime/Flutter error-focused log output was empty.
+
+### Fresh-install attempt and credential handling
+
+- Cleared only local package data for exact package `com.fitareeaee.app`; no Firebase or
+  production data was cleared.
+- Reinstalled `build/published-download-v103/app-debug.apk`: PASS.
+- Fresh cold launch: PASS; status `ok`, `LaunchState: COLD`, `TotalTime: 3706 ms`.
+- Entered the ignored fictional rider credentials without displaying their values.
+  Fresh sign-in and Home marker: PASS.
+- A temporary credential-filled accessibility XML was used only for field-length/button
+  verification, then its exact host and phone copies were deleted. It was never staged,
+  committed, published, or quoted.
+- Fresh session continued through live GPT-5.6 draft, one transparent match, and Trip
+  Details with `Book Trip`: PASS.
+- The physical phone then disconnected from ADB. Fresh-install run #1 is recorded as
+  interrupted before its final booking confirmation; run #2 remains pending. No later
+  phone step is inferred or claimed.
+
+### Continuity state
+
+- No source change was required after v1.0.3; source tag and APK hash remain unchanged.
+- Release source rollback: private `832a543`, sanitized/tagged `c42bc3f`.
+- Release evidence before this append: private `8e49a02`, sanitized public `cda5846`.
+- Next owner actions: reconnect only if a second fresh-install run is desired, rotate
+  exposed legacy credentials, verify public links signed out, record the demo, run
+  `/feedback`, review legal/eligibility statements, and perform final Devpost submission.

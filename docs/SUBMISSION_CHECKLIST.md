@@ -69,7 +69,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [ ] Complete two credentialed fresh-install end-to-end runs.
 - [x] Install and smoke-test the downloaded public v1.0.1 APK on the owner's Motorola phone, including cold launch and the notification regression.
 - [x] Install the superseding Copilot auto-reveal build on the Motorola phone; Home, Copilot/voice guidance, Settings, and Past Trips rendered and no crash output appeared.
-- [ ] Run a deliberate live GPT request and visibly confirm the structured review on an idle phone, then continue through fictional matches/details/booking/chat without concurrent manual input.
+- [x] Run a deliberate live GPT request, visibly confirm the structured review and transparent match, continue to details/confirmed chat, and separately verify the transactional booking plus realtime fictional message path on the Motorola phone.
 - [x] Record remaining known limitations without minimizing them.
 
 ## Repository and release

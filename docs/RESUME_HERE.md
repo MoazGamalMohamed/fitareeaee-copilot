@@ -4,8 +4,8 @@ Last updated: 2026-07-19 14:21 CDT / 2026-07-19 12:21 PDT
 
 ## Current objective
 
-Finish the deliberate fictional end-to-end phone demo, credential rotation, and
-owner-only Devpost actions from the now-published v1.0.3 checkpoint.
+Finish credential rotation and the owner-only video, `/feedback`, legal review, and
+Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
 
 ## Source state
 
@@ -84,9 +84,13 @@ owner-only Devpost actions from the now-published v1.0.3 checkpoint.
   credentials. No current credential value should be pasted into this thread.
 - Decide whether to retire the exact inherited Function set after reviewing
   `docs/OWNER_ACTIONS.md`; do not use wildcard deletion.
-- Run one deliberate fictional Home -> Copilot -> review -> matches -> details ->
-  booking -> confirmed chat flow on an idle phone. Automated taps were stopped when
-  phone state changed independently, so no unobserved step is claimed as passing.
+- The deliberate fictional phone path now passes: live GPT-5.6 reviewable draft, one
+  transparent match, match-to-details handoff, confirmed Chat, transactional booking,
+  and realtime fictional message rendering were directly observed. Verification was
+  already satisfied on the judge account and no real payment is claimed.
+- Fresh-install run #1 passed public-APK reinstall, 3.706-second cold launch, private
+  fictional sign-in, Home, GPT-5.6 draft, one match, and Trip Details. The phone then
+  disconnected before the final booking tap. Fresh-install run #2 remains unperformed.
 - Keep the v1.0.3 repository/release/backend available through judging and verify links
   signed out before final submission.
 - Add judge credentials privately in Devpost, record/upload the under-three-minute
@@ -98,8 +102,7 @@ owner-only Devpost actions from the now-published v1.0.3 checkpoint.
 
 ## Exact next action
 
-Run the deliberate fictional end-to-end phone flow and final signed-out link check,
-then run:
+Complete the credential rotations and final signed-out link check, then run:
 
 ```text
 /feedback

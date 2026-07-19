@@ -77,8 +77,8 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Clean emulator install | PASS | Universal APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; exact current package was removed to reclaim storage, then installation succeeded |
 | Cold launch to Login | PASS | Login semantics present; no fatal Firebase/Flutter error |
 | Credentialed emulator sign-in | BLOCKED | Credentials entered exactly in memory, but the emulator had no IP/DNS egress and Firebase Auth returned a network error; no invalid-credential or app crash occurred |
-| Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
-| Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
+| Full deployed Home → Copilot → matches → details → verification → booking → chat | PASS | On the Motorola phone, a live GPT-5.6 draft produced one transparent live match and handed off to Trip Details then enabled confirmed Chat. In the same fictional session, the server-authoritative booking transaction opened an authorized conversation and a sent message rendered through the realtime stream. The judge account's prior verification state was already satisfied; no real payment is claimed. |
+| Fresh-install end-to-end run #1 | INTERRUPTED | Public v1.0.3 local data clear/reinstall, 3.706 s cold launch, private fictional sign-in, Home, live GPT-5.6 draft, one match, and Trip Details all passed. The phone disconnected before the final booking confirmation tap. |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
 | Physical Android phone install | PASS | Public-download v1.0.3 candidate `543B2FE7…D4EC0` installed on Moto G Play (2024), cold-launched in 3.693 seconds, rendered the authenticated Chat empty state, and produced no AndroidRuntime/Flutter error output |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
