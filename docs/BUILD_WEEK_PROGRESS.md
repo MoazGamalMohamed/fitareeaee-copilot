@@ -1979,3 +1979,38 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next: sanitize/cherry-pick into the public repository, scan reachable history,
   publish source and an immutable v1.0.4 candidate release, redownload/hash-check it,
   and install it on the physical phone once Windows ADB exposes that device.
+
+## 2026-07-19 17:16 CDT / 2026-07-19 15:16 PDT - sanitized v1.0.4 candidate published and redownloaded
+
+- Restored the required GitHub CLI from its installed location and confirmed the
+  existing authenticated account `MoazGamalMohamed` without exposing its token.
+- Cherry-picked only the passing source/evidence commits into the clean publication
+  repository. Sanitized source: `d81c4b23`; sanitized evidence/tag target:
+  `ad351f3a`.
+- Sanitized reachable-history scan: 0 secret-signature hits and no real `.env`,
+  Firebase client config, keystore, service account, private key, or credential file.
+  `.env.example` is the only intentionally tracked environment template.
+- Following the `github:yeet` branch/PR workflow, pushed
+  `agent/payment-gated-chat-trip-support` and opened draft PR #1 against `main`:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Pushed annotated tag `fitareeaee-copilot-v1.0.4` and published an accurately
+  labeled GitHub pre-release candidate; no force push and no merge:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.4`.
+- Public APK URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.4/app-profile.apk`.
+- GitHub reports 83,181,715 bytes and digest
+  `sha256:be4d0fbdd04c023994c0db228d834552fcb01cfb011e1dc6c898c8eee5089ce6`.
+  A fresh direct HTTPS download produced exactly 83,181,715 bytes and SHA-256
+  `BE4D0FBDD04C023994C0DB228D834552FCB01CFB011E1DC6C898C8EEE5089CE6`.
+- Clean-installed the downloaded APK on `emulator-5554`: uninstall PASS, install
+  PASS, app process alive (`com.fitareeaee.app`), `MainActivity` top-resumed, and
+  Fitareeaee Login/Welcome Back visibly rendered in the captured screenshot. The
+  app-specific fatal scan found 0 `FATAL EXCEPTION`, `E/flutter`, or
+  `ANR in com.fitareeaee.app` matches.
+- The emulator separately displayed repeated **Pixel Launcher/System UI** ANR dialogs
+  and activity-wait timing was slow. Those system-process failures are not attributed
+  to Fitareeaee, but they prevent treating this emulator as a healthy full-navigation
+  target. The pre-release label remains until a healthy physical-device run passes.
+- Final ADB enumeration still showed only `emulator-5554`; the owner's USB phone was
+  neither `device` nor `unauthorized`. Exact next physical step: select USB file/data
+  transfer, enable USB debugging, accept the RSA prompt, then rerun `adb devices -l`.

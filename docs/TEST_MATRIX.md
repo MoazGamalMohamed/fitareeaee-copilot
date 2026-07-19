@@ -173,6 +173,16 @@ available.
   fresh healthy-device smoke test.
 - Physical phone: BLOCKED for this candidate because `adb devices -l` enumerated only
   `emulator-5554`. Do not infer a v1.0.4 phone pass from the older v1.0.3 evidence.
+- Sanitized publication: source `d81c4b23`, evidence/tag `ad351f3a`, draft PR #1,
+  annotated tag `fitareeaee-copilot-v1.0.4`, and an accurately labeled pre-release.
+- Public download verification: PASS; 83,181,715 bytes and SHA-256
+  `BE4D0FBDD04C023994C0DB228D834552FCB01CFB011E1DC6C898C8EEE5089CE6`
+  exactly match GitHub's asset metadata and the local candidate.
+- Downloaded-copy emulator install: PASS. Fitareeaee Login visibly rendered,
+  `MainActivity` was top-resumed, the process remained alive, and the app-specific
+  fatal/Flutter/ANR scan was empty. The emulator's Pixel Launcher/System UI produced
+  separate ANR dialogs, so a healthy physical-device navigation run remains required
+  before promoting the pre-release to final.
 
 ## Release gate
 

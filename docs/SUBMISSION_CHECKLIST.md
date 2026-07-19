@@ -108,6 +108,12 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   deploy only the scoped backend/rule changes to `fitareeaee` (`a27c2d9`).
 - [ ] Publish the sanitized v1.0.4 corrective source/artifact, redownload and compare
   its hash, then install that exact download on a healthy Android target.
+- [x] Publish the sanitized v1.0.4 source branch, draft PR, immutable tag, and
+  pre-release APK; redownload and verify the exact 83,181,715-byte SHA-256 match.
+- [x] Clean-install the public v1.0.4 download on the emulator and visibly confirm
+  Fitareeaee Login/top-resumed/process-alive with zero app-specific fatal log matches.
+- [ ] Repeat the v1.0.4 navigation smoke on a healthy Android target; the current
+  emulator has unrelated Pixel Launcher/System UI ANRs.
 - [ ] Make the physical phone visible to `adb devices -l` and record the v1.0.4
   install/navigation/crash-log result; current ADB output exposes only the emulator.
 
