@@ -169,7 +169,7 @@ fixtures, two explicitly fictional verification summaries, and two minimal
 public profiles. Rerunning may reset those fixture documents; it must never be
 used as a general production-data migration.
 
-The last public universal judge APK remains available from the [GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.1). A superseding local candidate now includes the Copilot outcome reveal and judge-path fixes: 154,994,394 bytes, SHA-256 `77B2DEB5C5C482B741911C12BA8593E755EE6DC8EA892D76AA7682167F8C0D8B`. That exact candidate clean-installs on the API 36 emulator and installs/cold-launches on a Motorola Moto G Play (2024). Publication remains pending until the sanitized source checkpoint is pushed and the uploaded asset is downloaded and hash-matched. The judge artifact is debug-signed for sideloading because no private release-signing configuration is available; no signing secret is committed.
+The current universal judge APK is available from the [v1.0.2 GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.2). It is 154,994,394 bytes with SHA-256 `77B2DEB5C5C482B741911C12BA8593E755EE6DC8EA892D76AA7682167F8C0D8B`. The published asset was downloaded, hash-matched, installed, and cold-launched on a Motorola Moto G Play (2024); the same bytes clean-install on the API 36 emulator. The judge artifact is debug-signed for sideloading because no private release-signing configuration is available; no signing secret is committed.
 
 ## Codex collaboration
 

@@ -89,6 +89,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Confirm downloaded SHA-256 matches the release record.
 - [x] Install and smoke-test the downloaded copy on the API 36.1 emulator.
 - [x] Confirm remote `main` and `build-week/final` contain sanitized release source `865a5e8` plus final evidence; superseding v1.0.1 tag points exactly to the release source.
+- [x] Push sanitized v1.0.2 source `5ad4b94` to `main` and `build-week/final`; tag and publish `fitareeaee-copilot-v1.0.2` without force.
+- [x] Download the public v1.0.2 APK, confirm 154,994,394 bytes and exact SHA-256 match, then install/cold-launch that downloaded copy on the Motorola phone.
 
 ## Devpost materials
 

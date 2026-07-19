@@ -1608,3 +1608,34 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Commit status: local PASS checkpoint created. Tag/push/release remain pending the
   sanitized replay and all-history secret scan.
 - Rollback point: `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c`.
+
+## 2026-07-19 13:15 CDT / 2026-07-19 11:15 PDT — sanitized v1.0.2 published and downloaded-copy phone test passed
+
+- Replayed only private commits `21f49ca` and `708fb6b` into the separate sanitized
+  publication clone as `eaa4378` and `5ad4b94`.
+- Removed the temporary local private-stage ref before scanning or pushing.
+- Sanitized reachable-history scan: PASS across 59 revisions; 0 token/private-key
+  signature hits and 0 reachable `.env`, `google-services.json`, judge-credential,
+  keystore, or signing-key paths.
+- Fast-forward pushed sanitized `main` and `build-week/final` from `bc1303f` to
+  `5ad4b94`; no force push.
+- Installed the official GitHub CLI v2.96.0 from its verified WinGet package because the
+  release connector did not expose binary-asset publishing. Authentication remained in
+  the system keyring and the CLI displayed only a masked token.
+- Created and pushed annotated tag `fitareeaee-copilot-v1.0.2` at exact sanitized source
+  `5ad4b94`.
+- Published non-draft, non-prerelease GitHub Release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.2`.
+- Direct APK URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.2/app-debug.apk`.
+- Downloaded the public asset to `build/published-download-v102/app-debug.apk`.
+  Download size: 154,994,394 bytes. Download SHA-256:
+  `77B2DEB5C5C482B741911C12BA8593E755EE6DC8EA892D76AA7682167F8C0D8B`.
+  Local/download hashes match exactly.
+- Installed that downloaded copy on Motorola Moto G Play (2024): PASS. Cold launch:
+  status `ok`, `LaunchState: COLD`, `TotalTime: 4035 ms`; AndroidRuntime/Flutter
+  crash-focused output empty.
+- Public source, tag, APK, and physical installed bytes are now aligned.
+- Remaining actions: deliberate fictional full booking/chat phone flow; credential
+  rotations; optional exact inherited-Function retirement decision; final screenshots,
+  video, `/feedback`, legal/eligibility review, and owner Devpost submission.

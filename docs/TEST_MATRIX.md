@@ -115,9 +115,9 @@ This is the published judge artifact. It is intentionally debug-signed for
 contest sideloading because no safe private release-signing configuration was
 available.
 
-## Latest superseding local candidate
+## Current v1.0.2 published APK
 
-- Build type: universal debug-signed Android judge candidate
+- Build type: universal debug-signed Android judge APK
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
 - Size: 154,994,394 bytes (147.81 MiB)
 - Build timestamp: July 19, 2026 at 12:52:51 CDT / 10:52:51 PDT
@@ -127,8 +127,13 @@ available.
 - API 36 emulator: clean install PASS; activity launch timed out waiting for the
   fully drawn signal, but the process remained alive and Login rendered in the
   preceding same-source smoke
-- Publication: PENDING sanitized commit/push, release upload, download, hash
-  comparison, and downloaded-copy installation
+- Sanitized source/tag: `5ad4b94` / `fitareeaee-copilot-v1.0.2`
+- Public URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.2/app-debug.apk`
+- Publication verification: PASS; the GitHub asset was downloaded to
+  `build/published-download-v102/app-debug.apk`, size and SHA-256 matched exactly,
+  and that downloaded copy installed and cold-launched on the Motorola phone in
+  4.035 seconds with no AndroidRuntime or Flutter crash output
 
 ## Release gate
 

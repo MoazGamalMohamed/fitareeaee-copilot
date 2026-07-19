@@ -39,6 +39,8 @@ evidence to the sanitized publication history:
 | Public v1.0.0 release evidence | `8447d5f` | `4006dc0` |
 | Phone-found notification compatibility fix | `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0` | `865a5e8a6d6e581fbcd781e5a4ba936529406609` |
 | Phone-tested v1.0.1 release evidence | `866eb46a79783ff2cb5ab44f6b5857ac292b4700` | `b973cc31dad1681fd28e9225bc1bc97c1013ec9f` |
+| Judge-path roles/chat/support source | `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c` | `eaa4378` |
+| Physical-device checkpoint evidence | `708fb6b` | `5ad4b94` |
 
 The annotated tag names are preserved:
 

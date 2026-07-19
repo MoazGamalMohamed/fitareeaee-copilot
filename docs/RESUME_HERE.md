@@ -4,9 +4,8 @@ Last updated: 2026-07-19 12:55 CDT / 2026-07-19 10:55 PDT
 
 ## Current objective
 
-Commit the passing judge-path checkpoint, replay it into the sanitized repository,
-publish and re-download the superseding APK, then finish the deliberate fictional
-end-to-end demo and owner-only Devpost actions.
+Finish the deliberate fictional end-to-end phone demo, credential rotation, and
+owner-only Devpost actions from the now-published v1.0.2 checkpoint.
 
 ## Source state
 
@@ -18,7 +17,8 @@ end-to-end demo and owner-only Devpost actions.
 - `pubspec.yaml` may appear modified, but `git diff -- pubspec.yaml` is empty. Do not
   stage a line-ending-only phantom change.
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
-- Last public sanitized checkpoint: `865a5e8a6d6e581fbcd781e5a4ba936529406609`
+- Published sanitized source checkpoint: `5ad4b94`; both `main` and
+  `build-week/final` point to it before this final publication-evidence append.
 - Never add a remote to or push the private original repository.
 
 ## Deployed Firebase state
@@ -67,10 +67,12 @@ end-to-end demo and owner-only Devpost actions.
   the same-source session; no AndroidRuntime or Flutter crash output.
 - Emulator: exact candidate clean-installed on API 36; activity wait timed out, but the
   process remained alive. Login had rendered in the preceding same-source smoke.
-- Publication: PENDING sanitized source commit/push, GitHub release upload, download,
-  hash match, and downloaded-copy installation.
-- Current public fallback remains v1.0.1 at:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk`.
+- Public tag/release: `fitareeaee-copilot-v1.0.2`.
+- Direct APK URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.2/app-debug.apk`.
+- Published-copy verification: downloaded size/hash match PASS; downloaded APK
+  installed and cold-launched on the Motorola phone in 4.035 seconds with no
+  AndroidRuntime or Flutter crash output.
 
 ## Remaining blockers and owner actions
 
@@ -81,8 +83,8 @@ end-to-end demo and owner-only Devpost actions.
 - Run one deliberate fictional Home -> Copilot -> review -> matches -> details ->
   booking -> confirmed chat flow on an idle phone. Automated taps were stopped when
   phone state changed independently, so no unobserved step is claimed as passing.
-- Publish the sanitized checkpoint and superseding release, re-download the APK, verify
-  SHA-256, and install that downloaded copy.
+- Keep the v1.0.2 repository/release/backend available through judging and verify links
+  signed out before final submission.
 - Add judge credentials privately in Devpost, record/upload the under-three-minute
   YouTube demo, run `/feedback`, review eligibility/legal statements, and personally
   perform the final Devpost submit action.
@@ -92,8 +94,8 @@ end-to-end demo and owner-only Devpost actions.
 
 ## Exact next action
 
-Create the private passing checkpoint, replay/rescan it in the sanitized clone, push a
-new tag/release without force, download/hash/install the published APK, then run:
+Run the deliberate fictional end-to-end phone flow and final signed-out link check,
+then run:
 
 ```text
 /feedback
