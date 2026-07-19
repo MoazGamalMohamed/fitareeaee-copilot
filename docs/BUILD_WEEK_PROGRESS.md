@@ -1593,3 +1593,18 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next: create the private commit, replay/rescan the sanitized clone, push a new tag and
   release, download/hash/install the published APK, run a deliberate fictional full
   phone flow, then complete `/feedback`, video, legal review, and owner submission.
+
+## 2026-07-19 13:04 CDT / 2026-07-19 11:04 PDT — private passing checkpoint recorded
+
+- Created private commit
+  `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c` with message
+  `feat(judge-path): harden roles chat support and device release`.
+- Commit scope: 25 intentional files, 1,856 insertions, 243 deletions; new Payments
+  overview and Google Play readiness document included.
+- `pubspec.yaml` remains an unstaged line-ending-only worktree marker with no content
+  diff and was intentionally excluded.
+- No credential, `.env`, Firebase config, judge password, keystore, APK, screenshot, or
+  build directory was staged or committed.
+- Commit status: local PASS checkpoint created. Tag/push/release remain pending the
+  sanitized replay and all-history secret scan.
+- Rollback point: `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c`.

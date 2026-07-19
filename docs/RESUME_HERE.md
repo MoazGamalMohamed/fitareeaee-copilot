@@ -12,10 +12,9 @@ end-to-end demo and owner-only Devpost actions.
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint before this work: `b34ea4cd326bda8ac57a2ac677b721ae040a8f40`
-- Current private work is uncommitted but fully saved in the working tree: Copilot
-  outcome reveal, confirmed-booking chat authorization, support, navigation,
-  role/settings/verification fixes, tests, and updated evidence.
+- Passing private source checkpoint: `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c`.
+- The implementation, tests, and first evidence record are committed. Only this
+  post-commit resume/progress update remains to checkpoint before sanitization.
 - `pubspec.yaml` may appear modified, but `git diff -- pubspec.yaml` is empty. Do not
   stage a line-ending-only phantom change.
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
