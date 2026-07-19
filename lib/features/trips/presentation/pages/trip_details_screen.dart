@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/trip.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
+import '../../../booking/domain/models/booking_model.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
@@ -53,11 +54,24 @@ class TripDetailsScreen extends ConsumerWidget {
               _buildDetailsGrid(context, trip),
               const SizedBox(height: 24),
 
-              // Passengers
-              _buildSectionTitle(context, 'Passengers'),
+              _buildSectionTitle(context, 'Preferences'),
               const SizedBox(height: 12),
-              _buildPassengersSection(context, trip),
+              _buildPreferencesSection(context, trip),
               const SizedBox(height: 24),
+
+              if (trip.isPackage) ...[
+                _buildSectionTitle(context, 'Package'),
+                const SizedBox(height: 12),
+                _buildPackageSection(context, trip),
+                const SizedBox(height: 24),
+              ],
+
+              if (trip.isOffer && trip.isPerson) ...[
+                _buildSectionTitle(context, 'Passengers'),
+                const SizedBox(height: 12),
+                _buildPassengersSection(context, trip),
+                const SizedBox(height: 24),
+              ],
 
               // Driver Info Card
               _buildSectionTitle(
@@ -101,15 +115,19 @@ class TripDetailsScreen extends ConsumerWidget {
             orElse: () => '',
           );
           final userBookingsAsync = ref.watch(userBookingsProvider(userId));
-          final hasBooked = userBookingsAsync.maybeWhen(
-            data: (bookings) => bookings.any(
-              (b) =>
-                  b.tripId == trip.id &&
-                  (b.status == 'confirmed' ||
-                      b.status == 'paid' ||
-                      b.status == 'pending'),
-            ),
-            orElse: () => false,
+          final activeBooking = userBookingsAsync.maybeWhen(
+            data: (bookings) {
+              for (final booking in bookings) {
+                if (booking.tripId == trip.id &&
+                    (booking.status == 'confirmed' ||
+                        booking.status == 'paid' ||
+                        booking.status == 'pending')) {
+                  return booking;
+                }
+              }
+              return null;
+            },
+            orElse: () => null,
           );
 
           return Padding(
@@ -135,24 +153,40 @@ class TripDetailsScreen extends ConsumerWidget {
                     icon: const Icon(Icons.message),
                     label: const Text('Message Requester'),
                   )
-                else if (hasBooked)
-                  ElevatedButton(
-                    onPressed: () => context.push('/chat/${trip.driverId}'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: AppColors.primary,
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.message, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text(
-                          'Message Driver',
+                else if (activeBooking != null)
+                  Column(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: bookingState is AsyncLoading
+                            ? null
+                            : () => _openBookedChat(
+                                context,
+                                ref,
+                                trip,
+                                activeBooking,
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: AppColors.primary,
+                        ),
+                        icon: const Icon(Icons.message, color: Colors.white),
+                        label: const Text(
+                          'Open Chat',
                           style: TextStyle(color: Colors.white),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: bookingState is AsyncLoading
+                            ? null
+                            : () => _cancelBooking(context, ref, trip, userId),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Cancel under policy'),
+                      ),
+                    ],
                   )
                 else if (bookingState is AsyncLoading)
                   const SizedBox(
@@ -198,7 +232,7 @@ class TripDetailsScreen extends ConsumerWidget {
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    child: const Text('Book Trip'),
+                    child: Text(trip.isPackage ? 'Book Delivery' : 'Book Trip'),
                   )
                 else
                   ElevatedButton(
@@ -405,13 +439,18 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailsGrid(BuildContext context, dynamic trip) {
+  Widget _buildDetailsGrid(BuildContext context, Trip trip) {
+    final seatsLabel = trip.isRequest ? 'Seats Needed' : 'Seats Available';
+    final seatsValue = trip.isRequest
+        ? '${trip.totalSeats}'
+        : '${trip.availableSeats}/${trip.totalSeats}';
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
+      childAspectRatio: 1.25,
       children: [
         _buildDetailItem(
           context,
@@ -425,14 +464,68 @@ class TripDetailsScreen extends ConsumerWidget {
           trip.durationDisplay,
           Icons.timer,
         ),
+        _buildDetailItem(context, seatsLabel, seatsValue, Icons.people),
         _buildDetailItem(
           context,
-          'Seats Available',
-          '${trip.availableSeats}/${trip.totalSeats}',
-          Icons.people,
+          trip.isPackage ? 'Delivery Price' : 'Per Seat',
+          trip.priceDisplay,
+          Icons.paid,
         ),
-        _buildDetailItem(context, 'Per Seat', trip.priceDisplay, Icons.paid),
       ],
+    );
+  }
+
+  Widget _buildPreferencesSection(BuildContext context, Trip trip) {
+    final chips = <Widget>[
+      Chip(
+        avatar: const Icon(Icons.pets, size: 18),
+        label: Text(trip.allowPets ? 'With pets' : 'No pets'),
+      ),
+      Chip(
+        avatar: Icon(
+          trip.allowSmoking ? Icons.smoking_rooms : Icons.smoke_free,
+          size: 18,
+        ),
+        label: Text(trip.allowSmoking ? 'Smoking allowed' : 'No smoking'),
+      ),
+      ...trip.amenities.map((amenity) => Chip(label: Text(amenity))),
+    ];
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Wrap(spacing: 8, runSpacing: 8, children: chips),
+    );
+  }
+
+  Widget _buildPackageSection(BuildContext context, Trip trip) {
+    final weight = trip.packageWeight;
+    final details = trip.packageDescription?.trim();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            weight == null
+                ? 'Weight not specified'
+                : '${weight.toStringAsFixed(1)} kg',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          if (details != null && details.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(details),
+          ],
+        ],
+      ),
     );
   }
 
@@ -617,20 +710,102 @@ class TripDetailsScreen extends ConsumerWidget {
 
   Future<void> _messageRequester(BuildContext context, Trip trip) async {
     try {
-      await FirebaseFunctions.instance
+      final result = await FirebaseFunctions.instance
           .httpsCallable('authorizeTripConversation')
           .call({
             'schemaVersion': 1,
             'tripId': trip.id,
             'recipientId': trip.driverId,
           });
-      if (context.mounted) context.push('/chat/${trip.driverId}');
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final conversationId = data['conversationId'];
+      if (conversationId is! String || conversationId.isEmpty) {
+        throw StateError('Conversation authorization missing');
+      }
+      if (context.mounted) {
+        context.push(
+          '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+        );
+      }
     } on FirebaseFunctionsException catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
             'Messaging is unavailable. Confirm the request is active and your identity review is complete.',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _openBookedChat(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+  ) async {
+    try {
+      final conversationId =
+          booking.conversationId ??
+          await ref
+              .read(tripBookingProvider.notifier)
+              .bookTrip(trip.id, booking.passengerId, booking.seatsBooked);
+      if (!context.mounted) return;
+      context.push(
+        '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Chat could not be opened. Try again.')),
+      );
+    }
+  }
+
+  Future<void> _cancelBooking(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    String userId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cancel booking?'),
+        content: const Text(
+          'Self-service cancellation is available until the scheduled departure. Seats will be returned to the trip. No payment or refund is processed in this contest build.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep booking'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Cancel booking'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref
+          .read(tripBookingProvider.notifier)
+          .cancelBooking(trip.id, userId);
+      ref.invalidate(userBookingsProvider(userId));
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(availableTripsProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Booking cancelled and seats restored.')),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'This booking cannot be cancelled here. Contact support for help.',
           ),
         ),
       );

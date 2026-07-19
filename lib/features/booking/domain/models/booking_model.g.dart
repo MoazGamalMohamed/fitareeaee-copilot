@@ -16,6 +16,7 @@ _$BookingModelImpl _$$BookingModelImplFromJson(Map<String, dynamic> json) =>
       totalPrice: (json['totalPrice'] as num).toDouble(),
       status: json['status'] as String,
       paymentStatus: json['paymentStatus'] as String,
+      conversationId: json['conversationId'] as String?,
       pickupLocation: json['pickupLocation'] as String?,
       dropoffLocation: json['dropoffLocation'] as String?,
       pickupTime: json['pickupTime'] == null
@@ -38,6 +39,7 @@ Map<String, dynamic> _$$BookingModelImplToJson(_$BookingModelImpl instance) =>
       'totalPrice': instance.totalPrice,
       'status': instance.status,
       'paymentStatus': instance.paymentStatus,
+      'conversationId': instance.conversationId,
       'pickupLocation': instance.pickupLocation,
       'dropoffLocation': instance.dropoffLocation,
       'pickupTime': instance.pickupTime?.toIso8601String(),

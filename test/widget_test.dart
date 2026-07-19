@@ -11,6 +11,7 @@ void main() {
     test('Message entity creation and utilities', () {
       final message = Message(
         id: 'msg1',
+        conversationId: 'trip1__user1_user2',
         senderId: 'user1',
         recipientId: 'user2',
         content: 'Hello',
@@ -26,8 +27,8 @@ void main() {
     });
 
     test('Message conversation ID generation', () {
-      final convId1 = Message.getConversationId('alice', 'bob');
-      final convId2 = Message.getConversationId('bob', 'alice');
+      final convId1 = Message.getLegacyConversationId('alice', 'bob');
+      final convId2 = Message.getLegacyConversationId('bob', 'alice');
 
       expect(convId1, convId2);
       expect(convId1.contains('_'), true);

@@ -163,7 +163,7 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     sender_id: "rider",
     recipient_id: "driver",
     participant_ids: ["driver", "rider"],
-    conversation_id: "driver_rider",
+    conversation_id: "trip-1__driver_rider",
     content: "Hello",
     attachments: [],
     created_at: new Date(),
@@ -171,9 +171,11 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     read_at: null,
     is_deleted: false,
   };
-  await seed("conversation_authorizations/driver_rider", {
-    id: "driver_rider",
+  await seed("conversation_authorizations/trip-1__driver_rider", {
+    id: "trip-1__driver_rider",
     participant_ids: ["driver", "rider"],
+    tripId: "trip-1",
+    active: true,
   });
   await seed("messages/legacy-mismatch", {
     ...message,
@@ -209,6 +211,19 @@ test("messages are participant-scoped and sender identity is enforced", async ()
       conversation_id: "outsider_rider",
     })
   );
+  await seed("conversation_authorizations/trip-old__driver_rider", {
+    id: "trip-old__driver_rider",
+    participant_ids: ["driver", "rider"],
+    tripId: "trip-old",
+    active: false,
+  });
+  await assertFails(
+    setDoc(doc(rider, "messages/inactive"), {
+      ...message,
+      id: "inactive",
+      conversation_id: "trip-old__driver_rider",
+    })
+  );
 });
 
 test("payment and wallet writes are denied", async () => {
@@ -230,16 +245,16 @@ test("storage limits verification uploads to the owning user and images", async 
   const image = new Uint8Array([1, 2, 3]);
   await assertSucceeds(
     uploadBytes(
-      ref(riderStorage, "verification_documents/rider/id.jpg"),
+      ref(riderStorage, "verification_documents/rider/identity.jpg"),
       image,
       {contentType: "image/jpeg"}
     )
   );
   await assertFails(
-    deleteObject(ref(otherStorage, "verification_documents/rider/id.jpg"))
+    deleteObject(ref(otherStorage, "verification_documents/rider/identity.jpg"))
   );
   await assertSucceeds(
-    deleteObject(ref(riderStorage, "verification_documents/rider/id.jpg"))
+    deleteObject(ref(riderStorage, "verification_documents/rider/identity.jpg"))
   );
   await assertFails(
     uploadBytes(
@@ -253,6 +268,20 @@ test("storage limits verification uploads to the owning user and images", async 
       ref(riderStorage, "verification_documents/rider/id.txt"),
       image,
       {contentType: "text/plain"}
+    )
+  );
+  await assertFails(
+    uploadBytes(
+      ref(riderStorage, "verification_documents/rider/random.jpg"),
+      image,
+      {contentType: "image/jpeg"}
+    )
+  );
+  await assertFails(
+    uploadBytes(
+      ref(riderStorage, "avatars/rider/not-profile.jpg"),
+      image,
+      {contentType: "image/jpeg"}
     )
   );
   assert.equal(image.length, 3);

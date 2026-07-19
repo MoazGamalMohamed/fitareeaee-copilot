@@ -92,7 +92,7 @@ export function parsePlanRequest(value: unknown): {
   }
   const locale = data.locale === "ar" ? "ar" : "en";
   const timezone = typeof data.timezone === "string" &&
-    /^[A-Za-z_+\-/]{1,64}$/.test(data.timezone) ? data.timezone : "UTC";
+    /^[A-Za-z0-9_+\-/:]{1,64}$/.test(data.timezone) ? data.timezone : "UTC";
   return {request, locale, timezone};
 }
 
@@ -108,15 +108,15 @@ export function authenticatedUid(auth: {uid?: unknown} | null | undefined): stri
 
 export function redactContactDetails(value: string): string {
   const dates: string[] = [];
-  const protectedValue = value.replace(/\b\d{4}-\d{2}-\d{2}\b/g, (date) => {
+  const protectedValue = value.replace(/[\p{Nd}]{4}-[\p{Nd}]{2}-[\p{Nd}]{2}/gu, (date) => {
     dates.push(date);
     return `__PRESERVED_DATE_${dates.length - 1}__`;
   });
   return protectedValue
     .replace(/https?:\/\/\S+/gi, "[url removed]")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email removed]")
-    .replace(/(?:\+?\d[\d\s().-]{6,}\d)/g, (match) => {
-      const digits = match.replace(/\D/g, "");
+    .replace(/(?:[+\p{Nd}][\p{Nd}\s().-]{6,}\p{Nd})/gu, (match) => {
+      const digits = match.match(/\p{Nd}/gu) ?? [];
       return digits.length >= 7 ? "[number removed]" : match;
     })
     .replace(/__PRESERVED_DATE_(\d+)__/g, (_match, index) => dates[Number(index)] ?? "[date]");
@@ -279,6 +279,7 @@ export const planTripWithCopilot = functions
     try {
       const response = await client.responses.create({
         model: MODEL,
+        store: false,
         reasoning: {effort: "none"},
         max_output_tokens: 1200,
         instructions: [

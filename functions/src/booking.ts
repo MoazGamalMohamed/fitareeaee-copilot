@@ -51,6 +51,16 @@ export function bookingDocumentId(tripId: string, passengerId: string): string {
   return `${tripId}_${passengerId}`;
 }
 
+export function validatedUnitPrice(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100_000) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "This trip has an invalid price."
+    );
+  }
+  return value;
+}
+
 function departureDate(value: unknown): Date | null {
   if (value instanceof Timestamp) return value.toDate();
   if (typeof value === "string") {
@@ -59,6 +69,13 @@ function departureDate(value: unknown): Date | null {
   }
   if (value instanceof Date) return value;
   return null;
+}
+
+export function canSelfCancelBeforeDeparture(
+  departure: Date | null,
+  nowMs: number
+): boolean {
+  return departure !== null && departure.getTime() > nowMs;
 }
 
 function hasRequiredVerification(
@@ -131,7 +148,11 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       }
 
       const availableSeats = Number(trip.available_seats);
-      const conversationId = conversationDocumentId(passengerId, driverId);
+      const conversationId = conversationDocumentId(
+        request.tripId,
+        passengerId,
+        driverId
+      );
       const conversationRef = db
         .collection("conversation_authorizations")
         .doc(conversationId);
@@ -143,7 +164,9 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
             participant_ids: [passengerId, driverId].sort(),
             source: "booking",
             tripId: request.tripId,
+            active: true,
             createdAt: existing.createdAt ?? Timestamp.now(),
+            updatedAt: Timestamp.now(),
           }, {merge: true});
           return {
             schemaVersion: 1,
@@ -152,6 +175,7 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
             seatsBooked: existing.seatsBooked ?? request.seats,
             totalPrice: existing.totalPrice ?? 0,
             availableSeats,
+            conversationId,
             created: false,
           };
         }
@@ -188,8 +212,8 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       }
 
       const now = Timestamp.now();
-      const unitPrice = Number(trip.price_per_seat) || 0;
-      const totalPrice = Math.max(0, unitPrice * request.seats);
+      const unitPrice = validatedUnitPrice(trip.price_per_seat);
+      const totalPrice = unitPrice * request.seats;
       transaction.create(bookingRef, {
         id: bookingRef.id,
         schemaVersion: 1,
@@ -200,6 +224,7 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         totalPrice,
         status: "confirmed",
         paymentStatus: "disabled",
+        conversationId,
         pickupLocation: trip.origin_address ?? null,
         dropoffLocation: trip.destination_address ?? null,
         pickupTime: trip.departure_time,
@@ -216,7 +241,9 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         participant_ids: [passengerId, driverId].sort(),
         source: "booking",
         tripId: request.tripId,
+        active: true,
         createdAt: now,
+        updatedAt: now,
       }, {merge: true});
 
       return {
@@ -226,6 +253,7 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         seatsBooked: request.seats,
         totalPrice,
         availableSeats: availableSeats - request.seats,
+        conversationId,
         created: true,
       };
     });
@@ -277,16 +305,36 @@ export const cancelBooking = functions.https.onCall(async (rawData, context) => 
       }
 
       const trip = tripSnapshot.data()!;
+      if (!canSelfCancelBeforeDeparture(
+        departureDate(trip.departure_time),
+        Date.now()
+      )) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "Self-service cancellation closes at the scheduled departure time."
+        );
+      }
       const totalSeats = Number(trip.total_seats) || 0;
       const availableSeats = Number(trip.available_seats) || 0;
       const bookedSeats = Number(booking.seatsBooked) || 1;
       const now = Timestamp.now();
+      const conversationId = typeof booking.conversationId === "string" ?
+        booking.conversationId :
+        conversationDocumentId(request.tripId, passengerId, booking.driverId);
+      const conversationRef = db
+        .collection("conversation_authorizations")
+        .doc(conversationId);
 
       transaction.update(bookingRef, {status: "cancelled", updatedAt: now});
       transaction.update(tripRef, {
         available_seats: Math.min(totalSeats, availableSeats + bookedSeats),
         updated_at: now,
       });
+      transaction.set(conversationRef, {
+        active: false,
+        status: "cancelled",
+        updatedAt: now,
+      }, {merge: true});
       return {schemaVersion: 1, bookingId: bookingRef.id, status: "cancelled"};
     });
   } catch (error) {

@@ -115,12 +115,9 @@ service cloud.firestore {
         && request.resource.data.attachments.size() == 0
         && request.resource.data.created_at is timestamp
         && request.resource.data.read_at == null
-        && (
-          request.resource.data.conversation_id ==
-            request.auth.uid + '_' + request.resource.data.recipient_id
-          || request.resource.data.conversation_id ==
-            request.resource.data.recipient_id + '_' + request.auth.uid
-        )
+        && request.resource.data.conversation_id is string
+        && request.resource.data.conversation_id.size() > 0
+        && request.resource.data.conversation_id.size() <= 512
         && request.resource.data.participant_ids is list
         && request.resource.data.participant_ids.size() == 2
         && request.resource.data.participant_ids.hasAll([
@@ -130,6 +127,8 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id))
         && get(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id)).data.participant_ids
           == request.resource.data.participant_ids
+        && get(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id)).data.active
+          == true
         && request.resource.data.is_read == false
         && request.resource.data.is_deleted == false;
       allow update: if signedIn()

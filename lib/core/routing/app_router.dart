@@ -153,7 +153,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'chat-conversation',
         builder: (context, state) {
           final userId = state.pathParameters['userId'] ?? '';
-          return ChatScreen(recipientId: userId);
+          final conversationId =
+              state.uri.queryParameters['conversationId'] ?? '';
+          return ChatScreen(
+            recipientId: userId,
+            conversationId: conversationId,
+          );
         },
       ),
 

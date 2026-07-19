@@ -61,8 +61,7 @@ final uploadVerificationDocumentProvider =
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      final fileName =
-          '${params.type.name}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = '${params.type.name}.jpg';
       // Use secure path that matches storage rules: verification_documents/{userId}/{fileName}
       final storageRef = storage.ref().child(
         'verification_documents/${user.uid}/$fileName',

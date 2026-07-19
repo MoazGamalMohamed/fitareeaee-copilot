@@ -434,7 +434,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
     try {
       final userId = ref.read(authStateProvider).value?.id;
       if (userId == null) return;
-      await ref
+      final conversationId = await ref
           .read(tripBookingProvider.notifier)
           .bookTrip(trip.id, userId, requestedSeats);
       ref.invalidate(tripDetailProvider(trip.id));
@@ -445,7 +445,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
           content: Text('Booking confirmed! You can now message the driver.'),
         ),
       );
-      context.go('/chat/${trip.driverId}');
+      context.go(
+        '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+      );
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

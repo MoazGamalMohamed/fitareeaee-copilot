@@ -30,6 +30,7 @@ class TimestampConverter implements JsonConverter<DateTime, dynamic> {
 class MessageModel with _$MessageModel {
   const factory MessageModel({
     required String id,
+    @JsonKey(name: 'conversation_id') required String conversationId,
     @JsonKey(name: 'sender_id') required String senderId,
     @JsonKey(name: 'recipient_id') required String recipientId,
     @Default('') String content,
@@ -47,6 +48,7 @@ class MessageModel with _$MessageModel {
   /// Convert to domain entity
   Message toEntity() => Message(
     id: id,
+    conversationId: conversationId,
     senderId: senderId,
     recipientId: recipientId,
     content: content,
@@ -59,7 +61,6 @@ class MessageModel with _$MessageModel {
 
   /// Convert to Firestore document format
   Map<String, dynamic> toFirestore() {
-    final conversationId = Message.getConversationId(senderId, recipientId);
     final participantIds = <String>[senderId, recipientId]..sort();
     return {
       'id': id,
@@ -84,6 +85,7 @@ class MessageModel with _$MessageModel {
 extension MessageToModel on Message {
   MessageModel toModel() => MessageModel(
     id: id,
+    conversationId: conversationId,
     senderId: senderId,
     recipientId: recipientId,
     content: content,

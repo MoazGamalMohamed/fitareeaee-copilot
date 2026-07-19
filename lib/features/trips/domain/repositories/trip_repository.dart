@@ -14,6 +14,6 @@ abstract class TripRepository {
     String? tripType,
   });
   Stream<List<Trip>> streamAvailableTrips({String? excludeUserId});
-  Future<void> bookTrip(String tripId, String userId, int seats);
+  Future<String> bookTrip(String tripId, String userId, int seats);
   Future<void> cancelBooking(String tripId, String userId);
 }

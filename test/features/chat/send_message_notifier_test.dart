@@ -30,7 +30,11 @@ void main() {
     );
 
     await expectLater(
-      notifier.sendMessage(recipientId: 'driver', content: 'Hello'),
+      notifier.sendMessage(
+        recipientId: 'driver',
+        conversationId: 'trip-1__driver_rider',
+        content: 'Hello',
+      ),
       throwsA(isA<Exception>()),
     );
     expect(notifier.state, isA<AsyncError<void>>());
@@ -39,6 +43,7 @@ void main() {
   test('authorized send completes successfully', () async {
     final placeholder = Message(
       id: 'placeholder',
+      conversationId: 'trip-1__driver_rider',
       senderId: 'rider',
       recipientId: 'driver',
       content: 'Hello',
@@ -54,7 +59,11 @@ void main() {
       userId: 'rider',
     );
 
-    await notifier.sendMessage(recipientId: 'driver', content: 'Hello');
+    await notifier.sendMessage(
+      recipientId: 'driver',
+      conversationId: 'trip-1__driver_rider',
+      content: 'Hello',
+    );
 
     expect(notifier.state, isA<AsyncData<void>>());
   });

@@ -10,8 +10,13 @@ import 'package:flutter/services.dart';
 /// Screen for a specific conversation
 class ChatScreen extends ConsumerStatefulWidget {
   final String recipientId;
+  final String conversationId;
 
-  const ChatScreen({super.key, required this.recipientId});
+  const ChatScreen({
+    super.key,
+    required this.recipientId,
+    required this.conversationId,
+  });
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -72,10 +77,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return const Scaffold(body: Center(child: Text('Please log in')));
     }
 
-    final conversationId = Message.getConversationId(
-      currentUser.id,
-      widget.recipientId,
-    );
+    final conversationId = widget.conversationId;
+    if (conversationId.isEmpty) {
+      return const Scaffold(
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'Open chat from an authorized trip or booking.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
 
     final messagesAsync = ref.watch(
       conversationMessagesProvider(conversationId),
@@ -262,6 +277,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _ChatInputField(
             controller: _messageController,
             recipientId: widget.recipientId,
+            conversationId: conversationId,
             onMessageSent: () {
               setState(() => _shouldAutoScroll = true);
               _scrollToBottom();
@@ -487,11 +503,13 @@ class _MessageBubble extends ConsumerWidget {
 class _ChatInputField extends ConsumerStatefulWidget {
   final TextEditingController controller;
   final String recipientId;
+  final String conversationId;
   final VoidCallback onMessageSent;
 
   const _ChatInputField({
     required this.controller,
     required this.recipientId,
+    required this.conversationId,
     required this.onMessageSent,
   });
 
@@ -514,6 +532,7 @@ class _ChatInputFieldState extends ConsumerState<_ChatInputField> {
       await ref
           .read(sendMessageProvider(widget.recipientId).notifier)
           .sendMessage(
+            conversationId: widget.conversationId,
             recipientId: widget.recipientId,
             content: content,
             attachments: const [],

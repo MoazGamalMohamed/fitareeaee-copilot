@@ -22,6 +22,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Message {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'conversation_id')
+  String get conversationId => throw _privateConstructorUsedError;
   String get senderId => throw _privateConstructorUsedError;
   String get recipientId => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
@@ -49,6 +51,7 @@ abstract class $MessageCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'conversation_id') String conversationId,
     String senderId,
     String recipientId,
     String content,
@@ -76,6 +79,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
   @override
   $Res call({
     Object? id = null,
+    Object? conversationId = null,
     Object? senderId = null,
     Object? recipientId = null,
     Object? content = null,
@@ -90,6 +94,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
             id: null == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            conversationId: null == conversationId
+                ? _value.conversationId
+                : conversationId // ignore: cast_nullable_to_non_nullable
                       as String,
             senderId: null == senderId
                 ? _value.senderId
@@ -139,6 +147,7 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
+    @JsonKey(name: 'conversation_id') String conversationId,
     String senderId,
     String recipientId,
     String content,
@@ -165,6 +174,7 @@ class __$$MessageImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? conversationId = null,
     Object? senderId = null,
     Object? recipientId = null,
     Object? content = null,
@@ -179,6 +189,10 @@ class __$$MessageImplCopyWithImpl<$Res>
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        conversationId: null == conversationId
+            ? _value.conversationId
+            : conversationId // ignore: cast_nullable_to_non_nullable
                   as String,
         senderId: null == senderId
             ? _value.senderId
@@ -222,6 +236,7 @@ class __$$MessageImplCopyWithImpl<$Res>
 class _$MessageImpl extends _Message {
   const _$MessageImpl({
     required this.id,
+    @JsonKey(name: 'conversation_id') required this.conversationId,
     required this.senderId,
     required this.recipientId,
     required this.content,
@@ -238,6 +253,9 @@ class _$MessageImpl extends _Message {
 
   @override
   final String id;
+  @override
+  @JsonKey(name: 'conversation_id')
+  final String conversationId;
   @override
   final String senderId;
   @override
@@ -268,7 +286,7 @@ class _$MessageImpl extends _Message {
 
   @override
   String toString() {
-    return 'Message(id: $id, senderId: $senderId, recipientId: $recipientId, content: $content, attachments: $attachments, createdAt: $createdAt, isRead: $isRead, readAt: $readAt, isDeleted: $isDeleted)';
+    return 'Message(id: $id, conversationId: $conversationId, senderId: $senderId, recipientId: $recipientId, content: $content, attachments: $attachments, createdAt: $createdAt, isRead: $isRead, readAt: $readAt, isDeleted: $isDeleted)';
   }
 
   @override
@@ -277,6 +295,8 @@ class _$MessageImpl extends _Message {
         (other.runtimeType == runtimeType &&
             other is _$MessageImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.conversationId, conversationId) ||
+                other.conversationId == conversationId) &&
             (identical(other.senderId, senderId) ||
                 other.senderId == senderId) &&
             (identical(other.recipientId, recipientId) ||
@@ -299,6 +319,7 @@ class _$MessageImpl extends _Message {
   int get hashCode => Object.hash(
     runtimeType,
     id,
+    conversationId,
     senderId,
     recipientId,
     content,
@@ -326,6 +347,7 @@ class _$MessageImpl extends _Message {
 abstract class _Message extends Message {
   const factory _Message({
     required final String id,
+    @JsonKey(name: 'conversation_id') required final String conversationId,
     required final String senderId,
     required final String recipientId,
     required final String content,
@@ -341,6 +363,9 @@ abstract class _Message extends Message {
 
   @override
   String get id;
+  @override
+  @JsonKey(name: 'conversation_id')
+  String get conversationId;
   @override
   String get senderId;
   @override

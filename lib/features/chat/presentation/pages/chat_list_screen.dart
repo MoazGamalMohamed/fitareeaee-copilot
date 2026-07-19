@@ -185,7 +185,9 @@ class _ConversationTile extends ConsumerWidget {
             ],
           ),
           onTap: () {
-            context.push('/chat/$otherUserId');
+            context.push(
+              '/chat/$otherUserId?conversationId=${Uri.encodeQueryComponent(message.conversationId)}',
+            );
           },
         );
       },
@@ -208,7 +210,9 @@ class _ConversationTile extends ConsumerWidget {
           overflow: TextOverflow.ellipsis,
         ),
         onTap: () {
-          context.push('/chat/$otherUserId');
+          context.push(
+            '/chat/$otherUserId?conversationId=${Uri.encodeQueryComponent(message.conversationId)}',
+          );
         },
       ),
     );

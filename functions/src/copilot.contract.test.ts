@@ -27,7 +27,13 @@ const validDraft = {
 };
 
 test("Copilot request enforces length and normalizes locale", () => {
-  assert.equal(parsePlanRequest({request: "Dallas to Austin tomorrow", locale: "ar"}).locale, "ar");
+  const request = parsePlanRequest({
+    request: "Dallas to Austin tomorrow",
+    locale: "ar",
+    timezone: "-05:00",
+  });
+  assert.equal(request.locale, "ar");
+  assert.equal(request.timezone, "-05:00");
   assert.throws(() => parsePlanRequest({request: "go"}));
   assert.throws(() => parsePlanRequest({request: "x".repeat(1201)}));
 });
@@ -43,7 +49,10 @@ test("Copilot removes email addresses and likely phone numbers", () => {
   assert.equal(redacted.includes("example.com"), false);
   assert.equal(redactContactDetails("Use https://example.com/private"), "Use [url removed]");
   assert.equal(redactContactDetails("Call 555-0199"), "Call [number removed]");
+  assert.equal(redactContactDetails("اتصل على ٠٥٥١٢٣٤٥٦٧"), "اتصل على [number removed]");
+  assert.equal(redactContactDetails("اتصل على ۰۵۵۱۲۳۴۵۶۷"), "اتصل على [number removed]");
   assert.equal(redactContactDetails("Travel on 2026-07-20"), "Travel on 2026-07-20");
+  assert.equal(redactContactDetails("السفر ٢٠٢٦-٠٧-٢٠"), "السفر ٢٠٢٦-٠٧-٢٠");
 });
 
 test("Copilot accepts a complete strict draft", () => {

@@ -18,7 +18,7 @@ abstract class TripRepository {
   });
   Stream<List<Trip>> streamAvailableTrips();
   Stream<List<Trip>> streamUserTrips(String userId);
-  Future<void> bookTrip(String tripId, String userId, int seats);
+  Future<String> bookTrip(String tripId, String userId, int seats);
   Future<void> cancelBooking(String tripId, String userId);
 }
 
@@ -267,13 +267,19 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<void> bookTrip(String tripId, String userId, int seats) async {
+  Future<String> bookTrip(String tripId, String userId, int seats) async {
     try {
-      await _functions.httpsCallable('createBooking').call({
+      final result = await _functions.httpsCallable('createBooking').call({
         'schemaVersion': 1,
         'tripId': tripId,
         'seats': seats,
       });
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final conversationId = data['conversationId'];
+      if (conversationId is! String || conversationId.isEmpty) {
+        throw AppException(message: 'Booking conversation was not created');
+      }
+      return conversationId;
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {

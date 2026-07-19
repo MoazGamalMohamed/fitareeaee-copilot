@@ -8,6 +8,7 @@ part 'message.g.dart';
 class Message with _$Message {
   const factory Message({
     required String id,
+    @JsonKey(name: 'conversation_id') required String conversationId,
     required String senderId,
     required String recipientId,
     required String content,
@@ -26,8 +27,8 @@ class Message with _$Message {
   /// Check if message is from current user
   bool isSentByUser(String userId) => senderId == userId;
 
-  /// Get conversation ID (sorted pair of user IDs)
-  static String getConversationId(String userId1, String userId2) {
+  /// Legacy participant-pair ID helper retained only for old local fixtures.
+  static String getLegacyConversationId(String userId1, String userId2) {
     final ids = [userId1, userId2]..sort();
     return ids.join('_');
   }

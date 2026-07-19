@@ -46,6 +46,7 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
        super(const AsyncValue.data(null));
 
   Future<void> sendMessage({
+    required String conversationId,
     required String recipientId,
     required String content,
     List<String> attachments = const [],
@@ -54,6 +55,7 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
 
     final message = Message(
       id: const Uuid().v4(),
+      conversationId: conversationId,
       senderId: _userId,
       recipientId: recipientId,
       content: content,

@@ -33,10 +33,10 @@ class _CopilotScreenState extends State<CopilotScreen> {
   String? _error;
 
   static const _examples = [
-    'I need a ride from Dallas to Austin tomorrow at 9 AM for two people under \$40.',
-    'I’m driving to Houston Friday evening with three seats, no smoking.',
-    'I need to send a 5 kg package from Chicago to Milwaukee this weekend.',
-    'أحتاج رحلة من دالاس إلى أوستن غداً الساعة ٩ صباحاً لشخصين.',
+    'I need a ride from Dallas to Austin on August 10, 2026 at 9 AM for two people under \$40.',
+    'I’m driving from Dallas to Austin on August 10, 2026 at noon with three seats, no smoking.',
+    'I need to send a 5 kg package from Chicago to Milwaukee on August 10, 2026.',
+    'أحتاج رحلة من دالاس إلى أوستن يوم 10 أغسطس 2026 الساعة 9 صباحاً لشخصين وبأقل من 40 دولاراً.',
   ];
 
   @override
@@ -70,7 +70,12 @@ class _CopilotScreenState extends State<CopilotScreen> {
       _loadDraft(result.draft);
       setState(() => _result = result);
     } catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (!mounted) return;
+      setState(() {
+        _error = error is CopilotException
+            ? error.message
+            : 'AI planning is unavailable. Retry or use manual search.';
+      });
     } finally {
       if (mounted) setState(() => _loading = false);
     }

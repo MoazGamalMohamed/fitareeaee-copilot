@@ -9,12 +9,14 @@ test("verification accepts the four manually reviewed document types", () => {
 });
 
 test("verification upload must belong to the authenticated user's folder", () => {
-  const valid = "verification_documents/rider/identity_1.jpg";
-  assert.equal(validateDocumentUrl(valid, "rider"), valid);
-  assert.throws(() => validateDocumentUrl(valid, "someone-else"));
-  assert.throws(() => validateDocumentUrl("verification_documents/rider/../other.jpg", "rider"));
+  const valid = "verification_documents/rider/identity.jpg";
+  assert.equal(validateDocumentUrl(valid, "rider", "identity"), valid);
+  assert.throws(() => validateDocumentUrl(valid, "someone-else", "identity"));
+  assert.throws(() => validateDocumentUrl(valid, "rider", "selfieWithId"));
+  assert.throws(() => validateDocumentUrl("verification_documents/rider/../other.jpg", "rider", "identity"));
   assert.throws(() => validateDocumentUrl(
     "verification_documents/rider/subfolder/identity.jpg",
-    "rider"
+    "rider",
+    "identity"
   ));
 });

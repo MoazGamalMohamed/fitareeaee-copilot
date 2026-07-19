@@ -15,6 +15,7 @@ class BookingModel with _$BookingModel {
     required String
     status, // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
     required String paymentStatus, // 'unpaid', 'paid', 'refunded', 'escrow'
+    String? conversationId,
     required String? pickupLocation,
     required String? dropoffLocation,
     required DateTime? pickupTime,

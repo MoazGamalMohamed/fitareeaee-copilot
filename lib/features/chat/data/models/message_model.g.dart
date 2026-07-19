@@ -9,6 +9,7 @@ part of 'message_model.dart';
 _$MessageModelImpl _$$MessageModelImplFromJson(Map<String, dynamic> json) =>
     _$MessageModelImpl(
       id: json['id'] as String,
+      conversationId: json['conversation_id'] as String,
       senderId: json['sender_id'] as String,
       recipientId: json['recipient_id'] as String,
       content: json['content'] as String? ?? '',
@@ -26,6 +27,7 @@ _$MessageModelImpl _$$MessageModelImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$MessageModelImplToJson(_$MessageModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'conversation_id': instance.conversationId,
       'sender_id': instance.senderId,
       'recipient_id': instance.recipientId,
       'content': instance.content,

@@ -124,6 +124,65 @@ async function commitWithAccessToken(documents, accessToken) {
   }
 }
 
+async function hasJudgeBookingsWithAccessToken(tripIds, accessToken) {
+  const root = `projects/${EXPECTED_PROJECT}/databases/(default)/documents`;
+  const response = await fetch(
+    `https://firestore.googleapis.com/v1/${root}:runQuery`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+        "content-type": "application/json",
+        "x-goog-user-project": EXPECTED_PROJECT,
+      },
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{collectionId: "bookings"}],
+          where: {
+            fieldFilter: {
+              field: {fieldPath: "tripId"},
+              op: "IN",
+              value: {
+                arrayValue: {
+                  values: tripIds.map((tripId) => ({stringValue: tripId})),
+                },
+              },
+            },
+          },
+          limit: 1,
+        },
+      }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`Firestore judge-booking check returned HTTP ${response.status}.`);
+  }
+  const results = await response.json();
+  return Array.isArray(results) && results.some((result) => result.document);
+}
+
+async function refuseDestructiveReseed(tripIds, accessToken) {
+  if (process.env.RESET_JUDGE_DATA === EXPECTED_PROJECT) return;
+  let hasBookings;
+  if (accessToken) {
+    hasBookings = await hasJudgeBookingsWithAccessToken(tripIds, accessToken);
+  } else {
+    if (getApps().length === 0) initializeApp({projectId: EXPECTED_PROJECT});
+    const snapshot = await getFirestore()
+      .collection("bookings")
+      .where("tripId", "in", tripIds)
+      .limit(1)
+      .get();
+    hasBookings = !snapshot.empty;
+  }
+  if (hasBookings) {
+    fail(
+      `judge bookings already exist; set RESET_JUDGE_DATA=${EXPECTED_PROJECT} ` +
+      "only after intentionally clearing the fictional test flow."
+    );
+  }
+}
+
 async function main({accessToken, driverEmail, riderEmail} = {}) {
   const fixtures = [
     trip({id: "build_week_judge_dallas_austin_0900", owner: driverUid,
@@ -146,6 +205,11 @@ async function main({accessToken, driverEmail, riderEmail} = {}) {
       price: 30, seats: 2, allowSmoking: false,
       description: "Judge fixture: evening ride request."}),
   ];
+
+  await refuseDestructiveReseed(
+    fixtures.map((fixture) => fixture.id),
+    accessToken,
+  );
 
   const documents = [];
   for (const fixture of fixtures) {

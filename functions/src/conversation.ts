@@ -1,8 +1,12 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
 
-export function conversationDocumentId(firstUid: string, secondUid: string): string {
-  return [firstUid, secondUid].sort().join("_");
+export function conversationDocumentId(
+  tripId: string,
+  firstUid: string,
+  secondUid: string
+): string {
+  return `${tripId}__${[firstUid, secondUid].sort().join("_")}`;
 }
 
 function validId(value: unknown): value is string {
@@ -47,13 +51,15 @@ export const authorizeTripConversation = functions.https.onCall(
     }
 
     const participants = [context.auth.uid, recipientId].sort();
-    const id = conversationDocumentId(participants[0], participants[1]);
+    const id = conversationDocumentId(tripId, participants[0], participants[1]);
     await db.collection("conversation_authorizations").doc(id).set({
       id,
       participant_ids: participants,
       source: "trip_request",
       tripId,
+      active: true,
       createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     }, {merge: true});
     return {schemaVersion: 1, conversationId: id};
   }

@@ -54,7 +54,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       },
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, _) => Scaffold(body: Center(child: Text('Error: $error'))),
+      error: (_, _) => const Scaffold(
+        body: Center(child: Text('Profile is unavailable. Please retry.')),
+      ),
     );
   }
 

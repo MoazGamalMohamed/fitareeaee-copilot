@@ -9,6 +9,7 @@ part of 'message.dart';
 _$MessageImpl _$$MessageImplFromJson(Map<String, dynamic> json) =>
     _$MessageImpl(
       id: json['id'] as String,
+      conversationId: json['conversation_id'] as String,
       senderId: json['senderId'] as String,
       recipientId: json['recipientId'] as String,
       content: json['content'] as String,
@@ -28,6 +29,7 @@ _$MessageImpl _$$MessageImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$MessageImplToJson(_$MessageImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'conversation_id': instance.conversationId,
       'senderId': instance.senderId,
       'recipientId': instance.recipientId,
       'content': instance.content,

@@ -18,7 +18,7 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
-    match /avatars/{uid}/{fileName} {
+    match /avatars/{uid}/profile.jpg {
       allow read: if signedIn();
       allow create, update: if signedIn() && request.auth.uid == uid && safeImage();
       allow delete: if signedIn() && request.auth.uid == uid;
@@ -29,6 +29,7 @@ service firebase.storage {
       allow create: if signedIn()
         && request.auth.uid == uid
         && resource == null
+        && fileName.matches('(identity|driverLicense|vehicle|selfieWithId)\\.jpg')
         && safeImage();
       allow delete: if signedIn() && request.auth.uid == uid;
       allow update: if false;

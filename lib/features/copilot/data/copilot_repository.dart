@@ -17,7 +17,7 @@ class CopilotRepository {
             'schemaVersion': 1,
             'request': request,
             'locale': locale,
-            'timezone': DateTime.now().timeZoneName,
+            'timezone': _timezoneOffset(),
           });
       final data = Map<String, dynamic>.from(response.data as Map);
       final draft = Map<String, dynamic>.from(data['draft'] as Map);
@@ -35,6 +35,15 @@ class CopilotRepository {
         'AI planning is unavailable. Retry or use manual search.',
       );
     }
+  }
+
+  String _timezoneOffset() {
+    final offset = DateTime.now().timeZoneOffset;
+    final totalMinutes = offset.inMinutes.abs();
+    final sign = offset.isNegative ? '-' : '+';
+    final hours = (totalMinutes ~/ 60).toString().padLeft(2, '0');
+    final minutes = (totalMinutes % 60).toString().padLeft(2, '0');
+    return '$sign$hours:$minutes';
   }
 }
 

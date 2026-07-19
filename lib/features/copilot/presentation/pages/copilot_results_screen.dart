@@ -45,7 +45,11 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError) return _error(snapshot.error.toString());
+          if (snapshot.hasError) {
+            return _error(
+              'Live trips are unavailable. Retry or search manually.',
+            );
+          }
           final matches = rankCopilotMatches(
             snapshot.data ?? const [],
             widget.draft,

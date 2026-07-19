@@ -119,6 +119,9 @@ test("duplicate booking is idempotent and cancellation restores inventory", asyn
   const bookingId = `${tripId}_${riderA.uid}`;
   const booking = await db.collection("bookings").doc(bookingId).get();
   assert.equal(booking.data().status, "cancelled");
+  const authorization = await db.collection("conversation_authorizations")
+    .doc(booking.data().conversationId).get();
+  assert.equal(authorization.data().active, false);
 });
 
 test("unverified rider is rejected without changing inventory", async () => {

@@ -32,6 +32,7 @@ mixin _$BookingModel {
       throw _privateConstructorUsedError; // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
   String get paymentStatus =>
       throw _privateConstructorUsedError; // 'unpaid', 'paid', 'refunded', 'escrow'
+  String? get conversationId => throw _privateConstructorUsedError;
   String? get pickupLocation => throw _privateConstructorUsedError;
   String? get dropoffLocation => throw _privateConstructorUsedError;
   DateTime? get pickupTime => throw _privateConstructorUsedError;
@@ -65,6 +66,7 @@ abstract class $BookingModelCopyWith<$Res> {
     double totalPrice,
     String status,
     String paymentStatus,
+    String? conversationId,
     String? pickupLocation,
     String? dropoffLocation,
     DateTime? pickupTime,
@@ -97,6 +99,7 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
     Object? totalPrice = null,
     Object? status = null,
     Object? paymentStatus = null,
+    Object? conversationId = freezed,
     Object? pickupLocation = freezed,
     Object? dropoffLocation = freezed,
     Object? pickupTime = freezed,
@@ -138,6 +141,10 @@ class _$BookingModelCopyWithImpl<$Res, $Val extends BookingModel>
                 ? _value.paymentStatus
                 : paymentStatus // ignore: cast_nullable_to_non_nullable
                       as String,
+            conversationId: freezed == conversationId
+                ? _value.conversationId
+                : conversationId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             pickupLocation: freezed == pickupLocation
                 ? _value.pickupLocation
                 : pickupLocation // ignore: cast_nullable_to_non_nullable
@@ -186,6 +193,7 @@ abstract class _$$BookingModelImplCopyWith<$Res>
     double totalPrice,
     String status,
     String paymentStatus,
+    String? conversationId,
     String? pickupLocation,
     String? dropoffLocation,
     DateTime? pickupTime,
@@ -217,6 +225,7 @@ class __$$BookingModelImplCopyWithImpl<$Res>
     Object? totalPrice = null,
     Object? status = null,
     Object? paymentStatus = null,
+    Object? conversationId = freezed,
     Object? pickupLocation = freezed,
     Object? dropoffLocation = freezed,
     Object? pickupTime = freezed,
@@ -258,6 +267,10 @@ class __$$BookingModelImplCopyWithImpl<$Res>
             ? _value.paymentStatus
             : paymentStatus // ignore: cast_nullable_to_non_nullable
                   as String,
+        conversationId: freezed == conversationId
+            ? _value.conversationId
+            : conversationId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         pickupLocation: freezed == pickupLocation
             ? _value.pickupLocation
             : pickupLocation // ignore: cast_nullable_to_non_nullable
@@ -299,6 +312,7 @@ class _$BookingModelImpl implements _BookingModel {
     required this.totalPrice,
     required this.status,
     required this.paymentStatus,
+    this.conversationId,
     required this.pickupLocation,
     required this.dropoffLocation,
     required this.pickupTime,
@@ -330,6 +344,8 @@ class _$BookingModelImpl implements _BookingModel {
   final String paymentStatus;
   // 'unpaid', 'paid', 'refunded', 'escrow'
   @override
+  final String? conversationId;
+  @override
   final String? pickupLocation;
   @override
   final String? dropoffLocation;
@@ -344,7 +360,7 @@ class _$BookingModelImpl implements _BookingModel {
 
   @override
   String toString() {
-    return 'BookingModel(id: $id, tripId: $tripId, passengerId: $passengerId, driverId: $driverId, seatsBooked: $seatsBooked, totalPrice: $totalPrice, status: $status, paymentStatus: $paymentStatus, pickupLocation: $pickupLocation, dropoffLocation: $dropoffLocation, pickupTime: $pickupTime, dropoffTime: $dropoffTime, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'BookingModel(id: $id, tripId: $tripId, passengerId: $passengerId, driverId: $driverId, seatsBooked: $seatsBooked, totalPrice: $totalPrice, status: $status, paymentStatus: $paymentStatus, conversationId: $conversationId, pickupLocation: $pickupLocation, dropoffLocation: $dropoffLocation, pickupTime: $pickupTime, dropoffTime: $dropoffTime, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -365,6 +381,8 @@ class _$BookingModelImpl implements _BookingModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.paymentStatus, paymentStatus) ||
                 other.paymentStatus == paymentStatus) &&
+            (identical(other.conversationId, conversationId) ||
+                other.conversationId == conversationId) &&
             (identical(other.pickupLocation, pickupLocation) ||
                 other.pickupLocation == pickupLocation) &&
             (identical(other.dropoffLocation, dropoffLocation) ||
@@ -391,6 +409,7 @@ class _$BookingModelImpl implements _BookingModel {
     totalPrice,
     status,
     paymentStatus,
+    conversationId,
     pickupLocation,
     dropoffLocation,
     pickupTime,
@@ -423,6 +442,7 @@ abstract class _BookingModel implements BookingModel {
     required final double totalPrice,
     required final String status,
     required final String paymentStatus,
+    final String? conversationId,
     required final String? pickupLocation,
     required final String? dropoffLocation,
     required final DateTime? pickupTime,
@@ -450,6 +470,8 @@ abstract class _BookingModel implements BookingModel {
   String get status; // 'pending', 'confirmed', 'completed', 'cancelled', 'paid'
   @override
   String get paymentStatus; // 'unpaid', 'paid', 'refunded', 'escrow'
+  @override
+  String? get conversationId;
   @override
   String? get pickupLocation;
   @override

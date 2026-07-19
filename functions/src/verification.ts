@@ -60,13 +60,16 @@ export function parseDocumentType(value: unknown): DocumentType {
   return value as DocumentType;
 }
 
-export function validateDocumentUrl(value: unknown, uid: string): string {
+export function validateDocumentUrl(
+  value: unknown,
+  uid: string,
+  type: DocumentType
+): string {
   if (typeof value !== "string" || value.length > 512) {
     throw new functions.https.HttpsError("invalid-argument", "A valid document upload is required.");
   }
-  const expectedPrefix = `verification_documents/${uid}/`;
-  if (!value.startsWith(expectedPrefix) || value.slice(expectedPrefix.length).length < 1 ||
-      value.includes("..") || value.split("/").length !== 3) {
+  const expectedPath = `verification_documents/${uid}/${type}.jpg`;
+  if (value !== expectedPath) {
     throw new functions.https.HttpsError("permission-denied", "The upload does not belong to this user.");
   }
   return value;
@@ -77,8 +80,8 @@ async function verifyStoredDocument(objectPath: string): Promise<void> {
     const [metadata] = await getStorage().bucket(STORAGE_BUCKET).file(objectPath).getMetadata();
     const size = Number(metadata.size);
     const contentType = metadata.contentType ?? "";
-    if (!Number.isFinite(size) || size <= 0 || size > 10 * 1024 * 1024 ||
-        !(contentType.startsWith("image/") || contentType === "application/pdf")) {
+    if (!Number.isFinite(size) || size <= 0 || size >= 5 * 1024 * 1024 ||
+        !contentType.startsWith("image/")) {
       throw new Error("Invalid verification object metadata");
     }
   } catch (_) {
@@ -101,7 +104,7 @@ export const submitVerification = functions.https.onCall(async (rawData, context
   const data = record(rawData);
   const uid = context.auth.uid;
   const type = parseDocumentType(data.type);
-  const documentUrl = validateDocumentUrl(data.documentUrl, uid);
+  const documentUrl = validateDocumentUrl(data.documentUrl, uid, type);
   await verifyStoredDocument(documentUrl);
   const fields = verificationFields[type];
   const db = getFirestore();

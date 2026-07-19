@@ -44,7 +44,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(calls, 1);
-    expect(find.textContaining('temporarily unavailable'), findsOneWidget);
+    expect(find.textContaining('AI planning is unavailable'), findsOneWidget);
+    expect(find.textContaining('temporarily unavailable'), findsNothing);
     expect(find.text('Create AI draft'), findsOneWidget);
     expect(find.text('Use manual trip search'), findsOneWidget);
   });

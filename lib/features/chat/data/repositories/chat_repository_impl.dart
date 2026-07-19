@@ -26,11 +26,6 @@ class ChatRepositoryImpl implements ChatRepository {
 
   String? get _currentUserId => _firebaseAuth.currentUser?.uid;
 
-  String _getConversationId(String userId1, String userId2) {
-    final ids = [userId1, userId2]..sort();
-    return '${ids[0]}_${ids[1]}';
-  }
-
   Message _messageFromDocument(
     QueryDocumentSnapshot<Map<String, dynamic>> document,
   ) {
@@ -121,11 +116,7 @@ class ChatRepositoryImpl implements ChatRepository {
     for (final document in documents) {
       final message = _messageFromDocument(document);
       if (message.isDeleted) continue;
-      final conversationId = _getConversationId(
-        message.senderId,
-        message.recipientId,
-      );
-      latest.putIfAbsent(conversationId, () => message);
+      latest.putIfAbsent(message.conversationId, () => message);
     }
     final messages = latest.values.toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));

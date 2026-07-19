@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {bookingDocumentId, parseBookingRequest} from "./booking";
+import {
+  bookingDocumentId,
+  canSelfCancelBeforeDeparture,
+  parseBookingRequest,
+  validatedUnitPrice,
+} from "./booking";
 import {conversationDocumentId} from "./conversation";
 import {publicTripData} from "./publicTrip";
 
@@ -27,9 +32,38 @@ test("booking IDs are deterministic for idempotent retries", () => {
   assert.equal(bookingDocumentId("trip-1", "user-1"), "trip-1_user-1");
 });
 
+test("booking prices must be finite, nonnegative canonical numbers", () => {
+  assert.equal(validatedUnitPrice(18), 18);
+  assert.throws(() => validatedUnitPrice("18"));
+  assert.throws(() => validatedUnitPrice(-1));
+  assert.throws(() => validatedUnitPrice(Number.NaN));
+  assert.throws(() => validatedUnitPrice(Number.POSITIVE_INFINITY));
+});
+
+test("self-service cancellation closes at scheduled departure", () => {
+  const now = Date.UTC(2026, 6, 18, 12);
+  assert.equal(
+    canSelfCancelBeforeDeparture(new Date(now + 60_000), now),
+    true
+  );
+  assert.equal(canSelfCancelBeforeDeparture(new Date(now), now), false);
+  assert.equal(canSelfCancelBeforeDeparture(new Date(now - 1), now), false);
+  assert.equal(canSelfCancelBeforeDeparture(null, now), false);
+});
+
 test("conversation authorization IDs are deterministic and order independent", () => {
-  assert.equal(conversationDocumentId("rider", "driver"), "driver_rider");
-  assert.equal(conversationDocumentId("driver", "rider"), "driver_rider");
+  assert.equal(
+    conversationDocumentId("trip-1", "rider", "driver"),
+    "trip-1__driver_rider"
+  );
+  assert.equal(
+    conversationDocumentId("trip-1", "driver", "rider"),
+    "trip-1__driver_rider"
+  );
+  assert.notEqual(
+    conversationDocumentId("trip-1", "driver", "rider"),
+    conversationDocumentId("trip-2", "driver", "rider")
+  );
 });
 
 test("public trip projection removes coordinates, passengers, photos, and metadata", () => {
