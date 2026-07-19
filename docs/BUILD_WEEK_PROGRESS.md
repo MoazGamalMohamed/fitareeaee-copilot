@@ -1897,3 +1897,85 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   or immutable release tag changed, so the passing release gate remains authoritative.
 - Private recovery checkpoint before this append: `5cc6487`; public recovery
   checkpoint before this append: `180673b`.
+
+## 2026-07-19 17:00 CDT / 2026-07-19 15:00 PDT - payment-gated chat, trip creation, and unified AI support checkpoint
+
+### Objective and implementation
+
+- Reproduced the remaining judge-path defects and replaced the message query that
+  required a missing composite index with a participant-scoped built-in-index query,
+  followed by local conversation/authorization cross-checking and sorting.
+- Changed new bookings to `pending_payment` / `required`. Creating a booking no
+  longer decrements seats, marks a trip confirmed, creates a conversation, or grants
+  message access. `authorizeBookingConversation` now requires both
+  `status == confirmed` and `paymentStatus == paid`; the legacy trip-only authorizer
+  is deny-only.
+- Added server-backed manual trip creation and visible Home/Trips actions for both
+  **Request a Trip** and verification-gated **Offer a Ride**. Copilot drafts now hand
+  off into the same editable creation form rather than ending at passive results.
+- Removed the separate Support Copilot surface. Contact Support now creates one
+  authenticated ticket, sends a minimized/redacted prompt through the official
+  OpenAI Responses API with GPT-5.6 strict structured output, and exposes explicit
+  or automatic human escalation. Direct customer support writes are denied by rules.
+- Added payment-state, malformed legacy message, support throttling/schema, trip
+  validation, driver/vehicle verification, and paid-chat closure coverage.
+
+### Files and deployed backend
+
+- Release source checkpoint: `a27c2d933043353ccc07c2434f99b1276f3904c2`.
+- Primary new files: `functions/src/trip.ts`, `functions/src/support.ts`, their contract
+  tests, and `lib/features/trips/presentation/pages/create_trip_screen.dart`.
+- Updated booking/conversation Functions, Firestore rules, chat repository/screens,
+  Home, Copilot results, Trips, booking review/details, payments, support, routing,
+  tests, and Android version metadata (`1.0.4+20260719`).
+- Confirmed Firebase target twice as `fitareeaee`. Targeted deployment succeeded for
+  `createBooking`, `cancelBooking`, both conversation authorizers, `createTrip`, all
+  three support callables, Firestore rules, and indexes. No data was deleted and the
+  eight inherited remote indexes not represented locally were preserved.
+
+### Exact verification results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS, 114 files,
+  0 changed.
+- `flutter analyze --no-pub`: PASS, no issues.
+- `flutter test`: PASS, 19/19.
+- `cd functions && npm run build`: PASS.
+- `cd functions && npm test`: PASS, 25/25.
+- Firestore/Storage emulator rule suite: PASS, 8/8.
+- Auth/Firestore/Functions booking integration suite: PASS, 4/4. The added scenario
+  proves pending requests do not reserve inventory or open chat, then simulates a
+  trusted paid finalizer, opens authorized chat, cancels, closes chat, and restores
+  inventory.
+- `flutter build apk --debug`: PASS.
+- `flutter build apk --profile`: PASS; optimized universal AOT judge candidate.
+
+### APK and Android evidence
+
+- Debug APK: `build/app/outputs/flutter-apk/app-debug.apk`; 155,021,938 bytes;
+  SHA-256 `E7A56969186D2401848E3B375909D8FC40BC7BE685861624C4166253964CECFC`;
+  built 2026-07-19 16:42 CDT / 14:42 PDT from source `a27c2d9` (source-identical
+  checkpoint committed immediately afterward).
+- Profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; 83,181,715 bytes;
+  SHA-256 `BE4D0FBDD04C023994C0DB228D834552FCB01CFB011E1DC6C898C8EEE5089CE6`;
+  built 2026-07-19 16:53 CDT / 14:53 PDT from the same source.
+- Detected target: API 36 x86_64 emulator only. Debug clean uninstall/install PASS;
+  explicit launch PASS; Login hierarchy rendered; process was top-resumed and initial
+  fatal-log scan was empty.
+- A later automated credential-entry attempt encountered an emulator ANR under heavy
+  debug/JIT load. The optimized profile APK installed, but Android then reported a
+  pre-Flutter process-attach timeout; after reboot the emulator remained stuck in
+  boot animation. These later infrastructure runs are not recorded as application
+  passes.
+- ADB still did not enumerate the owner's physical phone (no `device` or
+  `unauthorized` entry other than `emulator-5554`), so this new v1.0.4 candidate has
+  not yet received a physical-phone installation result. Earlier v1.0.3 Motorola
+  evidence remains historical only and is not reused as v1.0.4 evidence.
+
+### Continuity and next action
+
+- Rollback point: `a84e18014d7cbb3d741bdaa7cb0cd0101f3ade47`.
+- Local commit: `a27c2d9`; tag/push/release status pending the sanitized publication
+  checkpoint. No force push and no private remote were used.
+- Next: sanitize/cherry-pick into the public repository, scan reachable history,
+  publish source and an immutable v1.0.4 candidate release, redownload/hash-check it,
+  and install it on the physical phone once Windows ADB exposes that device.

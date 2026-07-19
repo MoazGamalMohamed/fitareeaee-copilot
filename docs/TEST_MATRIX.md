@@ -154,6 +154,26 @@ available.
   former loading error nor `FirebaseFailure` appeared; AndroidRuntime/Flutter
   error-focused output was empty
 
+## Current v1.0.4 local candidate
+
+- Release source: private `a27c2d933043353ccc07c2434f99b1276f3904c2`.
+- Flutter gate: format 114/0 changed, analysis clean, tests 19/19.
+- Backend gate: TypeScript build PASS, contracts 25/25, rules 8/8, transactional
+  booking/chat integration 4/4.
+- Firebase deploy: PASS to the confirmed `fitareeaee` project for the eight scoped
+  booking/chat/trip/support callables and Firestore rules/indexes.
+- Debug APK: 155,021,938 bytes; SHA-256
+  `E7A56969186D2401848E3B375909D8FC40BC7BE685861624C4166253964CECFC`.
+- Optimized profile APK: 83,181,715 bytes; SHA-256
+  `BE4D0FBDD04C023994C0DB228D834552FCB01CFB011E1DC6C898C8EEE5089CE6`.
+- API 36 emulator: debug clean install and initial Login/top-resumed/no-fatal-log
+  smoke PASS. A subsequent heavy automation run caused an emulator ANR; after an AOT
+  profile install, Android failed to attach the app process and the emulator later
+  remained in boot animation. The optimized candidate therefore still requires a
+  fresh healthy-device smoke test.
+- Physical phone: BLOCKED for this candidate because `adb devices -l` enumerated only
+  `emulator-5554`. Do not infer a v1.0.4 phone pass from the older v1.0.3 evidence.
+
 ## Release gate
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.

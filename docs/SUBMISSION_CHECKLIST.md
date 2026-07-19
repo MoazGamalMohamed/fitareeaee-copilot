@@ -103,6 +103,13 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Download the public v1.0.3 APK, confirm 154,995,438 bytes and exact SHA-256 match, install/cold-launch it on the Motorola phone, and recheck Chat plus AndroidRuntime/Flutter error output.
 - [x] Anonymous HTTP checks return 200 for the public repository, v1.0.3 release page,
   and redirected direct APK asset.
+- [x] Fix remaining chat, pre-payment confirmation, unified GPT-5.6 support, and
+  manual request/offer creation defects; pass local, rules, and transactional gates;
+  deploy only the scoped backend/rule changes to `fitareeaee` (`a27c2d9`).
+- [ ] Publish the sanitized v1.0.4 corrective source/artifact, redownload and compare
+  its hash, then install that exact download on a healthy Android target.
+- [ ] Make the physical phone visible to `adb devices -l` and record the v1.0.4
+  install/navigation/crash-log result; current ADB output exposes only the emulator.
 
 ## Devpost materials
 
