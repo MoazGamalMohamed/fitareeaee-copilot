@@ -74,8 +74,9 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 ## GitHub and release state
 
 - Public repository: `https://github.com/MoazGamalMohamed/fitareeaee-copilot`
-- Remote `main` and `build-week/final` exactly match sanitized `865a5e8`; all staged
-  tags and superseding `fitareeaee-copilot-v1.0.1` are pushed without force.
+- Remote `main` and `build-week/final` contain sanitized release source `865a5e8`
+  plus final evidence; superseding tag `fitareeaee-copilot-v1.0.1` peels exactly to
+  `865a5e8` and all publication was pushed without force.
 - A draft PR is not applicable because both published branches intentionally point to
   the same verified commit. The GitHub Release is public; its downloaded artifact
   exactly matches the tested local APK.

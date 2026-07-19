@@ -83,7 +83,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Physical Android phone install | PASS | Owner removed the older package; downloaded public v1.0.1 installed, cold-launched, exposed Plan with AI, and produced no matching fatal logs |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
 | Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.1`; private tested source `c5b6736`, sanitized source `865a5e8` |
-| Public sanitized repository | PASS | Both remote branches exactly match sanitized `865a5e8`; v1.0.1 and staged evidence tags pushed; original private repository has no remote |
+| Public sanitized repository | PASS | Both remote branches contain sanitized release source `865a5e8` plus final evidence; v1.0.1 peels exactly to the release source; original private repository has no remote |
 | Published APK download and hash comparison | PASS | Public asset downloaded; 154,878,330 bytes and SHA-256 exactly match local tested artifact |
 | Published APK install | PASS | Downloaded asset clean-installed on API 36.1 emulator; Login rendered, activity resumed, no matching fatal logs |
 

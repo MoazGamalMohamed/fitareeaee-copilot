@@ -84,7 +84,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Download the APK from the public judge URL.
 - [x] Confirm downloaded SHA-256 matches the release record.
 - [x] Install and smoke-test the downloaded copy on the API 36.1 emulator.
-- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `865a5e8`; superseding v1.0.1 tag points to that commit.
+- [x] Confirm remote `main` and `build-week/final` contain sanitized release source `865a5e8` plus final evidence; superseding v1.0.1 tag points exactly to the release source.
 
 ## Devpost materials
 
