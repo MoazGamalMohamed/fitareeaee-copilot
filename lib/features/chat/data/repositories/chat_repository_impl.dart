@@ -24,6 +24,9 @@ class ChatRepositoryImpl implements ChatRepository {
   CollectionReference<Map<String, dynamic>> get _messagesCollection =>
       _firebaseFirestore.collection('messages');
 
+  CollectionReference<Map<String, dynamic>> get _authorizationsCollection =>
+      _firebaseFirestore.collection('conversation_authorizations');
+
   String? get _currentUserId => _firebaseAuth.currentUser?.uid;
 
   Message _messageFromDocument(
@@ -83,10 +86,35 @@ class ChatRepositoryImpl implements ChatRepository {
         .orderBy('created_at', descending: true);
   }
 
-  Query<Map<String, dynamic>> _userMessagesQuery(String userId) {
-    return _messagesCollection
-        .where('participant_ids', arrayContains: userId)
-        .orderBy('created_at', descending: true);
+  Query<Map<String, dynamic>> _userAuthorizationsQuery(String userId) {
+    return _authorizationsCollection.where(
+      'participant_ids',
+      arrayContains: userId,
+    );
+  }
+
+  List<String> _activeConversationIds(
+    Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> documents,
+  ) {
+    return documents
+        .where((document) => document.data()['active'] == true)
+        .map((document) => document.id)
+        .toList(growable: false);
+  }
+
+  Future<List<Message>> _loadLatestAuthorizedMessages(
+    Iterable<String> conversationIds,
+    String userId,
+  ) async {
+    final snapshots = await Future.wait(
+      conversationIds.map(
+        (conversationId) =>
+            _conversationQuery(conversationId, userId).limit(1).get(),
+      ),
+    );
+    return _latestConversationMessages(
+      snapshots.expand((snapshot) => snapshot.docs),
+    );
   }
 
   @override
@@ -129,8 +157,13 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(FirebaseFailure(message: 'Not authorized'));
     }
     try {
-      final snapshot = await _userMessagesQuery(userId).get();
-      return Right(_latestConversationMessages(snapshot.docs));
+      final authorizations = await _userAuthorizationsQuery(userId).get();
+      return Right(
+        await _loadLatestAuthorizedMessages(
+          _activeConversationIds(authorizations.docs),
+          userId,
+        ),
+      );
     } catch (error) {
       return Left(_failure(error, 'Failed to get conversations'));
     }
@@ -170,8 +203,15 @@ class ChatRepositoryImpl implements ChatRepository {
       return;
     }
     try {
-      await for (final snapshot in _userMessagesQuery(userId).snapshots()) {
-        yield Right(_latestConversationMessages(snapshot.docs));
+      await for (final authorizations in _userAuthorizationsQuery(
+        userId,
+      ).snapshots()) {
+        yield Right(
+          await _loadLatestAuthorizedMessages(
+            _activeConversationIds(authorizations.docs),
+            userId,
+          ),
+        );
       }
     } catch (error) {
       yield Left(_failure(error, 'Failed to stream conversations'));

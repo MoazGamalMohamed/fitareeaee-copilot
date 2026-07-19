@@ -8,7 +8,18 @@ import {
   initializeTestEnvironment,
   RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import {doc, getDoc, setDoc, updateDoc} from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import {deleteObject, ref, uploadBytes} from "firebase/storage";
 
 let environment: RulesTestEnvironment;
@@ -184,6 +195,27 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     participant_ids: ["outsider", "rider"],
   });
   await assertSucceeds(setDoc(doc(rider, "messages/message-1"), message));
+  const authorizations = await assertSucceeds(
+    getDocs(
+      query(
+        collection(rider, "conversation_authorizations"),
+        where("participant_ids", "array-contains", "rider")
+      )
+    )
+  );
+  assert.equal(authorizations.size, 1);
+  const listedConversation = await assertSucceeds(
+    getDocs(
+      query(
+        collection(rider, "messages"),
+        where("conversation_id", "==", "trip-1__driver_rider"),
+        where("participant_ids", "array-contains", "rider"),
+        orderBy("created_at", "desc"),
+        limit(1)
+      )
+    )
+  );
+  assert.equal(listedConversation.size, 1);
   await assertFails(getDoc(doc(outsider, "messages/message-1")));
   await assertFails(getDoc(doc(rider, "messages/legacy-mismatch")));
   await assertFails(

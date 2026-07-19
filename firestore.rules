@@ -112,12 +112,18 @@ service cloud.firestore {
     }
 
     match /messages/{messageId} {
-      allow read: if signedIn()
+      allow get: if signedIn()
         && resource.data.participant_ids is list
         && request.auth.uid in resource.data.participant_ids
         && exists(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id))
         && get(/databases/$(database)/documents/conversation_authorizations/$(resource.data.conversation_id)).data.participant_ids
           == resource.data.participant_ids;
+      // Firestore can prove participant-scoped list queries from the required
+      // array-contains filter. Message creation remains bound to a server-owned
+      // conversation authorization below, while direct document reads retain
+      // the stricter authorization-document equality check above.
+      allow list: if signedIn()
+        && request.auth.uid in resource.data.participant_ids;
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly([
           'id', 'sender_id', 'recipient_id', 'conversation_id',
@@ -174,8 +180,10 @@ service cloud.firestore {
     }
 
     match /conversation_authorizations/{conversationId} {
-      allow read: if signedIn()
+      allow get: if signedIn()
         && resource.data.participant_ids is list
+        && request.auth.uid in resource.data.participant_ids;
+      allow list: if signedIn()
         && request.auth.uid in resource.data.participant_ids;
       allow write: if false;
     }
