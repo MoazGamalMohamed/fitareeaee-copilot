@@ -1383,3 +1383,20 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   eligibility, and personally submit Devpost.
 - Next action: commit/replay/push this evidence, confirm the public v1.0.1 links while
   signed out, and hand off only the unavoidable owner actions.
+
+## 2026-07-18 23:08 CDT / 2026-07-18 21:08 PDT — final public-link and rules check
+
+- Re-opened the live official rules. The deadline remains July 21, 2026 at 5:00 PM
+  Pacific; the rules still require a working installable project, clear pre-existing
+  versus Build Week evidence, a public/licensed repository, a public YouTube demo under
+  three minutes with audio, free testing access, English materials, and the primary
+  Codex `/feedback` Session ID.
+- Unauthenticated HEAD checks returned HTTP 200 for the public repository, v1.0.1
+  release page, and APK asset. The asset reported `Content-Length: 154878330`, matching
+  the downloaded and tested artifact.
+- Private and sanitized worktrees were clean before this append. No credential value
+  was accessed or published.
+- Remaining work is owner-only: revoke the key exposed in chat, confirm legacy provider
+  credential rotation, decide inherited Function retirement, place judge credentials
+  privately, record/upload the video, run `/feedback`, review eligibility/legal terms,
+  and submit Devpost.
