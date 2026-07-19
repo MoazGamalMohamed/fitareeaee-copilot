@@ -2,6 +2,10 @@
 
 Official deadline: **July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central**. Internal target: **3:00 PM Central**.
 
+Authoritative live pages: [Official Rules](https://openai.devpost.com/rules),
+[FAQ](https://openai.devpost.com/details/faqs), and
+[Updates](https://openai.devpost.com/updates).
+
 Status key: `[x]` verified, `[ ]` still required. Do not check an item based only on intent.
 
 ## Eligibility and evidence
@@ -13,6 +17,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Meaningful Build Week extension described separately.
 - [x] Append-only progress evidence maintained.
 - [ ] Owner confirms personal/team eligibility and accepts the official rules.
+- [x] Re-check live official rules, FAQ, resources, and updates on July 19: deadline,
+  public YouTube/audio, Codex explanation, GPT-5.6 evidence, repository/test access,
+  pre-existing-work disclosure, and `/feedback` requirements remain unchanged.
 - [ ] Re-check official rules and Devpost updates on submission day.
 - [ ] Run `/feedback` in the primary Codex build thread and paste the Session ID into Devpost.
 
@@ -94,6 +101,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Fix the phone-observed Chat-list Firestore query, pass the 8/8 emulator rule contract, deploy only the tested Firestore rules, and verify the authenticated Chat empty state on the Motorola phone.
 - [x] Push sanitized v1.0.3 source `c42bc3f` to `main` and `build-week/final`; tag and publish `fitareeaee-copilot-v1.0.3` without force.
 - [x] Download the public v1.0.3 APK, confirm 154,995,438 bytes and exact SHA-256 match, install/cold-launch it on the Motorola phone, and recheck Chat plus AndroidRuntime/Flutter error output.
+- [x] Anonymous HTTP checks return 200 for the public repository, v1.0.3 release page,
+  and redirected direct APK asset.
 
 ## Devpost materials
 
@@ -105,6 +114,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
 - [x] Add final repository URL.
 - [x] Add final stable APK URL and SHA-256.
+- [x] Preview the repository, release, APK, and English judge copy without relying on
+  repository authentication. The still-missing YouTube/Devpost fields remain below.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
 - [ ] Capture final screenshots with fictional data and no PII.
 - [ ] Audit final screenshots, icons/assets, packages, fixture data, and video/audio for ownership or authorized licenses; retain attribution where required.
@@ -129,4 +140,5 @@ Exact owner steps and the inherited Function set are recorded in
 
 1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.
+3. Optional second fresh-install phone rerun, YouTube upload, `/feedback`, private
+   credential placement, legal confirmation, and final Devpost submit action.

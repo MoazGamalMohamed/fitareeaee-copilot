@@ -1777,3 +1777,55 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next owner actions: reconnect only if a second fresh-install run is desired, rotate
   exposed legacy credentials, verify public links signed out, record the demo, run
   `/feedback`, review legal/eligibility statements, and perform final Devpost submission.
+
+## 2026-07-19 15:13 CDT / 2026-07-19 13:13 PDT — submission-copy and anonymous-link audit corrected stale release data
+
+### Live rule and external-access verification
+
+- Re-read the live official rules, FAQ, resources, and updates. The authoritative
+  deadline remains July 21, 2026 at 5:00 PM Pacific. The submission still requires a
+  working Codex/GPT-5.6 project, English description, public YouTube demo under three
+  minutes with audio explaining Codex and GPT-5.6, repository/testing access, and the
+  primary-thread `/feedback` Session ID.
+- The rules still require clear documentation of meaningful work added to a
+  pre-existing project and relevant licensing for a public repository. The preserved
+  baseline, dated history, MIT license, README, and append-only evidence address the
+  technical documentation side; eligibility/ownership acceptance remains owner-only.
+- Anonymous HTTP HEAD checks returned 200 for the public repository, v1.0.3 release
+  page, and redirected direct APK asset. No GitHub authentication was supplied.
+- Anonymous HTTP HEAD checks also returned 200 for the raw public README, raw MIT
+  license, and repository Issues support page.
+
+### Documentation defect found and corrected
+
+- The public README and release records were current, but the judge-facing Devpost
+  copy, judge guide, and final changelog section still named v1.0.1, its old size/hash,
+  and a now-obsolete pending booking/chat statement.
+- Updated `docs/DEVPOST_SUBMISSION.md`, `docs/JUDGE_TESTING.md`, and
+  `docs/BUILD_WEEK_CHANGELOG.md` to v1.0.3, 154,995,438 bytes, SHA-256
+  `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`,
+  private source `832a543`, sanitized source/tag target `c42bc3f`, 113-file format
+  gate, 19/19 Flutter and Functions contracts, 8/8 rules, and the observed phone path.
+- Updated `docs/JUDGE_TESTING.md` and `docs/DEMO_SCRIPT.md` for the shared fixture's
+  valid already-booked state: judges/demo may see `Open Confirmed Chat` rather than a
+  second booking action. No duplicate booking should be requested.
+- Updated `docs/OWNER_ACTIONS.md` with current v1.0.3 phone evidence and an exact
+  submission-day sequence; updated `docs/SUBMISSION_CHECKLIST.md` with the live-rule
+  and anonymous-link checks.
+- Demo narration audit: 9 spoken sections, 329 words, approximately 123 words/minute
+  across the 160-second target, leaving practical room for UI transitions while
+  remaining below the three-minute hard limit.
+- Markdown link audit: 19 files, 38 local links checked, 0 missing local targets.
+- Modified judge-document privacy/currentness scan: 0 fictional account email,
+  password, or UID hits; 0 token/private-key signatures; 0 stale v1.0.1 release facts
+  in current Devpost/judge/changelog/demo/owner handoff material.
+- Owner-only placeholders intentionally remain only for public YouTube URL, private
+  judge credential placement, `/feedback` Session ID, eligibility/legal acceptance,
+  and final submission evidence.
+
+### Release continuity
+
+- Documentation-only changes; no Dart, Function, rule, Firebase, APK, tag, or release
+  asset changed. The v1.0.3 source and hash remain authoritative.
+- Rollback/source points before this documentation append: private evidence `68153eb`,
+  public evidence `5c48900`, private source `832a543`, sanitized/tagged source `c42bc3f`.

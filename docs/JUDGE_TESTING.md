@@ -4,23 +4,30 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 
 > Release status: the hardened backend, rules, judge fixtures, authenticated
 > GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
-> published APK was downloaded, hash-matched, and clean-installed on the emulator.
+> published APK was downloaded, hash-matched, installed on a Motorola phone,
+> and exercised through the live GPT-5.6, matching, details, booking, and chat path.
 
-Final artifact: universal debug APK, 154,878,330 bytes, SHA-256 `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`, private release-gate source `c5b67364835aa32a59f6e40e7b2055c6aed8d5d0` and tree-equivalent sanitized source `865a5e8a6d6e581fbcd781e5a4ba936529406609`. It reports version code `20260718`, rendered Login on the API 36.1 emulator, and cold-launched with a live reviewable Copilot draft on a Motorola phone without matching fatal logs.
+Final artifact: universal debug APK, 154,995,438 bytes, SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`, private release-gate source `832a543cd94c4f5a2a8c17163e73113da85aba24` and tree-equivalent sanitized source `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`. It reports version code `20260718`, cold-launched on a Motorola phone, and passed the authenticated judge path without matching AndroidRuntime/Flutter errors.
 
 ## Final release information
 
 - Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk)
+- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk)
 - Build type: universal debug-signed Android judge APK
-- SHA-256: `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
-- Source tag/commit: `fitareeaee-copilot-v1.0.1` / sanitized `865a5e8a6d6e581fbcd781e5a4ba936529406609`
+- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
+- Source tag/commit: `fitareeaee-copilot-v1.0.3` / sanitized `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
 Live Copilot verification: **PASS** — authenticated English ride, English
 package, and Arabic ride requests returned validated drafts through the deployed
 Firebase callable after the obsolete secret version was retired.
+
+Physical judge path: **PASS** — the fixed English request returned a reviewable
+GPT-5.6 draft and one transparent live match; the match opened Trip Details and
+confirmed Chat. A separate fictional booking in the same test session completed
+through the server transaction and its test message rendered through the realtime
+conversation stream. No real payment or real identity is involved.
 
 ## Install
 
@@ -78,9 +85,10 @@ Using the provided seeded trip/account:
 
 1. Open trip details.
 2. Review manual verification context.
-3. Book the trip.
-4. Confirm the booking succeeds once and seat inventory changes consistently.
-5. Open participant chat.
+3. If **Book Trip** is shown, book once and verify the transaction succeeds. If the
+   shared fictional fixture is already booked, verify **Open Confirmed Chat** is shown
+   instead of another booking action.
+4. Open participant chat and send only a clearly fictional test message.
 
 No real payment is requested or processed.
 
@@ -136,4 +144,6 @@ Flutter Android app
 - **Sign-in fails:** confirm the exact judge credentials and network connection; report the time/error without posting the password.
 - **AI unavailable:** retry once, then use manual search. This is the designed fallback.
 - **No matches:** use the documented seeded prompt/account or adjust the draft; the app intentionally does not fabricate results.
+- **Already booked:** this is valid for the shared judge fixture; Trip Details should
+  show **Open Confirmed Chat**, not a second confirmation action.
 - **Support contact:** use the public repository's GitHub Issues tab without posting credentials or private data.

@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk — 154,878,330 bytes; SHA-256 `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk — 154,995,438 bytes; SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -156,7 +156,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
 - Maps/location autocomplete and broader Arabic UI are outside the core submission path unless stabilized.
-- The superseding public APK passed download/hash verification, clean emulator installation, physical Motorola installation/cold launch, legacy-notification compatibility, and a live reviewable GPT-5.6 draft. The full booking/chat demo still requires deliberate use of the fictional judge accounts.
+- The superseding public APK passed anonymous-link checks, download/hash verification, emulator installation, Motorola installation/cold launch, legacy-notification compatibility, live GPT-5.6 draft and transparent matching, match-to-details handoff, transactional fictional booking, confirmed-chat authorization, and realtime fictional message rendering.
 
 ## Suggested screenshot/image captions
 
@@ -172,7 +172,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **DONE:** stable APK URL, size, and SHA-256
-- **DONE:** release tag `fitareeaee-copilot-v1.0.1` / sanitized commit `865a5e8a6d6e581fbcd781e5a4ba936529406609`
+- **DONE:** release tag `fitareeaee-copilot-v1.0.3` / sanitized source commit `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID

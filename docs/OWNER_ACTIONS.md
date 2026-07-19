@@ -30,6 +30,8 @@ The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
 `https://github.com/MoazGamalMohamed/fitareeaee-copilot`; both sanitized branches
 and annotated tags are pushed. The private original still has no remote.
+The current judge release is `fitareeaee-copilot-v1.0.3`; anonymous repository,
+release, and direct-APK checks return HTTP 200.
 
 ### 4. Approve or decline inherited Function retirement
 
@@ -89,16 +91,46 @@ Runtime Config privately. Do not share replacement values in chat.
 
 ## Later physical/legal actions
 
-- Physical phone installation is complete. The owner removed the older package;
-  the downloaded public v1.0.1 APK installed, cold-launched, rendered legacy
-  notifications safely, exposed Plan with AI, and returned a live reviewable
-  Dallas–Austin draft without a matching fatal log.
+- Physical phone installation is complete. The downloaded public v1.0.3 APK installed,
+  cold-launched, rendered notifications safely, returned a live reviewable
+  Dallas–Austin draft and transparent match, opened Trip Details and confirmed Chat,
+  and completed a fictional transactional booking/realtime message check without a
+  matching AndroidRuntime/Flutter error.
+- A later fresh-install rerun passed reinstall, private fictional sign-in, live draft,
+  match, and Trip Details before the USB phone disconnected. A second fresh-install
+  rerun is optional and is not a blocker to the already-passing demonstrated path.
 - Record the final deployed flow using fictional data and the 2:40 script; upload
   it as a public YouTube video with audio and no unauthorized music/material.
 - Run `/feedback` in the primary Codex build thread and paste its Session ID into
   Devpost.
 - Review eligibility, ownership, privacy, testing credentials, and every final
   link, then personally perform the legally binding Devpost submission action.
+
+## Submission-day owner sequence
+
+Complete these in order before **July 21, 2026 at 5:00 PM Pacific / 7:00 PM
+Central**. The internal target remains 3:00 PM Central.
+
+1. Re-check the live official rules, FAQ, and updates. Confirm personal/team
+   eligibility and ownership; Codex cannot make those legal representations.
+2. Run `/feedback` in the primary build thread and paste the generated Session ID
+   into the required Devpost field.
+3. Copy the fictional rider email/password from the private ignored
+   `.judge-credentials.local.json` into Devpost's private testing instructions. Do
+   not add them to the public description, repository, screenshots, or video.
+4. Record the `docs/DEMO_SCRIPT.md` flow with Do Not Disturb enabled. Keep the final
+   cut under three minutes, include audible narration covering both Codex and
+   GPT-5.6, use no copyrighted music, and show no private notification or credential.
+5. Upload the video as **public** on YouTube and verify it while signed out. Then
+   verify the repository, v1.0.3 release, direct APK, and video links in the Devpost
+   preview.
+6. Paste the English copy from `docs/DEVPOST_SUBMISSION.md`, review every legal and
+   eligibility statement, submit personally, and save a screenshot/PDF/text copy of
+   the final submitted page.
+
+Do not disable the GitHub release, Firebase backend, fictional judge users, or
+managed OpenAI secret during judging. Do not rotate the currently deployed managed
+key unless the replacement is privately deployed and the live judge path is retested.
 
 See [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) for the complete release
 gate and [`BUILD_WEEK_PROGRESS.md`](BUILD_WEEK_PROGRESS.md) for append-only

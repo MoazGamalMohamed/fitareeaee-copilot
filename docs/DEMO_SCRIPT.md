@@ -4,6 +4,9 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
+Release gate status: **satisfied for public v1.0.3**. Before recording, enable Do
+Not Disturb, close messaging notifications, and use only the fictional judge account.
+
 ## Recording setup
 
 - Use the final tagged APK and the same backend judges will access.
@@ -48,9 +51,10 @@ Do not record the final take until the live backend, test data, and exact publis
 
 ### 1:39–1:58 — Trust, booking, and chat
 
-**On screen:** Open trip details, show verification context, book, then open chat.
+**On screen:** Open trip details and show verification context. If **Book Trip** is
+available, book once; otherwise show the existing confirmed state. Open confirmed chat.
 
-**Say:** “The journey continues through trip details and manual verification context. These demo badges are fictional fixtures—not a safety claim. Booking is an authenticated transaction that checks ownership, verification, duplicates, status, and seats atomically. Then only the server-authorized sender and recipient can use that conversation.”
+**Say:** “The journey continues through trip details and manual verification context. These demo badges are fictional fixtures—not a safety claim. Booking runs as an authenticated transaction that checks ownership, verification, duplicates, status, and seats atomically. A confirmed booking unlocks a trip-specific conversation for only the server-authorized participants.”
 
 ### 1:58–2:20 — Architecture and safety
 
