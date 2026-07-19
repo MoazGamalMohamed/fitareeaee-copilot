@@ -15,7 +15,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
 | Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | 19/19 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
-| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts, including exact legacy-message participants, constrained avatar URLs, and owner withdrawal of raw verification uploads |
+| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 8/8 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
 | Android build | `flutter build apk --debug` | PASS | Universal debug APK rebuilt from application source `15baa23`; version code `20260718` |
 
@@ -62,10 +62,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Check | Current status | Notes |
 | --- | --- | --- |
 | Confirmed project | PASS | All deployment commands explicitly targeted `fitareeaee` |
-| Firestore rules | PASS | Latest constrained-avatar and exact-message-participant rules deployed July 18, 2026; 7/7 emulator contracts pass |
-| Storage rules | PASS | Latest owner/type/delete restrictions deployed July 18, 2026; emulator contracts pass |
+| Firestore rules | PASS | Support-ticket and confirmed-chat rules deployed July 19, 2026; 8/8 emulator contracts pass |
+| Storage rules | PASS | Owner/type/delete restrictions redeployed July 19, 2026; emulator contracts pass |
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
-| Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1`; minimized verification submit/review versions were redeployed successfully |
+| Transaction/verification/chat callables | PASS | `authorizeBookingConversation` is deployed and `ACTIVE` with the retained hardened callables in `us-central1` |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
 | Copilot callable | PASS | Deployed with managed secret version 2; official Firebase SDK authentication and English ride, English package, and Arabic ride model calls passed after obsolete version 1 was destroyed |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
@@ -80,7 +80,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | PASS | Owner removed the older package; downloaded public v1.0.1 installed, cold-launched, exposed Plan with AI, and produced no matching fatal logs |
+| Physical Android phone install | PASS | Exact local candidate `77B2DEB5…C0D8B` installed on Moto G Play (2024), cold-launched in 3.684 seconds, and produced no AndroidRuntime/Flutter crash output |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
 | Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.1`; private tested source `c5b6736`, sanitized source `865a5e8` |
 | Public sanitized repository | PASS | Both remote branches contain sanitized release source `865a5e8` plus final evidence; v1.0.1 peels exactly to the release source; original private repository has no remote |
@@ -105,7 +105,7 @@ the contest release.
 - SHA-256: `468E3407683A96C1C471BC62E23320221934613DEDAAAA818AF71C532F3B709D`
 - Public URL: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.1/app-debug.apk`
 - Universal installation/smoke: PASS after downloading the public asset, verifying its exact hash, removing only the emulator's older `com.fitareeaee.app` package/data, and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
-- Physical installation/smoke: PASS on `moto g play - 2024`; public v1.0.1 cold-launched, the legacy `tripCancellation` record rendered without a raw error, Plan with AI was visible, and a documented Dallas–Austin request returned a reviewable AI draft
+- Physical installation/smoke: PASS on `moto g play - 2024`; public v1.0.1 cold-launched, the legacy `tripCancellation` record rendered without a raw error, and Plan with AI was visible. A later audit found that the claimed reviewable-draft observation was a false-positive match against static disclosure text. Authenticated phone calls did reach the deployed Function and return HTTP 200, and the local superseding build now auto-reveals the result; visible confirmation on an idle phone remains pending.
 - Credentialed attempt: NOT PASSED; exact in-memory entry reached Firebase Auth but the emulator could not reach `8.8.8.8` or resolve `identitytoolkit.googleapis.com`. The app displayed a safe network error and remained responsive. A credential-bearing diagnostic screenshot was immediately deleted from host and emulator.
 - APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
 - APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
@@ -114,6 +114,21 @@ the contest release.
 This is the published judge artifact. It is intentionally debug-signed for
 contest sideloading because no safe private release-signing configuration was
 available.
+
+## Latest superseding local candidate
+
+- Build type: universal debug-signed Android judge candidate
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 154,994,394 bytes (147.81 MiB)
+- Build timestamp: July 19, 2026 at 12:52:51 CDT / 10:52:51 PDT
+- SHA-256: `77B2DEB5C5C482B741911C12BA8593E755EE6DC8EA892D76AA7682167F8C0D8B`
+- Motorola Moto G Play (2024): install PASS; cold launch PASS in 3.684 seconds;
+  no AndroidRuntime or Flutter crash output
+- API 36 emulator: clean install PASS; activity launch timed out waiting for the
+  fully drawn signal, but the process remained alive and Login rendered in the
+  preceding same-source smoke
+- Publication: PENDING sanitized commit/push, release upload, download, hash
+  comparison, and downloaded-copy installation
 
 ## Release gate
 

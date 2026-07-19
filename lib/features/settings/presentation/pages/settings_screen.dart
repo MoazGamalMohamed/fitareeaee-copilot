@@ -2,19 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../profile/domain/entities/user_profile.dart';
+import '../../../profile/presentation/providers/profile_provider.dart';
 import '../../../verification/presentation/pages/verification_screen.dart';
+import '../providers/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final user = ref
+        .watch(authStateProvider)
+        .maybeWhen(data: (value) => value, orElse: () => null);
+    final profileAsync = user == null
+        ? const AsyncValue<UserProfile?>.data(null)
+        : ref.watch(userProfileProvider(user.id));
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings'), centerTitle: true),
       body: ListView(
         children: [
+          _section('Support'),
+          ListTile(
+            leading: const Icon(Icons.support_agent_outlined),
+            title: const Text('Support chat'),
+            subtitle: const Text(
+              'Get instant guidance, then keep a ticket open for admin/support follow-up.',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/support'),
+          ),
+          const Divider(),
           _section('Trust and safety'),
           ListTile(
             leading: const Icon(Icons.verified_user_outlined),
@@ -36,7 +59,75 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _showPrivacyAndSafety(context),
           ),
           const Divider(),
-          _section('Contest build'),
+          _section('Preferences'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilterChip(
+                  avatar: const Icon(Icons.language, size: 18),
+                  label: const Text('English'),
+                  selected: settings.preferredLanguages.contains('en'),
+                  onSelected: (_) => ref
+                      .read(settingsProvider.notifier)
+                      .togglePreferredLanguage('en'),
+                ),
+                FilterChip(
+                  avatar: const Icon(Icons.translate, size: 18),
+                  label: const Text('Arabic'),
+                  selected: settings.preferredLanguages.contains('ar'),
+                  onSelected: (_) => ref
+                      .read(settingsProvider.notifier)
+                      .togglePreferredLanguage('ar'),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.attach_money),
+            title: const Text('Currency'),
+            subtitle: const Text('Display preference for prices'),
+            trailing: DropdownButton<String>(
+              value: settings.currency,
+              items: AppConstants.supportedCurrencies
+                  .map(
+                    (currency) => DropdownMenuItem(
+                      value: currency,
+                      child: Text(currency),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  ref.read(settingsProvider.notifier).setCurrency(value);
+                }
+              },
+            ),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.notifications_outlined),
+            title: const Text('Notifications'),
+            subtitle: const Text('Booking, chat, support, and system updates'),
+            value: settings.notificationsEnabled,
+            onChanged: ref
+                .read(settingsProvider.notifier)
+                .setNotificationsEnabled,
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.location_on_outlined),
+            title: const Text('Location sharing while active'),
+            subtitle: const Text(
+              'Reserved for active confirmed trip tracking.',
+            ),
+            value: settings.locationSharingEnabled,
+            onChanged: ref
+                .read(settingsProvider.notifier)
+                .setLocationSharingEnabled,
+          ),
+          const Divider(),
+          _section('Payments'),
           const ListTile(
             leading: Icon(Icons.payments_outlined),
             title: Text('Payments are disabled'),
@@ -44,13 +135,27 @@ class SettingsScreen extends ConsumerWidget {
               'No cards are charged and no escrow, refund, wallet, or payout is processed.',
             ),
           ),
-          const ListTile(
-            leading: Icon(Icons.language_outlined),
-            title: Text('Language and currency'),
-            subtitle: Text(
-              'The interface and prices use English and US dollars. Copilot accepts English or Arabic requests.',
+          SwitchListTile(
+            secondary: const Icon(Icons.credit_card),
+            title: const Text('Save payment method later'),
+            subtitle: const Text(
+              'Preference only. No card details are collected in this judge build.',
             ),
+            value: settings.savePaymentMethod,
+            onChanged: ref.read(settingsProvider.notifier).setSavePaymentMethod,
           ),
+          ListTile(
+            leading: const Icon(Icons.receipt_long_outlined),
+            title: const Text('Payment overview'),
+            subtitle: const Text(
+              'Passenger payable and driver receivable view',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/payments'),
+          ),
+          const Divider(),
+          _section('Driver quality'),
+          _buildDriverMetric(context, profileAsync),
           const Divider(),
           _section('Account'),
           ListTile(
@@ -61,7 +166,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              'Fitareeaee Copilot • Build Week judge build',
+              'Fitareeaee Copilot - Build Week judge build',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ),
@@ -82,6 +187,56 @@ class SettingsScreen extends ConsumerWidget {
       ),
     ),
   );
+
+  Widget _buildDriverMetric(
+    BuildContext context,
+    AsyncValue<UserProfile?> profileAsync,
+  ) {
+    return profileAsync.when(
+      loading: () => const ListTile(
+        leading: Icon(Icons.insights_outlined),
+        title: Text('Driver priority metric'),
+        subtitle: Text('Loading profile history...'),
+      ),
+      error: (_, _) => const ListTile(
+        leading: Icon(Icons.insights_outlined),
+        title: Text('Driver priority metric'),
+        subtitle: Text('Profile history is unavailable.'),
+      ),
+      data: (profile) {
+        final totalTrips = profile?.totalTrips ?? 0;
+        final unlocked = totalTrips >= 50;
+        final rating = profile?.rating ?? 0;
+        final score = _driverPriorityScore(profile);
+        return ListTile(
+          leading: Icon(
+            unlocked ? Icons.emoji_events_outlined : Icons.lock_outline,
+          ),
+          title: const Text('Driver priority metric'),
+          subtitle: Text(
+            unlocked
+                ? 'Score ${score.toStringAsFixed(0)}/100 from rating, completed trips, and acceptance history.'
+                : 'Unlocks after 50 completed rides or deliveries. Current history: $totalTrips.',
+          ),
+          trailing: unlocked
+              ? CircleAvatar(child: Text(score.toStringAsFixed(0)))
+              : Text('${rating.toStringAsFixed(1)} rating'),
+        );
+      },
+    );
+  }
+
+  double _driverPriorityScore(UserProfile? profile) {
+    if (profile == null || profile.totalTrips < 50) return 0;
+    final acceptanceRate = profile.metadata['acceptanceRate'];
+    final completionRate = profile.metadata['completionRate'];
+    final acceptance = acceptanceRate is num ? acceptanceRate.toDouble() : 0.8;
+    final completion = completionRate is num ? completionRate.toDouble() : 0.9;
+    final ratingScore = (profile.rating.clamp(0, 5).toDouble() / 5) * 60;
+    final acceptanceScore = acceptance.clamp(0, 1).toDouble() * 25;
+    final completionScore = completion.clamp(0, 1).toDouble() * 15;
+    return ratingScore + acceptanceScore + completionScore;
+  }
 
   void _showPrivacyAndSafety(BuildContext context) {
     showModalBottomSheet(

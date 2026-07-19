@@ -17,10 +17,10 @@ before(async () => {
   environment = await initializeTestEnvironment({
     projectId: "fitareeaee",
     firestore: {
-      rules: readFileSync(resolve(process.cwd(), "../firestore.rules"), "utf8"),
+      rules: readFileSync(resolve(__dirname, "../../firestore.rules"), "utf8"),
     },
     storage: {
-      rules: readFileSync(resolve(process.cwd(), "../storage.rules"), "utf8"),
+      rules: readFileSync(resolve(__dirname, "../../storage.rules"), "utf8"),
     },
   });
 });
@@ -222,6 +222,44 @@ test("messages are participant-scoped and sender identity is enforced", async ()
       ...message,
       id: "inactive",
       conversation_id: "trip-old__driver_rider",
+    })
+  );
+});
+
+test("support tickets are owner-scoped and users cannot spoof staff", async () => {
+  const rider = environment.authenticatedContext("rider").firestore();
+  const outsider = environment.authenticatedContext("outsider").firestore();
+  const ticket = {
+    userId: "rider",
+    tripId: null,
+    category: "trip",
+    status: "open",
+    subject: "Chat problem",
+    description: "The confirmed trip chat will not open.",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  await assertSucceeds(setDoc(doc(rider, "support_tickets/ticket-1"), ticket));
+  await assertSucceeds(getDoc(doc(rider, "support_tickets/ticket-1")));
+  await assertFails(getDoc(doc(outsider, "support_tickets/ticket-1")));
+  await assertSucceeds(
+    setDoc(doc(rider, "support_tickets/ticket-1/messages/message-1"), {
+      ticketId: "ticket-1",
+      senderId: "rider",
+      senderName: "Judge Rider",
+      isStaff: false,
+      message: "Please help.",
+      createdAt: new Date().toISOString(),
+    })
+  );
+  await assertFails(
+    setDoc(doc(rider, "support_tickets/ticket-1/messages/staff-spoof"), {
+      ticketId: "ticket-1",
+      senderId: "rider",
+      senderName: "Fake Staff",
+      isStaff: true,
+      message: "I approve this.",
+      createdAt: new Date().toISOString(),
     })
   );
 });

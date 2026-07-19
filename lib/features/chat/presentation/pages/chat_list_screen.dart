@@ -85,7 +85,7 @@ class ChatListScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                error.toString(),
+                'Open chat from a confirmed trip, or retry after reconnecting.',
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),

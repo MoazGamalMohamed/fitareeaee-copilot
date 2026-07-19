@@ -12,11 +12,13 @@ import '../../../booking/domain/models/booking_model.dart';
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
   final int requestedSeats;
+  final String? bookingId;
 
   const TripDetailsScreen({
     super.key,
     required this.tripId,
     int? requestedSeats,
+    this.bookingId,
   }) : requestedSeats = requestedSeats == null
            ? 1
            : requestedSeats < 1
@@ -114,14 +116,32 @@ class TripDetailsScreen extends ConsumerWidget {
             data: (user) => user?.id ?? '',
             orElse: () => '',
           );
-          final userBookingsAsync = ref.watch(userBookingsProvider(userId));
-          final activeBooking = userBookingsAsync.maybeWhen(
+          final participantBookingsAsync = ref.watch(
+            participantBookingsProvider(userId),
+          );
+          final activeBooking = participantBookingsAsync.maybeWhen(
+            data: (bookings) {
+              final confirmed = bookings
+                  .where(
+                    (booking) =>
+                        booking.tripId == trip.id &&
+                        (booking.status == 'confirmed' ||
+                            booking.status == 'paid'),
+                  )
+                  .toList();
+              if (bookingId != null) {
+                for (final booking in confirmed) {
+                  if (booking.id == bookingId) return booking;
+                }
+              }
+              return confirmed.isEmpty ? null : confirmed.first;
+            },
+            orElse: () => null,
+          );
+          final pendingBooking = participantBookingsAsync.maybeWhen(
             data: (bookings) {
               for (final booking in bookings) {
-                if (booking.tripId == trip.id &&
-                    (booking.status == 'confirmed' ||
-                        booking.status == 'paid' ||
-                        booking.status == 'pending')) {
+                if (booking.tripId == trip.id && booking.status == 'pending') {
                   return booking;
                 }
               }
@@ -135,7 +155,59 @@ class TripDetailsScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (isOwnTrip)
+                if (activeBooking != null)
+                  Column(
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: bookingState is AsyncLoading
+                            ? null
+                            : () => _openBookedChat(context, activeBooking),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: AppColors.primary,
+                        ),
+                        icon: const Icon(Icons.message, color: Colors.white),
+                        label: const Text(
+                          'Open Confirmed Chat',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (activeBooking.passengerId == userId)
+                        OutlinedButton.icon(
+                          onPressed: bookingState is AsyncLoading
+                              ? null
+                              : () =>
+                                    _cancelBooking(context, ref, trip, userId),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          icon: const Icon(Icons.cancel_outlined),
+                          label: const Text('Cancel under policy'),
+                        )
+                      else
+                        OutlinedButton.icon(
+                          onPressed: () => context.push('/support'),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          icon: const Icon(Icons.support_agent_outlined),
+                          label: const Text('Need help? Contact support'),
+                        ),
+                    ],
+                  )
+                else if (pendingBooking != null)
+                  ElevatedButton.icon(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    icon: const Icon(Icons.lock_clock_outlined),
+                    label: const Text(
+                      'Waiting for confirmation - chat is locked',
+                    ),
+                  )
+                else if (isOwnTrip)
                   ElevatedButton(
                     onPressed: null,
                     style: ElevatedButton.styleFrom(
@@ -146,47 +218,12 @@ class TripDetailsScreen extends ConsumerWidget {
                   )
                 else if (trip.isRequest)
                   ElevatedButton.icon(
-                    onPressed: () => _messageRequester(context, trip),
+                    onPressed: null,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    icon: const Icon(Icons.message),
-                    label: const Text('Message Requester'),
-                  )
-                else if (activeBooking != null)
-                  Column(
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: bookingState is AsyncLoading
-                            ? null
-                            : () => _openBookedChat(
-                                context,
-                                ref,
-                                trip,
-                                activeBooking,
-                              ),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                          backgroundColor: AppColors.primary,
-                        ),
-                        icon: const Icon(Icons.message, color: Colors.white),
-                        label: const Text(
-                          'Open Chat',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: bookingState is AsyncLoading
-                            ? null
-                            : () => _cancelBooking(context, ref, trip, userId),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                        icon: const Icon(Icons.cancel_outlined),
-                        label: const Text('Cancel under policy'),
-                      ),
-                    ],
+                    icon: const Icon(Icons.lock_outline),
+                    label: const Text('No direct chat before confirmation'),
                   )
                 else if (bookingState is AsyncLoading)
                   const SizedBox(
@@ -708,52 +745,26 @@ class TripDetailsScreen extends ConsumerWidget {
     context.push('/trips/${trip.id}/booking?seats=$requestedSeats');
   }
 
-  Future<void> _messageRequester(BuildContext context, Trip trip) async {
-    try {
-      final result = await FirebaseFunctions.instance
-          .httpsCallable('authorizeTripConversation')
-          .call({
-            'schemaVersion': 1,
-            'tripId': trip.id,
-            'recipientId': trip.driverId,
-          });
-      final data = Map<String, dynamic>.from(result.data as Map);
-      final conversationId = data['conversationId'];
-      if (conversationId is! String || conversationId.isEmpty) {
-        throw StateError('Conversation authorization missing');
-      }
-      if (context.mounted) {
-        context.push(
-          '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
-        );
-      }
-    } on FirebaseFunctionsException catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Messaging is unavailable. Confirm the request is active and your identity review is complete.',
-          ),
-        ),
-      );
-    }
-  }
-
   Future<void> _openBookedChat(
     BuildContext context,
-    WidgetRef ref,
-    Trip trip,
     BookingModel booking,
   ) async {
     try {
-      final conversationId =
-          booking.conversationId ??
-          await ref
-              .read(tripBookingProvider.notifier)
-              .bookTrip(trip.id, booking.passengerId, booking.seatsBooked);
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('authorizeBookingConversation')
+          .call({'schemaVersion': 1, 'bookingId': booking.id});
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final conversationId = data['conversationId'];
+      final recipientId = data['recipientId'];
+      if (conversationId is! String ||
+          conversationId.isEmpty ||
+          recipientId is! String ||
+          recipientId.isEmpty) {
+        throw StateError('Conversation authorization missing');
+      }
       if (!context.mounted) return;
       context.push(
-        '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+        '/chat/$recipientId?conversationId=${Uri.encodeQueryComponent(conversationId)}',
       );
     } catch (_) {
       if (!context.mounted) return;

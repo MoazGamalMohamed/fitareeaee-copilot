@@ -63,7 +63,7 @@ class _AdminVerificationsScreenState
   Widget _buildAdminContent(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verification Management'),
+        title: const Text('Admin Console'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -118,18 +118,23 @@ class _AdminVerificationsScreenState
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.inbox, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text(
-                    'No verification requests yet',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildOperationsOverview(context),
+                const SizedBox(height: 16),
+                const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.inbox, size: 64, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text(
+                      'No verification requests yet',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ],
             );
           }
 
@@ -211,16 +216,72 @@ class _AdminVerificationsScreenState
             );
           }
 
-          return ListView.builder(
+          return ListView(
             padding: const EdgeInsets.all(16),
-            itemCount: filteredDocs.length,
-            itemBuilder: (context, index) {
-              final doc = filteredDocs[index];
-              final data = doc.data() as Map<String, dynamic>;
-              return _buildUserCard(doc.id, data);
-            },
+            children: [
+              _buildOperationsOverview(context),
+              const SizedBox(height: 16),
+              ...filteredDocs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return _buildUserCard(doc.id, data);
+              }),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildOperationsOverview(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Operations overview',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: const [
+                _AdminOpsChip(
+                  icon: Icons.verified_user_outlined,
+                  label: 'Verification review',
+                ),
+                _AdminOpsChip(
+                  icon: Icons.support_agent_outlined,
+                  label: 'Support tickets',
+                ),
+                _AdminOpsChip(
+                  icon: Icons.event_available_outlined,
+                  label: 'Bookings',
+                ),
+                _AdminOpsChip(
+                  icon: Icons.chat_bubble_outline,
+                  label: 'Confirmed chat only',
+                ),
+                _AdminOpsChip(
+                  icon: Icons.payments_outlined,
+                  label: 'Payments disabled',
+                ),
+                _AdminOpsChip(
+                  icon: Icons.report_problem_outlined,
+                  label: 'Safety escalation',
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Private participant messages remain participant-only. Admins handle verification and explicit support/safety tickets; real refunds and payouts require a payment processor integration before launch.',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -836,5 +897,17 @@ class _AdminVerificationsScreenState
       }
     }
     return DateTime.now();
+  }
+}
+
+class _AdminOpsChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _AdminOpsChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Chip(avatar: Icon(icon, size: 18), label: Text(label));
   }
 }

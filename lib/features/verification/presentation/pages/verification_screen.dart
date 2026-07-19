@@ -121,6 +121,11 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
   Widget _buildContent(UserVerification? verification) {
     final level = verification?.verificationLevel ?? 0;
+    const totalSteps = 6;
+    final approvedSteps = _approvedStepCount(verification);
+    final pendingSteps = _pendingStepCount(verification);
+    final progressValue = ((approvedSteps + pendingSteps * 0.5) / totalSteps)
+        .clamp(0.0, 1.0);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -146,14 +151,19 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Verification Level $level/3',
+                  'Verification Level $level/4',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
-                  value: level / 3,
+                  value: progressValue,
                   backgroundColor: Colors.grey[300],
                   valueColor: AlwaysStoppedAnimation(_getLevelColor(level)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$approvedSteps approved, $pendingSteps pending of $totalSteps checks',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -199,8 +209,58 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           onTap: () =>
               _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
         ),
+        _buildVerificationItem(
+          title: 'Driver License',
+          subtitle: 'Required before offering rides',
+          icon: Icons.badge_outlined,
+          isVerified: verification?.driverLicenseVerified ?? false,
+          isUploading: _uploadingType == VerificationType.driverLicense.name,
+          isPending:
+              (verification?.driverLicenseUrl != null &&
+              !(verification?.driverLicenseVerified ?? false)),
+          onTap: () =>
+              _uploadDocument(VerificationType.driverLicense, 'Driver License'),
+        ),
+        _buildVerificationItem(
+          title: 'Vehicle Registration',
+          subtitle: 'Required before offering rides or deliveries',
+          icon: Icons.directions_car_filled_outlined,
+          isVerified: verification?.vehicleVerified ?? false,
+          isUploading: _uploadingType == VerificationType.vehicle.name,
+          isPending:
+              (verification?.vehicleRegistrationUrl != null &&
+              !(verification?.vehicleVerified ?? false)),
+          onTap: () =>
+              _uploadDocument(VerificationType.vehicle, 'Vehicle Registration'),
+        ),
       ],
     );
+  }
+
+  int _approvedStepCount(UserVerification? verification) {
+    if (verification == null) return 0;
+    return [
+      verification.emailVerified,
+      verification.phoneVerified,
+      verification.identityVerified,
+      verification.selfieWithIdVerified,
+      verification.driverLicenseVerified,
+      verification.vehicleVerified,
+    ].where((isVerified) => isVerified).length;
+  }
+
+  int _pendingStepCount(UserVerification? verification) {
+    if (verification == null) return 0;
+    return [
+      verification.identityDocumentUrl != null &&
+          !verification.identityVerified,
+      verification.selfieWithIdUrl != null &&
+          !verification.selfieWithIdVerified,
+      verification.driverLicenseUrl != null &&
+          !verification.driverLicenseVerified,
+      verification.vehicleRegistrationUrl != null &&
+          !verification.vehicleVerified,
+    ].where((isPending) => isPending).length;
   }
 
   Widget _buildVerificationItem({
@@ -267,6 +327,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         return Icons.verified_user;
       case 3:
         return Icons.verified;
+      case 4:
+        return Icons.workspace_premium;
       default:
         return Icons.shield_outlined;
     }
@@ -281,6 +343,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       case 2:
         return Colors.orange;
       case 3:
+      case 4:
         return Colors.green;
       default:
         return Colors.grey;

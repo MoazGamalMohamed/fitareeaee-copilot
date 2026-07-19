@@ -71,28 +71,28 @@ List<FAQItem> _getDefaultFAQs() {
       id: 'faq_2',
       question: 'How do payments work?',
       answer:
-          'Payments are held in escrow until the trip is completed. Once the driver confirms arrival, funds are released to them.',
+          'Payments are disabled in the Build Week judge build. The app still keeps the business logic clear: riders and package senders are the paying side, and drivers or couriers are the receiving side. Real cards, escrow, refunds, and bank payouts require a separate compliant payment integration before launch.',
       category: 'Payments',
     ),
     FAQItem(
       id: 'faq_3',
       question: 'How do I become a driver?',
       answer:
-          'Go to your profile, tap "Become a Driver", and complete the verification process including uploading your ID and vehicle information.',
+          'Open Verification and complete manual identity, selfie, driver license, and vehicle registration review. Offer Ride stays locked until those driver requirements are approved.',
       category: 'Drivers',
     ),
     FAQItem(
       id: 'faq_4',
       question: 'What if I need to cancel?',
       answer:
-          'You can cancel a booking from your trips page. Cancellation policies vary - check the trip details for specific terms.',
+          'Self-service cancellation is allowed before the scheduled departure. The confirmed chat closes after cancellation. Emergency or post-departure issues should be escalated to support.',
       category: 'Booking',
     ),
     FAQItem(
       id: 'faq_5',
       question: 'How do I contact support?',
       answer:
-          'Submit a support ticket from this Help Center. Our team typically responds within 24 hours.',
+          'Submit a support ticket from this Help Center. The app adds instant guidance first, then keeps the ticket open for admin or support follow-up.',
       category: 'Support',
     ),
   ];
@@ -140,6 +140,7 @@ Future<SupportTicket> createTicket({
         'subject': subject,
         'description': description,
         'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
       });
 
   // Add initial message
@@ -149,6 +150,15 @@ Future<SupportTicket> createTicket({
     'senderName': user.displayName ?? 'User',
     'isStaff': false,
     'message': description,
+    'createdAt': DateTime.now().toIso8601String(),
+  });
+
+  await ticketRef.collection('messages').add({
+    'ticketId': ticketRef.id,
+    'senderId': user.uid,
+    'senderName': 'Fitareeaee Support Copilot guidance',
+    'isStaff': false,
+    'message': _instantSupportGuidance(category),
     'createdAt': DateTime.now().toIso8601String(),
   });
 
@@ -227,7 +237,29 @@ Future<void> createDispute({
 /// Mark FAQ as helpful
 Future<void> markFAQHelpful(String faqId, bool helpful) async {
   final field = helpful ? 'helpfulCount' : 'notHelpfulCount';
-  await FirebaseFirestore.instance.collection('faq').doc(faqId).update({
-    field: FieldValue.increment(1),
-  });
+  try {
+    await FirebaseFirestore.instance.collection('faq').doc(faqId).update({
+      field: FieldValue.increment(1),
+    });
+  } catch (_) {
+    // FAQ feedback is optional in the judge build; support tickets stay usable
+    // even when no writable FAQ collection is configured.
+  }
+}
+
+String _instantSupportGuidance(TicketCategory category) {
+  switch (category) {
+    case TicketCategory.payment:
+      return 'Thanks for opening a payment issue. In this judge build no real money is moved. A support/admin reviewer should verify the trip, booking status, and any documented payment concern before action is taken.';
+    case TicketCategory.trip:
+      return 'Thanks for opening a trip issue. Please include the route, scheduled time, and what changed. Confirmed-trip chat is only active while the booking is active; cancelled or completed trips should stay in support.';
+    case TicketCategory.account:
+      return 'Thanks for opening an account issue. Do not send passwords, full IDs, or private document numbers here. An admin can review account status and verification history.';
+    case TicketCategory.safety:
+      return 'Thanks for opening a safety issue. Fitareeaee is not an emergency service. If anyone may be in immediate danger, contact local emergency services first, then keep this ticket for admin follow-up.';
+    case TicketCategory.technical:
+      return 'Thanks for reporting a technical issue. Please include the screen name, the action you tapped, and the exact error text if visible.';
+    case TicketCategory.other:
+      return 'Thanks for contacting support. If this answer does not solve it, keep this ticket open and an admin/support reviewer can follow up.';
+  }
 }

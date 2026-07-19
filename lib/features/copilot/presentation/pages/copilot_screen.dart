@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -17,6 +18,8 @@ class CopilotScreen extends StatefulWidget {
 }
 
 class _CopilotScreenState extends State<CopilotScreen> {
+  final _scrollController = ScrollController();
+  final _requestFocus = FocusNode();
   final _request = TextEditingController();
   final _origin = TextEditingController();
   final _destination = TextEditingController();
@@ -41,6 +44,8 @@ class _CopilotScreenState extends State<CopilotScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
+    _requestFocus.dispose();
     for (final controller in [
       _request,
       _origin,
@@ -62,6 +67,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _result = null;
     });
     try {
       final planner = widget.planner ?? CopilotRepository().plan;
@@ -77,8 +83,22 @@ class _CopilotScreenState extends State<CopilotScreen> {
             : 'AI planning is unavailable. Retry or use manual search.';
       });
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+        _revealOutcome();
+      }
     }
+  }
+
+  void _revealOutcome() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+    });
   }
 
   void _loadDraft(CopilotDraft draft) {
@@ -153,12 +173,14 @@ class _CopilotScreenState extends State<CopilotScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Plan with AI')),
       body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(20),
         children: [
           _disclosure(),
           const SizedBox(height: 20),
           TextField(
             controller: _request,
+            focusNode: _requestFocus,
             minLines: 4,
             maxLines: 7,
             maxLength: 1200,
@@ -201,6 +223,12 @@ class _CopilotScreenState extends State<CopilotScreen> {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _loading ? null : _showVoiceInputHint,
+            icon: const Icon(Icons.mic_outlined),
+            label: const Text('Use voice input'),
+          ),
+          const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _loading || _request.text.trim().length < 5
                 ? null
@@ -221,11 +249,18 @@ class _CopilotScreenState extends State<CopilotScreen> {
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
-            _messageCard(_error!, Colors.red.shade50, Icons.error_outline),
+            Semantics(
+              liveRegion: true,
+              child: _messageCard(
+                _error!,
+                Colors.red.shade50,
+                Icons.error_outline,
+              ),
+            ),
           ],
           if (_result != null) ...[
             const SizedBox(height: 24),
-            _draftReview(_result!),
+            Semantics(liveRegion: true, child: _draftReview(_result!)),
           ],
         ],
       ),
@@ -367,12 +402,73 @@ class _CopilotScreenState extends State<CopilotScreen> {
           label: const Text('Confirm draft and find transparent matches'),
         ),
         const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => _announceDraft(draft),
+          icon: const Icon(Icons.record_voice_over_outlined),
+          label: const Text('Read draft summary'),
+        ),
+        const SizedBox(height: 8),
         const Text(
           'Confirmation starts a deterministic search only. It does not create a trip or booking.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 12),
         ),
       ],
+    );
+  }
+
+  void _showVoiceInputHint() {
+    _requestFocus.requestFocus();
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.mic_outlined, color: AppColors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Voice input',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Use the microphone on your Android keyboard to dictate the ride or package request in English or Arabic. Fitareeaee will turn the dictated text into a reviewable AI draft.',
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: const Text('Start dictating'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _announceDraft(CopilotDraft draft) {
+    final summary = [
+      draft.assistantSummary,
+      if (draft.origin != null && draft.destination != null)
+        'Route from ${draft.origin} to ${draft.destination}.',
+      if (draft.departureDate != null) 'Date ${draft.departureDate}.',
+      if (draft.departureTime != null) 'Time ${draft.departureTime}.',
+    ].join(' ');
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      summary,
+      draft.language == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Draft summary sent to screen reader.')),
     );
   }
 

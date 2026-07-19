@@ -120,7 +120,9 @@ final conversationsProvider = StreamProvider<List<Message>>((ref) {
   final chatRepository = ref.watch(chatRepositoryProvider);
   return chatRepository.streamConversations(userId).asyncMap((result) {
     return result.fold(
-      (failure) => throw Exception(failure.toString()),
+      (_) => throw Exception(
+        'Messages are unavailable. Open chat from an active confirmed booking or retry later.',
+      ),
       (messages) => messages,
     );
   });

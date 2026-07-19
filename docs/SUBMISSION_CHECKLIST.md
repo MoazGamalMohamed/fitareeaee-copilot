@@ -65,8 +65,11 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Rerun the complete mandatory gate on release-gate checkpoint `ba9c343`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, APK build/clean-install/Login smoke PASS.
 - [x] Final release gate passed on private `837c11d` / sanitized `8e572ae`: format 111/0, analysis clean, Flutter 18/18, focused Copilot 10/10, Functions 19/19, rules 7/7, callable integration 3/3, APK build and public-download emulator smoke PASS.
 - [x] Phone-found notification fix gate passed on private `c5b6736` / sanitized `865a5e8`: format 112/0, analysis clean, Flutter 19/19, Functions 19/19, rules 7/7, callable integration 3/3, APK/public-download emulator and phone smoke PASS.
+- [x] July 19 judge-path gate passed locally: format 113/0, analysis clean, Flutter 19/19, Functions 19/19, rules 8/8, compact APK build, emulator clean-install, and exact-candidate Motorola install/cold-launch PASS.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
-- [x] Install and smoke-test the downloaded public v1.0.1 APK on the owner's Motorola phone, including cold launch, notification regression, and live reviewable Copilot draft.
+- [x] Install and smoke-test the downloaded public v1.0.1 APK on the owner's Motorola phone, including cold launch and the notification regression.
+- [x] Install the superseding Copilot auto-reveal build on the Motorola phone; Home, Copilot/voice guidance, Settings, and Past Trips rendered and no crash output appeared.
+- [ ] Run a deliberate live GPT request and visibly confirm the structured review on an idle phone, then continue through fictional matches/details/booking/chat without concurrent manual input.
 - [x] Record remaining known limitations without minimizing them.
 
 ## Repository and release
@@ -79,6 +82,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Record draft PR as not applicable because sanitized `main` and `build-week/final` intentionally contain the same passing history.
 - [x] No safe private release signing exists; label the universal judge APK clearly as debug-signed.
 - [x] Record the latest local APK path, type, size, timestamp, commit, SHA-256, and tested emulator.
+- [x] Add a current Google Play readiness audit; the contest APK remains sideload-only and debug-signed.
 - [x] Tag the exact local APK source commit as `build-week-stage3-local`.
 - [x] Publish APK at a stable GitHub Release/direct URL.
 - [x] Download the APK from the public judge URL.

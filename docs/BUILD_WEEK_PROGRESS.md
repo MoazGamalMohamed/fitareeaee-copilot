@@ -1400,3 +1400,196 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   credential rotation, decide inherited Function retirement, place judge credentials
   privately, record/upload the video, run `/feedback`, review eligibility/legal terms,
   and submit Devpost.
+
+## 2026-07-19 01:16 CDT / 2026-07-18 23:16 PDT — Copilot result visibility correction and blocked checkpoint
+
+### Objective and correction
+
+- Re-audited the earlier physical Copilot evidence and found that automation had matched
+  the phrase “AI draft” in the static safety disclosure, not the structured review.
+  The older progress record remains unchanged because this log is append-only; this
+  entry is the authoritative correction.
+- Deployed Function logs prove the physical request was authenticated and completed
+  with HTTP 200 in 4.7 seconds. The result/error was appended below the lazy ListView
+  viewport without moving the user to it, so the successful action appeared inert.
+- Added a dedicated ScrollController. Every new request clears stale output, and the
+  completed review or safe error is now automatically scrolled into view and announced
+  as a live accessibility region.
+- Added regression assertions proving both the failure message and review heading are
+  inside the visible viewport after completion.
+- Corrected README, test-matrix, and checklist claims; no unobserved phone behavior is
+  represented as passing.
+
+### Files changed
+
+- `lib/features/copilot/presentation/pages/copilot_screen.dart`
+- `test/features/copilot/copilot_screen_test.dart`
+- `README.md`
+- `docs/TEST_MATRIX.md`
+- `docs/SUBMISSION_CHECKLIST.md`
+- `docs/BUILD_WEEK_PROGRESS.md`
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 112 files,
+  0 changed.
+- Focused Copilot widget tests: PASS; 3/3.
+- `flutter analyze --no-pub`: PASS; no issues.
+- `flutter test --no-pub`: PASS; 19/19.
+- `cd functions && npm run build`: PASS.
+- Default `npm test`: environment FAIL after the TypeScript build because the sandbox
+  denied Node worker spawning with `EPERM`.
+- Same three contract files with Node's supported `--test-isolation=none`: PASS; 19/19.
+- Direct rules test without emulators: expected environment setup FAIL; no contract ran.
+- Firebase emulator start: environment FAIL because the sandbox denied Firebase CLI
+  child-process/config-store access. A requested escalation and subsequent Git/GitHub
+  writes were rejected because the Codex environment approval quota was exhausted.
+  Rules and callable source were unchanged; their immediately preceding gates remain
+  PASS at 7/7 and 3/3, but this checkpoint does not falsely claim a fresh rerun.
+- `flutter build apk --debug --no-pub`: PASS in 377.0 seconds.
+- APK signature: PASS; Android Signature Scheme v2, one Android Debug signer, certificate
+  SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- APK metadata: `com.fitareeaee.app`, version `1.0.0` (`20260718`), min API 24,
+  target/compile API 36.
+- New local APK: `build/app/outputs/flutter-apk/app-debug.apk`; 192,821,763 bytes;
+  SHA-256 `22FD116A6BF095AD1606E6C704670BDB380DAC178B0C4A15E079C78DADCDA1FF`;
+  built 2026-07-19 01:11:13 CDT.
+
+### Checkpoint state and next action
+
+- Rollback point: private clean commit `b34ea4cd326bda8ac57a2ac677b721ae040a8f40`;
+  public clean commit `bc1303f2606df4dd6e44d139d4c087bdbd1767c2`; public v1.0.1 remains available.
+- Commit SHA/tag/push/release for this correction: PENDING. `.git` is read-only in the
+  current sandbox and both local Git escalation and GitHub connector writes were denied
+  after the approval quota was exhausted. No source was partially pushed.
+- Device installation/smoke for this new APK: PENDING. ADB installation approval was
+  denied for the same quota reason. Physical input was also halted when the owner began
+  using the phone in another app; a temporary diagnostic image was immediately deleted.
+- No production Firebase data changed. No secret or judge credential was printed,
+  committed, embedded in a test APK, or sent to GitHub.
+- Resume by granting/refreshing the narrow Git, GitHub, Firebase-emulator, and ADB
+  approvals. Then commit the local checkpoint, replay/rescan the sanitized tree, rerun
+  7/7 rules and 3/3 callable integration gates, install the new APK on an idle phone,
+  visibly confirm review → matches → details → booking → chat with fictional data, and
+  publish a superseding release before recording the demo.
+
+## 2026-07-19 01:20 CDT / 2026-07-18 23:20 PDT — APK padding audit correction
+
+- Compared the new APK ZIP structure with downloaded v1.0.1. Both contain 675 entries,
+  and their summed compressed entry sizes differ by only 987 bytes. The new file has
+  38,126,737 bytes of container/signing overhead versus 184,291 bytes in v1.0.1,
+  explaining the unexpected 192.8 MB size after repeated integration-test signing.
+- The APK verifies cryptographically and its application contents are current, but the
+  192,821,763-byte artifact is not accepted as the release candidate because the padding
+  is wasteful. The hash in the preceding entry identifies only this diagnostic build.
+- Attempted to remove only `build/app/outputs/flutter-apk/app-debug.apk` and its SHA-1
+  sidecar before a clean reproducible rebuild. The environment rejected even that exact
+  build-output deletion because its approval quota is exhausted. No file was deleted.
+- Required resume action: delete only those two reproducible outputs, rebuild, re-run
+  signature/metadata/hash/size checks, and use the rebuilt hash for the release record.
+
+## 2026-07-19 12:55 CDT / 2026-07-19 10:55 PDT — judge-path repair, live deploy, and exact-phone APK checkpoint
+
+### Objective and outcome
+
+- Completed the upgraded judge-critical repair slice rather than expanding unstable
+  prototype scope. The required format, analysis, Flutter, Functions, and security-rule
+  gates pass.
+- Built a compact universal debug APK, installed the exact hash on the physical Motorola
+  phone and API 36 emulator, and confirmed a clean physical cold launch.
+- Deployed only the tested confirmed-booking conversation callable plus Firestore and
+  Storage rules to the explicitly confirmed `fitareeaee` project. No production data
+  was deleted and no broad Functions deployment or legacy Function retirement occurred.
+
+### Product changes completed
+
+- Home `Offer a Ride` no longer opens Copilot. It requires identity, selfie-with-ID,
+  driver-license, and vehicle approval before entering the driver trip path.
+- Home quick links now route to Matches, completed Past Trips, a truthful read-only
+  Payments overview, and Support.
+- Trips now separate Available, My Trips, Matches, and Past. Plan with AI remains on
+  Home; pre-confirmation request chat is blocked, while confirmed/paid booking
+  participants obtain a server-authorized trip-specific conversation.
+- Added `authorizeBookingConversation`, which validates authentication, booking status,
+  participant roles, completion/cancellation, and repairs only the deterministic
+  booking conversation authorization.
+- Replaced raw `Instance of FirebaseFailure` chat output with actionable user-safe text.
+- Added owner-scoped support tickets, deterministic first-response guidance, user reply,
+  closure, and admin follow-up permissions. Users cannot impersonate staff.
+- Added English/Arabic language preferences, currency preference, payment-storage
+  preference disclosure, support access, and a driver priority score shown only after
+  50 completed trips.
+- Added voice-dictation guidance through the Android keyboard and a screen-reader
+  announcement action for a completed Copilot draft.
+- Corrected verification progress to six checks and exposed driver-license/vehicle
+  upload items. Added an admin operations overview without exposing private chat data.
+- Added `docs/PLAY_STORE_READINESS.md`; API 36 is aligned with the announced August 31,
+  2026 target requirement, while release signing/AAB/Play forms/testing remain separate
+  post-contest work.
+
+### Files changed
+
+- Routing/Home/Trips/Chat/Copilot/Settings/Support/Verification/Admin presentation and
+  providers under `lib/`.
+- New `lib/features/payments/presentation/pages/payments_screen.dart`.
+- `functions/src/conversation.ts`, `functions/src/index.ts`, and
+  `functions/src/rules.contract.test.ts`.
+- `firestore.rules`.
+- `README.md`, `docs/RESUME_HERE.md`, `docs/TEST_MATRIX.md`,
+  `docs/SUBMISSION_CHECKLIST.md`, `docs/PLAY_STORE_READINESS.md`, and this append-only log.
+
+### Commands and exact results
+
+- Dart format full gate: PASS; 113 files, 0 changed after canonical formatting. The two
+  final analyzer-fix files also reported 0 changes.
+- `flutter analyze --no-pub`: PASS; `No issues found!` in 77.6 seconds.
+- `flutter test --no-pub`: PASS; 19/19.
+- `cd functions && npm run build`: PASS.
+- Default `npm test`: environment FAIL after successful build because Windows sandbox
+  worker spawning returned `EPERM`. The same three contract files with Node's supported
+  `--test-isolation=none` mode: PASS; 19/19.
+- First fresh rule run found one real optional-field bug (`attachments` absent). The rule
+  was corrected and the complete Firestore/Storage emulator suite then passed 8/8.
+- Targeted deploy to `fitareeaee`: PASS; `authorizeBookingConversation` created ACTIVE in
+  `us-central1`; Firestore and Storage rules compiled and released successfully.
+- Read-only live inventory: `planTripWithCopilot` remains ACTIVE with managed
+  `OPENAI_API_KEY` secret version 2.
+- Initial APK build: PASS in 348.4 seconds but retained stale signing padding. Deleting
+  only the verified reproducible Gradle/Flutter APK outputs and rebuilding removed that
+  padding; final compact build PASS in 21.7 seconds.
+- API 36 emulator: exact compact APK clean install PASS after removing only the old
+  `com.fitareeaee.app` emulator package/data. Activity wait timed out, but process PID
+  remained alive; Login rendered during the preceding same-source smoke.
+- Motorola Moto G Play (2024): exact compact APK install PASS; cold launch status `ok`,
+  `LaunchState: COLD`, `TotalTime: 3684 ms`; crash-focused AndroidRuntime/Flutter log
+  output empty.
+- Same-source physical screen evidence: Home, Plan with AI/voice guidance, Settings, and
+  completed-only Past Trips rendered. Automated taps stopped when the device state
+  changed independently; no unobserved booking/chat step is claimed.
+
+### APK, deployment, and checkpoint state
+
+- Build type: universal debug-signed Android judge candidate
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 154,994,394 bytes (147.81 MiB)
+- SHA-256: `77B2DEB5C5C482B741911C12BA8593E755EE6DC8EA892D76AA7682167F8C0D8B`
+- Build timestamp: 2026-07-19 12:52:51 CDT / 10:52:51 PDT
+- Tested devices: Motorola Moto G Play (2024) PASS; API 36 x86_64 emulator install/PID PASS
+- Private rollback point before this stage: `b34ea4cd326bda8ac57a2ac677b721ae040a8f40`
+- Stage commit/tag/push/release: PENDING immediately after this progress append.
+- Current public fallback: `fitareeaee-copilot-v1.0.1`; it does not yet contain this
+  checkpoint.
+
+### Security incident and remaining action
+
+- During the targeted deployment, legacy Firebase CLI verbose diagnostics unexpectedly
+  printed existing Runtime Config credential values. They were not copied into source,
+  documentation, the APK, or GitHub. Future Firebase commands keep `DEBUG` empty.
+- Owner must urgently rotate/revoke the legacy email credential and Stripe test
+  credential, plus confirm provider-side revocation of the OpenAI key pasted in the
+  build conversation. Never paste replacements into this thread.
+- The inherited prototype Functions remain live pending a separate exact owner decision;
+  the judge UI keeps simulated financial functionality disabled.
+- Next: create the private commit, replay/rescan the sanitized clone, push a new tag and
+  release, download/hash/install the published APK, run a deliberate fictional full
+  phone flow, then complete `/feedback`, video, legal review, and owner submission.

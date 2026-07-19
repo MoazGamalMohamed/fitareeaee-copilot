@@ -44,7 +44,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(calls, 1);
-    expect(find.textContaining('AI planning is unavailable'), findsOneWidget);
+    final error = find.textContaining('AI planning is unavailable');
+    expect(error, findsOneWidget);
+    expect(tester.getCenter(error).dy, inInclusiveRange(0, 1800));
     expect(find.textContaining('temporarily unavailable'), findsNothing);
     expect(find.text('Create AI draft'), findsOneWidget);
     expect(find.text('Use manual trip search'), findsOneWidget);
@@ -106,6 +108,8 @@ void main() {
       find.textContaining('review required', skipOffstage: false),
       findsOneWidget,
     );
+    final review = find.textContaining('review required');
+    expect(tester.getCenter(review).dy, inInclusiveRange(0, 1800));
 
     final confirm = find.text('Confirm draft and find transparent matches');
     await tester.drag(find.byType(ListView), const Offset(0, -2200));

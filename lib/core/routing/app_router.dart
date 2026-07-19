@@ -15,9 +15,11 @@ import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.d
 import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
 import 'package:fitareeaee/features/admin/presentation/pages/admin_verifications_screen.dart';
 import 'package:fitareeaee/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:fitareeaee/features/payments/presentation/pages/payments_screen.dart';
 import 'package:fitareeaee/features/copilot/domain/copilot_draft.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_screen.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_screen.dart';
+import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,6 +37,8 @@ class AppRoutes {
   static const settings = '/settings';
   static const verification = '/verification';
   static const notifications = '/notifications';
+  static const payments = '/payments';
+  static const support = '/support';
   static const copilot = '/copilot';
   static const copilotResults = '/copilot/results';
 }
@@ -105,7 +109,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           // Get role from query parameter (rider or driver)
           final role = state.uri.queryParameters['role'];
-          return TripsListScreen(role: role);
+          final initialTab = state.uri.queryParameters['tab'];
+          return TripsListScreen(role: role, initialTab: initialTab);
         },
       ),
       GoRoute(
@@ -116,9 +121,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final requestedSeats = int.tryParse(
             state.uri.queryParameters['seats'] ?? '',
           );
+          final bookingId = state.uri.queryParameters['bookingId'];
           return TripDetailsScreen(
             tripId: tripId,
             requestedSeats: requestedSeats,
+            bookingId: bookingId,
           );
         },
       ),
@@ -174,6 +181,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.notifications,
         name: 'notifications',
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.payments,
+        name: 'payments',
+        builder: (context, state) => const PaymentsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.support,
+        name: 'support',
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: '${AppRoutes.support}/ticket/:id',
+        name: 'support-ticket',
+        builder: (context, state) {
+          final ticketId = state.pathParameters['id'] ?? '';
+          return SupportTicketScreen(ticketId: ticketId);
+        },
       ),
 
       // Driver Profile Route

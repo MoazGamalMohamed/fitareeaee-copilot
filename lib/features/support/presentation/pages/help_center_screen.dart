@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,8 +36,8 @@ class HelpCenterScreen extends ConsumerWidget {
                   child: _buildQuickAction(
                     context,
                     Icons.smart_toy,
-                    'AI Assistant',
-                    () => context.push('/ai-assistant'),
+                    'Support Copilot',
+                    () => _showInstantGuidance(context),
                   ),
                 ),
               ],
@@ -211,6 +212,234 @@ class HelpCenterScreen extends ConsumerWidget {
       isScrollControlled: true,
       builder: (context) => const _CreateTicketSheet(),
     );
+  }
+
+  void _showInstantGuidance(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.smart_toy, color: Theme.of(context).primaryColor),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Support Copilot',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'I can give instant guidance for common booking, payment, account, technical, and safety questions. If the answer is not enough, open a support ticket and an admin/support reviewer can follow up.',
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'For emergencies, contact local emergency services first. Do not send passwords, full ID numbers, or private payment details in support chat.',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 20),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  _showCreateTicketDialog(context);
+                },
+                icon: const Icon(Icons.support_agent),
+                label: const Text('Escalate to support'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SupportTicketScreen extends ConsumerStatefulWidget {
+  final String ticketId;
+
+  const SupportTicketScreen({super.key, required this.ticketId});
+
+  @override
+  ConsumerState<SupportTicketScreen> createState() =>
+      _SupportTicketScreenState();
+}
+
+class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
+  final _controller = TextEditingController();
+  bool _sending = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final messagesAsync = ref.watch(ticketMessagesProvider(widget.ticketId));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Support Chat'),
+        actions: [
+          TextButton(
+            onPressed: () => _closeTicket(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('support_tickets')
+                .doc(widget.ticketId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              final data = snapshot.data?.data();
+              return ListTile(
+                leading: const Icon(Icons.confirmation_number_outlined),
+                title: Text(data?['subject']?.toString() ?? 'Support ticket'),
+                subtitle: Text(
+                  '${data?['category'] ?? 'support'} - ${data?['status'] ?? 'open'}',
+                ),
+              );
+            },
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: messagesAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, _) => const Center(
+                child: Text('Support messages are unavailable. Please retry.'),
+              ),
+              data: (messages) => messages.isEmpty
+                  ? const Center(child: Text('No support messages yet.'))
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isGuidance = message.senderName
+                            .toLowerCase()
+                            .contains('support copilot');
+                        final isStaff = message.isStaff || isGuidance;
+                        return Align(
+                          alignment: isStaff
+                              ? Alignment.centerLeft
+                              : Alignment.centerRight,
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(12),
+                            constraints: const BoxConstraints(maxWidth: 320),
+                            decoration: BoxDecoration(
+                              color: isStaff
+                                  ? Colors.grey.shade200
+                                  : Colors.blue.shade600,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message.senderName,
+                                  style: TextStyle(
+                                    color: isStaff
+                                        ? Colors.black54
+                                        : Colors.white70,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  message.message,
+                                  style: TextStyle(
+                                    color: isStaff
+                                        ? Colors.black87
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      minLines: 1,
+                      maxLines: 4,
+                      maxLength: 1200,
+                      decoration: const InputDecoration(
+                        hintText: 'Reply to support...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filled(
+                    onPressed: _sending ? null : () => _send(context),
+                    icon: _sending
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.send),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _send(BuildContext context) async {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    setState(() => _sending = true);
+    try {
+      await sendTicketMessage(ticketId: widget.ticketId, message: text);
+      if (!mounted) return;
+      _controller.clear();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Support reply could not be sent.')),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  Future<void> _closeTicket(BuildContext context) async {
+    try {
+      await closeTicket(widget.ticketId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Support ticket closed.')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ticket could not be closed.')),
+      );
+    }
   }
 }
 

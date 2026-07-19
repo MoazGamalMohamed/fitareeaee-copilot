@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../verification/domain/models/verification_model.dart';
+import '../../../verification/presentation/providers/verification_provider.dart';
 
 /// Home screen showing only two primary options:
 /// - Find a ride (Rider flow)
@@ -18,6 +21,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref
+        .watch(authStateProvider)
+        .maybeWhen(data: (value) => value, orElse: () => null);
+    final verificationAsync = user == null
+        ? const AsyncValue<UserVerification?>.data(null)
+        : ref.watch(verificationStatusProvider(user.id));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fitareeaee'),
@@ -151,9 +161,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 context,
                 icon: Icons.drive_eta,
                 title: 'Offer a Ride',
-                subtitle: 'Describe your route, seats, and preferences',
+                subtitle: 'Driver and vehicle verification required',
                 color: Colors.green,
-                onTap: () => context.push('/copilot'),
+                onTap: () => _handleOfferRide(context, verificationAsync),
               ),
 
               const SizedBox(height: 40),
@@ -173,7 +183,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       context,
                       icon: Icons.people,
                       label: 'Matches',
-                      onTap: () => context.push('/trips'),
+                      onTap: () => context.push('/trips?tab=matches'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -181,26 +191,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.history,
-                      label: 'My Trips',
-                      onTap: () => context.push('/trips'),
+                      label: 'Past Trips',
+                      onTap: () => context.push('/trips?tab=past'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildQuickLink(
                       context,
-                      icon: Icons.verified_user_outlined,
-                      label: 'Verify',
-                      onTap: () => context.push('/verification'),
+                      icon: Icons.payments_outlined,
+                      label: 'Payments',
+                      onTap: () => context.push('/payments'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildQuickLink(
                       context,
-                      icon: Icons.notifications_outlined,
-                      label: 'Alerts',
-                      onTap: () => context.push('/notifications'),
+                      icon: Icons.support_agent_outlined,
+                      label: 'Support',
+                      onTap: () => context.push('/support'),
                     ),
                   ),
                 ],
@@ -238,6 +248,85 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Chat'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+      ),
+    );
+  }
+
+  void _handleOfferRide(
+    BuildContext context,
+    AsyncValue<UserVerification?> verificationAsync,
+  ) {
+    verificationAsync.when(
+      data: (verification) {
+        final canOffer =
+            (verification?.identityVerified ?? false) &&
+            (verification?.selfieWithIdVerified ?? false) &&
+            (verification?.driverLicenseVerified ?? false) &&
+            (verification?.vehicleVerified ?? false);
+        if (canOffer) {
+          context.push('/trips?role=driver&tab=available');
+          return;
+        }
+        _showDriverGate(context, verification);
+      },
+      loading: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Checking driver verification. Please wait.'),
+          ),
+        );
+      },
+      error: (_, _) => _showDriverGate(context, null),
+    );
+  }
+
+  void _showDriverGate(BuildContext context, UserVerification? verification) {
+    final missing = <String>[
+      if (!(verification?.identityVerified ?? false)) 'identity document',
+      if (!(verification?.selfieWithIdVerified ?? false)) 'selfie with ID',
+      if (!(verification?.driverLicenseVerified ?? false)) 'driver license',
+      if (!(verification?.vehicleVerified ?? false)) 'vehicle registration',
+    ];
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.verified_user_outlined, color: AppColors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Driver verification required',
+                    style: Theme.of(sheetContext).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Before offering rides, drivers must complete manual ID, selfie, driver license, and vehicle registration review.',
+                style: Theme.of(sheetContext).textTheme.bodyMedium,
+              ),
+              if (missing.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('Still needed: ${missing.join(', ')}.'),
+              ],
+              const SizedBox(height: 20),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  context.push('/verification');
+                },
+                icon: const Icon(Icons.upload_file),
+                label: const Text('Open verification'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

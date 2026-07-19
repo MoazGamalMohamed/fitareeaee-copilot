@@ -12,8 +12,9 @@ import '../../../../core/theme/app_colors.dart';
 class TripsListScreen extends ConsumerStatefulWidget {
   /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
   final String? role;
+  final String? initialTab;
 
-  const TripsListScreen({super.key, this.role});
+  const TripsListScreen({super.key, this.role, this.initialTab});
 
   @override
   ConsumerState<TripsListScreen> createState() => _TripsListScreenState();
@@ -29,7 +30,19 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: _tabIndex(widget.initialTab),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant TripsListScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab) {
+      _tabController.animateTo(_tabIndex(widget.initialTab));
+    }
   }
 
   @override
@@ -53,6 +66,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
             Tab(text: 'Available'),
             Tab(text: 'My Trips'),
             Tab(text: 'Matches'),
+            Tab(text: 'Past'),
           ],
         ),
         actions: [
@@ -205,12 +219,21 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (_, _) => const Center(child: Text('Account unavailable.')),
           ),
+
+          // Past Trips Tab
+          currentUser.when(
+            data: (user) {
+              if (user == null) {
+                return const Center(
+                  child: Text('Please sign in to view past trips'),
+                );
+              }
+              return _buildPastTripsTab(user.id);
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, _) => const Center(child: Text('Account unavailable.')),
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Plan with AI',
-        onPressed: () => context.push('/copilot'),
-        child: const Icon(Icons.auto_awesome),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
@@ -242,6 +265,20 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ],
       ),
     );
+  }
+
+  static int _tabIndex(String? value) {
+    switch (value) {
+      case 'my':
+        return 1;
+      case 'matches':
+        return 2;
+      case 'past':
+        return 3;
+      case 'available':
+      default:
+        return 0;
+    }
   }
 
   Widget _buildTripsList(List trips, {required bool isMyTrips}) {
@@ -384,7 +421,9 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                       _buildDetailBox(
                         context,
                         Icons.people,
-                        '${trip.availableSeats}/${trip.totalSeats}',
+                        trip.isRequest
+                            ? '${trip.totalSeats} needed'
+                            : '${trip.availableSeats}/${trip.totalSeats}',
                       ),
                     ],
                   ),
@@ -595,14 +634,14 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
               children: [
                 if (agreedDeals.isNotEmpty) ...[
                   Text(
-                    'Confirmed bookings',
+                    'Confirmed trips',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Bookings where you are the rider or trip owner',
+                    'Paid/confirmed matches where trip chat is active',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
@@ -764,6 +803,8 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   }
 
   Widget _buildBookingCard(BookingModel booking) {
+    final encodedBookingId = Uri.encodeQueryComponent(booking.id);
+    final detailsRoute = '/trips/${booking.tripId}?bookingId=$encodedBookingId';
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -793,16 +834,16 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ),
         trailing: IconButton(
           icon: const Icon(Icons.arrow_forward_ios, size: 16),
-          onPressed: () => context.push('/trips/${booking.tripId}'),
+          onPressed: () => context.push(detailsRoute),
         ),
-        onTap: () => context.push('/trips/${booking.tripId}'),
+        onTap: () => context.push(detailsRoute),
       ),
     );
   }
 
   List<Trip> filterTrips(List<Trip> trips) {
     final now = DateTime.now();
-    return trips.where((trip) {
+    final filtered = trips.where((trip) {
       if (trip.status != 'pending' ||
           trip.departureTime.isBefore(now) ||
           trip.availableSeats <= 0) {
@@ -816,5 +857,75 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
       }
       return true;
     }).toList();
+    filtered.sort((a, b) {
+      final byDeparture = a.departureTime.compareTo(b.departureTime);
+      if (byDeparture != 0) return byDeparture;
+      return a.distance.compareTo(b.distance);
+    });
+    return filtered;
+  }
+
+  Widget _buildPastTripsTab(String userId) {
+    final participantBookingsAsync = ref.watch(
+      participantBookingsProvider(userId),
+    );
+    final userTripsAsync = ref.watch(userTripsProvider(userId));
+
+    return participantBookingsAsync.when(
+      data: (bookings) => userTripsAsync.when(
+        data: (myTrips) {
+          final completedBookings = bookings
+              .where((booking) => booking.status == 'completed')
+              .toList();
+          final completedTripIds = completedBookings
+              .map((booking) => booking.tripId)
+              .toSet();
+          final completedOwnedTrips = myTrips
+              .where(
+                (trip) =>
+                    trip.status == 'completed' &&
+                    !completedTripIds.contains(trip.id),
+              )
+              .toList();
+
+          if (completedBookings.isEmpty && completedOwnedTrips.isEmpty) {
+            return const Center(child: Text('No completed past trips yet'));
+          }
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (completedBookings.isNotEmpty) ...[
+                Text(
+                  'Completed bookings',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                ...completedBookings.map(_buildBookingCard),
+                const SizedBox(height: 24),
+              ],
+              if (completedOwnedTrips.isNotEmpty) ...[
+                Text(
+                  'Completed offers and requests',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                ...completedOwnedTrips.map(
+                  (trip) => _buildTripCard(context, trip),
+                ),
+              ],
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => _matchesError(userId),
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, _) => _matchesError(userId),
+    );
   }
 }
