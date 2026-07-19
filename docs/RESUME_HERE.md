@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-19 15:19 CDT / 2026-07-19 13:19 PDT
+Last updated: 2026-07-19 15:34 CDT / 2026-07-19 13:34 PDT
 
 ## Current objective
 
@@ -12,7 +12,7 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
 - Passing private source checkpoint: `832a543cd94c4f5a2a8c17163e73113da85aba24`.
-- Passing private submission-material checkpoint: `4e28060`.
+- Passing private submission-material/recovery checkpoint: `5cc6487`.
 - The Chat-list correction, rule contract, deployed Firestore rule, APK, phone flow,
   live-rule audit, anonymous-link audit, and v1.0.3 submission-copy alignment are
   complete and committed.
@@ -21,8 +21,8 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Published sanitized source checkpoint: `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`;
   the v1.0.3 tag peels to this exact source.
-- Published sanitized submission-material checkpoint: `e17eac3`; both `main` and
-  `build-week/final` were confirmed at this commit before the final recovery append.
+- Published sanitized recovery checkpoint: `180673b`; both `main` and
+  `build-week/final` are confirmed at this commit.
 - Never add a remote to or push the private original repository.
 
 ## Deployed Firebase state
@@ -72,8 +72,10 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
   Moto G Play (2024). The public copy cold-launched in 3.693 seconds; authenticated
   Trips -> Chat rendered `No conversations yet`, the prior Firestore failure was absent,
   and AndroidRuntime/Flutter error-focused output was empty.
-- Emulator: exact candidate clean-installed on API 36; activity wait timed out, but the
-  process remained alive. Login had rendered in the preceding same-source smoke.
+- Emulator: the downloaded public v1.0.3 APK was clean-installed again on API 36.
+  Version code `20260718`, top-resumed `MainActivity`, Login markers, and an empty
+  AndroidRuntime/Flutter error-focused log all passed. A first slow activity wait timed
+  out before the direct relaunch and UI confirmation succeeded.
 - Public tag/release: `fitareeaee-copilot-v1.0.3`.
 - Direct APK URL:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk`.
@@ -93,7 +95,10 @@ Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
   already satisfied on the judge account and no real payment is claimed.
 - Fresh-install run #1 passed public-APK reinstall, 3.706-second cold launch, private
   fictional sign-in, Home, GPT-5.6 draft, one match, and Trip Details. The phone then
-  disconnected before the final booking tap. Fresh-install run #2 remains unperformed.
+  disconnected before the final booking tap. The owner later reported reconnecting it,
+  but ADB and Windows still enumerate no Motorola/Android USB device. Fresh-install run
+  #2 remains optional and awaits USB data mode/debug authorization; the earlier full
+  authenticated v1.0.3 Motorola path already passed.
 - Keep the v1.0.3 repository/release/backend available through judging and verify links
   signed out before final submission.
 - Add judge credentials privately in Devpost, record/upload the under-three-minute

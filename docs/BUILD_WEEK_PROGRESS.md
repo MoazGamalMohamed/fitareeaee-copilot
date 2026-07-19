@@ -1844,3 +1844,56 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   v1.0.1 reference.
 - No APK/source/backend change. Only this final recovery pointer follows the audited
   publication checkpoint.
+
+## 2026-07-19 15:34 CDT / 2026-07-19 13:34 PDT - live FAQ and judge-access checkpoint
+
+### Authoritative requirement audit
+
+- Re-read the full live Devpost FAQ and the controlling Official Rules. The deadline
+  remains July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central.
+- Confirmed the prepared package addresses the technical submission requirements: one
+  **Apps for Your Life** track, a working Codex/GPT-5.6 project, English description,
+  public licensed repository, README setup/sample-data/testing guidance, explicit
+  pre-existing-versus-Build-Week evidence, and a free judge build/test path.
+- Confirmed the 2:40 demo plan explicitly covers the working product, Codex workflow,
+  GPT-5.6 integration, and voiceover/audio. The current nine spoken sections contain
+  approximately 321 words and retain an under-three-minute target.
+- Owner-only fields remain: public YouTube upload/link, private judge credentials in
+  Devpost, primary-thread `/feedback` Session ID, ownership/eligibility acceptance,
+  and the legally binding final submission action.
+
+### Public and artifact integrity
+
+- Remote `main` and `build-week/final`: both confirmed at
+  `180673b59896cfc13199707f83c07109106553bb`.
+- Remote annotated tag `fitareeaee-copilot-v1.0.3`: confirmed to peel to exact APK
+  source `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`.
+- Anonymous HTTP checks: repository `200`, release page `200`, direct APK `200`.
+- Local authoritative APK remains 154,995,438 bytes with SHA-256
+  `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`.
+- Public tracked-path check found `.env.example` only; no real `.env`, Firebase client
+  config, keystore, service-account file, or signing material is tracked.
+
+### Android evidence
+
+- Cleared only the disposable API 36 emulator's local `com.fitareeaee.app` package
+  data, reinstalled `build/published-download-v103/app-debug.apk`, and relaunched it.
+- Install: PASS. Package version code: `20260718`. Login/Welcome Back/Sign In markers:
+  PASS. `MainActivity` became top-resumed. AndroidRuntime/Flutter error-focused log:
+  empty.
+- The first activity wait was slow on the emulator and reported a timeout even though
+  installation succeeded; a direct relaunch resumed the activity and the accessibility
+  hierarchy confirmed the Login screen. This is recorded accurately rather than
+  treating the wait status alone as a launch failure.
+- The owner reported the Motorola phone connected, but both ADB enumeration and a
+  Windows present-device query still exposed only the emulator and no Motorola/ADB
+  device, including no unauthorized entry. The earlier completed v1.0.3 Motorola
+  installation and authenticated end-to-end evidence remain valid; optional fresh
+  install run #2 awaits USB data mode/debug authorization or physical reconnection.
+
+### Continuity
+
+- Documentation evidence only; no Dart, Functions, rules, Firebase deployment, APK,
+  or immutable release tag changed, so the passing release gate remains authoritative.
+- Private recovery checkpoint before this append: `5cc6487`; public recovery
+  checkpoint before this append: `180673b`.
