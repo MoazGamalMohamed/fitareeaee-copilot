@@ -5,6 +5,7 @@ import {
   nextRateLimitState,
   parsePlanRequest,
   redactContactDetails,
+  safeOpenAIErrorMetadata,
   validateDraft,
 } from "./copilot";
 
@@ -100,4 +101,31 @@ test("Copilot throttles rapid and excessive authenticated calls", () => {
     windowStartedMs: 1,
     count: 12,
   }), {windowStartedMs: 4_000_000, count: 1});
+});
+
+test("Copilot logs only safe OpenAI error metadata", () => {
+  assert.deepEqual(
+    safeOpenAIErrorMetadata({
+      name: "APIError",
+      status: 400,
+      code: "invalid_request_error",
+      type: "invalid_request_error",
+      message: "must never be logged",
+      request: "must never be logged",
+    }),
+    {
+      errorName: "APIError",
+      status: 400,
+      code: "invalid_request_error",
+      type: "invalid_request_error",
+    }
+  );
+  assert.deepEqual(
+    safeOpenAIErrorMetadata({
+      name: "bad name with spaces",
+      status: 200,
+      code: "value containing private text",
+    }),
+    {errorName: "object"}
+  );
 });

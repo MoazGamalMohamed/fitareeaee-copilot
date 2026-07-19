@@ -235,6 +235,29 @@ export function nextRateLimitState({
   };
 }
 
+export function safeOpenAIErrorMetadata(error: unknown): {
+  errorName: string;
+  status?: number;
+  code?: string;
+  type?: string;
+} {
+  const record = error !== null && typeof error === "object" ?
+    error as Record<string, unknown> : {};
+  const safeToken = (value: unknown): string | undefined =>
+    typeof value === "string" && /^[A-Za-z0-9_.-]{1,80}$/.test(value) ? value : undefined;
+  const errorName = error instanceof Error ?
+    safeToken(error.name) ?? "Error" : safeToken(record.name) ?? typeof error;
+  const status = Number.isInteger(record.status) &&
+    (record.status as number) >= 400 && (record.status as number) <= 599 ?
+    record.status as number : undefined;
+  return {
+    errorName,
+    ...(status === undefined ? {} : {status}),
+    ...(safeToken(record.code) === undefined ? {} : {code: safeToken(record.code)}),
+    ...(safeToken(record.type) === undefined ? {} : {type: safeToken(record.type)}),
+  };
+}
+
 async function consumeRateLimit(uid: string): Promise<void> {
   const db = getFirestore();
   const ref = db.collection("copilot_rate_limits").doc(uid);
@@ -317,8 +340,7 @@ export const planTripWithCopilot = functions
       };
     } catch (error) {
       if (error instanceof functions.https.HttpsError) throw error;
-      const errorName = error instanceof Error ? error.name : typeof error;
-      functions.logger.error("Copilot planning failed", {errorName});
+      functions.logger.error("Copilot planning failed", safeOpenAIErrorMetadata(error));
       throw new functions.https.HttpsError(
         "unavailable",
         "AI planning is temporarily unavailable. Retry or use manual search."
