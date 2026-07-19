@@ -80,12 +80,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | PASS | Exact local candidate `77B2DEB5…C0D8B` installed on Moto G Play (2024), cold-launched in 3.684 seconds, and produced no AndroidRuntime/Flutter crash output |
+| Physical Android phone install | PASS | Public-download v1.0.3 candidate `543B2FE7…D4EC0` installed on Moto G Play (2024), cold-launched in 3.693 seconds, rendered the authenticated Chat empty state, and produced no AndroidRuntime/Flutter error output |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
-| Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.1`; private tested source `c5b6736`, sanitized source `865a5e8` |
-| Public sanitized repository | PASS | Both remote branches contain sanitized release source `865a5e8` plus final evidence; v1.0.1 peels exactly to the release source; original private repository has no remote |
-| Published APK download and hash comparison | PASS | Public asset downloaded; 154,878,330 bytes and SHA-256 exactly match local tested artifact |
-| Published APK install | PASS | Downloaded asset clean-installed on API 36.1 emulator; Login rendered, activity resumed, no matching fatal logs |
+| Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.3`; private tested source `832a543`, sanitized source `c42bc3f` |
+| Public sanitized repository | PASS | Both remote branches resolve to sanitized release source `c42bc3f`; v1.0.3 peels exactly to that source; original private repository has no remote |
+| Published APK download and hash comparison | PASS | Public v1.0.3 asset downloaded; 154,995,438 bytes and SHA-256 exactly match the phone-tested local artifact |
+| Published APK install | PASS | Downloaded v1.0.3 asset installed/cold-launched on the Motorola phone; authenticated Chat empty state rendered and no AndroidRuntime/Flutter errors appeared |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -94,7 +94,7 @@ triggers were also successfully built and deployed on the declared Node 20
 runtime; Firebase warns that Node 20 is deprecated and must be upgraded after
 the contest release.
 
-## Final published APK
+## Historical v1.0.1 published APK
 
 - Build type: universal debug-signed judge APK
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
@@ -115,7 +115,7 @@ This is the published judge artifact. It is intentionally debug-signed for
 contest sideloading because no safe private release-signing configuration was
 available.
 
-## Current v1.0.2 published APK
+## Historical v1.0.2 published APK
 
 - Build type: universal debug-signed Android judge APK
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
@@ -134,6 +134,25 @@ available.
   `build/published-download-v102/app-debug.apk`, size and SHA-256 matched exactly,
   and that downloaded copy installed and cold-launched on the Motorola phone in
   4.035 seconds with no AndroidRuntime or Flutter crash output
+
+## Current v1.0.3 published APK
+
+- Build type: universal debug-signed Android judge APK
+- Path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Size: 154,995,438 bytes (147.82 MiB)
+- Build timestamp: July 19, 2026 at 13:51:01 CDT / 11:51:01 PDT
+- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
+- Private/sanitized source: `832a543cd94c4f5a2a8c17163e73113da85aba24` /
+  `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
+- Source tag: `fitareeaee-copilot-v1.0.3` (peels to `c42bc3f`)
+- Public URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk`
+- Publication verification: PASS; GitHub asset digest, downloaded file, and local file
+  all equal the SHA-256 above and are exactly 154,995,438 bytes
+- Motorola Moto G Play (2024): downloaded asset install PASS; cold launch status `ok`
+  in 3.693 seconds; authenticated Chat rendered `No conversations yet`; neither the
+  former loading error nor `FirebaseFailure` appeared; AndroidRuntime/Flutter
+  error-focused output was empty
 
 ## Release gate
 

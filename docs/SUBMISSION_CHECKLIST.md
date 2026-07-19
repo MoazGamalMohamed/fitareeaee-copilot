@@ -91,6 +91,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Confirm remote `main` and `build-week/final` contain sanitized release source `865a5e8` plus final evidence; superseding v1.0.1 tag points exactly to the release source.
 - [x] Push sanitized v1.0.2 source `5ad4b94` to `main` and `build-week/final`; tag and publish `fitareeaee-copilot-v1.0.2` without force.
 - [x] Download the public v1.0.2 APK, confirm 154,994,394 bytes and exact SHA-256 match, then install/cold-launch that downloaded copy on the Motorola phone.
+- [x] Fix the phone-observed Chat-list Firestore query, pass the 8/8 emulator rule contract, deploy only the tested Firestore rules, and verify the authenticated Chat empty state on the Motorola phone.
+- [x] Push sanitized v1.0.3 source `c42bc3f` to `main` and `build-week/final`; tag and publish `fitareeaee-copilot-v1.0.3` without force.
+- [x] Download the public v1.0.3 APK, confirm 154,995,438 bytes and exact SHA-256 match, install/cold-launch it on the Motorola phone, and recheck Chat plus AndroidRuntime/Flutter error output.
 
 ## Devpost materials
 

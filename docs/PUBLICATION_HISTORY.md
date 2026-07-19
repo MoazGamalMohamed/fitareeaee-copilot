@@ -41,6 +41,7 @@ evidence to the sanitized publication history:
 | Phone-tested v1.0.1 release evidence | `866eb46a79783ff2cb5ab44f6b5857ac292b4700` | `b973cc31dad1681fd28e9225bc1bc97c1013ec9f` |
 | Judge-path roles/chat/support source | `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c` | `eaa4378` |
 | Physical-device checkpoint evidence | `708fb6b` | `5ad4b94` |
+| Authorized Chat-list query correction | `832a543cd94c4f5a2a8c17163e73113da85aba24` | `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43` |
 
 The annotated tag names are preserved:
 

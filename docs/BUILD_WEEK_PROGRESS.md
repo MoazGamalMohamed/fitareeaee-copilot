@@ -1639,3 +1639,93 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Remaining actions: deliberate fictional full booking/chat phone flow; credential
   rotations; optional exact inherited-Function retirement decision; final screenshots,
   video, `/feedback`, legal/eligibility review, and owner Devpost submission.
+
+## 2026-07-19 14:21 CDT / 2026-07-19 12:21 PDT — v1.0.3 Chat regression fixed, deployed, published, and phone-verified
+
+### Objective and result
+
+- Reproduced the authenticated Chat-tab failure through the Motorola accessibility
+  tree after v1.0.2, traced it to an all-conversation Firestore query that security
+  rules could not safely prove, and replaced it with server-owned conversation
+  authorization discovery plus exact participant-scoped message queries.
+- Split Firestore `get` and `list` authorization semantics: direct message reads retain
+  the conversation-authorization equality check; list queries require participant
+  membership; message creation still requires an active server-owned authorization.
+- Inactive/completed conversation authorization records remain available for audit but
+  are filtered from the app's Chat list. No trip/chat data was deleted.
+- Added emulator contract coverage for participant-filtered authorization discovery and
+  the exact conversation message query used by Flutter.
+- Deployed only the tested Firestore rules to confirmed project `fitareeaee`. No
+  production data, Function, index, Storage rule, or secret was deleted or replaced.
+
+### Files changed
+
+- `lib/features/chat/data/repositories/chat_repository_impl.dart`
+- `firestore.rules`
+- `functions/src/rules.contract.test.ts`
+- Release evidence/docs: `README.md`, `docs/BUILD_WEEK_PROGRESS.md`,
+  `docs/PUBLICATION_HISTORY.md`, `docs/RESUME_HERE.md`, `docs/SUBMISSION_CHECKLIST.md`,
+  and `docs/TEST_MATRIX.md`
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 113 files, 0 changed.
+- `flutter analyze --no-pub`: PASS; `No issues found!` (final run 85.0 seconds).
+- `flutter test --no-pub`: PASS; 19/19.
+- `cd functions && npm run build`: PASS.
+- Functions contract command with `--test-isolation=none`: PASS; 19/19.
+- Initial focused Functions command covered booking/Copilot only: PASS; 17/17; the
+  complete verification-inclusive command above is the recorded release gate.
+- First rule attempt correctly failed the unprovable authorization-list contract 7/8.
+  After splitting `get`/`list`, the message query exposed the same issue and failed 7/8.
+  The final participant-scoped rule/query contract passed 8/8.
+- `firebase deploy --project fitareeaee --only firestore:rules`: PASS; rules compiled,
+  uploaded, and released. `DEBUG` remained empty.
+- `flutter build apk --debug --no-pub`: PASS; fresh exact APK outputs were removed only
+  after resolving all three paths inside the workspace; Gradle completed in 105.9 s.
+- Local APK physical install: PASS. Cold launch status `ok`, `LaunchState: COLD`,
+  `TotalTime: 3725 ms`.
+- Authenticated phone navigation: Trips PASS; Chat PASS; `No conversations yet`
+  rendered; `Error loading conversations` and `FirebaseFailure` absent.
+- Local APK AndroidRuntime/Flutter error-focused log output: empty.
+- Sanitized reachable-history scan before push: PASS across 61 revisions; 0 secret
+  signature hits and 0 forbidden credential/config paths (the public `.env.example`
+  template was intentionally allowed and contains no secret values).
+- Public asset download: PASS; downloaded bytes and SHA-256 exactly match local.
+- Downloaded public APK install: PASS. Cold launch status `ok`, `LaunchState: COLD`,
+  `TotalTime: 3693 ms`; Chat empty-state regression PASS; AndroidRuntime/Flutter
+  error-focused output empty.
+
+### APK, commits, deployment, and publication
+
+- Build type: universal debug-signed Android judge APK
+- Local path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Download verification path: `build/published-download-v103/app-debug.apk`
+- Size: 154,995,438 bytes (147.82 MiB)
+- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
+- Build timestamp: 2026-07-19 13:51:01 CDT / 11:51:01 PDT
+- Android version code: `20260718`
+- Tested device: Motorola Moto G Play (2024), ADB serial `ZY22KQPKZS`
+- Private source/rollback commit: `832a543cd94c4f5a2a8c17163e73113da85aba24`
+- Sanitized source commit: `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
+- Remote `main` and `build-week/final`: both confirmed at `c42bc3f`
+- Annotated tag: `fitareeaee-copilot-v1.0.3`; peeled target confirmed `c42bc3f`
+- Release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.3`
+- Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk`
+- GitHub asset digest: exact SHA-256 match; release is non-draft and non-prerelease.
+- Push status: fast-forward only; no force push. Draft PR remains not applicable because
+  sanitized `main` and `build-week/final` intentionally carry the same passing history.
+
+### Known issues and next action
+
+- A deliberate fictional Home -> Copilot -> review -> matches -> details -> booking ->
+  confirmed conversation run is still not claimed; the phone changed state during
+  earlier automation, while this run deliberately verified the reproduced Chat defect.
+- Rotate/revoke the exposed old OpenAI key and the legacy email/Stripe test credentials;
+  never paste replacements into this thread.
+- The inherited prototype Function set remains live pending an exact owner decision.
+- Owner-only remaining work: final fictional demo, private judge credential placement,
+  screenshots/video, `/feedback`, eligibility/legal review, and the final Devpost submit.
+- Rollback point: private `832a543`; sanitized/tagged `c42bc3f`.
