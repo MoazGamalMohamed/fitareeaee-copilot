@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-18 21:23 CDT / 2026-07-18 19:23 PDT
+Last updated: 2026-07-18 21:36 CDT / 2026-07-18 19:36 PDT
 
 ## Current objective
 
@@ -11,11 +11,11 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 
 - Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Last committed private checkpoint: `68b123e9ff29382636174fd6aa82e968dedc7827`
-- Current private work: live Copilot/key containment and GitHub publication evidence
+- Last committed private checkpoint: `49409d566c9719f5f3946174fcc058a1589f85de`
+- Current private work: final release evidence, Android gate, and APK publication
 - Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Sanitized branch/checkpoint: `main` and `build-week/final` /
-  `9f5802683e3764b9737df2c7a38c4ef13c569d00`
+  `07a4e41` before this evidence update
 - Latest tested application source: `15baa237707b3115475b09ca7a586e1c171517a7`
 
 ## Deployed Firebase state
@@ -25,9 +25,11 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
   conversation authorization, verification submit/review/contact sync, and the
   public-profile/public-trip projections.
 - Current Firestore and Storage rules are deployed; required chat indexes are `READY`.
-- `planTripWithCopilot` is deployed and Firebase SDK authentication passes. Secret
-  version 1 is invalid and was exposed in the build conversation; it must be revoked
-  at OpenAI and replaced privately before any further model test.
+- `planTripWithCopilot` is deployed with managed secret version 2. Official
+  Firebase SDK authentication plus English ride, English package, and Arabic ride
+  GPT-5.6 calls pass. Obsolete managed version 1 was destroyed and the same matrix
+  passed again afterward. The owner still needs to confirm provider-side revocation
+  of the old key exposed in the build conversation.
 - Two fictional judge Auth users, their required private app profiles, and the
   approved four trip/public-trip fixtures, two verification summaries, and two
   public profiles were provisioned successfully. Fixture departures are fixed on
@@ -46,7 +48,7 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 - Dart format gate: PASS, 111 files / 0 changed
 - `flutter analyze`: PASS, no issues
 - `flutter test`: PASS, 18/18
-- `npm test` in `functions/`: PASS, build plus 18/18 contracts
+- `npm test` in `functions/`: PASS, build plus 19/19 contracts
 - Firestore/Storage emulator rules: PASS, 7/7
 - Auth/Functions/Firestore callable integration: PASS, 3/3
 - Corrected universal debug APK build and clean emulator install: PASS
@@ -68,31 +70,32 @@ and APK, complete authenticated emulator/phone flows, and finalize submission ev
 ## GitHub and release state
 
 - Public repository: `https://github.com/MoazGamalMohamed/fitareeaee-copilot`
-- Remote `main` and `build-week/final` exactly match sanitized `9f58026`; all staged
-  evidence/RC1 tags are pushed without force.
+- Remote `main` and `build-week/final` exactly matched sanitized `07a4e41` before
+  this evidence update; all staged evidence/RC1 tags are pushed without force.
 - A draft PR is not applicable because both published branches intentionally point to
   the same verified commit. GitHub Release/download verification remains pending.
 - Never add a remote to or push the private original repository.
 
 ## Current blockers and owner interactions
 
-- Owner must revoke the key exposed in the build conversation, create a different
-  valid OpenAI API key, and paste it only into the open hidden Firebase prompt.
+- Owner must confirm provider-side revocation of the old OpenAI key exposed in the
+  build conversation. The replacement is already installed privately and passing.
 - Deleting the exact 36 inherited Functions requires a fresh explicit owner
   confirmation; the environment safety reviewer rejected the earlier attempt.
-- Physical phone testing waits until the owner connects the phone and accepts USB RSA.
+- Motorola `moto g play - 2024` is connected and authorized over ADB; install and
+  smoke testing must use the final rebuilt/downloaded artifact.
 - Provider credential rotation, YouTube upload, `/feedback`, legal review, and final
   Devpost submit remain owner-only actions.
 
 ## Exact next command
 
-After committing and replaying this documentation checkpoint into the durable
-sanitized clone, re-check the managed secret and GitHub authentication:
+Commit and replay this documentation checkpoint into the durable sanitized clone,
+then run the complete final local gate beginning with:
 
 ```powershell
-gcloud secrets versions list OPENAI_API_KEY --project fitareeaee --format=json
+dart format --output=none --set-exit-if-changed lib test
 ```
 
-This checks metadata only and must not access or print the secret value. If an enabled
-version exists, deploy the verified rules/indexes/Functions to `fitareeaee`, probe the
-callable, and run the authenticated judge flow.
+Rebuild the APK, install it on the connected phone, publish the exact verified
+artifact as a GitHub Release, download it from the public URL, compare its hash,
+and install/smoke-test that downloaded copy.

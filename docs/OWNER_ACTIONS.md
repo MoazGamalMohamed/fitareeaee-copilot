@@ -7,21 +7,14 @@ Codex chat, Git, documentation, screenshots, or the APK.
 
 ## Immediate unblock bundle
 
-### 1. Replace the compromised/invalid managed OpenAI secret
+### 1. Confirm provider-side revocation of the exposed old OpenAI key
 
-Run from the repository root in a private terminal:
-
-```powershell
-firebase functions:secrets:set OPENAI_API_KEY --project fitareeaee
-```
-
-The first secret version was rejected by OpenAI with `invalid_api_key`, and the
-same key was later pasted into the build conversation. Revoke it in the OpenAI
-dashboard. Create a different key from the official OpenAI API Keys page, paste
-the replacement only into Firebase CLI's hidden prompt, and submit it. Never
-send the replacement in chat. Codex will verify only version metadata, deploy
-only `planTripWithCopilot`, destroy the obsolete managed version after the new
-deployment passes, and cap live English/package/Arabic checks below USD $5.
+A different key was entered privately through Firebase CLI's hidden prompt,
+stored as managed secret version 2, deployed only to `planTripWithCopilot`, and
+verified with authenticated English ride, English package, and Arabic ride
+requests. Obsolete managed version 1 was destroyed, and the post-retirement live
+matrix passed. In the OpenAI dashboard, confirm that the old key pasted into the
+build conversation is revoked. Never send either key in chat.
 
 ### 2. Judge users and fixtures — completed
 

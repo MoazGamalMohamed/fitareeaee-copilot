@@ -2,7 +2,9 @@
 
 Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
 
-> Release status: the stable APK URL and Copilot deployment must be added here only after they are verified. The hardened booking/verification/chat backend, rules, and fictional judge fixtures are deployed, but this July 18 APK remains a tested engineering checkpoint rather than the final distributed build.
+> Release status: the hardened backend, rules, judge fixtures, and authenticated
+> GPT-5.6 Copilot are deployed and live-tested. The APK below remains a tested
+> engineering checkpoint until the final GitHub Release download is verified.
 
 Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, release-gate source `ba9c3436645195180120c012e286d033b2da21f6` (application code `15baa237707b3115475b09ca7a586e1c171517a7`). It clean-installed after removing the older package data, reports version code `20260718`, and rendered Login successfully on the API 36.1 emulator without fatal Flutter/Android logs.
 
@@ -15,6 +17,10 @@ Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE07
 - Source tag/commit: `fitareeaee-copilot-rc1` / sanitized `9af9064f25443f22464e91961c4423085aef0b19`; a final tag will supersede it only if source changes
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
+
+Live Copilot verification: **PASS** — authenticated English ride, English
+package, and Arabic ride requests returned validated drafts through the deployed
+Firebase callable after the obsolete secret version was retired.
 
 ## Install
 

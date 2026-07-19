@@ -13,7 +13,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Flutter suite | `flutter test` | PASS | Consolidated hardened revision: 18/18 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
-| Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling | PASS | 18/18 tests |
+| Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | 19/19 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit authorization boundaries | PASS | 7/7 emulator contracts, including exact legacy-message participants, constrained avatar URLs, and owner withdrawal of raw verification uploads |
 | Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — callable/auth pass, but secret version 1 is invalid and compromised; fresh private key required |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — three authenticated cases passed before and after obsolete secret version 1 was destroyed |
 
 ## Security and transactional behavior
 
@@ -67,7 +67,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
 | Transaction/verification/chat callables | PASS | Six hardened Gen 1 callables report `ACTIVE` in `us-central1`; minimized verification submit/review versions were redeployed successfully |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
-| Copilot callable | PARTIAL | Deployed and Firebase SDK authentication passes; OpenAI rejected two attempts with `401 invalid_api_key`, before inference. Replace the compromised key and rerun the three-case matrix |
+| Copilot callable | PASS | Deployed with managed secret version 2; official Firebase SDK authentication and English ride, English package, and Arabic ride model calls passed after obsolete version 1 was destroyed |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
@@ -77,15 +77,15 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Clean emulator install | PASS | Universal APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; exact current package was removed to reclaim storage, then installation succeeded |
 | Cold launch to Login | PASS | Login semantics present; no fatal Firebase/Flutter error |
 | Credentialed emulator sign-in | BLOCKED | Credentials entered exactly in memory, but the emulator had no IP/DNS egress and Firebase Auth returned a network error; no invalid-credential or app crash occurred |
-| Full deployed Home → Copilot → matches → details → verification → booking → chat | BLOCKED | Judge fixtures are deployed; Copilot deployment and credentialed device run remain |
+| Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | BLOCKED | No phone connected/owner interaction required |
+| Physical Android phone install | PENDING | Motorola phone connected by ADB; final release APK test remains |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
 | Final deployed/tagged judge APK | PENDING | Rebuild/tag after live backend verification |
 | Public sanitized repository | PASS | Both remote branches exactly match `9f58026`; RC1 and staged evidence tags pushed; original private repository has no remote |
-| Published APK download and hash comparison | BLOCKED | GitHub repository exists; final Release awaits valid live Copilot verification |
-| Published APK install | BLOCKED | Final GitHub Release awaits valid live Copilot verification |
+| Published APK download and hash comparison | PENDING | GitHub repository and live Copilot are ready; final Release remains |
+| Published APK install | PENDING | Run against the downloaded GitHub Release asset |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,

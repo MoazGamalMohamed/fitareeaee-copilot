@@ -1166,3 +1166,61 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   Then redeploy only `planTripWithCopilot`, run the three-case Firebase SDK smoke matrix,
   destroy obsolete managed version 1, execute the full release gate, rebuild/tag/publish
   the final APK, download/hash/install it, and complete the physical-phone flow.
+
+## 2026-07-18 21:36 CDT / 2026-07-18 19:36 PDT — live GPT-5.6 and secret-retirement checkpoint
+
+### Objective and outcome
+
+- The owner supplied a different OpenAI key only through Firebase CLI's hidden prompt;
+  Codex never read, printed, logged, copied, or stored the value.
+- Confirmed managed secret version 2, redeployed only `planTripWithCopilot`, and ran the
+  official Firebase SDK authenticated smoke harness against production.
+- English ride, English package, and Arabic ride requests all returned validated
+  structured drafts. Each normalized to the expected intent/type/date and reported no
+  missing fields.
+- A read-only deployed-function inspection confirmed `OPENAI_API_KEY` version `2` was
+  bound. Destroyed the exact obsolete managed secret version `1`; no other secret or
+  production data was changed.
+- Firebase CLI warned that version 1 was referenced while destroying it, despite the
+  deployed-function metadata reporting version 2. The full three-case production smoke
+  matrix was therefore rerun after destruction and passed, directly confirming that the
+  live callable remained healthy on version 2.
+- Six successful capped model calls were made across the pre- and post-retirement
+  matrices. Total OpenAI testing remains below the authorized USD $5 cap.
+- The previously exposed old key still requires owner confirmation of provider-side
+  revocation in the OpenAI dashboard; managed version 1 is already destroyed.
+- A Motorola `moto g play - 2024` appeared as an authorized ADB device alongside the
+  emulator. Final APK installation and judge-path testing remain to be performed after
+  the exact release artifact is rebuilt.
+
+### Commands and exact results
+
+- Targeted `planTripWithCopilot` redeployment after secret version 2 creation: PASS
+- Official Firebase SDK live matrix before retirement: PASS, 3/3 in 39.3 seconds
+- `gcloud functions describe planTripWithCopilot ...`: PASS; secret binding version `2`
+- `firebase functions:secrets:destroy OPENAI_API_KEY@1 --project fitareeaee --force`:
+  PASS; exact obsolete version 1 destroyed
+- Official Firebase SDK live matrix after retirement: PASS, 3/3 in 32.7 seconds
+- Post-retirement cases: English ride `find/ride`, English package `find/package`,
+  Arabic ride `find/ride`; all date `2026-08-10`, all `missingInformation` count 0
+- `adb devices -l`: PASS; phone `ZY22KQPKZS` (`moto_g_play___2024`) and
+  `emulator-5554` both authorized
+- APK build/hash/device result: not rebuilt at this checkpoint; prior RC1 remains
+  recorded above and must not be labeled the final artifact
+
+### Git, publication, rollback, and next action
+
+- Private checkpoint before this append: `49409d566c9719f5f3946174fcc058a1589f85de`
+- Sanitized/public checkpoint before this append: `07a4e41`
+- Public repository: `https://github.com/MoazGamalMohamed/fitareeaee-copilot`
+- Push/PR status: both branches published before this append; draft PR not applicable
+  because `main` and `build-week/final` intentionally match
+- Tag: final release tag pending the exact rebuilt and tested source checkpoint
+- Known issues: complete credentialed Android path, final APK publication/download
+  verification, inherited 36-function decision, and owner-only provider/legal/video
+  actions remain
+- Rollback point: private `49409d5`; sanitized/public `07a4e41`; live callable source
+  remains privacy-safe diagnostics revision `68b123e` using managed secret version 2
+- Next action: commit/replay/push this evidence, run the complete mandatory release gate,
+  rebuild and test the APK on emulator and phone, publish/download/hash/install the
+  GitHub Release artifact, and append the exact final evidence.

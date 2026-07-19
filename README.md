@@ -65,8 +65,8 @@ flowchart LR
 
 The code requires `OPENAI_API_KEY` only as a managed Firebase Functions secret;
 the Flutter app never receives it. The Copilot callable is deployed with an
-authenticated, strict-schema boundary. Live model behavior is claimed only after
-a valid private secret version and the capped smoke matrix pass. The callable
+authenticated, strict-schema boundary. Its capped live smoke matrix passed for
+an English ride, an English package, and an Arabic ride request. The callable
 requires Firebase Authentication, limits input/output, redacts likely contact
 details, applies per-user throttling, validates the model result again on the
 server, and maps failures to safe messages.

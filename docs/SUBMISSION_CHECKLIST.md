@@ -28,14 +28,14 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
 - [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
-- [ ] Owner revokes the key exposed in the build conversation and sets a different valid `OPENAI_API_KEY` privately; version 1 is invalid/compromised and must not be reused.
+- [ ] Owner confirms provider-side revocation of the key exposed in the build conversation. A different valid key is privately installed as managed version 2; obsolete managed version 1 is destroyed.
 - [x] Deploy only to confirmed Firebase project `fitareeaee`.
 - [x] Deploy hardened booking, verification, chat, and public-projection Functions.
 - [x] Deploy Firestore and Storage rules.
 - [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
-- [ ] Deploy `planTripWithCopilot` after the managed OpenAI secret is set.
-- [ ] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests.
-- [ ] Confirm OpenAI test spend remains below USD $5.
+- [x] Deploy `planTripWithCopilot` with managed OpenAI secret version 2.
+- [x] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests, including a post-retirement rerun.
+- [x] Confirm OpenAI test spend remains below USD $5.
 - [x] Create dedicated fictional judge accounts and fixed August 10 demo trips; keep passwords out of Git.
 - [ ] Verify backend/test access remains free and available through judging.
 
@@ -74,7 +74,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Add an open-source license and complete judge-ready README.
 - [x] Confirm sanitized publication clone contains no API keys, `.env`, service accounts, keystores, passwords, or private data.
 - [x] Push passing sanitized `main`, `build-week/final`, and evidence/RC1 tags; no force-push.
-- [ ] Open/update draft PR if appropriate; do not merge without owner confirmation.
+- [x] Record draft PR as not applicable because sanitized `main` and `build-week/final` intentionally contain the same passing history.
 - [ ] Build signed universal release APK if safe signing exists; otherwise label the judge debug APK clearly.
 - [x] Record the latest local APK path, type, size, timestamp, commit, SHA-256, and tested emulator.
 - [x] Tag the exact local APK source commit as `build-week-stage3-local`.
@@ -116,7 +116,6 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 Exact owner steps and the inherited Function set are recorded in
 [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
 
-1. Owner privately completes the open managed OpenAI-key prompt; Copilot deploy and capped live tests then resume.
-2. Owner completes the open GitHub CLI browser/device authentication for sanitized publication.
-3. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-4. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.
+1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
+2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
+3. Physical Android phone interaction, YouTube upload, `/feedback`, legal confirmation, and final Devpost submit action.

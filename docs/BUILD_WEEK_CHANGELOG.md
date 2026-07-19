@@ -100,6 +100,12 @@ The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its pa
 - Universal APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
 - Hardened booking, cancellation, verification, trip-scoped chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
 
-## Not yet claimed
+## Live release status
 
-At the last metadata check, the managed `OPENAI_API_KEY` resource had no usable secret version, so the Copilot callable and live GPT-5.6 calls remained pending. A credentialed end-to-end Android flow, public GitHub/APK URL, downloaded-artifact test, signed release, and physical-phone test are not claimed as complete. See the submission checklist for the release gate.
+The authenticated Copilot callable is deployed to the confirmed `fitareeaee`
+project and uses managed `OPENAI_API_KEY` version 2. Its capped live matrix passed
+for an English ride, an English package, and an Arabic ride request both before
+and after obsolete secret version 1 was destroyed. The public sanitized GitHub
+repository is available. APK publication/download verification, the complete
+credentialed Android judge path, and physical-phone testing remain release-gate
+items until their direct checks are recorded.

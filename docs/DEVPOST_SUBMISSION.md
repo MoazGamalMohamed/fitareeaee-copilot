@@ -45,7 +45,7 @@ retry and manual search remain available. Empty Firestore results stay empty.
 
 ### How we built it
 
-The Android client is built in Flutter with Riverpod and GoRouter. It sends a minimal authenticated callable request to Firebase Functions. The Function uses the official OpenAI Node SDK and Responses API with `gpt-5.6`, strict JSON Schema output, independent validation, bounded tokens, timeouts, safe error mapping, and per-user throttling. The code requires the OpenAI key as a managed server secret and never ships it in Dart or the APK; live use is claimed only after secret setup and deployment pass.
+The Android client is built in Flutter with Riverpod and GoRouter. It sends a minimal authenticated callable request to Firebase Functions. The Function uses the official OpenAI Node SDK and Responses API with `gpt-5.6`, strict JSON Schema output, independent validation, bounded tokens, timeouts, safe error mapping, and per-user throttling. The OpenAI key is a managed server secret and never ships in Dart or the APK. The authenticated live matrix passed English ride, English package, and Arabic ride requests.
 
 After the structured draft returns, deterministic Dart code filters and ranks Firestore trips. GPT-5.6 handles language understanding; application code controls operational eligibility and explains the result. Booking runs through a Firestore transaction that verifies authentication, ownership, trip state, departure, manual verification, duplicate requests, and seat inventory atomically.
 
@@ -156,7 +156,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
 - Maps/location autocomplete and broader Arabic UI are outside the core submission path unless stabilized.
-- The final submission must not claim live deployment, physical-phone testing, or public artifact verification until those checks pass.
+- Physical-phone testing and public APK download verification are claimed only after their direct release checks pass.
 
 ## Suggested screenshot/image captions
 
