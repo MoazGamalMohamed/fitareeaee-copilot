@@ -11,7 +11,11 @@ _$NotificationModelImpl _$$NotificationModelImplFromJson(
 ) => _$NotificationModelImpl(
   id: json['id'] as String,
   userId: json['userId'] as String,
-  type: $enumDecode(_$NotificationTypeEnumMap, json['type']),
+  type: $enumDecode(
+    _$NotificationTypeEnumMap,
+    json['type'],
+    unknownValue: NotificationType.system,
+  ),
   title: json['title'] as String,
   body: json['body'] as String,
   imageUrl: json['imageUrl'] as String?,

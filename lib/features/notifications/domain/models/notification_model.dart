@@ -21,6 +21,7 @@ class NotificationModel with _$NotificationModel {
   const factory NotificationModel({
     required String id,
     required String userId,
+    @JsonKey(unknownEnumValue: NotificationType.system)
     required NotificationType type,
     required String title,
     required String body,
