@@ -8,6 +8,11 @@ import 'package:go_router/go_router.dart';
 void main() {
   test('Copilot preserves requested seat count in the details handoff', () {
     expect(copilotTripDetailsRoute('trip-1', _draft), '/trips/trip-1?seats=2');
+    expect(copilotCreationRoute(_draft), '/trips/create?role=rider');
+    expect(
+      copilotCreationRoute(_draft.copyWith(intent: 'offer')),
+      '/trips/create?role=driver',
+    );
   });
 
   testWidgets('Copilot failure keeps retry and manual fallback available', (

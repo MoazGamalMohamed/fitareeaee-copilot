@@ -125,8 +125,8 @@ class TripDetailsScreen extends ConsumerWidget {
                   .where(
                     (booking) =>
                         booking.tripId == trip.id &&
-                        (booking.status == 'confirmed' ||
-                            booking.status == 'paid'),
+                        booking.status == 'confirmed' &&
+                        booking.paymentStatus == 'paid',
                   )
                   .toList();
               if (bookingId != null) {
@@ -141,7 +141,9 @@ class TripDetailsScreen extends ConsumerWidget {
           final pendingBooking = participantBookingsAsync.maybeWhen(
             data: (bookings) {
               for (final booking in bookings) {
-                if (booking.tripId == trip.id && booking.status == 'pending') {
+                if (booking.tripId == trip.id &&
+                    (booking.status == 'pending' ||
+                        booking.status == 'pending_payment')) {
                   return booking;
                 }
               }
@@ -197,15 +199,34 @@ class TripDetailsScreen extends ConsumerWidget {
                     ],
                   )
                 else if (pendingBooking != null)
-                  ElevatedButton.icon(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    icon: const Icon(Icons.lock_clock_outlined),
-                    label: const Text(
-                      'Waiting for confirmation - chat is locked',
-                    ),
+                  Column(
+                    children: [
+                      FilledButton.icon(
+                        onPressed: () => context.push('/payments'),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        icon: const Icon(Icons.payment_outlined),
+                        label: const Text('Payment required - not confirmed'),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: bookingState is AsyncLoading
+                            ? null
+                            : () => _cancelBooking(context, ref, trip, userId),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Cancel payment request'),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Seats and chat unlock only after server-verified payment.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
                   )
                 else if (isOwnTrip)
                   ElevatedButton(

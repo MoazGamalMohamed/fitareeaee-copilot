@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import '../../domain/models/support_model.dart';
 import '../../../../core/utils/firestore_helpers.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -64,7 +65,7 @@ List<FAQItem> _getDefaultFAQs() {
       id: 'faq_1',
       question: 'How do I book a ride?',
       answer:
-          'Browse available trips, select one that matches your route, and tap "Book" to request a seat. The driver will confirm your booking.',
+          'Browse available trips and create a payment-required booking request. Seats, confirmation, and direct chat unlock only after payment is verified by the server.',
       category: 'Booking',
     ),
     FAQItem(
@@ -92,7 +93,7 @@ List<FAQItem> _getDefaultFAQs() {
       id: 'faq_5',
       question: 'How do I contact support?',
       answer:
-          'Submit a support ticket from this Help Center. The app adds instant guidance first, then keeps the ticket open for admin or support follow-up.',
+          'Start one conversation from Contact Support. GPT-5.6 answers first; use “Need a person?” whenever the answer is not enough or an account-specific action is required.',
       category: 'Support',
     ),
   ];
@@ -129,49 +130,37 @@ Future<SupportTicket> createTicket({
 }) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) throw Exception('Not authenticated');
-
-  final ticketRef = await FirebaseFirestore.instance
-      .collection('support_tickets')
-      .add({
-        'userId': user.uid,
-        'tripId': tripId,
-        'category': category.name,
-        'status': TicketStatus.open.name,
-        'subject': subject,
-        'description': description,
-        'createdAt': DateTime.now().toIso8601String(),
-        'updatedAt': DateTime.now().toIso8601String(),
-      });
-
-  // Add initial message
-  await ticketRef.collection('messages').add({
-    'ticketId': ticketRef.id,
-    'senderId': user.uid,
-    'senderName': user.displayName ?? 'User',
-    'isStaff': false,
-    'message': description,
-    'createdAt': DateTime.now().toIso8601String(),
-  });
-
-  await ticketRef.collection('messages').add({
-    'ticketId': ticketRef.id,
-    'senderId': user.uid,
-    'senderName': 'Fitareeaee Support Copilot guidance',
-    'isStaff': false,
-    'message': _instantSupportGuidance(category),
-    'createdAt': DateTime.now().toIso8601String(),
-  });
-
-  return SupportTicket(
-    id: ticketRef.id,
-    userId: user.uid,
-    tripId: tripId,
-    category: category,
-    status: TicketStatus.open,
-    subject: subject,
-    description: description,
-    createdAt: DateTime.now(),
-  );
+  try {
+    final result = await FirebaseFunctions.instance
+        .httpsCallable('contactSupport')
+        .call({
+          'schemaVersion': 1,
+          'category': category.name,
+          'subject': subject,
+          'message': description,
+          'tripId': tripId,
+        });
+    final data = Map<String, dynamic>.from(result.data as Map);
+    final ticketId = data['ticketId'];
+    if (ticketId is! String || ticketId.isEmpty) {
+      throw Exception('Support did not return a ticket ID.');
+    }
+    return SupportTicket(
+      id: ticketId,
+      userId: user.uid,
+      tripId: tripId,
+      category: category,
+      status: data['escalated'] == true
+          ? TicketStatus.inProgress
+          : TicketStatus.open,
+      subject: subject.trim(),
+      description: description.trim(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+  } on FirebaseFunctionsException catch (error) {
+    throw Exception(error.message ?? 'Support is unavailable. Please retry.');
+  }
 }
 
 /// Send message to ticket
@@ -182,24 +171,25 @@ Future<void> sendTicketMessage({
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) throw Exception('Not authenticated');
 
-  await FirebaseFirestore.instance
-      .collection('support_tickets')
-      .doc(ticketId)
-      .collection('messages')
-      .add({
-        'ticketId': ticketId,
-        'senderId': user.uid,
-        'senderName': user.displayName ?? 'User',
-        'isStaff': false,
-        'message': message,
-        'createdAt': DateTime.now().toIso8601String(),
-      });
+  try {
+    await FirebaseFunctions.instance.httpsCallable('sendSupportMessage').call({
+      'schemaVersion': 1,
+      'ticketId': ticketId,
+      'message': message,
+    });
+  } on FirebaseFunctionsException catch (error) {
+    throw Exception(error.message ?? 'Support reply could not be sent.');
+  }
+}
 
-  // Update ticket timestamp
-  await FirebaseFirestore.instance
-      .collection('support_tickets')
-      .doc(ticketId)
-      .update({'updatedAt': DateTime.now().toIso8601String()});
+Future<void> escalateTicket(String ticketId) async {
+  try {
+    await FirebaseFunctions.instance
+        .httpsCallable('escalateSupportTicket')
+        .call({'schemaVersion': 1, 'ticketId': ticketId});
+  } on FirebaseFunctionsException catch (error) {
+    throw Exception(error.message ?? 'Ticket could not be escalated.');
+  }
 }
 
 /// Close ticket
@@ -244,22 +234,5 @@ Future<void> markFAQHelpful(String faqId, bool helpful) async {
   } catch (_) {
     // FAQ feedback is optional in the judge build; support tickets stay usable
     // even when no writable FAQ collection is configured.
-  }
-}
-
-String _instantSupportGuidance(TicketCategory category) {
-  switch (category) {
-    case TicketCategory.payment:
-      return 'Thanks for opening a payment issue. In this judge build no real money is moved. A support/admin reviewer should verify the trip, booking status, and any documented payment concern before action is taken.';
-    case TicketCategory.trip:
-      return 'Thanks for opening a trip issue. Please include the route, scheduled time, and what changed. Confirmed-trip chat is only active while the booking is active; cancelled or completed trips should stay in support.';
-    case TicketCategory.account:
-      return 'Thanks for opening an account issue. Do not send passwords, full IDs, or private document numbers here. An admin can review account status and verification history.';
-    case TicketCategory.safety:
-      return 'Thanks for opening a safety issue. Fitareeaee is not an emergency service. If anyone may be in immediate danger, contact local emergency services first, then keep this ticket for admin follow-up.';
-    case TicketCategory.technical:
-      return 'Thanks for reporting a technical issue. Please include the screen name, the action you tapped, and the exact error text if visible.';
-    case TicketCategory.other:
-      return 'Thanks for contacting support. If this answer does not solve it, keep this ticket open and an admin/support reviewer can follow up.';
   }
 }

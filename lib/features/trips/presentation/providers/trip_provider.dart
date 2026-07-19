@@ -110,12 +110,16 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
   TripBookingStateNotifier(this._repository)
     : super(const AsyncValue.data(null));
 
-  Future<String> bookTrip(String tripId, String userId, int seats) async {
+  Future<repo.BookingStartResult> bookTrip(
+    String tripId,
+    String userId,
+    int seats,
+  ) async {
     state = const AsyncValue.loading();
     try {
-      final conversationId = await _repository.bookTrip(tripId, userId, seats);
+      final result = await _repository.bookTrip(tripId, userId, seats);
       state = const AsyncValue.data(null);
-      return conversationId;
+      return result;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       rethrow;

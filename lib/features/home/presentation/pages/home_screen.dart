@@ -132,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               const SizedBox(height: 32),
 
-              // Main Actions - TWO PRIMARY OPTIONS ONLY
+              // Explicit browse and creation paths.
               Text(
                 'What would you like to do?',
                 style: Theme.of(
@@ -146,13 +146,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildPrimaryActionCard(
                 context,
                 icon: Icons.search,
-                title: 'Find a Ride',
-                subtitle: 'Search for rides or package delivery',
+                title: 'Browse Available Trips',
+                subtitle: 'Find live ride offers and package delivery',
                 color: Colors.blue,
                 onTap: () {
                   // Navigate to rider flow - search/browse trips
                   context.push('/trips?role=rider');
                 },
+              ),
+              const SizedBox(height: 16),
+
+              _buildPrimaryActionCard(
+                context,
+                icon: Icons.add_location_alt_outlined,
+                title: 'Request a Trip',
+                subtitle: 'Post a ride or package request manually',
+                color: Colors.indigo,
+                onTap: () => context.push('/trips/create?role=rider'),
               ),
               const SizedBox(height: 16),
 
@@ -264,7 +274,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             (verification?.driverLicenseVerified ?? false) &&
             (verification?.vehicleVerified ?? false);
         if (canOffer) {
-          context.push('/trips?role=driver&tab=available');
+          context.push('/trips/create?role=driver');
           return;
         }
         _showDriverGate(context, verification);

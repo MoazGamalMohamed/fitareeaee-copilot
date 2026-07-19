@@ -267,7 +267,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   children: [
                     Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
                     const SizedBox(height: 16),
-                    Text('Error loading messages'),
+                    const Text('Conversation could not be loaded'),
+                    const SizedBox(height: 8),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        'Confirm that payment is verified and the booking is active, then retry.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () => ref.invalidate(
+                        conversationMessagesProvider(conversationId),
+                      ),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
                   ],
                 ),
               ),

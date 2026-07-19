@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   bookingDocumentId,
+  bookingIsPaidAndConfirmed,
   canSelfCancelBeforeDeparture,
   parseBookingRequest,
   validatedUnitPrice,
@@ -38,6 +39,21 @@ test("booking prices must be finite, nonnegative canonical numbers", () => {
   assert.throws(() => validatedUnitPrice(-1));
   assert.throws(() => validatedUnitPrice(Number.NaN));
   assert.throws(() => validatedUnitPrice(Number.POSITIVE_INFINITY));
+});
+
+test("chat eligibility requires both confirmed status and verified payment", () => {
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "confirmed", paymentStatus: "paid"}),
+    true
+  );
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "confirmed", paymentStatus: "required"}),
+    false
+  );
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "pending_payment", paymentStatus: "paid"}),
+    false
+  );
 });
 
 test("self-service cancellation closes at scheduled departure", () => {

@@ -10,6 +10,7 @@ import 'package:fitareeaee/features/profile/presentation/pages/profile_screen.da
 import 'package:fitareeaee/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:fitareeaee/features/settings/presentation/pages/settings_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/booking_confirmation_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
 import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
@@ -31,6 +32,7 @@ class AppRoutes {
   static const profile = '/profile';
   static const editProfile = '/profile/edit';
   static const trips = '/trips';
+  static const createTrip = '/trips/create';
   static const tripDetails = '/trips/:id';
   static const chat = '/chat';
   static const chatConversation = '/chat/:userId';
@@ -111,6 +113,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final role = state.uri.queryParameters['role'];
           final initialTab = state.uri.queryParameters['tab'];
           return TripsListScreen(role: role, initialTab: initialTab);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.createTrip,
+        name: 'create-trip',
+        builder: (context, state) {
+          final role = state.uri.queryParameters['role'];
+          final draft = state.extra is CopilotDraft
+              ? state.extra as CopilotDraft
+              : null;
+          return CreateTripScreen(role: role, initialDraft: draft);
         },
       ),
       GoRoute(

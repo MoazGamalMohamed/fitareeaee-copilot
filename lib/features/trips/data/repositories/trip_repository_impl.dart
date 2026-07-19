@@ -3,6 +3,23 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/utils/exceptions/app_exceptions.dart';
 
+class BookingStartResult {
+  const BookingStartResult({
+    required this.bookingId,
+    required this.status,
+    required this.paymentStatus,
+    this.conversationId,
+  });
+
+  final String bookingId;
+  final String status;
+  final String paymentStatus;
+  final String? conversationId;
+
+  bool get isConfirmedAndPaid =>
+      status == 'confirmed' && paymentStatus == 'paid';
+}
+
 abstract class TripRepository {
   Future<Trip> createTrip(Trip trip);
   Future<void> updateTrip(Trip trip);
@@ -18,7 +35,7 @@ abstract class TripRepository {
   });
   Stream<List<Trip>> streamAvailableTrips();
   Stream<List<Trip>> streamUserTrips(String userId);
-  Future<String> bookTrip(String tripId, String userId, int seats);
+  Future<BookingStartResult> bookTrip(String tripId, String userId, int seats);
   Future<void> cancelBooking(String tripId, String userId);
 }
 
@@ -35,18 +52,31 @@ class TripRepositoryImpl implements TripRepository {
   @override
   Future<Trip> createTrip(Trip trip) async {
     try {
-      // Use auto-generated ID if trip.id is empty
-      final DocumentReference docRef;
-      if (trip.id.isEmpty) {
-        docRef = _firestore.collection('trips').doc();
-      } else {
-        docRef = _firestore.collection('trips').doc(trip.id);
+      final result = await _functions.httpsCallable('createTrip').call({
+        'schemaVersion': 1,
+        'role': trip.role,
+        'type': trip.type,
+        'originAddress': trip.originAddress,
+        'destinationAddress': trip.destinationAddress,
+        'originLat': trip.originLat,
+        'originLng': trip.originLng,
+        'destinationLat': trip.destinationLat,
+        'destinationLng': trip.destinationLng,
+        'departureTime': trip.departureTime.toUtc().toIso8601String(),
+        'pricePerSeat': trip.pricePerSeat,
+        'seats': trip.totalSeats,
+        'description': trip.description,
+        'allowPets': trip.allowPets,
+        'allowSmoking': trip.allowSmoking,
+        'packageWeight': trip.packageWeight,
+        'packageDescription': trip.packageDescription,
+      });
+      final data = Map<String, dynamic>.from(result.data as Map);
+      final tripId = data['tripId'];
+      if (tripId is! String || tripId.isEmpty) {
+        throw AppException(message: 'Trip creation returned no trip ID');
       }
-
-      // Create trip with the generated ID
-      final tripWithId = trip.copyWith(id: docRef.id);
-      await docRef.set(tripWithId.toJson());
-      return tripWithId;
+      return trip.copyWith(id: tripId);
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
@@ -267,7 +297,11 @@ class TripRepositoryImpl implements TripRepository {
   }
 
   @override
-  Future<String> bookTrip(String tripId, String userId, int seats) async {
+  Future<BookingStartResult> bookTrip(
+    String tripId,
+    String userId,
+    int seats,
+  ) async {
     try {
       final result = await _functions.httpsCallable('createBooking').call({
         'schemaVersion': 1,
@@ -275,11 +309,25 @@ class TripRepositoryImpl implements TripRepository {
         'seats': seats,
       });
       final data = Map<String, dynamic>.from(result.data as Map);
-      final conversationId = data['conversationId'];
-      if (conversationId is! String || conversationId.isEmpty) {
-        throw AppException(message: 'Booking conversation was not created');
+      final bookingId = data['bookingId'];
+      final status = data['status'];
+      final paymentStatus = data['paymentStatus'];
+      final rawConversationId = data['conversationId'];
+      if (bookingId is! String ||
+          bookingId.isEmpty ||
+          status is! String ||
+          paymentStatus is! String) {
+        throw AppException(message: 'Booking response was incomplete');
       }
-      return conversationId;
+      return BookingStartResult(
+        bookingId: bookingId,
+        status: status,
+        paymentStatus: paymentStatus,
+        conversationId:
+            rawConversationId is String && rawConversationId.isNotEmpty
+            ? rawConversationId
+            : null,
+      );
     } on FirebaseException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {

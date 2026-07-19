@@ -6,6 +6,12 @@ if (getApps().length === 0) {
 
 export {cancelBooking, createBooking} from "./booking";
 export {planTripWithCopilot} from "./copilot";
+export {createTrip} from "./trip";
+export {
+  contactSupport,
+  escalateSupportTicket,
+  sendSupportMessage,
+} from "./support";
 export {
   reviewVerification,
   submitVerification,

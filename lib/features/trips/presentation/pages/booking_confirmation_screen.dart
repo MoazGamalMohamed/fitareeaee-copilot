@@ -48,7 +48,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
           );
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Confirm Booking'),
+              title: const Text('Review and Pay'),
               centerTitle: true,
             ),
             body: SingleChildScrollView(
@@ -73,8 +73,27 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   _buildServerVerificationNotice(context),
                   const SizedBox(height: 24),
 
-                  // Price summary. Payments are intentionally out of scope.
+                  // Price and payment-gated confirmation summary.
                   _buildPriceSection(context, trip),
+                  const SizedBox(height: 12),
+                  const Card(
+                    color: Color(0xFFFFF8E1),
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.lock_outline),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'This creates a payment-required booking request only. The trip is not confirmed, seats are not deducted, and chat stays locked until a payment provider verifies payment on the server.',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Action Button
@@ -102,7 +121,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         child: const SizedBox(
                           width: double.infinity,
                           child: Text(
-                            'Confirm Booking',
+                            'Continue to payment requirement',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
@@ -434,19 +453,23 @@ class BookingConfirmationScreen extends ConsumerWidget {
     try {
       final userId = ref.read(authStateProvider).value?.id;
       if (userId == null) return;
-      final conversationId = await ref
+      final result = await ref
           .read(tripBookingProvider.notifier)
           .bookTrip(trip.id, userId, requestedSeats);
       ref.invalidate(tripDetailProvider(trip.id));
       ref.invalidate(availableTripsProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Booking confirmed! You can now message the driver.'),
+        SnackBar(
+          content: Text(
+            result.isConfirmedAndPaid
+                ? 'Payment is verified and the booking is confirmed.'
+                : 'Payment is required. This trip is not confirmed and chat remains locked.',
+          ),
         ),
       );
       context.go(
-        '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+        '/trips/${trip.id}?bookingId=${Uri.encodeQueryComponent(result.bookingId)}',
       );
     } catch (_) {
       if (!context.mounted) return;

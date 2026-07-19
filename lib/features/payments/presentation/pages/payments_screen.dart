@@ -36,10 +36,19 @@ class PaymentsScreen extends ConsumerWidget {
     List<BookingModel> bookings,
   ) {
     final payable = bookings
-        .where((booking) => booking.passengerId == userId && booking.isActive)
+        .where(
+          (booking) =>
+              booking.passengerId == userId &&
+              booking.status == 'pending_payment',
+        )
         .fold<double>(0, (sum, booking) => sum + booking.totalPrice);
     final receivable = bookings
-        .where((booking) => booking.driverId == userId && booking.isActive)
+        .where(
+          (booking) =>
+              booking.driverId == userId &&
+              booking.status == 'confirmed' &&
+              booking.paymentStatus == 'paid',
+        )
         .fold<double>(0, (sum, booking) => sum + booking.totalPrice);
     final completed = bookings
         .where((booking) => booking.status == 'completed')
@@ -59,7 +68,7 @@ class PaymentsScreen extends ConsumerWidget {
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Contest build: no card is charged, no escrow is held, and no payout or refund is processed. Drivers are always the receiving side; riders and senders are the paying side when real payments are added later.',
+                    'No payment provider is configured in this contest build. New booking requests remain unconfirmed, do not deduct seats, and do not unlock chat. Drivers are always the receiving side; riders and senders are the paying side.',
                   ),
                 ),
               ],
@@ -191,8 +200,4 @@ class PaymentsScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-extension on BookingModel {
-  bool get isActive => status == 'confirmed' || status == 'paid';
 }

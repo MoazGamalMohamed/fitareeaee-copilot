@@ -96,15 +96,14 @@ final conversationMessagesProvider =
       final chatRepository = ref.watch(chatRepositoryProvider);
 
       // Stream messages with error handling
-      return chatRepository
-          .streamConversation(conversationId)
-          .asyncMap((result) {
-            return result.fold(
-              (failure) => <Message>[],
-              (messages) => messages,
-            );
-          })
-          .handleError((error, stackTrace) => <Message>[]);
+      return chatRepository.streamConversation(conversationId).asyncMap((
+        result,
+      ) {
+        return result.fold(
+          (failure) => throw Exception(failure.message),
+          (messages) => messages,
+        );
+      });
     });
 
 /// Stream provider for all conversations
@@ -120,9 +119,7 @@ final conversationsProvider = StreamProvider<List<Message>>((ref) {
   final chatRepository = ref.watch(chatRepositoryProvider);
   return chatRepository.streamConversations(userId).asyncMap((result) {
     return result.fold(
-      (_) => throw Exception(
-        'Messages are unavailable. Open chat from an active confirmed booking or retry later.',
-      ),
+      (failure) => throw Exception(failure.message),
       (messages) => messages,
     );
   });

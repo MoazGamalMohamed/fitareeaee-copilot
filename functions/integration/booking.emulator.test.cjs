@@ -81,29 +81,29 @@ after(async () => {
   await Promise.all(getApps().map((app) => deleteAdminApp(app)));
 });
 
-test("concurrent final-seat requests create exactly one booking", async () => {
+test("potential requests do not reserve inventory or authorize chat", async () => {
   const tripId = `integration-final-seat-${Date.now()}`;
   await seedTrip(tripId, 1);
   const [first, second] = await Promise.all([
     callable("createBooking", riderA.token, {schemaVersion: 1, tripId, seats: 1}),
     callable("createBooking", riderB.token, {schemaVersion: 1, tripId, seats: 1}),
   ]);
-  assert.equal([first, second].filter((result) => result.ok).length, 1);
-  assert.equal([first, second].filter((result) => !result.ok).length, 1);
+  assert.equal([first, second].filter((result) => result.ok).length, 2);
   const trip = await db.collection("trips").doc(tripId).get();
-  assert.equal(trip.data().available_seats, 0);
+  assert.equal(trip.data().available_seats, 1);
   const bookings = await db.collection("bookings").where("tripId", "==", tripId).get();
-  assert.equal(bookings.size, 1);
+  assert.equal(bookings.size, 2);
+  for (const booking of bookings.docs) {
+    assert.equal(booking.data().status, "pending_payment");
+    assert.equal(booking.data().paymentStatus, "required");
+    assert.equal(booking.data().conversationId, null);
+  }
   const authorizations = await db.collection("conversation_authorizations")
     .where("tripId", "==", tripId).get();
-  assert.equal(authorizations.size, 1);
-  assert.deepEqual(
-    authorizations.docs[0].data().participant_ids,
-    [driver.uid, bookings.docs[0].data().passengerId].sort(),
-  );
+  assert.equal(authorizations.size, 0);
 });
 
-test("duplicate booking is idempotent and cancellation restores inventory", async () => {
+test("duplicate booking is idempotent and pending cancellation leaves inventory", async () => {
   const tripId = `integration-duplicate-${Date.now()}`;
   await seedTrip(tripId, 1);
   const first = await callable("createBooking", riderA.token, {schemaVersion: 1, tripId, seats: 1});
@@ -119,9 +119,56 @@ test("duplicate booking is idempotent and cancellation restores inventory", asyn
   const bookingId = `${tripId}_${riderA.uid}`;
   const booking = await db.collection("bookings").doc(bookingId).get();
   assert.equal(booking.data().status, "cancelled");
+  assert.equal(booking.data().conversationId, null);
+});
+
+test("only a paid confirmed booking opens chat and paid cancellation restores inventory", async () => {
+  const tripId = `integration-paid-chat-${Date.now()}`;
+  await seedTrip(tripId, 1);
+  const pending = await callable("createBooking", riderA.token, {
+    schemaVersion: 1,
+    tripId,
+    seats: 1,
+  });
+  assert.equal(pending.ok, true);
+  const bookingId = pending.body.result.bookingId;
+
+  // Simulate the trusted payment-provider finalizer. No client is allowed to
+  // make these writes in production.
+  await Promise.all([
+    db.collection("bookings").doc(bookingId).update({
+      status: "confirmed",
+      paymentStatus: "paid",
+    }),
+    db.collection("trips").doc(tripId).update({
+      available_seats: 0,
+      passenger_ids: [riderA.uid],
+    }),
+  ]);
+
+  const authorized = await callable("authorizeBookingConversation", riderA.token, {
+    bookingId,
+  });
+  assert.equal(authorized.ok, true);
+  const conversationId = authorized.body.result.conversationId;
   const authorization = await db.collection("conversation_authorizations")
-    .doc(booking.data().conversationId).get();
-  assert.equal(authorization.data().active, false);
+    .doc(conversationId).get();
+  assert.equal(authorization.data().active, true);
+  assert.equal(authorization.data().source, "booking");
+  assert.equal(authorization.data().paymentStatus, "paid");
+
+  const cancelled = await callable("cancelBooking", riderA.token, {
+    schemaVersion: 1,
+    tripId,
+    seats: 1,
+  });
+  assert.equal(cancelled.ok, true);
+  const [trip, closedAuthorization] = await Promise.all([
+    db.collection("trips").doc(tripId).get(),
+    db.collection("conversation_authorizations").doc(conversationId).get(),
+  ]);
+  assert.equal(trip.data().available_seats, 1);
+  assert.equal(closedAuthorization.data().active, false);
 });
 
 test("unverified rider is rejected without changing inventory", async () => {

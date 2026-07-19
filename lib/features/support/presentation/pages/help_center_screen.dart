@@ -20,27 +20,11 @@ class HelpCenterScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Quick actions
-            Row(
-              children: [
-                Expanded(
-                  child: _buildQuickAction(
-                    context,
-                    Icons.chat,
-                    'Contact Support',
-                    () => _showCreateTicketDialog(context),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildQuickAction(
-                    context,
-                    Icons.smart_toy,
-                    'Support Copilot',
-                    () => _showInstantGuidance(context),
-                  ),
-                ),
-              ],
+            _buildQuickAction(
+              context,
+              Icons.support_agent,
+              'Contact Support - AI first, human when needed',
+              () => _showCreateTicketDialog(context),
             ),
             const SizedBox(height: 24),
             // My tickets
@@ -75,7 +59,7 @@ class HelpCenterScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showCreateTicketDialog(context),
         icon: const Icon(Icons.add),
-        label: const Text('New Ticket'),
+        label: const Text('Contact Support'),
       ),
     );
   }
@@ -213,51 +197,6 @@ class HelpCenterScreen extends ConsumerWidget {
       builder: (context) => const _CreateTicketSheet(),
     );
   }
-
-  void _showInstantGuidance(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.smart_toy, color: Theme.of(context).primaryColor),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Support Copilot',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'I can give instant guidance for common booking, payment, account, technical, and safety questions. If the answer is not enough, open a support ticket and an admin/support reviewer can follow up.',
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'For emergencies, contact local emergency services first. Do not send passwords, full ID numbers, or private payment details in support chat.',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 20),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.pop(sheetContext);
-                  _showCreateTicketDialog(context);
-                },
-                icon: const Icon(Icons.support_agent),
-                label: const Text('Escalate to support'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class SupportTicketScreen extends ConsumerStatefulWidget {
@@ -273,6 +212,7 @@ class SupportTicketScreen extends ConsumerStatefulWidget {
 class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
   final _controller = TextEditingController();
   bool _sending = false;
+  bool _escalating = false;
 
   @override
   void dispose() {
@@ -308,6 +248,19 @@ class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
                 subtitle: Text(
                   '${data?['category'] ?? 'support'} - ${data?['status'] ?? 'open'}',
                 ),
+                trailing: data?['escalated'] == true
+                    ? const Chip(label: Text('Human queue'))
+                    : TextButton(
+                        onPressed: _escalating ? null : _escalate,
+                        child: _escalating
+                            ? const SizedBox.square(
+                                dimension: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Need a person?'),
+                      ),
               );
             },
           ),
@@ -327,7 +280,7 @@ class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
                         final message = messages[index];
                         final isGuidance = message.senderName
                             .toLowerCase()
-                            .contains('support copilot');
+                            .contains('ai support');
                         final isStaff = message.isStaff || isGuidance;
                         return Align(
                           alignment: isStaff
@@ -385,7 +338,7 @@ class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
                       maxLines: 4,
                       maxLength: 1200,
                       decoration: const InputDecoration(
-                        hintText: 'Reply to support...',
+                        hintText: 'Ask support a question...',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -441,6 +394,24 @@ class _SupportTicketScreenState extends ConsumerState<SupportTicketScreen> {
       );
     }
   }
+
+  Future<void> _escalate() async {
+    setState(() => _escalating = true);
+    try {
+      await escalateTicket(widget.ticketId);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sent to a human support reviewer.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ticket could not be escalated.')),
+      );
+    } finally {
+      if (mounted) setState(() => _escalating = false);
+    }
+  }
 }
 
 class _CreateTicketSheet extends ConsumerStatefulWidget {
@@ -470,8 +441,12 @@ class _CreateTicketSheetState extends ConsumerState<_CreateTicketSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Create Support Ticket',
+            'Contact Support',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'GPT-5.6 provides the first response. Choose “Need a person?” in the conversation whenever the answer is not enough. Do not send passwords, full IDs, or complete card details.',
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<TicketCategory>(
@@ -514,7 +489,7 @@ class _CreateTicketSheetState extends ConsumerState<_CreateTicketSheet> {
               onPressed: _isLoading ? null : _submitTicket,
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : const Text('Submit Ticket'),
+                  : const Text('Ask Support'),
             ),
           ),
         ],
@@ -532,18 +507,21 @@ class _CreateTicketSheetState extends ConsumerState<_CreateTicketSheet> {
     }
     setState(() => _isLoading = true);
     try {
-      await createTicket(
+      final ticket = await createTicket(
         category: _category,
         subject: _subjectController.text,
         description: _descriptionController.text,
       );
       if (mounted) {
+        final router = GoRouter.of(context);
+        final messenger = ScaffoldMessenger.of(context);
         // Invalidate the tickets provider to refresh the list
         ref.invalidate(userTicketsProvider);
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ticket created successfully')),
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Support conversation created.')),
         );
+        router.push('/support/ticket/${ticket.id}');
       }
     } catch (e) {
       if (mounted)

@@ -103,11 +103,13 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                 data: (trips) {
                   return userBookings.when(
                     data: (bookings) {
-                      // Get trip IDs that user has confirmed or paid bookings for
+                      // Hide only server-paid, confirmed bookings. A payment
+                      // request is not a reservation and must not consume seats.
                       final bookedTripIds = bookings
                           .where(
                             (b) =>
-                                b.status == 'confirmed' || b.status == 'paid',
+                                b.status == 'confirmed' &&
+                                b.paymentStatus == 'paid',
                           )
                           .map((b) => b.tripId)
                           .toSet();
@@ -235,6 +237,11 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _showCreateTripOptions,
+        icon: const Icon(Icons.add_road),
+        label: const Text('Create trip'),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
         onTap: (index) {
@@ -279,6 +286,49 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
       default:
         return 0;
     }
+  }
+
+  void _showCreateTripOptions() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Create a trip',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Choose your role. Riders/senders request and pay; verified drivers/couriers offer and receive payment.',
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  context.push('/trips/create?role=rider');
+                },
+                icon: const Icon(Icons.person_search),
+                label: const Text('Request a ride or delivery'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  context.push('/trips/create?role=driver');
+                },
+                icon: const Icon(Icons.drive_eta),
+                label: const Text('Offer a ride or delivery'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildTripsList(List trips, {required bool isMyTrips}) {
@@ -625,7 +675,14 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
               }
             }
             final agreedDeals = bookings
-                .where((b) => b.status == 'confirmed' || b.status == 'paid')
+                .where(
+                  (b) => b.status == 'confirmed' && b.paymentStatus == 'paid',
+                )
+                .toList();
+            final paymentPending = bookings
+                .where(
+                  (b) => b.status == 'pending' || b.status == 'pending_payment',
+                )
                 .toList();
             final matchingTrips = matchingById.values.toList();
 
@@ -641,7 +698,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Paid/confirmed matches where trip chat is active',
+                    'Only paid, confirmed matches have trip chat access',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
@@ -664,6 +721,10 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                   ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 16),
+                if (paymentPending.isNotEmpty) ...[
+                  ...paymentPending.map(_buildBookingCard),
+                  const SizedBox(height: 16),
+                ],
                 if (matchingTrips.isEmpty)
                   Center(
                     child: Padding(
@@ -809,11 +870,14 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: booking.status == 'confirmed'
+          backgroundColor:
+              booking.status == 'confirmed' && booking.paymentStatus == 'paid'
               ? Colors.green
               : Colors.orange,
           child: Icon(
-            booking.status == 'confirmed' ? Icons.check : Icons.pending,
+            booking.status == 'confirmed' && booking.paymentStatus == 'paid'
+                ? Icons.check
+                : Icons.payment_outlined,
             color: Colors.white,
           ),
         ),
@@ -826,7 +890,11 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('Status: ${booking.status}'),
+            Text(
+              booking.status == 'pending_payment'
+                  ? 'Payment required - not confirmed'
+                  : 'Status: ${booking.status} / ${booking.paymentStatus}',
+            ),
             Text(
               'Seats: ${booking.seatsBooked} • \$${booking.totalPrice.toStringAsFixed(2)}',
             ),
