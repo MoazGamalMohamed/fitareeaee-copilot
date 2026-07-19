@@ -1224,3 +1224,88 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: commit/replay/push this evidence, run the complete mandatory release gate,
   rebuild and test the APK on emulator and phone, publish/download/hash/install the
   GitHub Release artifact, and append the exact final evidence.
+
+## 2026-07-18 22:13 CDT / 2026-07-18 20:13 PDT — final gate and public APK release checkpoint
+
+### Objective and outcome
+
+- Committed the live GPT-5.6 evidence, replayed it byte-equivalently into the
+  sanitized clone, and pushed both public branches to sanitized `8e572ae` without
+  force. Git tree comparison found 312/312 tracked blobs identical between private
+  and sanitized release checkpoints.
+- Ran the complete mandatory local release gate on private source `837c11d`; every
+  required formatting, analysis, Flutter, Functions, rules, integration, and APK
+  check passed.
+- Created annotated tag `fitareeaee-copilot-v1.0.0` on private `837c11d` and the
+  tree-equivalent sanitized `8e572ae`, then pushed the sanitized tag.
+- Published the universal debug-signed APK as a non-draft, non-prerelease GitHub
+  Release. Downloaded the public asset into an ignored build directory and proved
+  its size and SHA-256 exactly match the local tested artifact.
+- Clean-installed the downloaded public APK on the API 36.1 emulator. A first UI
+  automation query returned a transient null root; a read-only retry found Login,
+  the activity remained top-resumed, and no matching fatal startup logs appeared.
+- The Motorola phone reconnected and Android received the public APK, but installation
+  failed safely with `INSTALL_FAILED_UPDATE_INCOMPATIBLE` because an older installed
+  Fitareeaee package uses a different signing certificate. No phone package/data was
+  changed. Replacing it requires explicit owner approval because uninstalling
+  `com.fitareeaee.app` deletes that app's local phone data.
+
+### Commands and exact results
+
+- Initial combined sandbox gate: tooling stalled before output and was terminated;
+  each command was immediately rerun separately with SDK/cache access and passed
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 111 files, 0 changed
+- `flutter analyze`: PASS; no issues
+- `flutter test`: PASS; 18/18
+- `flutter test test/features/copilot`: PASS; 10/10 focused Copilot tests
+- `cd functions && npm run build`: PASS
+- `cd functions && npm test`: PASS; TypeScript build plus 19/19 contracts
+- Firestore/Storage emulator rules gate: PASS; 7/7 contracts
+- Auth/Functions/Firestore callable integration: PASS; 3/3
+- `flutter build apk --debug`: PASS in 89.8 seconds
+- APK signature verification: PASS; Android Signature Scheme v2, one Android Debug
+  signer, certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
+- APK package metadata: `com.fitareeaee.app`, version `1.0.0` (`20260718`), minimum
+  API 24, target/compile API 36
+- First emulator update install: expected environment failure due insufficient
+  emulator storage; only the exact old emulator package/data was removed
+- Exact locally built APK clean install/Login smoke: PASS; no matching fatal logs
+- GitHub Release upload: PASS; public asset state `uploaded`, digest matched
+- Public asset download/hash comparison: PASS; exact size/hash match
+- Sanitized all-history scan: PASS; 0 token/private-key signature matches and 0
+  reachable `.env`, Firebase config, service-account, keystore, or PEM paths
+- Remote verification: PASS; both branch refs equal sanitized `8e572ae`; final
+  annotated tag peels to the same commit
+- Downloaded public asset clean install/Login smoke: PASS after transient hierarchy
+  retry; no matching fatal logs
+- Physical phone public-asset install: BLOCKED by incompatible existing signature;
+  uninstall/data deletion not performed
+
+### APK, GitHub, rollback, and next action
+
+- Build type: universal debug-signed Android judge APK
+- Local path: `build/app/outputs/flutter-apk/app-debug.apk`
+- Downloaded verification path: `build/published-download-v1/app-debug.apk`
+- Public URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk`
+- Size: 154,878,330 bytes
+- SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
+- Build timestamp: 2026-07-18 22:02:49 CDT / 20:02:49 PDT
+- Private source/rollback: `837c11dd42e0e08d8bd1761b44bf11e44e82c03c`
+- Sanitized public source/rollback: `8e572aef98cbd238b28a401fa691080645d4e9e8`
+- Tag: `fitareeaee-copilot-v1.0.0`
+- Remote branches before this evidence append: `main` and `build-week/final` both
+  `8e572aef98cbd238b28a401fa691080645d4e9e8`
+- PR status: not applicable because both public branches intentionally match
+- Release status: public, non-draft, non-prerelease
+- Tested device: API 36.1 x86_64 emulator PASS; Motorola phone install blocked by
+  owner-controlled destructive replacement decision
+- Known issues: two credentialed fresh-install end-to-end runs remain; owner must
+  approve phone app-data deletion or perform replacement, confirm old OpenAI key
+  provider revocation, decide inherited Function retirement, rotate legacy provider
+  credentials, record/upload video, run `/feedback`, review legal eligibility, and
+  submit Devpost
+- Next action: commit/replay/push this final evidence. If the owner explicitly approves
+  deleting the old phone package/data, uninstall exactly `com.fitareeaee.app`, install
+  the hash-verified public APK, and complete the physical credentialed smoke.

@@ -80,12 +80,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PENDING | Judge fixtures and Copilot are deployed; credentialed device run remains |
 | Fresh-install end-to-end run #1 | PENDING | Must be recorded after deployment |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | PENDING | Motorola phone connected by ADB; final release APK test remains |
+| Physical Android phone install | BLOCKED | Public APK install reached Android but failed `INSTALL_FAILED_UPDATE_INCOMPATIBLE`; replacing the differently signed older app requires owner approval because uninstall deletes its local phone data |
 | Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
-| Final deployed/tagged judge APK | PENDING | Rebuild/tag after live backend verification |
-| Public sanitized repository | PASS | Both remote branches exactly match `9f58026`; RC1 and staged evidence tags pushed; original private repository has no remote |
-| Published APK download and hash comparison | PENDING | GitHub repository and live Copilot are ready; final Release remains |
-| Published APK install | PENDING | Run against the downloaded GitHub Release asset |
+| Final deployed/tagged judge APK | PASS | Tag `fitareeaee-copilot-v1.0.0`; private tested source `837c11d`, sanitized source `8e572ae` |
+| Public sanitized repository | PASS | Both remote branches exactly match sanitized `8e572ae`; final tag and staged evidence tags pushed; original private repository has no remote |
+| Published APK download and hash comparison | PASS | Public asset downloaded; 154,878,330 bytes and SHA-256 exactly match local tested artifact |
+| Published APK install | PASS | Downloaded asset clean-installed on API 36.1 emulator; Login rendered, activity resumed, no matching fatal logs |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -94,22 +94,25 @@ triggers were also successfully built and deployed on the declared Node 20
 runtime; Firebase warns that Node 20 is deprecated and must be upgraded after
 the contest release.
 
-## Latest recorded local APK
+## Final published APK
 
-- Build type: universal debug judge candidate
+- Build type: universal debug-signed judge APK
 - Path: `build/app/outputs/flutter-apk/app-debug.apk`
 - Size: 154,878,330 bytes (147.70 MiB)
-- Build timestamp: July 18, 2026 at 20:29:09 CDT / 18:29:09 PDT
-- Release-gate source commit: `ba9c3436645195180120c012e286d033b2da21f6` (application code last changed at `15baa237707b3115475b09ca7a586e1c171517a7`)
-- Source tag: `fitareeaee-copilot-rc1` after local/public tag creation
+- Build timestamp: July 18, 2026 at 22:02:49 CDT / 20:02:49 PDT
+- Release-gate source commit: private `837c11dd42e0e08d8bd1761b44bf11e44e82c03c`; sanitized `8e572aef98cbd238b28a401fa691080645d4e9e8`
+- Source tag: `fitareeaee-copilot-v1.0.0`
 - SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
-- Universal installation/smoke: PASS after removing the exact older `com.fitareeaee.app` package and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
+- Public URL: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk`
+- Universal installation/smoke: PASS after downloading the public asset, verifying its exact hash, removing only the emulator's older `com.fitareeaee.app` package/data, and clean-installing; Login rendered, the activity was top-resumed, and no fatal Flutter/Android logs matched
 - Credentialed attempt: NOT PASSED; exact in-memory entry reached Firebase Auth but the emulator could not reach `8.8.8.8` or resolve `identitytoolkit.googleapis.com`. The app displayed a safe network error and remained responsive. A credential-bearing diagnostic screenshot was immediately deleted from host and emulator.
 - APK archive audit: PASS; no `.env`, `google-services.json`, service-account JSON, keystore, OpenAI/OpenRouter/Stripe secret key name, or private-key PEM in the archive; no token-shaped match in the application payload
 - APK signature: PASS; Android Signature Scheme v2, one expected Android Debug signer, certificate SHA-256 `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`
 - Package metadata: `com.fitareeaee.app`, version `1.0.0` (`20260718`), label `Fitareeaee Copilot`, min API 24, target/compile API 36, ABIs `arm64-v8a`, `armeabi-v7a`, and `x86_64`
 
-This is a local engineering checkpoint, not yet the published judge artifact.
+This is the published judge artifact. It is intentionally debug-signed for
+contest sideloading because no safe private release-signing configuration was
+available.
 
 ## Release gate
 

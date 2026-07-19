@@ -63,9 +63,10 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Judge-path hardening gate passed on `15baa23`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, universal APK clean-install/Login smoke PASS with version code `20260718`.
 - [x] Third-party package/asset/data/music authorization checklist added; final screenshots/video still require owner review.
 - [x] Rerun the complete mandatory gate on release-gate checkpoint `ba9c343`: format 111/0, analysis clean, Flutter 18/18, Functions 18/18, rules 7/7, callable integration 3/3, APK build/clean-install/Login smoke PASS.
+- [x] Final release gate passed on private `837c11d` / sanitized `8e572ae`: format 111/0, analysis clean, Flutter 18/18, focused Copilot 10/10, Functions 19/19, rules 7/7, callable integration 3/3, APK build and public-download emulator smoke PASS.
 - [ ] Complete two credentialed fresh-install end-to-end runs.
-- [ ] Install and smoke-test on the owner's physical Android phone.
-- [ ] Record any remaining known limitation without minimizing it.
+- [ ] Install and smoke-test on the owner's physical Android phone; current attempt is blocked by the differently signed older package and requires approval to delete its local app data.
+- [x] Record remaining known limitations without minimizing them.
 
 ## Repository and release
 
@@ -75,14 +76,14 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Confirm sanitized publication clone contains no API keys, `.env`, service accounts, keystores, passwords, or private data.
 - [x] Push passing sanitized `main`, `build-week/final`, and evidence/RC1 tags; no force-push.
 - [x] Record draft PR as not applicable because sanitized `main` and `build-week/final` intentionally contain the same passing history.
-- [ ] Build signed universal release APK if safe signing exists; otherwise label the judge debug APK clearly.
+- [x] No safe private release signing exists; label the universal judge APK clearly as debug-signed.
 - [x] Record the latest local APK path, type, size, timestamp, commit, SHA-256, and tested emulator.
 - [x] Tag the exact local APK source commit as `build-week-stage3-local`.
-- [ ] Publish APK at a stable GitHub Release/direct URL.
-- [ ] Download the APK from the public judge URL.
-- [ ] Confirm downloaded SHA-256 matches the release record.
-- [ ] Install and smoke-test the downloaded copy.
-- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `9f58026`; RC1 tag peels to `9af9064`.
+- [x] Publish APK at a stable GitHub Release/direct URL.
+- [x] Download the APK from the public judge URL.
+- [x] Confirm downloaded SHA-256 matches the release record.
+- [x] Install and smoke-test the downloaded copy on the API 36.1 emulator.
+- [x] Confirm remote `main` and `build-week/final` exactly match sanitized `8e572ae`; final tag points to that commit.
 
 ## Devpost materials
 
@@ -91,9 +92,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Privacy and safety notes drafted.
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
-- [ ] Replace all pending links/build metadata with final verified values.
+- [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
 - [x] Add final repository URL.
-- [ ] Add final stable APK URL and SHA-256.
+- [x] Add final stable APK URL and SHA-256.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
 - [ ] Capture final screenshots with fictional data and no PII.
 - [ ] Audit final screenshots, icons/assets, packages, fixture data, and video/audio for ownership or authorized licenses; retain attribution where required.

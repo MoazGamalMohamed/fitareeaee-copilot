@@ -85,19 +85,20 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
-The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The consolidated security checkpoint source is `85d73f0a8118c32a3dbc0b7a0786f85f86d271ed`; the latest tested application source is `15baa237707b3115475b09ca7a586e1c171517a7`.
+The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The final tested private source is `837c11dd42e0e08d8bd1761b44bf11e44e82c03c`; its tree-equivalent sanitized public source is `8e572aef98cbd238b28a401fa691080645d4e9e8`, tagged `fitareeaee-copilot-v1.0.0`.
 
 - Flutter format gate: 111 files, 0 changes
 - Flutter analysis: no issues
 - Flutter full-suite result: 18/18 passed (Copilot interaction coverage: two widget tests plus one focused route/unit test; chat notifier coverage: 2/2)
-- Functions contracts: 18/18 passed
+- Focused Copilot tests: 10/10 passed
+- Functions contracts: 19/19 passed
 - Firestore/Storage rules contracts: 7/7 passed
 - Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
 - Functions TypeScript build: passed
-- Universal debug APK: rebuilt from application source `15baa23`; 154,878,330 bytes; Android version code `20260718`
-- Release-gate source checkpoint: `ba9c3436645195180120c012e286d033b2da21f6`
+- Universal debug APK: rebuilt from release source `837c11d`; 154,878,330 bytes; Android version code `20260718`
+- Release-gate source checkpoint: private `837c11d`; sanitized `8e572ae`
 - Universal APK SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`
-- Universal APK: clean-installed and launched to Login on Android API 36.1; no fatal logs
+- Universal APK: published, downloaded, hash-matched, clean-installed, and launched to Login on Android API 36.1; no fatal logs
 - Hardened booking, cancellation, verification, trip-scoped chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
 
 ## Live release status
@@ -106,6 +107,7 @@ The authenticated Copilot callable is deployed to the confirmed `fitareeaee`
 project and uses managed `OPENAI_API_KEY` version 2. Its capped live matrix passed
 for an English ride, an English package, and an Arabic ride request both before
 and after obsolete secret version 1 was destroyed. The public sanitized GitHub
-repository is available. APK publication/download verification, the complete
-credentialed Android judge path, and physical-phone testing remain release-gate
-items until their direct checks are recorded.
+repository and APK Release are available. The complete credentialed Android judge
+path remains pending. A physical-phone install attempt reached Android but was
+rejected because the older installed build has an incompatible certificate;
+replacement requires owner approval to delete that app's local phone data.

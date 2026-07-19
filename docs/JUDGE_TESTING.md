@@ -2,19 +2,19 @@
 
 Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
 
-> Release status: the hardened backend, rules, judge fixtures, and authenticated
-> GPT-5.6 Copilot are deployed and live-tested. The APK below remains a tested
-> engineering checkpoint until the final GitHub Release download is verified.
+> Release status: the hardened backend, rules, judge fixtures, authenticated
+> GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
+> published APK was downloaded, hash-matched, and clean-installed on the emulator.
 
-Latest local candidate: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, release-gate source `ba9c3436645195180120c012e286d033b2da21f6` (application code `15baa237707b3115475b09ca7a586e1c171517a7`). It clean-installed after removing the older package data, reports version code `20260718`, and rendered Login successfully on the API 36.1 emulator without fatal Flutter/Android logs.
+Final artifact: universal debug APK, 154,878,330 bytes, SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`, private release-gate source `837c11dd42e0e08d8bd1761b44bf11e44e82c03c` and tree-equivalent sanitized source `8e572aef98cbd238b28a401fa691080645d4e9e8`. It reports version code `20260718` and rendered Login on the API 36.1 emulator without fatal Flutter/Android logs.
 
 ## Final release information
 
 - Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: **PENDING — add verified stable release URL**
+- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.0/app-debug.apk)
 - Build type: universal debug-signed Android judge APK
 - SHA-256: `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414` (published download must match)
-- Source tag/commit: `fitareeaee-copilot-rc1` / sanitized `9af9064f25443f22464e91961c4423085aef0b19`; a final tag will supersede it only if source changes
+- Source tag/commit: `fitareeaee-copilot-v1.0.0` / sanitized `8e572aef98cbd238b28a401fa691080645d4e9e8`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 

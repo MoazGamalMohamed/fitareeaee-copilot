@@ -89,8 +89,12 @@ Runtime Config privately. Do not share replacement values in chat.
 
 ## Later physical/legal actions
 
-- Connect the Android phone with USB debugging enabled and approve its RSA
-  prompt; Codex can then install and smoke-test the exact APK through ADB.
+- Physical phone installation is blocked by the differently signed older
+  `com.fitareeaee.app` package. The public APK reached Android, but replacing the
+  older package requires uninstalling it and deleting its local app data. If that
+  data may be discarded, explicitly approve this exact action in chat:
+  `UNINSTALL com.fitareeaee.app FROM PHONE ZY22KQPKZS AND DELETE ITS LOCAL APP DATA`.
+  Codex can then install and smoke-test the hash-verified public APK through ADB.
 - Record the final deployed flow using fictional data and the 2:40 script; upload
   it as a public YouTube video with audio and no unauthorized music/material.
 - Run `/feedback` in the primary Codex build thread and paste its Session ID into

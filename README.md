@@ -169,7 +169,7 @@ fixtures, two explicitly fictional verification summaries, and two minimal
 public profiles. Rerunning may reset those fixture documents; it must never be
 used as a general production-data migration.
 
-The universal judge APK is produced at `build/app/outputs/flutter-apk/app-debug.apk`. The current local candidate was built from release-gate checkpoint `ba9c343` (application code last changed at `15baa23`), uses version code `20260718`, is 154,878,330 bytes, and has SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`. It clean-installed and launched to Login on the API 36.1 emulator. It is clearly a debug-signed sideload build unless a private release signing configuration is supplied locally; no signing secret is committed.
+The verified universal judge APK is available from the [GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.0). It was built from private release-gate source `837c11d` (sanitized public source `8e572ae`, tag `fitareeaee-copilot-v1.0.0`), uses version code `20260718`, is 154,878,330 bytes, and has SHA-256 `A35BE070C1D785D85AC26A62797FFDB3581EAE895148E13E078997A431DFC414`. The published copy was downloaded, hash-matched, clean-installed, and launched to Login on the API 36.1 emulator. It is clearly a debug-signed sideload build because no private release signing configuration was available; no signing secret is committed.
 
 ## Codex collaboration
 
