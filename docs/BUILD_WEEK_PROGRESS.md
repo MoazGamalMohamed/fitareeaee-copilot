@@ -2855,3 +2855,26 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   wording manually; merging remains explicitly unperformed.
 - No phone appeared in `adb devices -l`; exact-public v1.0.9 physical verification
   and stable promotion remain pending. No phone result is inferred.
+
+## 2026-07-20 03:43 CDT / 2026-07-20 01:43 PDT - live rules/FAQ and owner handoff re-audited
+
+- Reopened the authoritative official Rules and FAQ on July 20. Confirmed the
+  submission deadline remains July 21, 2026 at 5:00 PM Pacific; judging runs through
+  August 5; pre-existing projects require clear meaningful-extension/Codex or
+  GPT-5.6 evidence; and judges must have free working access during judging.
+- Confirmed mandatory submission materials remain: English text description,
+  public licensed repository/test path, public YouTube demo at or under three
+  minutes with audible narration, specific Codex and GPT-5.6 explanation, and the
+  primary-thread `/feedback` Session ID. Rules remain authoritative where the FAQ's
+  general editing wording is ambiguous; no post-deadline edit is assumed.
+- Repository compliance remains covered by the baseline/evidence history, MIT
+  license, third-party notices, generated APK dependency notices, permanent linked
+  OpenStreetMap attribution, README Codex/GPT-5.6 explanation, judge instructions,
+  fictional accounts, and stable public APK URL. No new contest requirement was found.
+- Corrected stale v1.0.7/v1.0.5 wording in the owner handoff and demo preflight to
+  identify public v1.0.9 as the exact pending-phone candidate. Split the completed
+  repository package/fixture-data audit from the still-owner-dependent launcher and
+  final-media ownership/privacy review.
+- Remaining blockers are unchanged and owner-only: reconnect/unlock the phone,
+  record/upload the final narrated video, place judge credentials privately, run
+  `/feedback`, make eligibility/legal confirmations, and click final Devpost submit.

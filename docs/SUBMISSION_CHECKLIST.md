@@ -20,6 +20,11 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Re-check live official rules, FAQ, resources, and updates on July 19: deadline,
   public YouTube/audio, Codex explanation, GPT-5.6 evidence, repository/test access,
   pre-existing-work disclosure, and `/feedback` requirements remain unchanged.
+- [x] Re-check live official rules and FAQ on July 20: July 21 5:00 PM Pacific
+  deadline, meaningful-extension evidence, English submission, public YouTube video
+  at or under three minutes with voiceover, public/licensed repository, free judge
+  access through the August 5 judging period, Codex/GPT-5.6 explanation, and primary
+  `/feedback` Session ID remain required.
 - [ ] Re-check official rules and Devpost updates on submission day.
 - [ ] Run `/feedback` in the primary Codex build thread and paste the Session ID into Devpost.
 
@@ -158,7 +163,11 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   repository authentication. The still-missing YouTube/Devpost fields remain below.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
 - [ ] Capture final screenshots with fictional data and no PII.
-- [ ] Audit final screenshots, icons/assets, packages, fixture data, and video/audio for ownership or authorized licenses; retain attribution where required.
+- [x] Audit repository packages and fictional fixture data; retain package notices
+  and permanent linked OpenStreetMap attribution.
+- [ ] Owner confirms authorization for launcher artwork and audits final screenshots
+  and video/audio; no copyrighted music, private data, credentials, or real identity
+  documents.
 - [ ] Record video from final deployed build with audible narration and no copyrighted music.
 - [ ] Verify YouTube video is public, under three minutes, and playable while signed out.
 - [ ] Add YouTube URL.
@@ -180,5 +189,5 @@ Exact owner steps and the inherited Function set are recorded in
 
 1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Optional second fresh-install phone rerun, YouTube upload, `/feedback`, private
+3. Exact-public v1.0.9 phone install/smoke, YouTube upload, `/feedback`, private
    credential placement, legal confirmation, and final Devpost submit action.

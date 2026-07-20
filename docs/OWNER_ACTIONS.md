@@ -27,7 +27,7 @@ The passwords were rotated after emulator automation exposed a test value; all
 values shown during that attempt are invalid. Existing judge fixtures/bookings
 were preserved.
 
-### 3. GitHub publication — v1.0.7 prerelease complete; phone gate pending
+### 3. GitHub publication — v1.0.9 prerelease complete; phone gate pending
 
 The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
@@ -37,13 +37,15 @@ The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
 annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
 
-The superseding v1.0.7 lifecycle/map/voice source and 85,260,359-byte profile APK
+The superseding v1.0.9 lifecycle/map/voice source and 85,276,819-byte profile APK
 are published as an accurately labeled prerelease. The public APK was anonymously
-redownloaded, matched the local size/SHA-256 exactly, and passed an API 36
-reinstall/cold launch with zero app-specific fatal/error matches. Its permanent
-linked OpenStreetMap attribution also passes a focused widget test. Physical testing
-is waiting for the phone to be reconnected. Do not promote v1.0.7 to stable or replace
-the final v1.0.5 Devpost fields until that same public download passes on the phone.
+redownloaded, byte-matched at SHA-256
+`95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`, and passed
+an authenticated API 36 driver lifecycle/chat smoke with zero app-specific
+fatal/Flutter/FirebaseFailure/ANR matches. Its permanent linked OpenStreetMap
+attribution also passes focused coverage. Physical testing is waiting for the phone
+to be reconnected. Do not promote v1.0.9 to stable or replace the final v1.0.5
+Devpost fields until that exact public download passes on the phone.
 
 ### 4. Approve or decline inherited Function retirement
 
@@ -112,6 +114,10 @@ Runtime Config privately. Do not share replacement values in chat.
   source-compatible predecessor. New v1.0.5 selections deliberately stop at pending
   payment because no real payment provider is configured; do not enter a real card
   or claim a real payment pass.
+- Exact-public v1.0.9 phone verification is still pending while the owner device is
+  disconnected. When it reconnects, install the already-downloaded public bytes at
+  `build/published-download-v109/app-profile.apk`; do not rebuild or substitute a
+  local APK for this gate.
 
 - Physical phone installation is complete. The downloaded public v1.0.3 APK installed,
   cold-launched, rendered notifications safely, returned a live reviewable
@@ -133,25 +139,29 @@ Runtime Config privately. Do not share replacement values in chat.
 Complete these in order before **July 21, 2026 at 5:00 PM Pacific / 7:00 PM
 Central**. The internal target remains 3:00 PM Central.
 
-1. Re-check the live official rules, FAQ, and updates. Confirm personal/team
+1. Create and save the Devpost draft immediately if it does not already exist;
+   confirm the project is joined to **Apps for Your Life**. Do not wait for the
+   phone/video before saving the other completed fields.
+2. Re-check the live official rules, FAQ, and updates. Confirm personal/team
    eligibility and ownership; Codex cannot make those legal representations.
-2. Run `/feedback` in the primary build thread and paste the generated Session ID
+3. Run `/feedback` in the primary build thread and paste the generated Session ID
    into the required Devpost field.
-3. Copy the fictional rider email/password from the private ignored
+4. Copy the fictional rider email/password from the private ignored
    `.judge-credentials.local.json` into Devpost's private testing instructions. Do
    not add them to the public description, repository, screenshots, or video.
-4. Record the `docs/DEMO_SCRIPT.md` flow with Do Not Disturb enabled. Keep the final
+5. Record the `docs/DEMO_SCRIPT.md` flow with Do Not Disturb enabled. Keep the final
    cut under three minutes, include audible narration covering both Codex and
    GPT-5.6, use no copyrighted music, and show no private notification or credential.
-5. Upload the video as **public** on YouTube and verify it while signed out. Then
+6. Upload the video as **public** on YouTube and verify it while signed out. Then
    verify the repository, latest stable release, direct APK, and video links in the Devpost
    preview.
-6. Paste the English copy from `docs/DEVPOST_SUBMISSION.md`, review every legal and
+7. Paste the English copy from `docs/DEVPOST_SUBMISSION.md`, review every legal and
    eligibility statement, submit personally, and save a screenshot/PDF/text copy of
    the final submitted page.
 
 Do not disable the GitHub release, Firebase backend, fictional judge users, or
-managed OpenAI secret during judging. Do not rotate the currently deployed managed
+managed OpenAI secret through **August 5, 2026 at 5:00 PM Pacific**, when the stated
+judging period ends. Do not rotate the currently deployed managed
 key unless the replacement is privately deployed and the live judge path is retested.
 
 See [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md) for the complete release
