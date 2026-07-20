@@ -3008,3 +3008,45 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   `build/published-download-v109/app-profile.apk`, repeat the final authenticated
   smoke and crash scan, record the device result, then promote v1.0.9 from
   prerelease if and only if the exact public bytes pass.
+
+## 2026-07-20 05:09 CDT / 2026-07-20 03:09 PDT - complete current-source release gate rerun
+
+- Reran the entire local release gate from clean private checkpoint `41f6f79` while
+  the physical phone remained disconnected. No application source, Firebase state,
+  release asset, judge fixture, or OpenAI request was changed by this verification.
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 119 files,
+  0 changed. The first sandboxed invocation stalled without output and was
+  terminated; the identical narrowly authorized rerun completed normally.
+- `flutter analyze`: PASS; no issues. `flutter test`: PASS; 25/25.
+- `cd functions && npm run build`: PASS. `npm test`: PASS; TypeScript build and
+  28/28 booking, verification, Copilot, trip, matching, and support contracts.
+- A direct `npm run test:rules` correctly failed setup because the required
+  emulators were absent. The first emulator wrapper attempt correctly failed setup
+  because Java was absent from that shell's PATH. With Android Studio JBR 21 set
+  for the command, `firebase emulators:exec --only "firestore,storage"
+  "npm --prefix functions run test:rules" --project fitareeaee` passed 9/9
+  Firestore/Storage authorization contracts.
+- With Firebase debug verbosity cleared, `firebase emulators:exec --only
+  "auth,functions,firestore" "npm --prefix functions run
+  test:integration:booking" --project fitareeaee` passed 7/7 real callable
+  integration cases. This reconfirmed potential requests do not reserve seats or
+  open chat; only paid/confirmed bookings unlock chat; cancellation, proposals,
+  verification, start, completion, chat closure, one-time rating, and emergency
+  admin review remain server authoritative.
+- `flutter build apk --debug`: PASS. Universal debug APK:
+  `build/app/outputs/flutter-apk/app-debug.apk`; 156,387,810 bytes; SHA-256
+  `761A7A6C98CB61E1476BF4D54E299CA6DF7A490771FCB5751E2C6B192932BB54`;
+  built `2026-07-20T10:08:27Z`; source checkpoint `41f6f79`.
+- Emulator install: PASS on `emulator-5554` / API 36. Android reported
+  `com.fitareeaee.app`, version `1.0.9`, code `20260723`, min API 24, target API 36;
+  `MainActivity` was top-resumed and the process remained alive. Final app-specific
+  fatal/Flutter/FirebaseFailure/ANR matches: 0.
+- This debug gate build does not replace or relabel the exact public v1.0.9 profile
+  APK. The immutable public candidate remains 85,276,819 bytes with SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+- Files changed: this append-only evidence entry only. Phone install result for the
+  exact public v1.0.9 bytes remains pending because only the emulator is connected.
+  Rollback: public v1.0.9 tag/release and phone-tested stable v1.0.5.
+- Next action: publish this evidence through the sanitized branch after its full
+  reachable-history scan, then perform the exact-public phone gate immediately when
+  the owner reconnects/unlocks the device.
