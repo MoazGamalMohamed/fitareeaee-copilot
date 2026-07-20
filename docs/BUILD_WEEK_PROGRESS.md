@@ -2327,6 +2327,29 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   the draft PR remains open, then when the phone reconnects install the exact
   public v1.0.7 download, authenticate normally, run the mapped/voice/trip/chat
   demo path and app-specific log scan, and promote only if every check passes.
+
+## 2026-07-20 01:13 CDT / 2026-07-19 23:13 PDT — v1.0.7 evidence published
+
+- Committed the reviewed third-party notices, judge/Devpost/recovery updates, and
+  owner-only password-rotation hardening at private
+  `23f1ae0f85cd887307fcaaadae3de5c4b678eda3`.
+- Replayed only that reviewed patch into the sanitized clone at
+  `329f5c656dec48cf86c9f9e8e7d4849bdd966d15`. Private/public trees matched at
+  `0ef9087ad006d24686025c760f657a0eeeb48839`; worktrees were clean and the full
+  reachable path scan found 0 forbidden secret/config files.
+- Pushed the existing branch without force. Draft PR #1 remains OPEN and DRAFT,
+  now titled `Harden payment-gated trips, mapped voice lifecycle, and map
+  compliance`, with head `329f5c65` and a v1.0.7 verification comment.
+- Final validation for this documentation checkpoint: provisioner `node --check`
+  PASS; Functions TypeScript build PASS; contracts 28/28; 51 Markdown files
+  scanned with 0 missing relative links; diff whitespace and high-signal secret
+  checks PASS.
+- Rollback/tag/APK state is unchanged: v1.0.5 stable, v1.0.6 prerelease rollback,
+  v1.0.7 annotated source tag/prerelease at sanitized `06195d02`, public APK
+  85,260,359 bytes, SHA-256
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+- Remaining next action is only the disconnected-phone gate plus owner-only video,
+  private credential placement, `/feedback`, legal review, and final submission.
 - API 36 emulator: clean install PASS; cold launch PASS in 18.675 seconds; Login and
   Welcome rendered; authenticated fictional judge-rider sign-in PASS; Home visibly
   rendered Plan with AI, Request a Trip, and Offer a Ride; process alive; no matching

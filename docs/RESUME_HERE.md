@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-20 00:46 CDT / 2026-07-19 22:46 PDT
+Last updated: 2026-07-20 01:13 CDT / 2026-07-19 23:13 PDT
 
 ## Current objective
 
@@ -13,13 +13,14 @@ simulated money.
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private APK source: `96343be`; current private evidence head is the
-  latest local `build-week/final` commit shown by `git log -1`
+- Passing private APK source: `96343be`; release-document/credential-hardening
+  checkpoint: `23f1ae0f85cd887307fcaaadae3de5c4b678eda3`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
 - Passing sanitized source/tag: `06195d02398c32783fa894f7e1bb5ab1d5fb4daf`
-- Current sanitized branch head before the documentation follow-up: `06195d02`
+- Current sanitized branch head after the documentation follow-up:
+  `329f5c656dec48cf86c9f9e8e7d4849bdd966d15`
 - Private/public APK-source tree: `0da079592d723eb149fbcaf75cb822305a60e54b`
 - Draft PR #1 is open and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
