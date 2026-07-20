@@ -2753,3 +2753,33 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   mistake; the successful Git push itself was unaffected.
 - The next action remains the exact public v1.0.8 physical-phone smoke after the owner
   reconnects the device. No phone result or stable promotion is claimed here.
+
+## 2026-07-20 03:21 CDT / 2026-07-20 01:21 PDT - v1.0.9 truthful owned-trip status candidate
+
+- A second exact-public-binary fresh-install flow signed in as the fictional driver.
+  Offer a Ride correctly opened the manual verified-driver form rather than Copilot,
+  but My Trips exposed a truthful-label defect: any non-pending trip was called
+  `Full`, including confirmed and completed lifecycle states.
+- Replaced that availability-only badge logic with explicit Available, Full,
+  Confirmed, In progress, Completed, and Cancelled labels. Added two regression
+  tests covering pending inventory and every lifecycle status. Bumped Android to
+  `1.0.9+20260723` so immutable v1.0.8 public bytes are never replaced.
+- Exact commands: formatter PASS (119 files, 0 changed); analyzer PASS (0 issues);
+  Flutter PASS (25/25); Functions build PASS; Functions contracts PASS (28/28);
+  debug/profile APK builds PASS. Rules and callable source were unchanged; their
+  passing 9/9 and 7/7 gates remain applicable.
+- Emulator update install: PASS; authenticated driver state preserved; package
+  `com.fitareeaee.app`, version `1.0.9`, code `20260723`, min API 24, target API 36.
+  My Trips visibly showed the active fixture as Confirmed and the past fixture as
+  Completed; no false Full label remained. Trip Details showed Paid and confirmed,
+  Open Confirmed Chat, Confirm trip start, and Emergency cancel and alert admin.
+- App-specific fatal/Flutter/FirebaseFailure/ANR scan: PASS; zero matches.
+- APK: optimized universal profile, Android Debug signed, 85,276,819 bytes,
+  timestamp `2026-07-20T08:18:33.1398289Z`, SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+- Passing private source commit: `ab792130938601370f5ccf87ef4af3ff0290076e`.
+  Tag/push/release: pending sanitized replay. Public v1.0.8 is preserved unchanged
+  as the authenticated public rollback; v1.0.5 remains the phone-tested stable release.
+- Physical phone: still disconnected; no v1.0.9 phone result is claimed. Next action:
+  sanitized v1.0.9 publication, anonymous byte verification/emulator install, then
+  the exact public physical-phone smoke when the owner reconnects.

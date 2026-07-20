@@ -4,16 +4,16 @@ Last updated: 2026-07-20 02:54 CDT / 2026-07-20 00:54 PDT
 
 ## Current objective
 
-Install and smoke the exact public v1.0.8 download on the owner's reconnected phone,
-then promote it from prerelease to stable. Finish the video, `/feedback`, legal
-review, and owner-performed Devpost submission. Do not replace the payment gate with
-simulated money.
+Publish the passing v1.0.9 truthful-status candidate, anonymously verify its public
+bytes on the emulator, then install and smoke that exact download on the owner's
+reconnected phone. Finish the video, `/feedback`, legal review, and owner-performed
+Devpost submission. Do not replace the payment gate with simulated money.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private application source: `3817ed587bc141856c7c20eed126aa8c5508091e`
+- Passing private application source: `ab792130938601370f5ccf87ef4af3ff0290076e`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
@@ -61,9 +61,9 @@ simulated money.
 
 ## Passing gates
 
-- Dart format: 118 files, 0 changes.
+- Dart format: 119 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 23/23.
+- Flutter tests: 25/25.
 - Functions TypeScript/contracts: 28/28.
 - Firestore/Storage rules: 9/9.
 - Auth/Firestore/Functions integration: 7/7.
@@ -72,19 +72,21 @@ simulated money.
 
 ## Current APK and emulator evidence
 
-- Local v1.0.8 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Local v1.0.9 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 109,174,213 bytes
-- SHA-256: `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`
-- Version: `1.0.8` / code `20260722`
+- Size: 85,276,819 bytes
+- SHA-256: `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`
+- Version: `1.0.9` / code `20260723`
 - Package/API: `com.fitareeaee.app`, minimum 24, target/compile 36
-- API 36 emulator fresh install and fictional sign-in: PASS.
+- API 36 emulator update over the authenticated fictional driver session: PASS.
 - Exact candidate UI passes: Home actions; manual map picker; speech permission and
   recognition-service/audio startup; paid chat load/send; Past completed trip;
   completed details without Book Trip; rating entry; Verified identity; and
   `Payment required - not confirmed` with seats unchanged and chat locked.
 - Final app-specific fatal/Flutter/FirebaseFailure/ANR scan: 0 matches.
-- Physical v1.0.8 phone result: PENDING because the owner disconnected the phone.
+- v1.0.9 additionally fixes owned-trip badges: the active trip now says Confirmed
+  and the past trip Completed, while driver chat/start/emergency actions remain.
+- Physical v1.0.9 phone result: PENDING because the owner disconnected the phone.
 - Public v1.0.8 release:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8`
 - Public v1.0.8 APK:
@@ -110,9 +112,8 @@ simulated money.
 
 ## Exact next action
 
-When the phone returns, install
-`build/published-download-v108/app-profile.apk`, verify version `1.0.8` / code
-`20260722`, run Home → Copilot → matches → details → payment gate and the seeded
-paid Chat/Past/rating paths, then scan app-specific logs. If it passes, promote the
-existing v1.0.8 prerelease without replacing the asset and update the final stable
-judge fields.
+Replay and publish private `ab79213` as v1.0.9 through the sanitized clone, tag the
+exact application source, upload the current APK without modifying v1.0.8, then
+anonymously download/hash/install it. When the phone returns, install those exact
+public bytes and run Home → Copilot → matches → details → payment gate plus seeded
+paid Chat/Past/rating and driver lifecycle paths before stable promotion.
