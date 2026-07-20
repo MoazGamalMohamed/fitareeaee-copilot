@@ -84,8 +84,8 @@ UserVerification userVerificationFromFirestoreData(
 }
 
 /// Provider for user verification data
-final userVerificationProvider =
-    StreamProvider.family<UserVerification?, String>((ref, userId) {
+final userVerificationProvider = StreamProvider.autoDispose
+    .family<UserVerification?, String>((ref, userId) {
       return FirebaseFirestore.instance
           .collection('verifications')
           .doc(userId)
@@ -94,12 +94,17 @@ final userVerificationProvider =
             if (!doc.exists) return null;
             final data = doc.data()!;
             return userVerificationFromFirestoreData(userId, data);
+          })
+          .handleError((Object error, StackTrace stackTrace) {
+            if (FirebaseAuth.instance.currentUser?.uid == userId) {
+              Error.throwWithStackTrace(error, stackTrace);
+            }
           });
     });
 
 /// Alias for simpler access to verification status
-final verificationStatusProvider =
-    StreamProvider.family<UserVerification?, String>((ref, userId) {
+final verificationStatusProvider = StreamProvider.autoDispose
+    .family<UserVerification?, String>((ref, userId) {
       return ref
           .watch(userVerificationProvider(userId))
           .when(
@@ -110,19 +115,18 @@ final verificationStatusProvider =
     });
 
 /// Provider for current user's verification
-final currentUserVerificationProvider = FutureProvider<UserVerification?>((
-  ref,
-) async {
-  // Watch auth state to automatically refresh when user signs in/out
-  final authState = ref.watch(authStateProvider);
-  final user = authState.value;
-  if (user == null) return null;
-  return ref.watch(userVerificationProvider(user.id).future);
-});
+final currentUserVerificationProvider =
+    FutureProvider.autoDispose<UserVerification?>((ref) async {
+      // Watch auth state to automatically refresh when user signs in/out
+      final authState = ref.watch(authStateProvider);
+      final user = authState.value;
+      if (user == null) return null;
+      return ref.watch(userVerificationProvider(user.id).future);
+    });
 
 /// Upload verification document
-final uploadVerificationDocumentProvider =
-    FutureProvider.family<String, UploadDocumentParams>((ref, params) async {
+final uploadVerificationDocumentProvider = FutureProvider.autoDispose
+    .family<String, UploadDocumentParams>((ref, params) async {
       final storage = ref.read(firebaseStorageProvider);
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception('User not authenticated');

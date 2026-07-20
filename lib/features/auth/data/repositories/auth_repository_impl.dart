@@ -170,20 +170,27 @@ class AuthRepositoryImpl {
 
   /// Get current user stream
   Stream<AppUser?> authStateChanges() {
-    return _firebaseAuth.authStateChanges().asyncExpand((firebaseUser) {
-      if (firebaseUser == null) return Stream<AppUser?>.value(null);
+    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
+      if (firebaseUser == null) return null;
 
       // Auth may emit immediately before signup finishes writing users/{uid}.
-      // Keep listening so the selected Request/Offer path appears without an
-      // app restart and remains current after owner-editable profile updates.
-      return _userService.streamUser(firebaseUser.uid).map((userDoc) {
-        if (!userDoc.exists || userDoc.data() == null) return null;
-        try {
-          return AppUser.fromJson(userDoc.data()!);
-        } catch (_) {
-          return null;
+      // Retry the owner read briefly, then rely on dedicated profile providers
+      // for live edits. Keeping a global Firestore listener alive through
+      // sign-out causes a native permission warning before cancellation wins.
+      for (var attempt = 0; attempt < 6; attempt++) {
+        final userDoc = await _userService.getUserById(firebaseUser.uid);
+        if (userDoc != null && userDoc.data() != null) {
+          try {
+            return AppUser.fromJson(userDoc.data()!);
+          } catch (_) {
+            return null;
+          }
         }
-      });
+        if (attempt < 5) {
+          await Future<void>.delayed(const Duration(milliseconds: 200));
+        }
+      }
+      return null;
     });
   }
 

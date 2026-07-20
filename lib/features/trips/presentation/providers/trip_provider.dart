@@ -16,7 +16,7 @@ final tripRepositoryProvider = Provider((ref) {
 });
 
 // Stream Providers
-final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
+final availableTripsProvider = StreamProvider.autoDispose<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
   final currentUserAsync = ref.watch(authStateProvider);
 
@@ -34,21 +34,20 @@ final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
   );
 });
 
-final userTripsProvider = StreamProvider.family<List<Trip>, String>((
-  ref,
-  String userId,
-) {
-  final repository = ref.watch(tripRepositoryProvider);
-  return repository.streamUserTrips(userId);
-});
+final userTripsProvider = StreamProvider.autoDispose.family<List<Trip>, String>(
+  (ref, String userId) {
+    final repository = ref.watch(tripRepositoryProvider);
+    return repository.streamUserTrips(userId);
+  },
+);
 
 // Future Providers
-final allTripsProvider = FutureProvider<List<Trip>>((ref) {
+final allTripsProvider = FutureProvider.autoDispose<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
   return repository.getAllTrips();
 });
 
-final tripDetailProvider = FutureProvider.family<Trip, String>((
+final tripDetailProvider = FutureProvider.autoDispose.family<Trip, String>((
   ref,
   String tripId,
 ) {

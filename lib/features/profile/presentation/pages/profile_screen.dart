@@ -34,10 +34,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
 
     if (shouldSignOut == true && context.mounted) {
-      await ref.read(authRepositoryProvider).signOut();
-      if (context.mounted) {
-        context.go('/login');
-      }
+      final authRepository = ref.read(authRepositoryProvider);
+      // Leave profile-scoped Firestore listeners before revoking the session.
+      // This prevents a final native permission event during account switches.
+      context.go('/home');
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await authRepository.signOut();
     }
   }
 

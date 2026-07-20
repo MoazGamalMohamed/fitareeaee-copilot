@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/forgot_password_screen.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/login_screen.dart';
@@ -46,11 +49,33 @@ class AppRoutes {
   static const copilotResults = '/copilot/results';
 }
 
+/// Keeps one router instance alive while still refreshing redirects whenever
+/// Firebase restores, changes, or clears the authenticated session.
+class _AuthRefreshListenable extends ChangeNotifier {
+  _AuthRefreshListenable(this._firebaseAuth) {
+    _subscription = _firebaseAuth.authStateChanges().listen((_) {
+      notifyListeners();
+    });
+  }
+
+  final FirebaseAuth _firebaseAuth;
+  late final StreamSubscription<Object?> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authStateAsync = ref.watch(authStateProvider);
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  final authRefresh = _AuthRefreshListenable(firebaseAuth);
+  ref.onDispose(authRefresh.dispose);
 
   return GoRouter(
     initialLocation: AppRoutes.login,
+    refreshListenable: authRefresh,
     routes: [
       // Auth Routes
       GoRoute(
@@ -78,8 +103,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.copilot,
         name: 'copilot',
-        builder: (context, state) =>
-            CopilotScreen(role: state.uri.queryParameters['role']),
+        builder: (context, state) => CopilotScreen(
+          role: state.uri.queryParameters['role'],
+          templateOwnerId: firebaseAuth.currentUser?.uid,
+        ),
       ),
       GoRoute(
         path: AppRoutes.copilotResults,
@@ -87,7 +114,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final draft = state.extra;
           if (draft is! CopilotDraft) {
-            return const CopilotScreen();
+            return CopilotScreen(
+              templateOwnerId: firebaseAuth.currentUser?.uid,
+            );
           }
           return CopilotResultsScreen(draft: draft);
         },
@@ -251,13 +280,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
     redirect: (context, state) {
-      if (authStateAsync.isLoading) return null;
-
-      final isAuthenticated = authStateAsync.when(
-        data: (user) => user != null,
-        loading: () => false,
-        error: (_, _) => false,
-      );
+      final isAuthenticated = firebaseAuth.currentUser != null;
 
       final publicRoutes = [
         AppRoutes.login,

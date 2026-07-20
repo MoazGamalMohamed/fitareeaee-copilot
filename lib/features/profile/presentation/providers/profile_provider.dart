@@ -14,35 +14,23 @@ final userProfileRepositoryProvider = Provider((ref) {
   return UserProfileRepositoryImpl(firestore: firestore, storage: storage);
 });
 
-// Stream Providers
-// AutoDispose ensures this provider is disposed when no longer watched
-final userProfileProvider = StreamProvider.autoDispose
-    .family<UserProfile?, String>((ref, String userId) async* {
-      // Import auth provider to watch auth state
+// The owner profile is reloaded after every explicit edit. A one-shot cached
+// read avoids carrying an unnecessary Firestore listener across sign-out while
+// retaining the same AsyncValue UI contract.
+final userProfileProvider = FutureProvider.autoDispose
+    .family<UserProfile?, String>((ref, String userId) async {
       final authState = ref.watch(authStateProvider);
-
-      // If no authenticated user, return null stream to avoid permission errors
-      if (!authState.hasValue || authState.value == null) {
-        yield null;
-        return;
-      }
+      if (!authState.hasValue || authState.value == null) return null;
 
       final repository = ref.watch(userProfileRepositoryProvider);
-      // Verification and trust fields are server controlled. This owner-scoped
-      // stream never writes derived authorization state back to Firestore.
-      await for (final profile in repository.streamUserProfile(userId)) {
-        yield profile;
-      }
+      return repository.getUserProfile(userId);
     });
 
 // Future Providers
-final userProfileFutureProvider = FutureProvider.family<UserProfile?, String>((
-  ref,
-  String userId,
-) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  return repository.getUserProfile(userId);
-});
+final userProfileFutureProvider = FutureProvider.autoDispose
+    .family<UserProfile?, String>((ref, String userId) {
+      return ref.watch(userProfileProvider(userId).future);
+    });
 
 // State Notifiers
 class UpdateProfileStateNotifier
@@ -145,18 +133,14 @@ final searchUsersProvider =
     });
 
 // Utility Providers
-final profileCompletionProvider = FutureProvider.family<int, String>((
-  ref,
-  String userId,
-) async {
-  final profile = await ref.watch(userProfileFutureProvider(userId).future);
-  return profile?.completionPercentage ?? 0;
-});
+final profileCompletionProvider = FutureProvider.autoDispose
+    .family<int, String>((ref, String userId) async {
+      final profile = await ref.watch(userProfileFutureProvider(userId).future);
+      return profile?.completionPercentage ?? 0;
+    });
 
-final isProfileCompleteProvider = FutureProvider.family<bool, String>((
-  ref,
-  String userId,
-) async {
-  final profile = await ref.watch(userProfileFutureProvider(userId).future);
-  return profile?.profileCompleteCheck ?? false;
-});
+final isProfileCompleteProvider = FutureProvider.autoDispose
+    .family<bool, String>((ref, String userId) async {
+      final profile = await ref.watch(userProfileFutureProvider(userId).future);
+      return profile?.profileCompleteCheck ?? false;
+    });

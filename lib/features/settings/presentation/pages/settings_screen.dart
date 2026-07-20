@@ -8,7 +8,10 @@ import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/domain/entities/user_profile.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../../verification/domain/models/verification_model.dart';
+import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/pages/verification_screen.dart';
+import '../../../verification/presentation/providers/verification_provider.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -23,6 +26,10 @@ class SettingsScreen extends ConsumerWidget {
     final profileAsync = user == null
         ? const AsyncValue<UserProfile?>.data(null)
         : ref.watch(userProfileProvider(user.id));
+    final verificationAsync = user == null
+        ? const AsyncValue<UserVerification?>.data(null)
+        : ref.watch(userVerificationProvider(user.id));
+    final isDriver = marketplacePathForRoles(user?.roles ?? const []).isDriver;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings'), centerTitle: true),
@@ -40,17 +47,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           _section('Trust and safety'),
-          ListTile(
-            leading: const Icon(Icons.verified_user_outlined),
-            title: const Text('Manual identity verification'),
-            subtitle: const Text(
-              'Submit a selfie and ID for review by an authorized admin.',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const VerificationScreen()),
-            ),
+          _buildVerificationProgress(
+            context,
+            verificationAsync,
+            isDriver: isDriver,
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
@@ -272,6 +272,43 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildVerificationProgress(
+    BuildContext context,
+    AsyncValue<UserVerification?> verificationAsync, {
+    required bool isDriver,
+  }) {
+    final subtitle = verificationAsync.when(
+      loading: () => 'Loading live verification progress…',
+      error: (_, _) => 'Progress unavailable — tap to retry in Verification',
+      data: (verification) {
+        final total = tripVerificationTotalSteps(driver: isDriver);
+        final submitted = submittedTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        final approved = approvedTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        final pending = pendingTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        return '$submitted/$total submitted • $approved approved • $pending pending';
+      },
+    );
+    return ListTile(
+      leading: const Icon(Icons.verified_user_outlined),
+      title: const Text('Verification progress'),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VerificationScreen()),
+      ),
+    );
+  }
+
   double _driverPriorityScore(UserProfile? profile) {
     if (profile == null || profile.totalTrips < 50) return 0;
     final acceptanceRate = profile.metadata['acceptanceRate'];
@@ -364,7 +401,11 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(authRepositoryProvider).signOut();
-    if (context.mounted) context.go('/login');
+    final authRepository = ref.read(authRepositoryProvider);
+    // Dispose settings/profile streams while the old session still has read
+    // access, then let the auth-aware router move Home to Login after sign-out.
+    if (context.mounted) context.go('/home');
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await authRepository.signOut();
   }
 }

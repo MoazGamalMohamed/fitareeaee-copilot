@@ -23,11 +23,8 @@ class TripRatingSubmission {
 }
 
 // Ratings are created and aggregated only by the authenticated callable.
-final submitRatingProvider =
-    FutureProvider.family<String, TripRatingSubmission>((
-      ref,
-      submission,
-    ) async {
+final submitRatingProvider = FutureProvider.autoDispose
+    .family<String, TripRatingSubmission>((ref, submission) async {
       final result = await FirebaseFunctions.instance
           .httpsCallable('submitTripRating')
           .call({
@@ -45,8 +42,8 @@ final submitRatingProvider =
       return ratingId;
     });
 
-final ratingExistsProvider =
-    StreamProvider.family<bool, ({String bookingId, String userId})>(
+final ratingExistsProvider = StreamProvider.autoDispose
+    .family<bool, ({String bookingId, String userId})>(
       (ref, key) => _firestore
           .collection('ratings')
           .doc('${key.bookingId}_${key.userId}')
@@ -55,30 +52,26 @@ final ratingExistsProvider =
     );
 
 // Get user ratings
-final userRatingsProvider = StreamProvider.family<List<RatingModel>, String>((
-  ref,
-  userId,
-) {
-  return _firestore
-      .collection('ratings')
-      .where('ratedUserId', isEqualTo: userId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map(_ratingFromFirestore).toList());
-});
+final userRatingsProvider = StreamProvider.autoDispose
+    .family<List<RatingModel>, String>((ref, userId) {
+      return _firestore
+          .collection('ratings')
+          .where('ratedUserId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs.map(_ratingFromFirestore).toList());
+    });
 
 // Get trip ratings
-final tripRatingsProvider = FutureProvider.family<List<RatingModel>, String>((
-  ref,
-  tripId,
-) async {
-  final snapshot = await _firestore
-      .collection('ratings')
-      .where('tripId', isEqualTo: tripId)
-      .get();
+final tripRatingsProvider = FutureProvider.autoDispose
+    .family<List<RatingModel>, String>((ref, tripId) async {
+      final snapshot = await _firestore
+          .collection('ratings')
+          .where('tripId', isEqualTo: tripId)
+          .get();
 
-  return snapshot.docs.map(_ratingFromFirestore).toList();
-});
+      return snapshot.docs.map(_ratingFromFirestore).toList();
+    });
 
 // Rating state for UI
 class RatingState {
@@ -116,6 +109,6 @@ class RatingStateNotifier extends StateNotifier<RatingState> {
 }
 
 final ratingStateProvider =
-    StateNotifierProvider<RatingStateNotifier, RatingState>((ref) {
+    StateNotifierProvider.autoDispose<RatingStateNotifier, RatingState>((ref) {
       return RatingStateNotifier();
     });

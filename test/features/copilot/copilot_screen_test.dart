@@ -4,6 +4,7 @@ import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_s
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('Copilot preserves requested seat count in the details handoff', () {
@@ -179,6 +180,47 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     expect(find.text('Driver / Courier path'), findsOneWidget);
     expect(find.text('Create an offer manually'), findsOneWidget);
+  });
+
+  testWidgets('signed-in user can save and reuse an editable local template', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    tester.view.physicalSize = const Size(1000, 3000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: CopilotScreen(templateOwnerId: 'fictional-rider'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    const request = 'I need a ride from Dallas to Austin every Monday at 9 AM.';
+    await tester.enterText(find.byType(TextField).first, request);
+    await tester.pump();
+    await tester.tap(find.text('Saved trip templates'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save current request as template'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Template name'),
+      'Monday commute',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Trip template saved.'), findsOneWidget);
+    expect(find.text('Monday commute'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, 'Temporary request');
+    await tester.tap(find.text('Monday commute'));
+    await tester.pump();
+    expect(
+      (tester.widget<TextField>(find.byType(TextField).first).controller?.text),
+      request,
+    );
   });
 }
 

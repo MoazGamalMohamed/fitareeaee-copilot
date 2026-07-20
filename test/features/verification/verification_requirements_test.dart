@@ -9,6 +9,10 @@ UserVerification verification({
   bool selfie = false,
   bool licence = false,
   bool vehicle = false,
+  bool identitySubmitted = false,
+  bool selfieSubmitted = false,
+  bool licenceSubmitted = false,
+  bool vehicleSubmitted = false,
 }) => UserVerification(
   userId: 'user',
   emailVerified: email,
@@ -17,6 +21,18 @@ UserVerification verification({
   selfieWithIdVerified: selfie,
   driverLicenseVerified: licence,
   vehicleVerified: vehicle,
+  identityDocumentUrl: identitySubmitted
+      ? 'verification_documents/u/id.jpg'
+      : null,
+  selfieWithIdUrl: selfieSubmitted
+      ? 'verification_documents/u/selfie.jpg'
+      : null,
+  driverLicenseUrl: licenceSubmitted
+      ? 'verification_documents/u/licence.jpg'
+      : null,
+  vehicleRegistrationUrl: vehicleSubmitted
+      ? 'verification_documents/u/vehicle.jpg'
+      : null,
   createdAt: DateTime.utc(2026),
   updatedAt: DateTime.utc(2026),
 );
@@ -80,5 +96,21 @@ void main() {
       ),
       ['driver licence', 'vehicle registration'],
     );
+  });
+
+  test('submitted, approved, and pending counts remain distinct', () {
+    final status = verification(
+      email: true,
+      phone: true,
+      identitySubmitted: true,
+      selfieSubmitted: true,
+      licenceSubmitted: true,
+    );
+
+    expect(tripVerificationTotalSteps(driver: true), 6);
+    expect(approvedTripVerificationStepCount(status, driver: true), 2);
+    expect(pendingTripVerificationStepCount(status, driver: true), 3);
+    expect(submittedTripVerificationStepCount(status, driver: true), 5);
+    expect(submittedTripVerificationStepCount(status, driver: false), 4);
   });
 }

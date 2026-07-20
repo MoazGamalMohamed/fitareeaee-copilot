@@ -14,6 +14,47 @@ bool driverTripVerificationComplete(UserVerification? verification) =>
     (verification?.driverLicenseVerified ?? false) &&
     (verification?.vehicleVerified ?? false);
 
+int tripVerificationTotalSteps({required bool driver}) => driver ? 6 : 4;
+
+int approvedTripVerificationStepCount(
+  UserVerification? verification, {
+  required bool driver,
+}) {
+  if (verification == null) return 0;
+  return [
+    verification.emailVerified,
+    verification.phoneVerified,
+    verification.identityVerified,
+    verification.selfieWithIdVerified,
+    if (driver) verification.driverLicenseVerified,
+    if (driver) verification.vehicleVerified,
+  ].where((approved) => approved).length;
+}
+
+int pendingTripVerificationStepCount(
+  UserVerification? verification, {
+  required bool driver,
+}) {
+  if (verification == null) return 0;
+  return [
+    verification.identityDocumentUrl != null && !verification.identityVerified,
+    verification.selfieWithIdUrl != null && !verification.selfieWithIdVerified,
+    if (driver)
+      verification.driverLicenseUrl != null &&
+          !verification.driverLicenseVerified,
+    if (driver)
+      verification.vehicleRegistrationUrl != null &&
+          !verification.vehicleVerified,
+  ].where((pending) => pending).length;
+}
+
+int submittedTripVerificationStepCount(
+  UserVerification? verification, {
+  required bool driver,
+}) =>
+    approvedTripVerificationStepCount(verification, driver: driver) +
+    pendingTripVerificationStepCount(verification, driver: driver);
+
 List<String> missingTripVerificationItems(
   UserVerification? verification, {
   required bool driver,

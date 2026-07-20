@@ -79,20 +79,18 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Provider for send message notifier
-final sendMessageProvider =
-    StateNotifierProvider.family<SendMessageNotifier, AsyncValue<void>, String>(
-      (ref, recipientId) {
-        final userId = ref
-            .watch(authStateProvider)
-            .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
-        final repository = ref.watch(chatRepositoryProvider);
-        return SendMessageNotifier(chatRepository: repository, userId: userId);
-      },
-    );
+final sendMessageProvider = StateNotifierProvider.autoDispose
+    .family<SendMessageNotifier, AsyncValue<void>, String>((ref, recipientId) {
+      final userId = ref
+          .watch(authStateProvider)
+          .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
+      final repository = ref.watch(chatRepositoryProvider);
+      return SendMessageNotifier(chatRepository: repository, userId: userId);
+    });
 
 /// Stream provider for a specific conversation
-final conversationMessagesProvider =
-    StreamProvider.family<List<Message>, String>((ref, conversationId) {
+final conversationMessagesProvider = StreamProvider.autoDispose
+    .family<List<Message>, String>((ref, conversationId) {
       final chatRepository = ref.watch(chatRepositoryProvider);
 
       // Stream messages with error handling
@@ -107,7 +105,7 @@ final conversationMessagesProvider =
     });
 
 /// Stream provider for all conversations
-final conversationsProvider = StreamProvider<List<Message>>((ref) {
+final conversationsProvider = StreamProvider.autoDispose<List<Message>>((ref) {
   final userId = ref
       .watch(authStateProvider)
       .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
@@ -165,7 +163,9 @@ class MarkAsReadNotifier extends StateNotifier<AsyncValue<void>> {
 
 /// Provider for mark as read notifier
 final markAsReadProvider =
-    StateNotifierProvider<MarkAsReadNotifier, AsyncValue<void>>((ref) {
+    StateNotifierProvider.autoDispose<MarkAsReadNotifier, AsyncValue<void>>((
+      ref,
+    ) {
       final repository = ref.watch(chatRepositoryProvider);
       return MarkAsReadNotifier(chatRepository: repository);
     });
@@ -191,7 +191,9 @@ class DeleteMessageNotifier extends StateNotifier<AsyncValue<void>> {
 
 /// Provider for delete message notifier
 final deleteMessageProvider =
-    StateNotifierProvider<DeleteMessageNotifier, AsyncValue<void>>((ref) {
+    StateNotifierProvider.autoDispose<DeleteMessageNotifier, AsyncValue<void>>((
+      ref,
+    ) {
       final repository = ref.watch(chatRepositoryProvider);
       return DeleteMessageNotifier(chatRepository: repository);
     });

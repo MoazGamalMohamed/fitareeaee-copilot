@@ -9,6 +9,7 @@ import '../../../../core/location/location_catalog.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/assisted_text_form_field.dart';
 import '../../data/copilot_repository.dart';
+import '../../data/trip_prompt_template_store.dart';
 import '../../domain/copilot_draft.dart';
 
 typedef CopilotPlanner = Future<CopilotPlanResult> Function(String request);
@@ -44,8 +45,16 @@ String copilotVoiceErrorMessage(String rawError) {
 class CopilotScreen extends StatefulWidget {
   final CopilotPlanner? planner;
   final String? role;
+  final String? templateOwnerId;
+  final TripPromptTemplateStore? templateStore;
 
-  const CopilotScreen({super.key, this.planner, this.role});
+  const CopilotScreen({
+    super.key,
+    this.planner,
+    this.role,
+    this.templateOwnerId,
+    this.templateStore,
+  });
 
   @override
   State<CopilotScreen> createState() => _CopilotScreenState();
@@ -76,6 +85,8 @@ class _CopilotScreenState extends State<CopilotScreen> {
   String _voicePrefix = '';
   String _voiceLanguage = 'auto';
   String? _error;
+  List<TripPromptTemplate> _templates = const [];
+  bool _templatesLoading = false;
 
   bool get _driverPath => widget.role == 'driver';
   String get _pathIntent => copilotIntentForRole(widget.role);
@@ -88,6 +99,15 @@ class _CopilotScreenState extends State<CopilotScreen> {
     'I need to send a 5 kg package from Chicago to Milwaukee on August 10, 2026.',
     'أحتاج رحلة من دالاس إلى أوستن يوم 10 أغسطس 2026 الساعة 9 صباحاً لشخصين وبأقل من 40 دولاراً.',
   ];
+
+  TripPromptTemplateStore get _templateStore =>
+      widget.templateStore ?? TripPromptTemplateStore();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadTemplates());
+  }
 
   @override
   void dispose() {
@@ -264,6 +284,11 @@ class _CopilotScreenState extends State<CopilotScreen> {
               border: OutlineInputBorder(),
             ),
           ),
+          if (widget.templateOwnerId case final ownerId?
+              when ownerId.trim().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _templatePanel(),
+          ],
           const SizedBox(height: 8),
           Text('Try an example', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
@@ -415,6 +440,227 @@ class _CopilotScreenState extends State<CopilotScreen> {
         ],
       ),
     );
+  }
+
+  Widget _templatePanel() {
+    return Card(
+      child: ExpansionTile(
+        initiallyExpanded: _templates.isNotEmpty,
+        leading: const Icon(Icons.bookmarks_outlined),
+        title: const Text('Saved trip templates'),
+        subtitle: const Text(
+          'Editable and stored only for this account on this device',
+        ),
+        children: [
+          if (_templatesLoading)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: LinearProgressIndicator(),
+            )
+          else if (_templates.isEmpty)
+            const ListTile(
+              leading: Icon(Icons.info_outline),
+              title: Text('No saved templates yet'),
+              subtitle: Text(
+                'Describe a recurring trip, then save it for one-tap reuse.',
+              ),
+            )
+          else
+            ..._templates.map(
+              (template) => ListTile(
+                leading: const Icon(Icons.route_outlined),
+                title: Text(template.name),
+                subtitle: Text(
+                  template.request,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => _applyTemplate(template),
+                trailing: PopupMenuButton<String>(
+                  tooltip: 'Manage ${template.name}',
+                  onSelected: (action) {
+                    if (action == 'edit') {
+                      unawaited(_editTemplate(template));
+                    } else if (action == 'delete') {
+                      unawaited(_deleteTemplate(template));
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: 'edit', child: Text('Edit')),
+                    PopupMenuItem(value: 'delete', child: Text('Delete')),
+                  ],
+                ),
+              ),
+            ),
+          ListTile(
+            leading: const Icon(Icons.add_circle_outline),
+            title: const Text('Save current request as template'),
+            subtitle: const Text(
+              'Do not save names, contact details, IDs, or payment information.',
+            ),
+            enabled: _request.text.trim().length >= 5,
+            onTap: _request.text.trim().length < 5
+                ? null
+                : () => _editTemplate(null),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _loadTemplates() async {
+    final ownerId = widget.templateOwnerId?.trim();
+    if (ownerId == null || ownerId.isEmpty) return;
+    if (mounted) setState(() => _templatesLoading = true);
+    try {
+      final templates = await _templateStore.load(ownerId);
+      if (mounted) setState(() => _templates = templates);
+    } catch (_) {
+      if (mounted) setState(() => _templates = const []);
+    } finally {
+      if (mounted) setState(() => _templatesLoading = false);
+    }
+  }
+
+  void _applyTemplate(TripPromptTemplate template) {
+    setState(() {
+      _request.text = template.request;
+      _request.selection = TextSelection.collapsed(
+        offset: template.request.length,
+      );
+      _error = null;
+      _result = null;
+    });
+    _requestFocus.requestFocus();
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text('${template.name} loaded for review.')),
+      );
+  }
+
+  Future<void> _editTemplate(TripPromptTemplate? existing) async {
+    final ownerId = widget.templateOwnerId?.trim();
+    if (ownerId == null || ownerId.isEmpty) return;
+    final formKey = GlobalKey<FormState>();
+    var name = existing?.name ?? 'My trip';
+    var request = existing?.request ?? _request.text.trim();
+    final template = await showDialog<TripPromptTemplate>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(existing == null ? 'Save trip template' : 'Edit template'),
+        content: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  initialValue: name,
+                  maxLength: TripPromptTemplateStore.maxNameLength,
+                  decoration: const InputDecoration(labelText: 'Template name'),
+                  onChanged: (value) => name = value,
+                  validator: (value) => (value?.trim().isEmpty ?? true)
+                      ? 'Enter a template name.'
+                      : null,
+                ),
+                TextFormField(
+                  initialValue: request,
+                  minLines: 4,
+                  maxLines: 7,
+                  maxLength: TripPromptTemplateStore.maxRequestLength,
+                  decoration: const InputDecoration(
+                    labelText: 'Reusable trip request',
+                    alignLabelWithHint: true,
+                  ),
+                  onChanged: (value) => request = value,
+                  validator: (value) => (value?.trim().length ?? 0) < 5
+                      ? 'Describe the recurring trip.'
+                      : null,
+                ),
+                const Text(
+                  'Stored locally on this device. It is sent to GPT-5.6 only when you choose Create AI draft.',
+                  style: TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (!(formKey.currentState?.validate() ?? false)) return;
+              Navigator.pop(
+                dialogContext,
+                TripPromptTemplate(
+                  id:
+                      existing?.id ??
+                      DateTime.now().microsecondsSinceEpoch.toString(),
+                  name: name.trim(),
+                  request: request.trim(),
+                  updatedAt: DateTime.now(),
+                ),
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (template == null || !mounted) return;
+    try {
+      final templates = await _templateStore.upsert(ownerId, template);
+      if (!mounted) return;
+      setState(() => _templates = templates);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Trip template saved.')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Template could not be saved. Retry.')),
+      );
+    }
+  }
+
+  Future<void> _deleteTemplate(TripPromptTemplate template) async {
+    final ownerId = widget.templateOwnerId?.trim();
+    if (ownerId == null || ownerId.isEmpty) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete trip template?'),
+        content: Text('Remove ${template.name} from this device?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      final templates = await _templateStore.delete(ownerId, template.id);
+      if (!mounted) return;
+      setState(() => _templates = templates);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Trip template deleted.')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Template could not be deleted. Retry.')),
+      );
+    }
   }
 
   Widget _draftReview(CopilotPlanResult result) {

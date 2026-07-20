@@ -7,6 +7,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../../../core/user_path.dart';
 import '../../domain/models/verification_model.dart';
+import '../../domain/verification_requirements.dart';
 import '../providers/verification_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -103,27 +104,32 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final verificationAsync = ref.watch(currentUserVerificationProvider);
     final userAsync = ref.watch(authStateProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Verification Center')),
-      body: verificationAsync.when(
+      body: userAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => _buildLoadError(),
-        data: (verification) => userAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => _buildLoadError(),
-          data: (user) => _buildContent(
-            verification,
-            isDriver: marketplacePathForRoles(user?.roles ?? const []).isDriver,
-          ),
-        ),
+        data: (user) {
+          if (user == null) return _buildLoadError();
+          final verificationAsync = ref.watch(
+            userVerificationProvider(user.id),
+          );
+          return verificationAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, _) => _buildLoadError(userId: user.id),
+            data: (verification) => _buildContent(
+              verification,
+              isDriver: marketplacePathForRoles(user.roles).isDriver,
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildLoadError() {
+  Widget _buildLoadError({String? userId}) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -143,7 +149,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              onPressed: () => ref.invalidate(currentUserVerificationProvider),
+              onPressed: () {
+                if (userId != null) {
+                  ref.invalidate(userVerificationProvider(userId));
+                } else {
+                  ref.invalidate(authStateProvider);
+                }
+              },
               icon: const Icon(Icons.refresh),
               label: const Text('Retry verification'),
             ),
@@ -157,15 +169,24 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     UserVerification? verification, {
     required bool isDriver,
   }) {
-    final totalSteps = isDriver ? 6 : 4;
-    final approvedSteps = _approvedStepCount(verification, isDriver: isDriver);
-    final pendingSteps = _pendingStepCount(verification, isDriver: isDriver);
+    final totalSteps = tripVerificationTotalSteps(driver: isDriver);
+    final approvedSteps = approvedTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
+    final pendingSteps = pendingTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
+    final submittedSteps = submittedTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
     final allApproved = approvedSteps == totalSteps;
     final statusColor = allApproved
         ? Colors.green
         : (pendingSteps > 0 ? Colors.orange : Colors.grey);
-    final progressValue = ((approvedSteps + pendingSteps * 0.5) / totalSteps)
-        .clamp(0.0, 1.0);
+    final progressValue = (submittedSteps / totalSteps).clamp(0.0, 1.0);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -201,7 +222,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$approvedSteps of $totalSteps role checks approved',
+                  '$submittedSteps of $totalSteps requirements submitted',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
@@ -212,9 +233,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  pendingSteps == 0
-                      ? 'No documents are awaiting manual review.'
-                      : '$pendingSteps document${pendingSteps == 1 ? '' : 's'} awaiting manual review.',
+                  '$approvedSteps approved • $pendingSteps awaiting manual review',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -293,40 +312,6 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         ],
       ],
     );
-  }
-
-  int _approvedStepCount(
-    UserVerification? verification, {
-    required bool isDriver,
-  }) {
-    if (verification == null) return 0;
-    return [
-      verification.emailVerified,
-      verification.phoneVerified,
-      verification.identityVerified,
-      verification.selfieWithIdVerified,
-      if (isDriver) verification.driverLicenseVerified,
-      if (isDriver) verification.vehicleVerified,
-    ].where((isVerified) => isVerified).length;
-  }
-
-  int _pendingStepCount(
-    UserVerification? verification, {
-    required bool isDriver,
-  }) {
-    if (verification == null) return 0;
-    return [
-      verification.identityDocumentUrl != null &&
-          !verification.identityVerified,
-      verification.selfieWithIdUrl != null &&
-          !verification.selfieWithIdVerified,
-      if (isDriver)
-        verification.driverLicenseUrl != null &&
-            !verification.driverLicenseVerified,
-      if (isDriver)
-        verification.vehicleRegistrationUrl != null &&
-            !verification.vehicleVerified,
-    ].where((isPending) => isPending).length;
   }
 
   Widget _buildVerificationItem({

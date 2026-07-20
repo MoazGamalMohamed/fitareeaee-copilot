@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
@@ -194,18 +195,27 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
   @override
   Stream<UserProfile?> streamUserProfile(String userId) {
-    return _firestore.collection('users').doc(userId).snapshots().map((doc) {
-      if (!doc.exists || doc.data() == null) {
-        return null;
-      }
-      try {
-        final data = {...doc.data()!, 'userId': userId};
-        final model = UserProfileModel.fromJson(data);
-        return model.toEntity();
-      } catch (_) {
-        return null;
-      }
-    });
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .map((doc) {
+          if (!doc.exists || doc.data() == null) {
+            return null;
+          }
+          try {
+            final data = {...doc.data()!, 'userId': userId};
+            final model = UserProfileModel.fromJson(data);
+            return model.toEntity();
+          } catch (_) {
+            return null;
+          }
+        })
+        .handleError((Object error, StackTrace stackTrace) {
+          if (FirebaseAuth.instance.currentUser?.uid == userId) {
+            Error.throwWithStackTrace(error, stackTrace);
+          }
+        });
   }
 
   @override

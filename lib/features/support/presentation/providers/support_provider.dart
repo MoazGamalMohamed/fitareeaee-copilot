@@ -39,8 +39,8 @@ final userTicketsProvider = StreamProvider.autoDispose<List<SupportTicket>>((
 });
 
 /// Provider for ticket messages
-final ticketMessagesProvider =
-    StreamProvider.family<List<TicketMessage>, String>((ref, ticketId) {
+final ticketMessagesProvider = StreamProvider.autoDispose
+    .family<List<TicketMessage>, String>((ref, ticketId) {
       return FirebaseFirestore.instance
           .collection('support_tickets')
           .doc(ticketId)
@@ -100,7 +100,7 @@ List<FAQItem> _getDefaultFAQs() {
 }
 
 /// Provider for FAQ items
-final faqProvider = FutureProvider<List<FAQItem>>((ref) async {
+final faqProvider = FutureProvider.autoDispose<List<FAQItem>>((ref) async {
   try {
     final snapshot = await FirebaseFirestore.instance.collection('faq').get();
 

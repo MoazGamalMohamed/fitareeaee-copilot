@@ -24,22 +24,20 @@ BookingModel _bookingFromFirestore(
 
 /// Read-only booking stream. Creation and cancellation are intentionally
 /// performed only by the authenticated transactional Cloud Functions.
-final userBookingsProvider = StreamProvider.family<List<BookingModel>, String>((
-  ref,
-  userId,
-) {
-  return _firestore
-      .collection('bookings')
-      .where('passengerId', isEqualTo: userId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((snapshot) => snapshot.docs.map(_bookingFromFirestore).toList());
-});
+final userBookingsProvider = StreamProvider.autoDispose
+    .family<List<BookingModel>, String>((ref, userId) {
+      return _firestore
+          .collection('bookings')
+          .where('passengerId', isEqualTo: userId)
+          .orderBy('createdAt', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs.map(_bookingFromFirestore).toList());
+    });
 
 /// All bookings where the user is either the passenger or the trip owner.
 /// Two rule-compatible equality queries are merged locally.
-final participantBookingsProvider =
-    StreamProvider.family<List<BookingModel>, String>((ref, userId) {
+final participantBookingsProvider = StreamProvider.autoDispose
+    .family<List<BookingModel>, String>((ref, userId) {
       final controller = StreamController<List<BookingModel>>();
       var passengerBookings = <BookingModel>[];
       var driverBookings = <BookingModel>[];
@@ -85,11 +83,9 @@ final participantBookingsProvider =
       return controller.stream;
     });
 
-final bookingProvider = FutureProvider.family<BookingModel?, String>((
-  ref,
-  bookingId,
-) async {
-  final doc = await _firestore.collection('bookings').doc(bookingId).get();
-  if (!doc.exists) return null;
-  return _bookingFromFirestore(doc);
-});
+final bookingProvider = FutureProvider.autoDispose
+    .family<BookingModel?, String>((ref, bookingId) async {
+      final doc = await _firestore.collection('bookings').doc(bookingId).get();
+      if (!doc.exists) return null;
+      return _bookingFromFirestore(doc);
+    });
