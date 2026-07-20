@@ -10,6 +10,19 @@ import '../../domain/entities/trip.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../ratings/presentation/providers/rating_provider.dart';
 
+String tripCardStatusLabel({
+  required String status,
+  required int availableSeats,
+}) {
+  return switch (status) {
+    'confirmed' => 'Confirmed',
+    'in_progress' => 'In progress',
+    'completed' => 'Completed',
+    'cancelled' => 'Cancelled',
+    _ => availableSeats > 0 ? 'Available' : 'Full',
+  };
+}
+
 class TripsListScreen extends ConsumerStatefulWidget {
   /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
   final String? role;
@@ -357,6 +370,16 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   }
 
   Widget _buildTripCard(BuildContext context, dynamic trip) {
+    final statusLabel = tripCardStatusLabel(
+      status: trip.status as String,
+      availableSeats: trip.availableSeats as int,
+    );
+    final statusColor = switch (statusLabel) {
+      'Available' || 'In progress' => Colors.green,
+      'Confirmed' => Colors.blue,
+      'Completed' => Colors.grey,
+      _ => Colors.red,
+    };
     return GestureDetector(
       onTap: () => context.push('/trips/${trip.id}'),
       child: Container(
@@ -492,46 +515,25 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                      if (trip.isAvailable)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green[50],
-                            border: Border.all(color: Colors.green),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Available',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        )
-                      else
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.red[50],
-                            border: Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Full',
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.08),
+                          border: Border.all(color: statusColor),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          statusLabel,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
