@@ -65,6 +65,7 @@ evidence to the sanitized publication history:
 | v1.0.10 verification gate evidence | `ffa6e34811e4682a7ea8ce01990a645bcecdc86f` | `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2` |
 | v1.0.10 judge handoff and public-release evidence | `deecf6ec12144ae94e4509e1810fdbcff7b3005e` | `6ce1141d8d9283adffc79986cc835bf632e75be1` |
 | v1.0.11 role-path/voice/location source and tag | `b05c91fd2b6856952a028866ec57a83c57ac116e` | `4e1439b098c53c41bf9d95b9f82f3a607b0240bc` |
+| v1.0.11 judge release evidence | `4347f4a8da68594dca7845fd6f72d43fb628a66a` | `0f8a7ccb69efbdfd829919daa8cd818c37fa2d62` |
 
 The annotated tag names are preserved:
 
