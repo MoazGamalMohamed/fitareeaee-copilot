@@ -55,3 +55,18 @@ append-only execution evidence in `BUILD_WEEK_PROGRESS.md`.
   input remains supported and tested.
 - Android release updates use dated version code `20260718`; the stale version code `1`
   discovered during emulator installation is not a release candidate.
+
+## 2026-07-20 — Reusable plans and authentication lifecycle
+
+- Recurring trip plans are stored only in account-scoped local preferences. They
+  contain a name and natural-language request, never booking, payment, verification,
+  identity, contact, or chat data. A template reaches GPT-5.6 only after an explicit
+  new draft action.
+- Authentication routing is driven by Firebase's current session and one stable
+  router. User/screen data providers are disposable, and owner profiles reload after
+  explicit edits instead of holding a Firestore listener through sign-out.
+- Verification progress reports both submission and approval. An uploaded document
+  is not represented as approved until manual review says so.
+- A debug-signed profile APK remains acceptable for the contest sideload build
+  because no safe private release-signing configuration exists. Physical-phone
+  verification is reported separately and never inferred from emulator success.

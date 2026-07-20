@@ -14,6 +14,24 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Reusable plans and session reliability — v1.0.14
+
+- Added account-scoped, editable local trip prompt templates so a rider or driver
+  can reuse a recurring natural-language request without storing payment,
+  verification, or booking data.
+- Corrected Verification Center and Settings progress to distinguish documents
+  submitted from documents approved, including the complete four-step rider and
+  six-step driver requirements.
+- Stabilized Firebase authentication redirects and disposed user-scoped data
+  providers so rider/driver account changes no longer remain on Login or emit stale
+  Firestore permission exceptions.
+- Replaced the unnecessary live owner-profile listener with explicit reloads after
+  edits, removing the final native sign-out listener race.
+- Repeated the complete automated, rules, two-account lifecycle, APK, and API 36
+  emulator gates. The fictional rider login/sign-out log was clean of Flutter,
+  Firebase, permission, and fatal errors. Physical-phone v1.0.14 testing remains an
+  owner-device step.
+
 ### Complete verification and confirmed chat — v1.0.13
 
 - Enforced one client/server publication boundary: riders/senders need verified

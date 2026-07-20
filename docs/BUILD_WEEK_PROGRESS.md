@@ -3459,3 +3459,50 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   correction `fc7d880fc877096f5ddc94a1ff34e0f57e721cc0`, and phone-tested v1.0.5.
   Next action: publish this correction, then install the exact public v1.0.13 APK on
   the non-emulator phone as soon as Windows/ADB detects it.
+
+## 2026-07-20 13:13 CDT / 2026-07-20 11:13 PDT — v1.0.14 reusable plans and final session gate
+
+- Objective: finish the voice/map release path with reusable trip planning, accurate
+  verification evidence, reliable two-account switching, a complete local gate, and
+  an installable final Android checkpoint without weakening the payment boundary.
+- Work completed: added bounded UID-scoped editable local trip templates; kept AI
+  review/confirmation mandatory; changed Verification Center and Settings to show
+  submitted, approved, and pending counts; stabilized GoRouter authentication
+  refresh; made user-scoped Riverpod providers disposable; removed the unnecessary
+  owner-profile snapshot listener; and handled stale signed-out Firestore events.
+- Voice/map evidence: the exact profile build opens both full-field OpenStreetMap
+  pickers with attribution; Copilot shows its microphone disclosure, requests the
+  Android permission, starts English recognition, displays the three-minute timer,
+  and exposes editable transcript/no-speech recovery. Silent emulator audio cannot
+  prove spoken transcription, so that remains part of the physical-phone step.
+- Exact commands/results: format 132 files/0 changed; `flutter analyze` 0 issues;
+  `flutter test` 47/47; Functions TypeScript/contracts 30/30; Firestore/Storage rules
+  9/9; authenticated Auth/Functions/Firestore lifecycle 9/9; debug and profile APK
+  builds PASS.
+- Lifecycle evidence: two distinct emulator accounts cover rider/driver
+  verification, manual creation, potential unpaid state, idempotent booking,
+  proposal selection, server-verified paid confirmation, active participant chat,
+  trip start/completion, closed chat, one immutable rating, and urgent emergency
+  admin review. A fresh rider UI login reached Request Home, sign-out reached Login,
+  and a cleared log had zero matching Flutter, Firebase, permission, or fatal errors.
+- APK records: profile `build/app/outputs/flutter-apk/app-profile.apk`, optimized
+  universal AOT/profile, 109,878,725 bytes, SHA-256
+  `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`, built
+  2026-07-20 12:54:02 CDT; debug `build/app/outputs/flutter-apk/app-debug.apk`,
+  175,663,268 bytes, SHA-256
+  `C6F6E873DB7E45F7EDA0500D955E11CF85922FDE615079FEE46605531ABFAD90`, built
+  2026-07-20 13:11:40 CDT. Package/version: `com.fitareeaee.app`, `1.0.14` /
+  `20260728`, minimum API 24, target/compile API 36.
+- Tested device: `emulator-5554`, API 36, install PASS, authenticated smoke PASS.
+  Physical v1.0.14 phone install is not claimed because the phone is disconnected.
+- Application source commit: `22d5317f8d900560c9fba6a92d450529aed02bfe`;
+  tree `bcfb92a99879d02cd6340b931a0b983ed71906d1`. Public sanitized
+  commit/tag/release are pending the post-gate tree comparison and history scan.
+- Known issues/manual boundary: no real payment provider or private release signing;
+  physical microphone/phone smoke, YouTube upload, `/feedback`, private credential
+  placement, legal review, inherited Function retirement decision, and final Devpost
+  submit remain owner-only actions.
+- Rollback point: exact public v1.0.13 prerelease; phone-tested public v1.0.5 remains
+  the physical rollback. Next action: publish only the sanitized v1.0.14 tree, scan
+  all reachable history, release and redownload the APK, then install the downloaded
+  bytes on the emulator and the owner's phone when it reconnects.

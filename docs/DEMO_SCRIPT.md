@@ -4,10 +4,11 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
-Release gate status: **public v1.0.13 passes source, lifecycle backend, rules, hash,
-fresh English/package/Arabic GPT-5.6 calls, and authenticated API 36 emulator gates;
-exact-public physical-phone smoke remains pending**. Public v1.0.5 remains the
-phone-tested stable rollback. Before recording, finish the v1.0.13 phone gate,
+Release gate status: **v1.0.14 passes source, lifecycle backend, rules, local APK,
+fresh English/package/Arabic GPT-5.6 evidence, reusable-plan, verification-progress,
+and authenticated API 36 emulator gates; exact-public physical-phone smoke remains
+pending**. Public v1.0.5 remains the phone-tested stable rollback. Before recording,
+finish the v1.0.14 phone gate,
 enable Do Not Disturb, close messaging notifications, and use only the fictional
 judge account.
 
@@ -40,6 +41,10 @@ judge account.
 **On screen:** Tap the microphone and say, or paste as a recording fallback: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create AI draft**.
 
 **Say:** “I can type or speak a ride or package naturally in English or Arabic. The app sends only the redacted request, locale, timezone, and current date through an authenticated Firebase Function. Contact details and links in free text are filtered.”
+
+If time allows, briefly show **Saved trip plans** and say: “A recurring request can
+stay as an editable template on this device, so I remain in control of when it is
+sent to GPT-5.6.”
 
 ### 0:53–1:17 — Structured, reviewable draft
 

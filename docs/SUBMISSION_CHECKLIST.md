@@ -36,6 +36,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Strict structured output plus independent server validation.
 - [x] Editable, disclosed AI draft; confirmation required before search.
 - [x] Deterministic matching with transparent reasons and no fabricated trips.
+- [x] Editable account-scoped local trip templates; no payment, identity, booking,
+  contact, or chat data stored in templates.
 - [x] Authenticated transactional booking and server-controlled verification.
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
@@ -180,6 +182,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   0 visible or matched chat-permission/fatal errors.
 - [x] Verify managed secret/callable metadata and pass authenticated English ride,
   English package, and Arabic ride live calls through the exact public APK.
+- [x] Build and install v1.0.14 on API 36; verify reusable plans, accurate
+  submitted/approved progress, rider/driver routing, and a clean login/sign-out log.
 - [ ] Install that exact public v1.0.13 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
@@ -228,5 +232,5 @@ Exact owner steps and the inherited Function set are recorded in
 1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
    managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Exact-public v1.0.13 phone install/smoke, YouTube upload, `/feedback`, private
+3. Exact-public v1.0.14 phone install/smoke, YouTube upload, `/feedback`, private
    credential placement, legal confirmation, and final Devpost submit action.

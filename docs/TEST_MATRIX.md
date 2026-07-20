@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.13 candidate source: 130 files, 0 changes |
-| Static analysis | `flutter analyze` | PASS | v1.0.13 candidate source: `No issues found!` |
-| Flutter suite | `flutter test` | PASS | v1.0.13 candidate source: 43/43 tests |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.14 source: 132 files, 0 changes |
+| Static analysis | `flutter analyze` | PASS | v1.0.14 source: `No issues found!` |
+| Flutter suite | `flutter test` | PASS | v1.0.14 source: 47/47 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
-| Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
+| Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff, account-scoped reusable plans | PASS | Widget, domain, platform, and local-store coverage |
 | Functions contracts | Booking/cancellation, lifecycle, matching, support, trip-scoped conversations, projections, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | Current Functions source: 30/30 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 9/9 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
 | Callable integration | Proposal/payment boundary, idempotency, verification, chat, start, completion, rating, and emergency cancellation | PASS | 9/9 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.13 universal debug and optimized profile builds passed; code `20260727` |
+| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.14 universal debug and optimized profile builds passed; code `20260728` |
 
 ## Copilot behavior
 
@@ -32,10 +32,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Unauthenticated request | Callable rejects the request | PASS — contract test |
 | Oversized/rapid request | Input/rate limits enforced | PASS — contract test |
 | User edits draft | Reviewed values are used for matching | PASS — widget/domain coverage |
+| User saves a recurring request | Template remains editable, local, bounded, and isolated by signed-in UID | PASS — store/widget coverage plus authenticated emulator reuse |
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
 | Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — exact public v1.0.13 APK returned strict `gpt-5.6` review drafts for an English ride, 5 kg English package, and Arabic ride on July 20 |
+| Account switch and sign-out | Correct Home role after sign-in; Login after sign-out; no stale listener exception | PASS — v1.0.14 API 36 rider/driver regression with cleared-log scan |
 
 ## Security and transactional behavior
 

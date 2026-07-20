@@ -1,21 +1,24 @@
 # Resume Here
 
-Last updated: 2026-07-20 10:38 CDT / 2026-07-20 08:38 PDT
+Last updated: 2026-07-20 13:13 CDT / 2026-07-20 11:13 PDT
 
 ## Current objective
 
-Install the already published, byte-verified, and freshly GPT-5.6-tested v1.0.13
-artifact on the owner's reconnected phone to complete the remaining technical gate.
-Finish the video, `/feedback`, legal review, and owner-performed Devpost submission.
-Do not replace the payment gate with simulated money.
+Publish, anonymously redownload, and emulator-test the fully passing v1.0.14
+artifact, then install those exact bytes on the owner's reconnected phone to finish
+the remaining technical gate. Finish the video, `/feedback`, legal review, and
+owner-performed Devpost submission. Do not replace the payment gate with simulated
+money.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private v1.0.13 application source:
-  `7a764178106bf38ece5151a2913aec35a752902f`.
-- Private annotated tag `fitareeaee-copilot-v1.0.13` peels to that source.
+- Passing private v1.0.14 application source:
+  `22d5317f8d900560c9fba6a92d450529aed02bfe` (tree
+  `bcfb92a99879d02cd6340b931a0b983ed71906d1`).
+- Private v1.0.14 tag and sanitized publication are pending the final history scan;
+  v1.0.13 remains the public rollback until that completes.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
@@ -31,6 +34,13 @@ Do not replace the payment gate with simulated money.
   the sanitized clone after a reachable-history secret scan and tree comparison.
 
 ## Current product boundary
+
+- Copilot now includes bounded editable **Saved trip plans** stored locally per
+  signed-in UID. Templates contain only a name and request text; they never contain
+  payment, booking, verification, identity, contact, or chat data.
+- Verification progress distinguishes requirements submitted from requirements
+  approved. Account switching uses one stable auth-aware router and screen-scoped
+  data providers; the v1.0.14 rider login/sign-out cleared-log regression passes.
 
 - Home provides a circular **Plan with AI** action. Its bottom creation destination
   is **Request** for rider/sender accounts or verification-gated **Offer** for
@@ -72,9 +82,9 @@ Do not replace the payment gate with simulated money.
 
 ## Passing gates
 
-- Dart format: 130 files, 0 changes.
+- Dart format: 132 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 43/43.
+- Flutter tests: 47/47.
 - Functions TypeScript/contracts: 30/30.
 - Firestore/Storage rules: 9/9.
 - Auth/Firestore/Functions integration: 9/9.
@@ -82,6 +92,17 @@ Do not replace the payment gate with simulated money.
 - Scoped callable deployment to `fitareeaee`: PASS.
 
 ## Current APK and emulator evidence
+
+- Local v1.0.14 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Type: optimized universal AOT profile APK, debug-signed for contest sideloading
+- Size: 109,878,725 bytes
+- SHA-256: `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
+- Version: `1.0.14` / code `20260728`
+- API 36 install/authenticated rider login/sign-out/templates/verification smoke:
+  PASS; cleared log had no matching Flutter/Firebase/permission/fatal errors.
+- Physical v1.0.14 phone result: PENDING because no physical ADB device is connected.
+- The v1.0.13 record below remains the public rollback until v1.0.14 publication is
+  independently downloaded, hash-matched, and installed.
 
 - Local v1.0.13 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading

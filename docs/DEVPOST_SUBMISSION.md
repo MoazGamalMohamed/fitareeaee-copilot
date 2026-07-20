@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk — 109,583,813 bytes; SHA-256 `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk — 109,878,725 bytes; SHA-256 `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -35,6 +35,10 @@ and can announce its draft through Android accessibility services. A user who
 prefers a form can create a ride/package request or, after driver and vehicle
 verification, an offer manually and place origin/destination pins on an
 interactive OpenStreetMap.
+
+Recurring natural-language requests can be saved as editable, account-scoped local
+templates. The app clearly discloses that a template stays on the device and is
+sent to GPT-5.6 only when the user explicitly creates a new draft from it.
 
 The draft is visibly labeled as AI-generated and remains editable. Copilot never
 writes a trip or booking: confirming the reviewed draft only performs

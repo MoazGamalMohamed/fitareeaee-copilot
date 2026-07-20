@@ -206,18 +206,19 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.13 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13)
+[v1.0.14 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14)
 separates rider/sender requests from driver/courier offers, adds a circular Home
 Copilot action, and hardens English/Arabic voice planning with explicit Android
-consent and a three-minute cap. Publication now requires verified email, phone,
+consent and a three-minute cap. It also adds editable, account-scoped local trip
+templates, accurate submitted/approved verification progress, and reliable
+rider/driver account switching. Publication now requires verified email, phone,
 manually approved ID, and selfie; drivers additionally require approved licence and
-vehicle records. Its public 109,583,813-byte APK was anonymously redownloaded,
-byte-matched at SHA-256
-`E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`,
-installed, authenticated, and lifecycle-tested on API 36, including real confirmed
-fixture chat without the former permission failure. It remains a prerelease until
-that exact public download passes the physical-phone smoke; v1.0.5 remains the
-phone-tested rollback.
+vehicle records. Its 109,878,725-byte profile APK has SHA-256
+`487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E` and passed
+the complete local gate plus authenticated API 36 login/sign-out, templates,
+verification, maps, voice-permission, payment boundary, confirmed chat, Past, and
+rating checks. It remains a prerelease until the exact public download passes the
+physical-phone smoke; v1.0.5 remains the phone-tested rollback.
 
 ## Codex collaboration
 
