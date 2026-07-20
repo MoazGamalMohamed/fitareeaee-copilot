@@ -2241,3 +2241,64 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   candidate. GitHub publication, same-URL redownload/hash verification, and physical
   phone installation remain pending because `gh` is not installed and the owner
   reserved the phone during this checkpoint.
+
+## 2026-07-19 23:24 CDT / 2026-07-19 21:24 PDT - v1.0.6 judge-document and APK-signature audit
+
+### Objective and outcome
+
+- Reconciled the README, judge guide, Devpost copy, demo script, privacy/safety
+  disclosure, owner actions, test matrix, and submission checklist with the tested
+  v1.0.6 map/voice/lifecycle behavior while preserving v1.0.5 as the latest public
+  fallback until the newer artifact completes publication and phone testing.
+- Corrected the judge/demo narrative so a new selection is visibly payment-required,
+  cannot decrement inventory or unlock chat, and a separate seeded paid/confirmed
+  fixture is the only contest path used to demonstrate participant chat.
+- Recorded interactive map privacy boundaries: exact pins remain private, the
+  signed-in marketplace projection receives two-decimal coarsened coordinates, and
+  the app does not claim live tracking, routing-service ETA, or turn-by-turn navigation.
+- Checked the current official OpenAI model catalog. It documents `gpt-5.6` as the
+  GPT-5.6 Sol alias with Responses API and structured-output support. The deployed
+  Functions already use that exact alias, official SDK, strict JSON Schema, bounded
+  output, managed secret, timeout, and independent validation, so no backend change
+  was required. Added the official OpenAI developer-docs MCP configuration; Codex
+  must restart before that connector becomes available in this session.
+
+### Files and exact verification
+
+- Files: `README.md`, `docs/DEMO_SCRIPT.md`, `docs/DEVPOST_SUBMISSION.md`,
+  `docs/JUDGE_TESTING.md`, `docs/OWNER_ACTIONS.md`,
+  `docs/PRIVACY_AND_SAFETY.md`, `docs/SUBMISSION_CHECKLIST.md`, and
+  `docs/TEST_MATRIX.md`.
+- `git diff --check`: PASS.
+- Relative Markdown link audit across all edited documents: PASS; 0 missing targets.
+- Contradiction scan for pre-payment chat, stale map limitation, and v1.0.3 final-
+  release wording: PASS; only the intentional statement that new bookings are not
+  confirmed before payment remains.
+- `aapt dump badging`: PASS; package `com.fitareeaee.app`, version `1.0.6` / code
+  `20260720`, min API 24, target/compile API 36, and microphone/location permissions.
+- `apksigner verify --verbose --print-certs`: PASS; Android Signature Scheme v2,
+  one expected Android Debug signer, certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- No application source changed in this checkpoint; the already recorded complete
+  v1.0.6 gate remains 115/0 format, 0 analysis issues, Flutter 19/19, Functions
+  28/28, rules 9/9, integration 7/7, and authenticated API 36 emulator smoke PASS.
+
+### APK, Git, recovery, and next action
+
+- APK: `build/app/outputs/flutter-apk/app-profile.apk`; optimized universal AOT
+  profile, debug-signed; 85,293,151 bytes; SHA-256
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+- Documentation checkpoint: `9d9705a` (`docs(release): align v1.0.6 judge evidence`).
+  Application-source checkpoint: `47f49ce`. Stable rollback: published v1.0.5
+  (`dd1378a` private documentation head / sanitized release source `6d67f306`).
+- Tag/push/PR/release: no v1.0.6 remote mutation. GitHub CLI remains unavailable,
+  so the required `github:yeet` publication flow cannot start. Existing draft PR #1
+  and stable v1.0.5 release remain untouched.
+- Physical device: v1.0.6 remains not tested on the owner's phone because only the
+  emulator is connected. Do not relabel the v1.0.5 Motorola evidence.
+- Known owner actions remain provider-side legacy credential rotation, GitHub CLI
+  installation/authentication, phone reconnection, video, private judge credential
+  placement, `/feedback`, legal review, and final Devpost submission.
+- Next action: commit this append-only evidence entry, then publish sanitized v1.0.6
+  when `gh` is available, redownload/hash-test the public asset, and install that
+  exact download on the reconnected phone for the final smoke.
