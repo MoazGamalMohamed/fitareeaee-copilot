@@ -2738,3 +2738,18 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   reconnected phone, run the final authenticated demo/log smoke, and promote the
   existing release only if it passes. Owner-only video, private credential placement,
   `/feedback`, legal review, and final Devpost submission still remain.
+
+## 2026-07-20 03:11 CDT / 2026-07-20 01:11 PDT - v1.0.8 publication record synchronized
+
+- Added the public v1.0.8 link, exact artifact hash, emulator authentication/chat/
+  Past evidence, current judge guidance, checklist state, changelog, and private-to-
+  sanitized source mappings to the public repository.
+- Private documentation source: `45452a4c968600438506b493c2939f1f4c4a8266`;
+  sanitized equivalent: `5f2819c574622accdaa420064751cdc9c1b5a827`;
+  tree equality PASS at `51d63a0e534a70a65c6d934a456d2df3067386e7`.
+- Sanitized scan after that replay: 87 reachable revisions, 0 forbidden credential/
+  config path objects, 0 current high-signal secret matches. Push used no force and
+  local/remote equality passed after correcting a PowerShell display-only SHA parsing
+  mistake; the successful Git push itself was unaffected.
+- The next action remains the exact public v1.0.8 physical-phone smoke after the owner
+  reconnects the device. No phone result or stable promotion is claimed here.

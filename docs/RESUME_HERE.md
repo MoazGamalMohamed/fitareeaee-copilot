@@ -17,7 +17,9 @@ simulated money.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Current public branch/remote head: `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993`.
+- Recorded public artifact-evidence checkpoint:
+  `5f2819c574622accdaa420064751cdc9c1b5a827`. A later mapping-only tail may
+  advance the branch; use `git ls-remote` for the current remote head.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
 - Public v1.0.8 is tagged at sanitized application source `54b1654c` and remains an

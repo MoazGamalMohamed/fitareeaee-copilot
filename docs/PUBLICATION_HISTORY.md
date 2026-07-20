@@ -54,6 +54,7 @@ evidence to the sanitized publication history:
 | v1.0.7 release evidence and credential hardening | `23f1ae0f85cd887307fcaaadae3de5c4b678eda3` | `329f5c656dec48cf86c9f9e8e7d4849bdd966d15` |
 | v1.0.8 voice/verification/lifecycle source and tag | `3817ed587bc141856c7c20eed126aa8c5508091e` | `54b1654cf42d716d47d56b1e649da139d6f9b097` |
 | v1.0.8 emulator release evidence | `eb78ecf81b9ce898c24c15ba076d2004ebe7eadc` | `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993` |
+| v1.0.8 public artifact evidence | `45452a4c968600438506b493c2939f1f4c4a8266` | `5f2819c574622accdaa420064751cdc9c1b5a827` |
 
 The annotated tag names are preserved:
 
