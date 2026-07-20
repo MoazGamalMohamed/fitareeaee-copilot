@@ -184,7 +184,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   English package, and Arabic ride live calls through the exact public APK.
 - [x] Build and install v1.0.14 on API 36; verify reusable plans, accurate
   submitted/approved progress, rider/driver routing, and a clean login/sign-out log.
-- [ ] Install that exact public v1.0.13 download on the owner's reconnected phone,
+- [ ] Install that exact public v1.0.14 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials
@@ -195,7 +195,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.13
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.14
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on

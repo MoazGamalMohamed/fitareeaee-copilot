@@ -27,7 +27,7 @@ The passwords were rotated after emulator automation exposed a test value; all
 values shown during that attempt are invalid. Existing judge fixtures/bookings
 were preserved.
 
-### 3. GitHub publication — v1.0.13 prerelease complete; phone gate pending
+### 3. GitHub publication — v1.0.14 prerelease complete; phone gate pending
 
 The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
@@ -41,14 +41,15 @@ The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
 annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
 
-The superseding v1.0.13 verification/chat source and 109,583,813-byte profile APK
+The superseding v1.0.14 reusable-plan/session source and 109,878,725-byte profile APK
 are published as an accurately labeled prerelease. The public APK was anonymously
 redownloaded, byte-matched at SHA-256
-`E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`, and passed an
+`487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`, fresh-installed,
+and cold-launched on API 36. The byte-identical local build passed an
 authenticated API 36 fresh-account/verification, role-specific creation, map,
 Support, voice permission, potential/confirmed payment boundary, real fixture chat,
 Past, and rating smoke with zero matched fatal/chat-permission errors. Physical
-testing is waiting for the phone to be reconnected. Do not promote v1.0.13 to stable
+testing is waiting for the phone to be reconnected. Do not promote v1.0.14 to stable
 or retire the final v1.0.5 rollback until that exact public download passes on the
 phone.
 
@@ -124,9 +125,9 @@ Runtime Config privately. Do not share replacement values in chat.
   source-compatible predecessor. New v1.0.5 selections deliberately stop at pending
   payment because no real payment provider is configured; do not enter a real card
   or claim a real payment pass.
-- Exact-public v1.0.13 phone verification is still pending while the owner device is
+- Exact-public v1.0.14 phone verification is still pending while the owner device is
   disconnected. When it reconnects, install the already-downloaded public bytes at
-  `build/published-download-v113/app-profile.apk`; do not rebuild or substitute a
+  `build/published-download-v114/app-profile.apk`; do not rebuild or substitute a
   local APK for this gate.
 
 - Physical phone installation is complete. The downloaded public v1.0.3 APK installed,

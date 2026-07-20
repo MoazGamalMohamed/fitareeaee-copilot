@@ -176,7 +176,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.13 candidate includes complete role-specific publication verification,
+- The v1.0.14 candidate includes complete role-specific publication verification,
   repaired confirmed chat, interactive map pins, permanent linked
   OpenStreetMap attribution, English/Arabic speech entry, and editable curated
   location suggestions. It does not include turn-by-turn navigation, routing-service
@@ -200,10 +200,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.13 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
+- **DONE:** v1.0.14 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
 - **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
-- **PENDING:** exact-public v1.0.13 physical-phone smoke and stable promotion
-- **DONE:** release tag `fitareeaee-copilot-v1.0.13` / sanitized source commit `ffb5929094b4d48e9991499f65839f75c4479125`
+- **PENDING:** exact-public v1.0.14 physical-phone smoke and stable promotion
+- **DONE:** release tag `fitareeaee-copilot-v1.0.14` / sanitized source commit `ed3a967585a4bb5854a6975173f77c4661f077de`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID

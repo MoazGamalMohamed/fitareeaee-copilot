@@ -17,18 +17,20 @@ money.
 - Passing private v1.0.14 application source:
   `22d5317f8d900560c9fba6a92d450529aed02bfe` (tree
   `bcfb92a99879d02cd6340b931a0b983ed71906d1`).
-- Private v1.0.14 tag and sanitized publication are pending the final history scan;
-  v1.0.13 remains the public rollback until that completes.
+- Private/public annotated v1.0.14 tags peel to tree-equivalent application source;
+  the sanitized source is `ed3a967585a4bb5854a6975173f77c4661f077de`. Use the
+  tracked remote branch head for later documentation-only checkpoints; never retag
+  the application source to a docs commit.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Public v1.0.13 source is
-  `ffb5929094b4d48e9991499f65839f75c4479125`; all 351 tracked paths match the
-  private application source.
+- Public v1.0.14 source is
+  `ed3a967585a4bb5854a6975173f77c4661f077de`; its tree exactly matches the
+  private v1.0.14 application source.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- PR #1 is open, draft, unmerged, and updated for v1.0.13 at the public source SHA.
-- Public v1.0.13 is the latest prerelease; the branch/tag were pushed without force.
+- PR #1 is open, draft, unmerged, and updated for v1.0.14.
+- Public v1.0.14 is the latest prerelease; the branch/tag were pushed without force.
 - GitHub CLI 2.96.0 is installed and authenticated through the Windows keyring.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
@@ -101,17 +103,17 @@ money.
 - API 36 install/authenticated rider login/sign-out/templates/verification smoke:
   PASS; cleared log had no matching Flutter/Firebase/permission/fatal errors.
 - Physical v1.0.14 phone result: PENDING because no physical ADB device is connected.
-- The v1.0.13 record below remains the public rollback until v1.0.14 publication is
-  independently downloaded, hash-matched, and installed.
+- The v1.0.13 evidence below is historical. v1.0.14 is independently downloaded,
+  hash-matched, and fresh-installed; v1.0.5 remains the phone-tested rollback.
 
-- Local v1.0.13 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Current public v1.0.14 profile path: `build/published-download-v114/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 109,583,813 bytes
-- SHA-256: `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`
-- Version: `1.0.13` / code `20260727`
+- Size: 109,878,725 bytes
+- SHA-256: `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
+- Version: `1.0.14` / code `20260728`
 - Package/API: `com.fitareeaee.app`, minimum 24, target/compile 36
 - API 36 emulator fresh-account and fictional-rider lifecycle smoke: PASS.
-- v1.0.13 requires email, phone, approved ID, and approved selfie before a rider can
+- v1.0.14 requires email, phone, approved ID, and approved selfie before a rider can
   publish; drivers additionally need approved driver licence and vehicle. Verification
   shows four rider checks or six driver checks with real role-specific progress.
 - Exact candidate UI passes: circular Home Copilot; rider bottom Request; manual map
@@ -123,15 +125,16 @@ money.
   and the past trip Completed, while driver chat/start/emergency actions remain.
 - Confirmed chat log scan: no visible error, `FirebaseFailure`, `typing_status`,
   `PERMISSION_DENIED`, fatal exception, or `E/flutter` match.
-- Physical v1.0.13 phone result: PENDING because only the emulator is connected.
-- Public v1.0.13 release:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13`
-- Public v1.0.13 APK:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk`
-- Anonymous re-download: `build/published-download-v113/app-profile.apk`; exact
-  109,583,813-byte/hash/byte match. The downloaded copy installed over the
-  authenticated fictional rider and reopened paid-confirmed chat with its real
-  fixture message and no matched fatal/chat-permission error on API 36.
+- Physical v1.0.14 phone result: PENDING because only the emulator is connected.
+- Public v1.0.14 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14`
+- Public v1.0.14 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk`
+- Anonymous re-download: `build/published-download-v114/app-profile.apk`; exact
+  109,878,725-byte/hash/byte match. After an update attempt exposed insufficient
+  emulator storage, only `com.fitareeaee.app` and its emulator-local data were
+  removed; the downloaded copy then fresh-installed and cold-launched to Login with
+  correct package/version/API metadata and no matched fatal/Firebase error.
 - Phone-tested rollback remains public v1.0.5.
 
 ## Remaining owner-only actions
@@ -153,6 +156,6 @@ money.
 ## Exact next action
 
 When ADB sees a non-emulator device, install the already downloaded exact public
-v1.0.13 bytes and run Home, Copilot, verification, both map fields,
+v1.0.14 bytes and run Home, Copilot, verification, both map fields,
 matches/details/payment gate, seeded paid Chat/Past/rating, and driver lifecycle.
 Promote only if every phone check passes.

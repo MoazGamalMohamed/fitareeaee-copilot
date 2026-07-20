@@ -3506,3 +3506,45 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   the physical rollback. Next action: publish only the sanitized v1.0.14 tree, scan
   all reachable history, release and redownload the APK, then install the downloaded
   bytes on the emulator and the owner's phone when it reconnects.
+
+## 2026-07-20 13:30 CDT / 2026-07-20 11:30 PDT — v1.0.14 sanitized publication and exact-public install
+
+- Applied the two reviewed private v1.0.14 commits to only the durable sanitized
+  publication clone. Private source tree `bcfb92a99879d02cd6340b931a0b983ed71906d1`
+  exactly matches public source tree `bcfb92a99879d02cd6340b931a0b983ed71906d1`;
+  private/public documentation trees also match before this final mapping entry.
+- Sanitized application source:
+  `ed3a967585a4bb5854a6975173f77c4661f077de`; documentation branch head:
+  `b8443c481a970599561e1f271365b635a9915018`. Annotated tag object
+  `11dbddd2c2dc803795ec15202e329ab3d1756dc5` peels to the application source.
+  Remote branch, tag object, and tag peel match local; no force push occurred.
+- Pre-push sanitized audit: 120 reachable revisions, 2,761 reachable object/path
+  lines, zero forbidden private-config/credential paths, zero high-signal secret-hit
+  files, zero `refs/original`, and a clean worktree. The private original still has
+  no remote and was not pushed.
+- Draft PR #1 remains OPEN, draft, unmerged, base `main`, head
+  `agent/payment-gated-chat-trip-support`, and reports exact head `b8443c48`:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk`.
+  GitHub reports Android-package content type, 109,878,725 bytes, and digest
+  `sha256:487bcbb871c009494ce5fd21f79b41de46fd28dc8744acb85ab88c7dfa833c6e`.
+- Anonymous download to `build/published-download-v114/app-profile.apk`: exact size
+  and SHA-256 match. The first update install correctly reported insufficient
+  emulator storage and was not counted. Removed only `com.fitareeaee.app` and its
+  emulator-local data, fresh-installed the public bytes, and cold-launched Login in
+  8.243 seconds. Package metadata is version `1.0.14` / code `20260728`, minimum API
+  24, target API 36. Exact-public fresh-install log scan: zero matching Flutter,
+  Firebase, permission, or fatal errors.
+- No Firebase deploy, production-data mutation/deletion, payment/billing action, PR
+  merge, stable promotion, or private-repository push occurred.
+- Remaining owner-only actions: reconnect/unlock/authorize the physical phone and
+  install the exact public bytes; record/upload the public under-three-minute video;
+  run `/feedback`; place fictional credentials privately; review legal/eligibility
+  statements; decide on inherited Function retirement/legacy credential rotation;
+  and personally perform final Devpost submission.
+- Rollback point: exact public v1.0.14 prerelease, source tag above, and phone-tested
+  public v1.0.5. Next action: physical-phone microphone and complete demo-path smoke,
+  then record the video and finish the owner-only submission checklist.
