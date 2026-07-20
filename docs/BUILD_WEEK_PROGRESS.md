@@ -2959,3 +2959,21 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   0 matches. Captured and visually inspected fictional screenshot
   `docs/screenshots/09-support-escalation.png`; no credential or private user data is
   visible.
+
+## 2026-07-20 04:27 CDT / 2026-07-20 02:27 PDT - exact-public Settings and Payments expectations passed
+
+- Opened Profile → Settings from the exact public v1.0.9 clean-install rider
+  session. Verified a real Support-chat route, separate English and Arabic display
+  preferences, USD currency preference, notification controls, active-trip-only
+  location disclosure, and accessibility section.
+- Verified the judge-safe financial boundary: `Payments are disabled`, no cards are
+  charged, no escrow/refund/wallet/payout is processed, and `Save payment method
+  later` is explicitly preference-only with no card details collected.
+- Opened Payment overview. It truthfully separated `Pending to pay` from `Pending to
+  receive`, identified rider/sender payment rows, and stated riders/senders pay while
+  drivers receive. The pending row remained `pending_payment - required`; fictional
+  paid/completed rows were labeled as fixture lifecycle history rather than a live
+  processor claim.
+- Verified Driver quality shows `Driver priority metric` but does not calculate or
+  expose a priority score before 50 completed rides/deliveries; the fictional rider
+  correctly showed current history 0. No raw error UI was present.

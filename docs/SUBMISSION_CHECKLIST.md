@@ -49,6 +49,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests, including a post-retirement rerun.
 - [x] Run exact-public Contact Support UI smoke: GPT-5.6 first answer, explicit
   `Need a person?` handoff, Human queue state, staff confirmation, and clean logs.
+- [x] Run exact-public Settings/Payments UI smoke: Support, English/Arabic, USD,
+  no-card/no-escrow boundary, rider-pay/driver-receive activity, and the 50-trip
+  driver-priority threshold render truthfully.
 - [x] Confirm OpenAI test spend remains below USD $5.
 - [x] Create dedicated fictional judge accounts and fixed August 10 demo trips; keep passwords out of Git.
 - [ ] Verify backend/test access remains free and available through judging.
