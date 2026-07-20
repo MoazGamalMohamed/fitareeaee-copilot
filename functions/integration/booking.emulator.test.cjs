@@ -48,11 +48,40 @@ async function callable(name, token, data) {
 async function seedVerified(uid, isDriver = false) {
   await db.collection("verifications").doc(uid).set({
     userId: uid,
+    emailVerified: true,
+    phoneVerified: true,
     identityVerified: true,
     selfieWithIdVerified: true,
     driverLicenseVerified: isDriver,
     vehicleVerified: isDriver,
   });
+}
+
+async function seedAccount(uid, roles) {
+  await db.collection("users").doc(uid).set({
+    id: uid,
+    roles,
+  });
+}
+
+function createTripPayload(role = "request") {
+  return {
+    schemaVersion: 1,
+    role,
+    type: "person",
+    originAddress: "Dallas",
+    destinationAddress: "Austin",
+    originLat: 32.7767,
+    originLng: -96.797,
+    destinationLat: 30.2672,
+    destinationLng: -97.7431,
+    departureTime: new Date(Date.now() + 86_400_000).toISOString(),
+    pricePerSeat: 40,
+    seats: 1,
+    description: "Integration lifecycle request",
+    allowPets: false,
+    allowSmoking: false,
+  };
 }
 
 async function seedTrip(id, seats = 1) {
@@ -95,12 +124,42 @@ before(async () => {
     seedVerified(driver.uid, true),
     seedVerified(riderA.uid),
     seedVerified(riderB.uid),
+    seedAccount(driver.uid, ["driver", "courier"]),
+    seedAccount(riderA.uid, ["rider", "sender"]),
+    seedAccount(riderB.uid, ["rider", "sender"]),
+    seedAccount(unverified.uid, ["rider", "sender"]),
   ]);
 });
 
 after(async () => {
   await Promise.all(clientApps.map((app) => deleteApp(app)));
   await Promise.all(getApps().map((app) => deleteAdminApp(app)));
+});
+
+test("verified rider can publish only a request", async () => {
+  const published = await callable(
+    "createTrip",
+    riderA.token,
+    createTripPayload("request"),
+  );
+  assert.equal(published.ok, true);
+  assert.equal(published.body.result.status, "pending");
+
+  const flipped = await callable(
+    "createTrip",
+    riderA.token,
+    createTripPayload("offer"),
+  );
+  assert.equal(flipped.ok, false);
+});
+
+test("unverified rider cannot publish a request", async () => {
+  const result = await callable(
+    "createTrip",
+    unverified.token,
+    createTripPayload("request"),
+  );
+  assert.equal(result.ok, false);
 });
 
 test("potential requests do not reserve inventory or authorize chat", async () => {

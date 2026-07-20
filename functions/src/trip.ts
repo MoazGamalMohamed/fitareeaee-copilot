@@ -128,10 +128,31 @@ export function parseCreateTripRequest(
 }
 
 export function driverVerificationComplete(data: Record<string, unknown>): boolean {
-  return data.identityVerified === true &&
-    data.selfieWithIdVerified === true &&
+  return participantVerificationComplete(data) &&
     data.driverLicenseVerified === true &&
     data.vehicleVerified === true;
+}
+
+export function participantVerificationComplete(
+  data: Record<string, unknown>
+): boolean {
+  return data.emailVerified === true &&
+    data.phoneVerified === true &&
+    data.identityVerified === true &&
+    data.selfieWithIdVerified === true;
+}
+
+export function accountCanCreateRole(
+  data: Record<string, unknown>,
+  requestedRole: "offer" | "request"
+): boolean {
+  if (!Array.isArray(data.roles) ||
+      data.roles.some((role) => typeof role !== "string")) return false;
+  const roles = data.roles as string[];
+  const rider = roles.includes("rider") || roles.includes("sender");
+  const driver = roles.includes("driver") || roles.includes("courier");
+  if (rider === driver) return false;
+  return requestedRole === "request" ? rider : driver;
 }
 
 export function routeDistanceKm(
@@ -157,17 +178,28 @@ export const createTrip = functions.https.onCall(async (rawData, context) => {
   }
   const request = parseCreateTripRequest(rawData);
   const db = getFirestore();
-  if (request.role === "offer") {
-    const verification = await db
-      .collection("verifications")
-      .doc(context.auth.uid)
-      .get();
-    if (!verification.exists || !driverVerificationComplete(verification.data() ?? {})) {
-      throw new functions.https.HttpsError(
-        "failed-precondition",
-        "Complete ID, selfie, driver-license, and vehicle verification before offering a ride."
-      );
-    }
+  const [account, verification] = await Promise.all([
+    db.collection("users").doc(context.auth.uid).get(),
+    db.collection("verifications").doc(context.auth.uid).get(),
+  ]);
+  if (!account.exists ||
+      !accountCanCreateRole(account.data() ?? {}, request.role)) {
+    throw new functions.https.HttpsError(
+      "permission-denied",
+      "This action does not match the Request or Offer path selected at signup."
+    );
+  }
+  const verificationData = verification.data() ?? {};
+  const verified = request.role === "offer" ?
+    driverVerificationComplete(verificationData) :
+    participantVerificationComplete(verificationData);
+  if (!verification.exists || !verified) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      request.role === "offer" ?
+        "Complete email, phone, ID, selfie, driver-licence, and vehicle verification before offering a ride." :
+        "Complete email, phone, ID, and selfie verification before publishing a trip request."
+    );
   }
 
   const ref = db.collection("trips").doc();

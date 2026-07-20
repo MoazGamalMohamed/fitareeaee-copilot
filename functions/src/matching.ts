@@ -1,7 +1,10 @@
 import {getFirestore, Timestamp, Transaction} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
 import {redactContactDetails} from "./copilot";
-import {driverVerificationComplete} from "./trip";
+import {
+  driverVerificationComplete,
+  participantVerificationComplete,
+} from "./trip";
 
 interface TripProposalInput {
   schemaVersion: 1;
@@ -63,7 +66,7 @@ export function parseTripProposal(value: unknown): TripProposalInput {
 }
 
 function hasRiderVerification(data: Record<string, unknown>): boolean {
-  return data.identityVerified === true && data.selfieWithIdVerified === true;
+  return participantVerificationComplete(data);
 }
 
 function departureIsFuture(value: unknown): boolean {
@@ -126,7 +129,7 @@ export const proposeForTripRequest = functions.https.onCall(async (rawData, cont
         !driverVerificationComplete(driverVerification.data() ?? {})) {
       throw new functions.https.HttpsError(
         "failed-precondition",
-        "Complete ID, selfie, driver-license, and vehicle verification before responding."
+        "Complete email, phone, ID, selfie, driver-license, and vehicle verification before responding."
       );
     }
     if (!riderVerification.exists ||

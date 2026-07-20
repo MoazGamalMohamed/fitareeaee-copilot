@@ -301,7 +301,7 @@ async function main({accessToken, driverEmail, riderEmail} = {}) {
     }});
   const verificationCreatedAt = new Date();
   const verified = {identityVerified: true, selfieWithIdVerified: true,
-    emailVerified: true, buildWeekJudgeFixture: true,
+    emailVerified: true, phoneVerified: true, buildWeekJudgeFixture: true,
     createdAt: verificationCreatedAt, updatedAt: verificationCreatedAt};
   documents.push({collection: "verifications", id: driverUid, value: {
     ...verified, userId: driverUid, driverLicenseVerified: true,

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../../../core/location/location_catalog.dart';
-import '../../../../core/user_path.dart';
 import '../../../../core/widgets/assisted_text_form_field.dart';
 import '../../../trips/presentation/pages/trip_location_picker_screen.dart';
 import '../providers/profile_provider.dart';
@@ -32,7 +31,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   String _countryCode = '+20'; // Default to Egypt
   String? _verificationId;
 
-  MarketplacePath _selectedPath = MarketplacePath.rider;
   String? _initializedProfileId;
   double? _latitude;
   double? _longitude;
@@ -81,22 +79,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       setState(() {
         _isPhoneVerified = _originalPhone != null;
       });
-    }
-  }
-
-  void _selectPath(MarketplacePath path) {
-    if (_selectedPath == path) return;
-    setState(() => _selectedPath = path);
-    if (path.isDriver) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'The driver/courier path requires approved identity, driver licence, and vehicle registration before offers can be published.',
-          ),
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.orange,
-        ),
-      );
     }
   }
 
@@ -409,7 +391,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         country: _countryController.text,
         latitude: _latitude,
         longitude: _longitude,
-        roles: rolesForMarketplacePath(_selectedPath),
         isPhoneVerified: _isPhoneVerified,
         updatedAt: DateTime.now(),
       );
@@ -446,7 +427,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
             _latitude = profile.latitude;
             _longitude = profile.longitude;
-            _selectedPath = marketplacePathForRoles(profile.roles);
           }
 
           return SingleChildScrollView(
@@ -604,51 +584,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 16),
-
-                  // One marketplace path keeps payment and trip responsibilities clear.
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Marketplace path',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _selectedPath.isDriver
-                                ? 'Driver/courier: publish offers and receive payment.'
-                                : 'Rider/sender: request rides or deliveries and pay after confirmation.',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          SegmentedButton<MarketplacePath>(
-                            segments: const [
-                              ButtonSegment(
-                                value: MarketplacePath.rider,
-                                icon: Icon(Icons.person_search),
-                                label: Text('Request'),
-                              ),
-                              ButtonSegment(
-                                value: MarketplacePath.driver,
-                                icon: Icon(Icons.drive_eta),
-                                label: Text('Offer'),
-                              ),
-                            ],
-                            selected: {_selectedPath},
-                            onSelectionChanged: (selection) =>
-                                _selectPath(selection.first),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 16),
 
                   Card(

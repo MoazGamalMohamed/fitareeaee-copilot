@@ -51,6 +51,7 @@ async function seed(path: string, data: Record<string, unknown>): Promise<void> 
 
 test("users cannot write another user's profile", async () => {
   const rider = environment.authenticatedContext("rider").firestore();
+  const mixed = environment.authenticatedContext("mixed").firestore();
   await assertSucceeds(
     setDoc(doc(rider, "users/rider"), {
       id: "rider",
@@ -61,6 +62,20 @@ test("users cannot write another user's profile", async () => {
       totalRatings: 0,
       totalTrips: 0,
       name: "Judge Rider",
+      roles: ["rider", "sender"],
+    })
+  );
+  await assertFails(
+    setDoc(doc(mixed, "users/mixed"), {
+      id: "mixed",
+      isVerified: false,
+      isEmailVerified: false,
+      isPhoneVerified: false,
+      rating: 5,
+      totalRatings: 0,
+      totalTrips: 0,
+      name: "Mixed Role",
+      roles: ["rider", "driver"],
     })
   );
   await assertFails(

@@ -125,50 +125,6 @@ final conversationsProvider = StreamProvider<List<Message>>((ref) {
   });
 });
 
-/// Typing indicator stream for a conversation (true if other user typing)
-final typingStatusProvider = StreamProvider.family<bool, Map<String, String>>((
-  ref,
-  args,
-) {
-  // args: {'conversationId': 'a_b', 'userId': 'otherUserId'}
-  final conversationId = args['conversationId'] ?? '';
-  final userId = args['userId'] ?? '';
-  if (conversationId.isEmpty || userId.isEmpty) {
-    return Stream.value(false);
-  }
-
-  final docRef = FirebaseFirestore.instance
-      .collection('typing_status')
-      .doc(conversationId)
-      .collection('users')
-      .doc(userId);
-
-  return docRef.snapshots().map((snap) {
-    if (!snap.exists) return false;
-    final data = snap.data();
-    if (data == null) return false;
-    return data['isTyping'] as bool? ?? false;
-  });
-});
-
-/// Helper to set typing status for current user in a conversation
-Future<void> setTypingStatus(
-  String conversationId,
-  String userId,
-  bool isTyping,
-) async {
-  final docRef = FirebaseFirestore.instance
-      .collection('typing_status')
-      .doc(conversationId)
-      .collection('users')
-      .doc(userId);
-
-  await docRef.set({
-    'isTyping': isTyping,
-    'updatedAt': FieldValue.serverTimestamp(),
-  }, SetOptions(merge: true));
-}
-
 /// Model for conversation with metadata
 class ConversationUI {
   final String conversationId;

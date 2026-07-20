@@ -123,14 +123,20 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 TextFormField(
                   controller: _phoneController,
                   decoration: const InputDecoration(
-                    labelText: 'Phone Number',
+                    labelText: 'Phone Number (verified next)',
                     hintText: 'Enter your phone number',
                     prefixIcon: Icon(Icons.phone),
+                    helperText:
+                        'Verification Center will send an SMS before trip publication.',
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
                       return 'Phone is required';
+                    }
+                    final digits = value!.replaceAll(RegExp(r'[^0-9]'), '');
+                    if (digits.length < 7 || digits.length > 15) {
+                      return 'Enter a valid phone number';
                     }
                     return null;
                   },

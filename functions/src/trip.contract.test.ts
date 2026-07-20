@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  accountCanCreateRole,
   driverVerificationComplete,
   parseCreateTripRequest,
+  participantVerificationComplete,
   routeDistanceKm,
 } from "./trip";
 
@@ -50,17 +52,44 @@ test("trip creation validates package details and future departure", () => {
 
 test("driver offers require every manual driver and vehicle check", () => {
   assert.equal(driverVerificationComplete({
+    emailVerified: true,
+    phoneVerified: true,
     identityVerified: true,
     selfieWithIdVerified: true,
     driverLicenseVerified: true,
     vehicleVerified: true,
   }), true);
   assert.equal(driverVerificationComplete({
+    emailVerified: true,
+    phoneVerified: true,
     identityVerified: true,
     selfieWithIdVerified: true,
     driverLicenseVerified: true,
     vehicleVerified: false,
   }), false);
+});
+
+test("rider requests require contact, identity, and selfie checks", () => {
+  assert.equal(participantVerificationComplete({
+    emailVerified: true,
+    phoneVerified: true,
+    identityVerified: true,
+    selfieWithIdVerified: true,
+  }), true);
+  assert.equal(participantVerificationComplete({
+    emailVerified: true,
+    phoneVerified: false,
+    identityVerified: true,
+    selfieWithIdVerified: true,
+  }), false);
+});
+
+test("signup path cannot be flipped by callable input", () => {
+  assert.equal(accountCanCreateRole({roles: ["rider", "sender"]}, "request"), true);
+  assert.equal(accountCanCreateRole({roles: ["rider", "sender"]}, "offer"), false);
+  assert.equal(accountCanCreateRole({roles: ["driver", "courier"]}, "offer"), true);
+  assert.equal(accountCanCreateRole({roles: ["driver", "courier"]}, "request"), false);
+  assert.equal(accountCanCreateRole({roles: ["rider", "driver"]}, "request"), false);
 });
 
 test("map coordinates produce a realistic route distance", () => {

@@ -28,6 +28,11 @@ service cloud.firestore {
           ));
     }
 
+    function validMarketplaceRoles() {
+      return request.resource.data.roles == ['rider', 'sender']
+        || request.resource.data.roles == ['driver', 'courier'];
+    }
+
     function validSupportStatus(status) {
       return status in ['open', 'inProgress', 'resolved', 'closed'];
     }
@@ -77,7 +82,8 @@ service cloud.firestore {
         && request.resource.data.isPhoneVerified == false
         && request.resource.data.rating == 5
         && request.resource.data.totalRatings == 0
-        && request.resource.data.totalTrips == 0;
+        && request.resource.data.totalTrips == 0
+        && validMarketplaceRoles();
       allow update: if isOwner(uid)
         && request.resource.data.id == resource.data.id
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([

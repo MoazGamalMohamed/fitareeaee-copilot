@@ -70,8 +70,14 @@ class AuthRepositoryImpl {
         userData: appUser.toJson(),
       );
 
-      // Send verification email
-      await firebaseUser.sendEmailVerification();
+      // Account creation must remain successful if the email provider is
+      // temporarily unavailable. Verification Center provides a safe retry.
+      try {
+        await firebaseUser.sendEmailVerification();
+      } on firebase_auth.FirebaseAuthException {
+        // Best effort only; publishing remains protected by the complete
+        // role-specific verification gate.
+      }
 
       return appUser;
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -164,16 +170,20 @@ class AuthRepositoryImpl {
 
   /// Get current user stream
   Stream<AppUser?> authStateChanges() {
-    return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
-      if (firebaseUser == null) return null;
+    return _firebaseAuth.authStateChanges().asyncExpand((firebaseUser) {
+      if (firebaseUser == null) return Stream<AppUser?>.value(null);
 
-      try {
-        final userDoc = await _userService.getUserById(firebaseUser.uid);
-        if (userDoc == null) return null;
-        return AppUser.fromJson(userDoc.data()!);
-      } catch (e) {
-        return null;
-      }
+      // Auth may emit immediately before signup finishes writing users/{uid}.
+      // Keep listening so the selected Request/Offer path appears without an
+      // app restart and remains current after owner-editable profile updates.
+      return _userService.streamUser(firebaseUser.uid).map((userDoc) {
+        if (!userDoc.exists || userDoc.data() == null) return null;
+        try {
+          return AppUser.fromJson(userDoc.data()!);
+        } catch (_) {
+          return null;
+        }
+      });
     });
   }
 

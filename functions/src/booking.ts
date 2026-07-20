@@ -91,7 +91,10 @@ function hasRequiredVerification(
 ): boolean {
   if (!snapshot.exists) return false;
   const data = snapshot.data();
-  return data?.identityVerified === true && data?.selfieWithIdVerified === true;
+  return data?.emailVerified === true &&
+    data?.phoneVerified === true &&
+    data?.identityVerified === true &&
+    data?.selfieWithIdVerified === true;
 }
 
 function rethrowCallableError(error: unknown, fallback: string): never {
@@ -212,7 +215,7 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       ) {
         throw new functions.https.HttpsError(
           "failed-precondition",
-          "Both participants must complete ID and selfie verification."
+          "Both participants must complete email, phone, ID, and selfie verification."
         );
       }
 

@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../verification/domain/models/verification_model.dart';
+import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 
 /// Home screen showing only two primary options:
@@ -180,11 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               // Already on home
               break;
             case 1:
-              if (marketplacePath.isDriver) {
-                _handleOfferRide(context, verificationAsync);
-              } else {
-                context.push('/trips/create?role=rider');
-              }
+              _handleCreateTrip(context, verificationAsync, marketplacePath);
               break;
             case 2:
               context.push('/chat');
@@ -286,22 +283,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _handleOfferRide(
+  void _handleCreateTrip(
     BuildContext context,
     AsyncValue<UserVerification?> verificationAsync,
+    MarketplacePath marketplacePath,
   ) {
     verificationAsync.when(
       data: (verification) {
-        final canOffer =
-            (verification?.identityVerified ?? false) &&
-            (verification?.selfieWithIdVerified ?? false) &&
-            (verification?.driverLicenseVerified ?? false) &&
-            (verification?.vehicleVerified ?? false);
-        if (canOffer) {
-          context.push('/trips/create?role=driver');
+        final ready = marketplacePath.isDriver
+            ? driverTripVerificationComplete(verification)
+            : participantTripVerificationComplete(verification);
+        if (ready) {
+          context.push('/trips/create?role=${marketplacePath.routeRole}');
           return;
         }
-        _showDriverGate(context, verification);
+        _showVerificationGate(context, verification, marketplacePath);
       },
       loading: () {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -310,17 +306,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         );
       },
-      error: (_, _) => _showDriverGate(context, null),
+      error: (_, _) => _showVerificationGate(context, null, marketplacePath),
     );
   }
 
-  void _showDriverGate(BuildContext context, UserVerification? verification) {
-    final missing = <String>[
-      if (!(verification?.identityVerified ?? false)) 'identity document',
-      if (!(verification?.selfieWithIdVerified ?? false)) 'selfie with ID',
-      if (!(verification?.driverLicenseVerified ?? false)) 'driver license',
-      if (!(verification?.vehicleVerified ?? false)) 'vehicle registration',
-    ];
+  void _showVerificationGate(
+    BuildContext context,
+    UserVerification? verification,
+    MarketplacePath marketplacePath,
+  ) {
+    final driver = marketplacePath.isDriver;
+    final missing = missingTripVerificationItems(verification, driver: driver);
     showModalBottomSheet(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -335,14 +331,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Icon(Icons.verified_user_outlined, color: AppColors.primary),
                   const SizedBox(width: 12),
                   Text(
-                    'Driver verification required',
+                    driver
+                        ? 'Driver verification required'
+                        : 'Trip verification required',
                     style: Theme.of(sheetContext).textTheme.titleLarge,
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
-                'Before offering rides, drivers must complete manual ID, selfie, driver license, and vehicle registration review.',
+                driver
+                    ? 'Before publishing offers, drivers must verify email and phone, then complete manual ID, selfie, driver licence, and vehicle review.'
+                    : 'Before publishing a ride or delivery request, riders and senders must verify email and phone, then complete manual ID and selfie review.',
                 style: Theme.of(sheetContext).textTheme.bodyMedium,
               ),
               if (missing.isNotEmpty) ...[
@@ -356,7 +356,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   context.push('/verification');
                 },
                 icon: const Icon(Icons.upload_file),
-                label: const Text('Open verification'),
+                label: const Text('Complete verification'),
               ),
             ],
           ),

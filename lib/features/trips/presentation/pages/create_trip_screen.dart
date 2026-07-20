@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../copilot/domain/copilot_draft.dart';
+import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
@@ -94,19 +95,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     final effectiveRole = accountPath.isDriver ? 'offer' : 'request';
     final offering = effectiveRole == 'offer';
     final userId = FirebaseAuth.instance.currentUser?.uid;
-    final driverReady =
-        !offering ||
-        (userId != null &&
-            ref
-                .watch(verificationStatusProvider(userId))
-                .maybeWhen(
-                  data: (verification) =>
-                      (verification?.identityVerified ?? false) &&
-                      (verification?.selfieWithIdVerified ?? false) &&
-                      (verification?.driverLicenseVerified ?? false) &&
-                      (verification?.vehicleVerified ?? false),
-                  orElse: () => false,
-                ));
+    final verificationAsync = userId == null
+        ? const AsyncValue.data(null)
+        : ref.watch(verificationStatusProvider(userId));
+    final tripReady = verificationAsync.maybeWhen(
+      data: (verification) => offering
+          ? driverTripVerificationComplete(verification)
+          : participantTripVerificationComplete(verification),
+      orElse: () => false,
+    );
     return Scaffold(
       appBar: AppBar(title: Text(offering ? 'Offer a Ride' : 'Request a Trip')),
       body: Form(
@@ -129,20 +126,24 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                     Expanded(
                       child: Text(
                         offering
-                            ? 'You are the driver/courier and receive payment. Approved ID, selfie, driver license, and vehicle registration are required.'
-                            : 'You are the rider/sender and paying side. This posts what you need; it does not confirm a booking.',
+                            ? 'You are the driver/courier and receive payment. Email, phone, ID, selfie, driver license, and vehicle verification are required.'
+                            : 'You are the rider/sender and paying side. Email, phone, ID, and selfie verification are required before publishing. A request does not confirm a booking.',
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            if (offering && !driverReady) ...[
+            if (!tripReady) ...[
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => context.push('/verification'),
                 icon: const Icon(Icons.verified_user_outlined),
-                label: const Text('Complete driver and vehicle verification'),
+                label: Text(
+                  offering
+                      ? 'Complete driver and vehicle verification'
+                      : 'Complete email, phone, ID, and selfie verification',
+                ),
               ),
             ],
             const SizedBox(height: 20),
@@ -262,7 +263,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
               const SizedBox(height: 12),
             ],
             FilledButton.icon(
-              onPressed: state is AsyncLoading || !driverReady ? null : _submit,
+              onPressed: state is AsyncLoading || !tripReady ? null : _submit,
               icon: state is AsyncLoading
                   ? const SizedBox.square(
                       dimension: 18,
