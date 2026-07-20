@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.9 candidate source: 119 files, 0 changes |
-| Static analysis | `flutter analyze` | PASS | v1.0.9 candidate source: `No issues found!` |
-| Flutter suite | `flutter test` | PASS | v1.0.9 candidate source: 25/25 tests |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.10 candidate source: 121 files, 0 changes |
+| Static analysis | `flutter analyze` | PASS | v1.0.10 candidate source: `No issues found!` |
+| Flutter suite | `flutter test` | PASS | v1.0.10 candidate source: 30/30 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
 | Functions contracts | Booking/cancellation, lifecycle, matching, support, trip-scoped conversations, projections, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | Current Functions source: 28/28 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 9/9 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
 | Callable integration | Proposal/payment boundary, idempotency, verification, chat, start, completion, rating, and emergency cancellation | PASS | 7/7 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.9 universal debug and optimized profile builds passed; code `20260723` |
+| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.10 universal debug and optimized profile builds passed; code `20260724` |
 
 ## Copilot behavior
 
@@ -90,10 +90,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Fresh-install end-to-end run #2 | PASS (emulator) | Exact anonymously downloaded public v1.0.9 profile APK clean install, fictional rider sign-in, manual map pin/attribution, voice service/audio startup, payment gate, paid Chat, completed-only Past, and rating entry passed. Physical-phone repetition remains pending. |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Tagged judge APK candidate | PASS (prerelease) | v1.0.9 private source `ab79213` is tree-equivalent to sanitized/tagged source `ef2eecb7`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested stable rollback. |
-| Public sanitized repository | PASS | Draft PR branch was pushed without force; v1.0.9 tag source is `ef2eecb7`. Artifact-evidence checkpoint `a064e7aa` contains 91 reachable revisions, 0 forbidden private config/credential path objects, and 0 high-signal secret-hit files; a mapping-only tail may advance the branch. The original private repository still has no remote. |
-| Published APK download and hash comparison | PASS | Public v1.0.9 asset downloaded anonymously; 85,276,819 bytes and SHA-256 `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1` exactly match local and GitHub's digest. |
-| Published APK install | PASS (emulator) | Exact downloaded v1.0.9 asset clean-installed and authenticated as the fictional rider, then separately tested in an authenticated driver session. Map/voice, Past/rating, payment lock, paid Chat, truthful driver labels, and lifecycle controls passed on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone install remains pending. |
+| Tagged judge APK candidate | PASS (prerelease) | v1.0.10 private source `9b92625` is tree-equivalent to sanitized/tagged source `fe73ad55`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested rollback. |
+| Public sanitized repository | PASS | Draft PR branch was pushed without force; v1.0.10 tag source is `fe73ad55`. Evidence commit `25f2adf2` and mapping tail `94acd6ed` are public; reachable history contains 0 forbidden private config/credential path objects and 0 concrete high-signal secret signatures. The original private repository still has no remote. |
+| Published APK download and hash comparison | PASS | Public v1.0.10 asset downloaded anonymously; 85,276,887 bytes and SHA-256 `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59` exactly match local and GitHub's digest. |
+| Published APK install | PASS (emulator) | Exact downloaded v1.0.10 asset installed and authenticated as the fictional rider. Verification, both full-field map actions, Trips tabs, paid Chat, cancellation confirmation, Settings, Support, Payments, Notifications, Copilot, and microphone permission passed on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone install remains pending. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -195,6 +195,30 @@ available.
 ## Release gate
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
+
+## Public v1.0.10 verification/map/action-audit prerelease candidate
+
+- Exact APK source: private `9b92625f20912607d3c7ce32db9902fc76971eae`;
+  tree-equivalent sanitized/tagged
+  `fe73ad5509ac348f120b025688eee1abd2c009d8`.
+- Format/analyze/Flutter: 121 files/0 changed, 0 issues, 30/30.
+- Functions/contracts: TypeScript build PASS and 28/28; Firestore/Storage rules 9/9;
+  authenticated callable integration 7/7.
+- Public profile APK: 85,276,887 bytes; SHA-256
+  `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`;
+  package `com.fitareeaee.app`, version `1.0.10` / code `20260724`, min API 24,
+  target/compile API 36.
+- Anonymous download exactly matched local bytes and GitHub's asset digest. That
+  exact downloaded copy installed, cold-launched, and authenticated as the fictional
+  rider. Verification Center, origin and destination full-field map launch, all
+  Trips tabs, paid-confirmed Chat, safe cancellation confirmation, Settings,
+  Support, Payments, Notifications, Copilot examples, and microphone permission
+  passed; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches were found.
+- Public release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.10`.
+- Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.10/app-profile.apk`.
+- Physical phone: PENDING while disconnected. Stable v1.0.5 remains the rollback.
 
 ## Public v1.0.9 truthful-status prerelease candidate
 

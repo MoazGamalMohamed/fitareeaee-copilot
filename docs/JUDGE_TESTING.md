@@ -8,20 +8,22 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
 > and app-specific crash logs passed on that exact public artifact.
 
-> Superseding candidate: v1.0.9 includes interactive origin/destination map pins,
+> Superseding candidate: v1.0.10 includes interactive origin/destination map pins,
 > reliable English/Arabic speech-service discovery, completed-only Past Trips,
 > payment-gated chat, closed completed chat, one-time ratings, and permanently
 > visible linked OpenStreetMap attribution. It also labels active and completed
-> owned trips truthfully instead of deriving a misleading `Full` label from
-> availability. Its 25/25 Flutter tests, backend/rules
+> owned trips truthfully, parses nullable legacy verification records safely, and
+> makes the complete From/To fields open the map instead of requiring a small icon.
+> Its 30/30 Flutter tests, backend/rules
 > gates, and API 36 authenticated lifecycle smoke pass. The
-> [v1.0.9 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9)
-> is public and its 85,276,819-byte APK was anonymously redownloaded, SHA-256
+> [v1.0.10 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.10)
+> is public and its 85,276,887-byte APK was anonymously redownloaded, SHA-256
 > matched, clean-installed, authenticated as the fictional rider, and tested. A
-> separate authenticated driver update tested the driver controls. Keep using stable v1.0.5
-> below until the exact v1.0.9 download is tested on the owner's phone.
+> separate authenticated driver update tested the driver controls. Keep v1.0.5 as
+> the phone-tested rollback until the exact v1.0.10 download is tested on the owner's
+> phone.
 
-Final artifact: universal profile APK, 83,378,603 bytes, SHA-256
+Phone-tested rollback: universal profile APK, 83,378,603 bytes, SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
 private release-gate source `4630703b5a69e151d07d6e6c9683deced6298302`
 and tree-equivalent sanitized source
@@ -29,14 +31,14 @@ and tree-equivalent sanitized source
 `1.0.5` / code `20260719`, cold-launched on a Motorola phone, and produced zero
 matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
-## Final release information
+## Current judge candidate
 
 - Final source branch: [agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support)
 - Repository root/support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.5/app-profile.apk)
+- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.10/app-profile.apk)
 - Build type: universal AOT profile Android judge APK, debug-signed for sideloading
-- SHA-256: `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`
-- Source tag/commit: `fitareeaee-copilot-v1.0.5` / sanitized `6d67f306203886d3d1623f9966f36764589b9cfb`
+- SHA-256: `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`
+- Source tag/commit: `fitareeaee-copilot-v1.0.10` / sanitized `fe73ad5509ac348f120b025688eee1abd2c009d8`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
@@ -49,7 +51,7 @@ GPT-5.6 draft and one transparent live match. The match opened Trip Details; a
 separate seeded paid/confirmed fixture opened participant Chat and rendered a
 fictional realtime message. No real payment or real identity is involved.
 
-New bookings in v1.0.5 are deliberately **not confirmed before payment**. Since
+New bookings in v1.0.10 are deliberately **not confirmed before payment**. Since
 the contest build has no real payment provider, selecting a trip or driver creates
 only a pending-payment record and does not decrement seats or unlock chat. Use the
 seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.

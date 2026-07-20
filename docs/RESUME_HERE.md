@@ -1,12 +1,11 @@
 # Resume Here
 
-Last updated: 2026-07-20 06:08 CDT / 2026-07-20 04:08 PDT
+Last updated: 2026-07-20 06:29 CDT / 2026-07-20 04:29 PDT
 
 ## Current objective
 
-Publish the passing v1.0.10 verification/map/action-audit checkpoint through the
-sanitized clone after GitHub authentication is refreshed, anonymously re-download
-and verify it, then install that exact artifact on the owner's reconnected phone.
+Install the already-published and anonymously verified v1.0.10 artifact on the
+owner's reconnected phone and complete the physical release gate.
 Finish the video, `/feedback`, legal review, and owner-performed Devpost submission.
 Do not replace the payment gate with simulated money.
 
@@ -15,26 +14,24 @@ Do not replace the payment gate with simulated money.
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
 - Passing private application source: `9b92625f20912607d3c7ce32db9902fc76971eae`
-- v1.0.10 evidence is appended in `docs/BUILD_WEEK_PROGRESS.md` but still needs its
-  own private evidence commit after this resume update.
+- Private v1.0.10 evidence commit: `ffa6e34811e4682a7ea8ce01990a645bcecdc86f`.
+- Private publication mapping tail: `6a26a131b682e2c139fef413322b1b5938465a45`.
 - Private v1.0.9 local-evidence commit: `d23cafdc83923e00aa16b678d63e893c11464445`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Recorded public v1.0.9 artifact/driver-smoke evidence checkpoint:
-  `a064e7aa69757a17d8ebf8341ff74c917d18cfcc`. A later mapping-only tail may
-  advance the branch; use `git ls-remote` for the current remote head.
+- Public v1.0.10 source: `fe73ad5509ac348f120b025688eee1abd2c009d8`.
+- Public v1.0.10 evidence commit: `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2`.
+- Public branch head/mapping tail: `94acd6ede1b9eb8f5039e9782d21654b10c04da3`.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- PR #1 head is current and mergeable. Its title/body still say v1.0.8 because the
-  connected GitHub integration returned HTTP 403 for metadata and comment writes;
-  this does not affect the pushed v1.0.9 source, tag, release, or direct APK. Update
-  the PR wording manually only if write access is not restored before submission.
-- Public v1.0.9 is still the latest published prerelease at sanitized application
-  source `ef2eecb7`. Local v1.0.10 has not yet been represented as public.
-- GitHub CLI 2.96.0 is installed at the WinGet user link, but `gh auth status`
-  reports the stored token is invalid. The owner must run
-  `gh auth refresh -h github.com` before the supported CLI publish/release path.
+- PR #1 is current, draft, unmerged, and titled for v1.0.10.
+- Public v1.0.10 is the latest published prerelease at sanitized application source
+  `fe73ad55`.
+- GitHub CLI 2.96.0 is installed at the WinGet user link. Its normal auth status
+  still reports an invalid stored token, but the existing Git Credential Manager
+  credential supported the scoped release and PR updates without printing or
+  persisting the token.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
 
@@ -105,15 +102,15 @@ Do not replace the payment gate with simulated money.
 - v1.0.9 additionally fixes owned-trip badges: the active trip now says Confirmed
   and the past trip Completed, while driver chat/start/emergency actions remain.
 - Physical v1.0.10 phone result: PENDING because the owner disconnected the phone.
-- Public v1.0.9 release:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9`
-- Public v1.0.9 APK:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.9/app-profile.apk`
-- Anonymous re-download: `build/published-download-v109/app-profile.apk`; exact
-  85,276,819-byte/hash/byte match. The downloaded copy clean-installed and signed
-  in as the fictional rider; Home/manual map, voice service, payment lock, paid Chat,
-  Past, rating, and final app-specific log scan passed. A separate driver-session
-  update passed My Trips and active lifecycle controls on API 36.
+- Public v1.0.10 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.10`
+- Public v1.0.10 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.10/app-profile.apk`
+- Anonymous re-download: `build/published-download-v110/app-profile.apk`; exact
+  85,276,887-byte/hash/byte match. The downloaded copy installed and authenticated
+  as the fictional rider; Verification, both map actions, Trips, paid Chat,
+  cancellation confirmation, Settings, Support, Payments, Notifications, Copilot,
+  microphone permission, and the final app-specific log scan passed on API 36.
 - Phone-tested rollback remains public v1.0.5.
 
 ## Remaining owner-only actions
@@ -129,13 +126,12 @@ Do not replace the payment gate with simulated money.
 6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
 7. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
-8. Refresh GitHub CLI authentication, publish v1.0.10 from the sanitized clone, and
-   update draft PR #1's stale title/body if write access is restored.
+8. No further GitHub source/release action is needed unless the phone gate passes;
+   then promote the existing prerelease without replacing its APK bytes.
 
 ## Exact next action
 
-First refresh GitHub CLI authentication, synchronize/rescan the sanitized clone,
-publish v1.0.10 as a prerelease, and verify an anonymous re-download matches the
-local hash. When the phone returns, install those exact public bytes and run Home,
+When the phone returns, install the already-downloaded exact public v1.0.10 bytes
+and run Home,
 Copilot, verification, both map fields, matches/details/payment-gate, seeded paid
 Chat/Past/rating, and driver lifecycle. Promote only if every phone check passes.

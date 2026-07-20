@@ -3135,3 +3135,54 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   Next action: commit this evidence, synchronize and rescan the sanitized clone, then
   publish/tag the exact v1.0.10 bytes once GitHub authentication is refreshed; install
   and smoke the exact downloaded asset on the physical phone when reconnected.
+
+## 2026-07-20 06:29 CDT / 2026-07-20 04:29 PDT - v1.0.10 sanitized publication and exact-public emulator gate
+
+- Objective: publish the already passing verification/map/action-audit checkpoint
+  without exposing private configuration, then independently download and test the
+  exact bytes available to judges.
+- Private checkpoint chain: application source
+  `9b92625f20912607d3c7ce32db9902fc76971eae`; evidence
+  `ffa6e34811e4682a7ea8ce01990a645bcecdc86f`; publication mapping tail
+  `6a26a131b682e2c139fef413322b1b5938465a45`. Annotated private tag
+  `fitareeaee-copilot-v1.0.10` peels to the application source commit.
+- Sanitized checkpoint chain: tree-equivalent application source
+  `fe73ad5509ac348f120b025688eee1abd2c009d8`; evidence
+  `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2`; public branch/mapping tail
+  `94acd6ede1b9eb8f5039e9782d21654b10c04da3`. The annotated public tag object
+  `ea83b9f038d0ddf2c8e5c759816e504a9227b627` peels to `fe73ad55`.
+- Compared all 342 tracked paths in the private and sanitized application-source
+  trees: exact match, with no missing, extra, or content-different tracked file.
+- Scanned every reachable sanitized revision before push: zero forbidden sensitive
+  paths such as `.env`, `google-services.json`, keystores, PEM files, or service
+  accounts, and zero concrete OpenAI, Google, GitHub, Stripe, or private-key secret
+  signatures. Generic `OPENAI_API_KEY` documentation references are placeholders,
+  not credentials.
+- Pushed the sanitized branch and annotated tag without force. Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.10`.
+  Direct judge APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.10/app-profile.apk`.
+- Updated draft PR #1's title/body to the v1.0.10 scope and exact validation values
+  through a scoped GitHub CLI fallback after the connected GitHub app returned 403.
+  The PR remains draft, open, and unmerged; no branch history was rewritten.
+- GitHub reports `app-profile.apk`, label
+  `Fitareeaee-Copilot-v1.0.10-profile.apk`, Android-package content type,
+  85,276,887 bytes, and the expected SHA-256 digest. The published release remains
+  accurately labeled prerelease until physical-phone validation.
+- Downloaded the public URL anonymously with redirects/retry to
+  `build/published-download-v110/app-profile.apk`. The downloaded file is exactly
+  85,276,887 bytes with SHA-256
+  `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`,
+  exactly matching the local candidate and GitHub digest.
+- Installed that exact downloaded copy over the authenticated API 36 emulator,
+  cold-launched it, confirmed package `com.fitareeaee.app`, version `1.0.10` / code
+  `20260724`, and observed the UI render with zero app-specific fatal, Flutter,
+  FirebaseFailure, raw-error, or ANR matches. This is an exact-public emulator PASS.
+- No Firebase deploy, user/admin privilege mutation, production data deletion,
+  billing change, PR merge, or stable-release promotion occurred. The live admin UI
+  is still not claimed as exercised because no authorized admin fixture was created;
+  its callable/rules and focused action contracts pass.
+- Rollback: phone-tested public v1.0.5 remains available. Physical v1.0.10 phone
+  install/smoke is pending because the owner intentionally disconnected the phone.
+  Next action: update judge-facing current-version references, push that docs-only
+  checkpoint, then install this exact downloaded APK when the phone reconnects.

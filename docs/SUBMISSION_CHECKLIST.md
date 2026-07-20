@@ -151,7 +151,15 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   `1.0.9` / code `20260723`, Confirmed and Completed owned-trip labels, paid
   driver lifecycle controls, confirmed chat, and 0 app-specific
   fatal/Flutter/FirebaseFailure/ANR matches.
-- [ ] Install that exact public v1.0.9 download on the owner's reconnected phone,
+- [x] Publish v1.0.10 source/tag/prerelease; anonymously redownload and byte-match
+  85,276,887 bytes and SHA-256
+  `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`.
+- [x] Install that exact public v1.0.10 download on API 36; verify version
+  `1.0.10` / code `20260724`, Verification Center, both full-field map actions,
+  Trips tabs, paid chat, cancellation confirmation, Settings, Support, Payments,
+  Notifications, Copilot, microphone permission, and 0 app-specific fatal/Flutter/
+  FirebaseFailure/ANR matches.
+- [ ] Install that exact public v1.0.10 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials
@@ -162,15 +170,16 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.9
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.10
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on
   repository authentication. The still-missing YouTube/Devpost fields remain below.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
-- [x] Capture and visually inspect final screenshots from the exact public v1.0.9
-  APK using fictional data and no credentials, real identity data, or private
-  notifications; add an editable architecture graphic.
+- [x] Capture and visually inspect representative screenshots from the exact public
+  v1.0.9 APK using fictional data and no credentials, real identity data, or private
+  notifications; add an editable architecture graphic. The v1.0.10 UI changes were
+  separately inspected during its exact-public emulator smoke.
 - [x] Audit repository packages and fictional fixture data; retain package notices
   and permanent linked OpenStreetMap attribution.
 - [ ] Owner confirms authorization for launcher artwork and audits final screenshots
@@ -197,5 +206,5 @@ Exact owner steps and the inherited Function set are recorded in
 
 1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Exact-public v1.0.9 phone install/smoke, YouTube upload, `/feedback`, private
+3. Exact-public v1.0.10 phone install/smoke, YouTube upload, `/feedback`, private
    credential placement, legal confirmation, and final Devpost submit action.
