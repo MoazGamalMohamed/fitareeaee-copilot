@@ -194,6 +194,13 @@ Firestore failure or matching app crash logs. The judge artifact is debug-signed
 for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
+The superseding
+[v1.0.6 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6)
+adds the mapped voice-enabled lifecycle. Its public 85,293,151-byte APK was
+redownloaded, hash-matched, clean-installed, and cold-launched on API 36. It
+remains a prerelease until that exact public download passes the physical-phone
+smoke; v1.0.5 remains the stable rollback meanwhile.
+
 ## Codex collaboration
 
 Codex audited the inherited repository, preserved an honest baseline, checked current official rules and OpenAI guidance, implemented the new vertical slice, wrote security contracts, repeatedly ran the complete gate, built and smoke-tested Android APK checkpoints, and maintained the append-only evidence record. Human decisions defined the problem, track, safety boundaries, product name, Firebase project, budget cap, release authority, and final legal submission.

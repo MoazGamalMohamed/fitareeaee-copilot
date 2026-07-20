@@ -188,9 +188,9 @@ available.
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
 
-## Local v1.0.6 lifecycle/map/voice candidate
+## Public v1.0.6 lifecycle/map/voice prerelease candidate
 
-- Source: private `47f49ce`.
+- Source: private `47f49ce`; tree-equivalent sanitized/tagged `9194066a`.
 - Format/analyze/Flutter: 115 files/0 changed, 0 issues, 19/19.
 - Functions/rules/integration: 28/28, 9/9, 7/7.
 - Authenticated emulator UI: Home role actions, manual request form, interactive map
@@ -211,7 +211,15 @@ Before submission, rerun and record all mandatory commands on the exact tagged r
   logs. Universal emulator install was blocked only by emulator free space.
 - Physical phone: NOT RETESTED for v1.0.6; user reserved/disconnected it during this
   checkpoint. Existing v1.0.5 phone evidence must not be relabeled as v1.0.6.
-- Publication: pending because `gh` is missing; stable public v1.0.5 remains intact.
+- Publication: PASS as an accurately labeled prerelease. Sanitized branch head
+  `455a8706`, draft PR #1, annotated tag `fitareeaee-copilot-v1.0.6` (peels to
+  `9194066a`), and the 85,293,151-byte APK are public without force-push.
+- Public-download verification: PASS. Anonymous download to
+  `build/published-download-v106/app-profile.apk` exactly matched SHA-256
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`;
+  clean API 36 install/cold launch reached visible Login/Welcome, version
+  `1.0.6` / code `20260720`, top-resumed process, and 0 app-specific fatal/error
+  matches. Stable public v1.0.5 remains intact pending the phone gate.
 
 ## Superseding v1.0.5 judge candidate
 

@@ -24,7 +24,7 @@ exist only in owner-restricted, Git-ignored `.judge-credentials.local.json`.
 Keep the eventual judge login credentials only in the private Devpost testing
 field, not the public repository, video, screenshots, or progress log.
 
-### 3. GitHub publication — v1.0.5 complete; v1.0.6 pending
+### 3. GitHub publication — v1.0.6 prerelease complete; phone gate pending
 
 The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
@@ -35,10 +35,11 @@ annotated tag, stable judge release, and direct APK are published. The public AP
 redownloaded and its exact size/SHA-256 were verified before phone installation.
 
 The superseding v1.0.6 lifecycle/map/voice source and 85,293,151-byte profile APK
-are passing locally and on the API 36 emulator. Publication is waiting for GitHub
-CLI installation/authentication; physical testing is waiting for the phone to be
-reconnected. Do not replace the v1.0.5 links until the new public download is
-hash-matched and installed from that same URL.
+are published as an accurately labeled prerelease. The public APK was anonymously
+redownloaded, matched the local size/SHA-256 exactly, and passed a clean API 36
+install/cold launch with zero app-specific fatal/error matches. Physical testing is
+waiting for the phone to be reconnected. Do not promote v1.0.6 to stable or replace
+the final v1.0.5 Devpost fields until that same public download passes on the phone.
 
 ### 4. Approve or decline inherited Function retirement
 

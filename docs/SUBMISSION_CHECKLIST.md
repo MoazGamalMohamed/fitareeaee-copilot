@@ -120,8 +120,10 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   authenticated Home, Chat empty state, manual Request form, and crash-log scan pass.
 - [x] Build and emulator-test the v1.0.6 lifecycle/map/voice profile candidate;
   verify package/version/API metadata and its expected debug signature.
-- [ ] Publish sanitized v1.0.6 source/tag/APK, redownload and hash-match it, then
-  install that downloaded copy on the owner's reconnected phone.
+- [x] Publish sanitized v1.0.6 source/tag/prerelease APK; anonymously redownload,
+  hash-match, clean-install, and cold-launch it on API 36.
+- [ ] Install that exact public v1.0.6 download on the owner's reconnected phone,
+  run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials
 

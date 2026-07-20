@@ -1,28 +1,30 @@
 # Resume Here
 
-Last updated: 2026-07-19 22:56 CDT / 2026-07-19 20:56 PDT
+Last updated: 2026-07-19 23:47 CDT / 2026-07-19 21:47 PDT
 
 ## Current objective
 
-Publish and phone-test the locally passing v1.0.6 lifecycle/map/voice checkpoint,
-then finish owner-required credential rotation, video, `/feedback`, legal review,
-and Devpost submission. Do not restart the audit or replace the payment gate with
+Phone-test and promote the published v1.0.6 lifecycle/map/voice prerelease, then
+finish owner-required credential rotation, video, `/feedback`, legal review, and
+Devpost submission. Do not restart the audit or replace the payment gate with
 simulated money.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private source: `47f49ce` (documentation follow-up commit may be newer)
+- Passing private source: `47f49ce`; current private evidence head `add3cc2`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Passing sanitized source: `6d67f306203886d3d1623f9966f36764589b9cfb`
-- Private/public tree: `eb32120d74af47cc0e604729055b4e67d92f2aa9`
+- Passing sanitized source/tag: `9194066a38777d8fba9fd9b84810f688f5bc3a2e`
+- Current sanitized branch head: `455a8706f6443832f1f48928c21686998fc65d83`
+- Private/public tree: `1d84b1b414dbd3b4d5dee81c8db3a97db4940fcd`
 - Draft PR #1 is open and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- Annotated tag `fitareeaee-copilot-v1.0.5` exists locally/remotely and peels to
-  `6d67f306`. No force push was used.
+- Annotated tag `fitareeaee-copilot-v1.0.6` exists locally/remotely and peels to
+  `9194066a`. The matching APK is an accurately labeled prerelease; no force push
+  was used. v1.0.5 remains the stable rollback.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan.
 
@@ -84,9 +86,13 @@ simulated money.
 - Version: `1.0.6` / code `20260720`
 - API 36 emulator: clean install and cold launch PASS; fictional judge login and
   authenticated Home actions PASS; no matching app fatal/Flutter/bootstrap/ANR log.
-- v1.0.6 GitHub link and physical-phone result: PENDING (`gh` unavailable; phone
-  reserved by owner). Do not replace the stable v1.0.5 public links below until the
-  new artifact is uploaded, redownloaded, hash-matched, and device-tested.
+- Public v1.0.6 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6`
+- Public v1.0.6 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.6/app-profile.apk`
+- Public re-download path: `build/published-download-v106/app-profile.apk`; exact
+  size/hash match PASS; clean API 36 install/cold launch/Login/top-resumed/0 fatal
+  matches PASS. Physical-phone result remains PENDING while the phone is disconnected.
 
 - Local profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Public re-download path: `build/published-download-v105/app-profile.apk`
@@ -122,7 +128,7 @@ simulated money.
 
 ## Exact next action
 
-Install/authenticate GitHub CLI so `github:yeet` can publish the sanitized v1.0.6
-checkpoint. Download/hash-test the published artifact, install it on the connected
-phone, run the final demo-path smoke, then open `docs/DEMO_SCRIPT.md` and follow
+Reconnect the owner's phone, install the exact public v1.0.6 download, run the final
+demo-path smoke and app-specific log scan, then promote the prerelease to stable and
+replace the final v1.0.5 Devpost fields. Open `docs/DEMO_SCRIPT.md` and follow
 `docs/SUBMISSION_CHECKLIST.md`. Preserve v1.0.5 as the rollback release.

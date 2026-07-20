@@ -2302,3 +2302,77 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: commit this append-only evidence entry, then publish sanitized v1.0.6
   when `gh` is available, redownload/hash-test the public asset, and install that
   exact download on the reconnected phone for the final smoke.
+
+## 2026-07-19 23:47 CDT / 2026-07-19 21:47 PDT - sanitized v1.0.6 prerelease published and emulator-verified
+
+### Objective and outcome
+
+- Unblocked the required `github:yeet` flow without installing unverified software:
+  downloaded GitHub CLI 2.94.0's official Windows archive and checksum into ignored
+  `build/`, resumed one timed-out partial transfer, and verified SHA-256
+  `C0766AF54195DFA0BCD9A0CB63A45C313FBAFFDEBB9F736F666E9BA4BE8C91E8`
+  before extraction. Existing Git Credential Manager authentication was supplied to
+  the process in memory only; no credential was printed, persisted, or added to Git.
+- Replayed only the five reviewed post-v1.0.5 commits into the separate sanitized
+  publication clone, then added the explicit private-to-sanitized v1.0.5/v1.0.6
+  mapping. The private repository still has no remote and was not pushed.
+- Pushed the existing sanitized branch without force, updated draft PR #1, created
+  the annotated v1.0.6 tag at the exact sanitized application-source commit, and
+  published the universal APK as an accurately labeled prerelease pending phone test.
+- Anonymously downloaded the APK from the public judge URL, verified byte-for-byte
+  equality, and clean-installed that downloaded copy on the API 36 emulator.
+
+### GitHub and sanitization evidence
+
+- Private application source: `47f49ce72504d90446058c9ea2dc3e3db845e3d4`.
+- Sanitized application source/tag target:
+  `9194066a38777d8fba9fd9b84810f688f5bc3a2e`.
+- Private evidence head before this publication record: `add3cc2`; sanitized branch
+  head: `455a8706f6443832f1f48928c21686998fc65d83`.
+- Private/sanitized tree equality: PASS at
+  `1d84b1b414dbd3b4d5dee81c8db3a97db4940fcd`.
+- Reachable sanitized revisions: 78; forbidden credential/config path objects: 0;
+  high-signal secret-bearing revision paths: 0.
+- Remote branch verification: `agent/payment-gated-chat-trip-support` equals
+  sanitized `455a8706`; no force push.
+- Draft PR #1 remains open, draft, and unmerged:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+  The GitHub app returned `403` for PR editing, so the skill-prescribed authenticated
+  CLI fallback updated only its title/body.
+- Annotated tag: `fitareeaee-copilot-v1.0.6`; remote tag object `e6e3ed78`; peeled
+  source `9194066a`.
+- Prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6`.
+- Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.6/app-profile.apk`.
+
+### Published APK and emulator verification
+
+- Local/public-download size: 85,293,151 / 85,293,151 bytes.
+- Local/public-download SHA-256:
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0` /
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+- Public re-download path: `build/published-download-v106/app-profile.apk`.
+- Clean API 36 install: PASS via streamed install.
+- Cold launch: PASS; status `ok`, `MainActivity`, total time 20.019 seconds.
+- Visible state: Login / Welcome Back; `MainActivity` top-resumed; process alive.
+- Installed metadata: package `com.fitareeaee.app`, version `1.0.6`, code `20260720`,
+  min API 24, target API 36.
+- App-specific `FATAL EXCEPTION` / process crash / `E/flutter` / `FirebaseFailure` /
+  Firebase bootstrap / app ANR scan: PASS; 0 matches.
+- The same APK bytes previously passed fictional judge authentication and Home/map/
+  voice/role/Past UI smoke before publication; the anonymous redownload integrity
+  match proves the published asset is byte-identical to that tested candidate.
+
+### Recovery and next action
+
+- v1.0.6 intentionally remains a prerelease because the owner's phone is currently
+  disconnected. Existing v1.0.5 remains the stable rollback and its phone evidence
+  is not relabeled as v1.0.6.
+- Phone installation, authenticated demo-path smoke, and app-specific log scan are
+  the next engineering action when the device reconnects. After they pass, promote
+  v1.0.6 to stable, update the final README/judge/Devpost release fields, redownload
+  once more if the asset changes (it should not), and record the physical result.
+- Remaining owner-only actions are provider-side legacy credential rotation, video,
+  private judge credential placement, `/feedback`, legal review, and the final
+  Devpost submit action.

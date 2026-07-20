@@ -189,8 +189,8 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **DONE:** stable v1.0.5 fallback APK URL, size, and SHA-256
-- **PENDING:** replace the test-build fields with v1.0.6 only after publication,
-  public redownload/hash verification, and physical-phone smoke
+- **PENDING:** replace the test-build fields with the already published/hash-matched
+  v1.0.6 prerelease only after physical-phone smoke and stable promotion
 - **DONE:** release tag `fitareeaee-copilot-v1.0.5` / sanitized source commit `6d67f306203886d3d1623f9966f36764589b9cfb`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
