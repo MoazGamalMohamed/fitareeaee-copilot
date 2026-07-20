@@ -22,7 +22,10 @@ Do not replace the payment gate with simulated money.
 - Public branch: `agent/payment-gated-chat-trip-support`
 - Public v1.0.10 source: `fe73ad5509ac348f120b025688eee1abd2c009d8`.
 - Public v1.0.10 evidence commit: `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2`.
-- Public branch head/mapping tail: `94acd6ede1b9eb8f5039e9782d21654b10c04da3`.
+- Public pre-handoff mapping tail: `94acd6ede1b9eb8f5039e9782d21654b10c04da3`.
+- Public v1.0.10 judge-handoff documentation checkpoint:
+  `6ce1141d8d9283adffc79986cc835bf632e75be1`. A later mapping-only tail may
+  advance the branch without changing application source or APK bytes.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
 - PR #1 is current, draft, unmerged, and titled for v1.0.10.
