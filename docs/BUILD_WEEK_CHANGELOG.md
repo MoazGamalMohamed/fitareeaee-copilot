@@ -67,6 +67,13 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 - Constrained avatar and verification uploads to exact image paths, types, and a 5 MB maximum enforced by Storage rules and Functions.
 - Removed simulated-money controls from the submitted experience; added English/Arabic and currency display preferences while keeping the demonstrated shell in English and avoiding any claim of live currency conversion.
 - Added the MIT license, judge-ready README, test matrix, privacy/safety notes, Devpost copy, 2:40 demo script, judge instructions, and final checklist.
+- Added server-authoritative driver proposals for rider trip requests. A manually
+  verified driver can quote within the rider's budget; direct contact details are
+  redacted, the rider selects the proposal, and the booking remains pending payment.
+- Enforced that drivers never pay, seats do not change, and direct chat does not open
+  until a trusted server marks the selected booking both paid and confirmed.
+- Restored visible manual Request a Trip and verification-gated Offer a Ride paths,
+  while keeping Plan with AI as a Home-only assisted entry point.
 
 ## Before and after
 
@@ -85,20 +92,24 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
-The Stage 2 feature commit is `200ead32a1e075f28a32d117c6c8ee7113ddd212`; its passing evidence commit and `build-week-stage2-local` tag point to `3ddeaae13ce4852d1a8744cd8e7204e0fcb8bec9`. The hardened Stage 3 local tag points to `31deb8c8dc132f1768e19b55b3676fa712865678`. The final APK source is private `832a543cd94c4f5a2a8c17163e73113da85aba24`; its tree-equivalent sanitized public source is `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`, tagged `fitareeaee-copilot-v1.0.3`.
+The current APK source is private
+`4630703b5a69e151d07d6e6c9683deced6298302`; its tree-equivalent sanitized
+public source is `6d67f306203886d3d1623f9966f36764589b9cfb`, tagged
+`fitareeaee-copilot-v1.0.5`. The shared source tree is
+`eb32120d74af47cc0e604729055b4e67d92f2aa9`.
 
 - Flutter format gate: 113 files, 0 changes
 - Flutter analysis: no issues
 - Flutter full-suite result: 19/19 passed, including legacy notification compatibility
 - Focused Copilot tests: 10/10 passed
-- Functions contracts: 19/19 passed
+- Functions contracts: 27/27 passed
 - Firestore/Storage rules contracts: 8/8 passed
-- Real callable Auth/Functions/Firestore emulator integration: 3/3 passed
+- Real callable Auth/Functions/Firestore emulator integration: 5/5 passed
 - Functions TypeScript build: passed
-- Universal debug APK: rebuilt from release source `832a543`; 154,995,438 bytes; Android version code `20260718`
-- Release-gate source checkpoint: private `832a543`; sanitized `c42bc3f`
-- Universal APK SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
-- Universal APK: published, downloaded, hash-matched, installed/cold-launched on a Motorola phone; live GPT-5.6 draft, transparent match, details handoff, transactional fictional booking, confirmed Chat, and realtime message PASS
+- Universal profile APK: rebuilt from v1.0.5 source; 83,378,603 bytes; Android version `1.0.5` / code `20260719`
+- Release-gate source checkpoint: private `4630703`; sanitized `6d67f306`
+- Universal APK SHA-256: `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`
+- Universal APK: published, redownloaded, hash-matched, installed/cold-launched on a Motorola phone; authenticated Home, payment-gated Chat empty state, and manual trip request form PASS
 - Hardened booking, cancellation, verification, trip-scoped chat, projection callables, Firestore rules, Storage rules, and required indexes: deployed and verified on the confirmed `fitareeaee` project
 
 ## Live release status
@@ -107,8 +118,10 @@ The authenticated Copilot callable is deployed to the confirmed `fitareeaee`
 project and uses managed `OPENAI_API_KEY` version 2. Its capped live matrix passed
 for an English ride, an English package, and an Arabic ride request both before
 and after obsolete secret version 1 was destroyed. The public sanitized GitHub
-repository and superseding v1.0.3 APK Release are available. Anonymous HTTP checks
-return 200 for the repository, release, and redirected APK asset. Physical-phone
-testing passed install, cold launch, notification compatibility, a live reviewable
-Copilot draft, transparent matching, details, server-authoritative fictional booking,
-confirmed Chat, and realtime message rendering using only dedicated judge fixtures.
+repository and superseding v1.0.5 APK Release are available. GitHub asset metadata
+and a fresh public download exactly match the recorded size and SHA-256.
+Physical-phone testing passed v1.0.5 install, cold launch, authenticated Home,
+payment-gated Chat empty state, manual trip creation, and app-specific crash logs.
+The earlier live reviewable Copilot draft, transparent matching, details,
+server-authoritative fictional booking, confirmed Chat, and realtime message
+evidence remains recorded against the source-compatible judge fixtures.

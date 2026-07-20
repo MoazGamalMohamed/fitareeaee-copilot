@@ -2014,3 +2014,110 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Final ADB enumeration still showed only `emulator-5554`; the owner's USB phone was
   neither `device` nor `unauthorized`. Exact next physical step: select USB file/data
   transfer, enable USB debugging, accept the RSA prompt, then rerun `adb devices -l`.
+
+## 2026-07-19 19:03 CDT / 2026-07-19 17:03 PDT - v1.0.5 request matching, payment gate, and physical-phone checkpoint
+
+### Objective and completed work
+
+- Closed the remaining functional gap where drivers could see rider requests but
+  could not respond. Added authenticated server-authoritative driver proposals,
+  rider selection, and driver withdrawal.
+- Enforced role and money boundaries: the request owner is the rider/sender and
+  paying party; the verified driver/deliverer never pays. Proposal price cannot
+  exceed the rider's budget, contact details are redacted, and notes are bounded.
+- Added a `potential` match state. Selecting a proposal changes only the booking to
+  `pending_payment` / `required`; it does not decrement seats, confirm the trip,
+  create a conversation, or authorize chat. Paid and confirmed remain jointly
+  required for chat.
+- Fixed multi-proposal UI selection by carrying the selected booking ID into Trip
+  Details. Drivers can submit/withdraw proposals, while riders can choose a specific
+  proposal and continue to the accurately labeled payment-required screen.
+- Preserved visible Home actions for Plan with AI, Request a Trip, and
+  verification-gated Offer a Ride. Manual creation remains the complete editable
+  ride/package form; Plan with AI remains a Home-only assisted entry point.
+
+### Files changed and recovery points
+
+- New: `functions/src/matching.ts` and
+  `functions/src/matching.contract.test.ts`.
+- Updated: Functions exports/test script and booking integration suite; Booking
+  status model; Trip Details and Trips matching UI; Android version metadata;
+  README and judge/release/evidence documentation.
+- Rollback points before this work: private `98012c6178368f7181fdc0f82ae269e1c28af186`;
+  public PR branch `e3a34972f20912caf2a82ecbc697ebf5aa7b5197`.
+- Passing source: private `4630703b5a69e151d07d6e6c9683deced6298302`;
+  sanitized public `6d67f306203886d3d1623f9966f36764589b9cfb`;
+  identical tree `eb32120d74af47cc0e604729055b4e67d92f2aa9`.
+
+### Exact verification results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS, 114 files,
+  0 changed.
+- `flutter analyze --no-pub`: PASS, no issues.
+- `flutter test --no-pub`: PASS, 19/19.
+- `cd functions && npm test`: PASS; TypeScript build PASS; contracts 27/27.
+- Firestore/Storage emulator rule suite: PASS, 8/8. An initial command started
+  Firestore without the Storage emulator and failed during environment setup; the
+  corrected complete two-emulator gate passed every assertion.
+- Auth/Firestore/Functions booking integration: PASS, 5/5. The first attempt hit the
+  Firebase emulator's 10-second function-discovery timeout under host Node 24 and
+  executed no assertions. With `FUNCTIONS_DISCOVERY_TIMEOUT=60000`, all five tests
+  passed, including the new proposal/payment/chat-inventory scenario.
+- `flutter build apk --debug --no-pub`: PASS.
+- `flutter build apk --profile --no-pub`: PASS.
+- Targeted Firebase deployment to the confirmed project `fitareeaee`: PASS for only
+  `proposeForTripRequest`, `selectTripProposal`, and `withdrawTripProposal`. No data,
+  rules, indexes, existing Functions, or billing were removed or changed.
+
+### APK record
+
+- Debug APK: `build/app/outputs/flutter-apk/app-debug.apk`; 155,027,042 bytes;
+  SHA-256 `865E8B5F7DB0737B6C81810A0C72B61EF2183194743B424EFED327E6DDF31BE6`;
+  built 2026-07-19 17:53 CDT / 15:53 PDT.
+- Profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; 83,378,603 bytes;
+  SHA-256 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`;
+  built 2026-07-19 18:01 CDT / 16:01 PDT; version `1.0.5` / code `20260719`.
+- Release URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.5`.
+- Direct APK URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.5/app-profile.apk`.
+- GitHub asset metadata, fresh public re-download, and local build all match exactly:
+  83,378,603 bytes and the SHA-256 above.
+
+### GitHub and device evidence
+
+- Reachable sanitized-history scan: 0 secret-signature hits and 0 forbidden tracked
+  credential/config filenames. Pushed only the passing source to
+  `agent/payment-gated-chat-trip-support`; draft PR #1 remains open and unmerged:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Annotated tag `fitareeaee-copilot-v1.0.5` exists locally and remotely; both peel
+  to public source `6d67f306`. Published an accurately labeled GitHub prerelease;
+  no force push or merge.
+- API 36 emulator: exact public APK clean install PASS; explicit launch PASS;
+  version metadata correct; process/top-resumed PASS; 0 Fitareeaee fatal,
+  `E/flutter`, or app-ANR matches. Pixel Launcher/System UI ANRs remain separate
+  emulator faults.
+- Physical Motorola Moto G Play (2024), serial recorded locally: exact public APK
+  update install PASS; cold launch PASS in 2.587 seconds and again in 1.391 seconds;
+  authenticated Home visibly rendered Plan with AI, Request a Trip, and Offer a
+  Ride; Chat rendered `No conversations yet` plus its paid-confirmed disclosure and
+  did not show the former `FirebaseFailure`; Request a Trip opened the full manual
+  form. Installed version `1.0.5` / `20260719`; process alive; 0 app fatal,
+  Flutter-error, or app-ANR matches.
+- Two accidental phone captures included private notification/message content and
+  were immediately deleted from both host and phone. They are not tracked, retained,
+  or used as evidence. Privacy-safe app-only captures remain in the ignored build
+  directory only.
+
+### Known limits and next action
+
+- No real payment provider is configured. New bookings correctly remain pending
+  payment and cannot consume seats or open chat. The seeded paid/confirmed judge
+  fixture demonstrates chat; no real card should be entered and no payment pass is
+  claimed.
+- Firebase warns that production Node 20 is deprecated and must be upgraded after
+  the contest; the scoped Node 20 deployment succeeded.
+- Remaining owner-only actions: record/upload the final under-three-minute video,
+  privately add judge credentials, run `/feedback` in this primary thread and save
+  the Session ID, complete the final rules/eligibility checkbox review, and perform
+  the legally binding Devpost submission action.

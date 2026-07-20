@@ -30,8 +30,9 @@ The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
 `https://github.com/MoazGamalMohamed/fitareeaee-copilot`; both sanitized branches
 and annotated tags are pushed. The private original still has no remote.
-The current judge release is `fitareeaee-copilot-v1.0.3`; anonymous repository,
-release, and direct-APK checks return HTTP 200.
+The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
+annotated tag, prerelease, and direct APK are published. The public APK was
+redownloaded and its exact size/SHA-256 were verified before phone installation.
 
 ### 4. Approve or decline inherited Function retirement
 
@@ -90,6 +91,16 @@ Revoke/rotate both in their provider consoles and update or remove the obsolete
 Runtime Config privately. Do not share replacement values in chat.
 
 ## Later physical/legal actions
+
+- Superseding v1.0.5 phone verification is complete. The exact public APK installed
+  on the Motorola phone, cold-launched in 2.587s and 1.391s, and visibly passed
+  authenticated Home, the payment-gated Chat empty state, and the complete manual
+  Request a Trip form with zero matching app fatal/Flutter/ANR logs.
+- The live GPT-5.6 draft, transparent matching, Trip Details, seeded confirmed Chat,
+  and fictional realtime message evidence below remains historical evidence from the
+  source-compatible predecessor. New v1.0.5 selections deliberately stop at pending
+  payment because no real payment provider is configured; do not enter a real card
+  or claim a real payment pass.
 
 - Physical phone installation is complete. The downloaded public v1.0.3 APK installed,
   cold-launched, rendered notifications safely, returned a live reviewable

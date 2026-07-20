@@ -4,18 +4,25 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 
 > Release status: the hardened backend, rules, judge fixtures, authenticated
 > GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
-> published APK was downloaded, hash-matched, installed on a Motorola phone,
-> and exercised through the live GPT-5.6, matching, details, booking, and chat path.
+> v1.0.5 APK was downloaded, hash-matched, and installed on a Motorola phone.
+> Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
+> and app-specific crash logs passed on that exact public artifact.
 
-Final artifact: universal debug APK, 154,995,438 bytes, SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`, private release-gate source `832a543cd94c4f5a2a8c17163e73113da85aba24` and tree-equivalent sanitized source `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`. It reports version code `20260718`, cold-launched on a Motorola phone, and passed the authenticated judge path without matching AndroidRuntime/Flutter errors.
+Final artifact: universal profile APK, 83,378,603 bytes, SHA-256
+`0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
+private release-gate source `4630703b5a69e151d07d6e6c9683deced6298302`
+and tree-equivalent sanitized source
+`6d67f306203886d3d1623f9966f36764589b9cfb`. It reports version
+`1.0.5` / code `20260719`, cold-launched on a Motorola phone, and produced zero
+matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
 ## Final release information
 
 - Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk)
-- Build type: universal debug-signed Android judge APK
-- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
-- Source tag/commit: `fitareeaee-copilot-v1.0.3` / sanitized `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
+- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.5/app-profile.apk)
+- Build type: universal AOT profile Android judge APK, debug-signed for sideloading
+- SHA-256: `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`
+- Source tag/commit: `fitareeaee-copilot-v1.0.5` / sanitized `6d67f306203886d3d1623f9966f36764589b9cfb`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
@@ -28,6 +35,11 @@ GPT-5.6 draft and one transparent live match; the match opened Trip Details and
 confirmed Chat. A separate fictional booking in the same test session completed
 through the server transaction and its test message rendered through the realtime
 conversation stream. No real payment or real identity is involved.
+
+New bookings in v1.0.5 are deliberately **not confirmed before payment**. Since
+the contest build has no real payment provider, selecting a trip or driver creates
+only a pending-payment record and does not decrement seats or unlock chat. Use the
+seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.
 
 ## Install
 

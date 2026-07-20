@@ -40,14 +40,19 @@ The append-only evidence log is [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_
 4. Review and edit the clearly labeled AI draft.
 5. Confirm the criteria to rank real seeded trips.
 6. Open a transparent match and view manual verification context.
-7. Confirm booking; the callable transaction checks both participants and seat inventory.
-8. Continue to participant chat.
+7. Create or select a match. The server records it as **payment required**, not
+   confirmed; seats and chat remain locked.
+8. Use the seeded paid/confirmed judge fixture to demonstrate participant chat.
 
 That booking path applies to a rider/sender finding an offered trip. An **offer**
-draft instead ranks compatible request listings; a manually verified offerer can
-open the request and ask the server to authorize a conversation with its owner.
+draft instead ranks compatible request listings; a manually verified driver can
+submit a bounded proposal. The rider chooses a proposal and becomes the paying
+party; the driver never pays. Selection creates only a pending-payment state.
 
-No payment is requested or processed. See [`docs/JUDGE_TESTING.md`](docs/JUDGE_TESTING.md) for exact testing instructions.
+No real payment provider is configured for the contest build, so the app never
+pretends that money moved. A trusted payment-provider webhook would be required
+to transition a new booking to paid/confirmed and unlock inventory and chat. See
+[`docs/JUDGE_TESTING.md`](docs/JUDGE_TESTING.md) for the seeded demo path.
 
 ## Architecture
 
@@ -59,8 +64,9 @@ flowchart LR
   B -->|validated normalized draft| A
   A -->|confirmed criteria only| D[Deterministic Firestore ranking]
   D --> E[Trip details]
-  E -->|explicit confirmation| F[Transactional booking callable]
-  F --> G[Participant chat]
+  E -->|explicit selection| F[Pending payment booking]
+  F -->|trusted provider confirmation; not configured in contest build| G[Paid confirmed booking]
+  G --> H[Participant chat]
 ```
 
 The code requires `OPENAI_API_KEY` only as a managed Firebase Functions secret;
@@ -169,7 +175,16 @@ fixtures, two explicitly fictional verification summaries, and two minimal
 public profiles. Rerunning may reset those fixture documents; it must never be
 used as a general production-data migration.
 
-The current universal judge APK is available from the [v1.0.3 GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.3). It is 154,995,438 bytes with SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`. The published asset was downloaded, hash-matched, installed, and cold-launched on a Motorola Moto G Play (2024). Its authenticated Chat tab rendered the expected empty state without the former Firestore failure, and no AndroidRuntime or Flutter errors appeared. The judge artifact is debug-signed for sideloading because no private release-signing configuration is available; no signing secret is committed.
+The current universal profile APK is available from the
+[v1.0.5 GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.5).
+It is 83,378,603 bytes with SHA-256
+`0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
+The published asset was downloaded, hash-matched, installed, and cold-launched
+on a Motorola Moto G Play (2024). Authenticated Home, the paid-confirmed-only
+Chat empty state, and manual Request a Trip form rendered without the former
+Firestore failure or matching app crash logs. The judge artifact is debug-signed
+for sideloading because no private release-signing configuration is available;
+no signing secret is committed.
 
 ## Codex collaboration
 

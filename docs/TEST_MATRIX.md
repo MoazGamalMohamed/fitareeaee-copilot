@@ -80,12 +80,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PASS | On the Motorola phone, a live GPT-5.6 draft produced one transparent live match and handed off to Trip Details then enabled confirmed Chat. In the same fictional session, the server-authoritative booking transaction opened an authorized conversation and a sent message rendered through the realtime stream. The judge account's prior verification state was already satisfied; no real payment is claimed. |
 | Fresh-install end-to-end run #1 | INTERRUPTED | Public v1.0.3 local data clear/reinstall, 3.706 s cold launch, private fictional sign-in, Home, live GPT-5.6 draft, one match, and Trip Details all passed. The phone disconnected before the final booking confirmation tap. |
 | Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
-| Physical Android phone install | PASS | Public-download v1.0.3 candidate `543B2FE7…D4EC0` installed on Moto G Play (2024), cold-launched in 3.693 seconds, rendered the authenticated Chat empty state, and produced no AndroidRuntime/Flutter error output |
-| Universal judge APK candidate | PASS | Debug build; no safe release-signing configuration is present |
-| Final deployed/tagged judge APK | PASS | Superseding tag `fitareeaee-copilot-v1.0.3`; private tested source `832a543`, sanitized source `c42bc3f` |
-| Public sanitized repository | PASS | Both remote branches resolve to sanitized release source `c42bc3f`; v1.0.3 peels exactly to that source; original private repository has no remote |
-| Published APK download and hash comparison | PASS | Public v1.0.3 asset downloaded; 154,995,438 bytes and SHA-256 exactly match the phone-tested local artifact |
-| Published APK install | PASS | Downloaded v1.0.3 asset installed/cold-launched on the Motorola phone; authenticated Chat empty state rendered and no AndroidRuntime/Flutter errors appeared |
+| Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
+| Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
+| Final deployed/tagged judge APK | PASS | Tag `fitareeaee-copilot-v1.0.5`; private source `4630703`, sanitized source `6d67f306`, identical source tree verified |
+| Public sanitized repository | PASS | Draft PR branch resolves to sanitized source `6d67f306`; v1.0.5 peels exactly to that source; original private repository has no remote |
+| Published APK download and hash comparison | PASS | Public v1.0.5 asset downloaded; 83,378,603 bytes and SHA-256 exactly match the phone-tested local artifact |
+| Published APK install | PASS | Exact downloaded v1.0.5 asset clean-installed/launched on emulator and installed/cold-launched on Motorola; Chat empty state rendered without the prior error |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -187,3 +187,34 @@ available.
 ## Release gate
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
+
+## Superseding v1.0.5 judge candidate
+
+- Source: private `4630703b5a69e151d07d6e6c9683deced6298302`; sanitized
+  `6d67f306203886d3d1623f9966f36764589b9cfb`; identical tree
+  `eb32120d74af47cc0e604729055b4e67d92f2aa9`.
+- Flutter: format 114 files/0 changes, analysis 0 issues, tests 19/19.
+- Functions: TypeScript build PASS and contracts 27/27.
+- Firestore/Storage authorization rules: 8/8 PASS.
+- Auth/Firestore/Functions integration: 5/5 PASS. The new scenario proves a
+  verified driver proposal stays `potential`, unauthorized selection fails, rider
+  selection creates only `pending_payment` / `required`, inventory is unchanged,
+  and chat authorization remains denied.
+- Scoped deployment: `proposeForTripRequest`, `selectTripProposal`, and
+  `withdrawTripProposal` successfully created in `fitareeaee`; no data/rule/index
+  deletion and no billing change.
+- Public universal profile APK: 83,378,603 bytes; version `1.0.5` / code
+  `20260719`; SHA-256
+  `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
+- Public redownload: exact size/hash match and clean emulator install PASS.
+  Explicit emulator launch reached top-resumed `MainActivity`; process alive;
+  0 Fitareeaee fatal, Flutter-error, or app-ANR matches. Pixel Launcher/System UI
+  ANRs remain an unrelated emulator fault.
+- Motorola Moto G Play (2024): public APK update install PASS; two cold launches
+  PASS in 2.587s and 1.391s; authenticated Home visibly showed Plan with AI,
+  Request a Trip, and Offer a Ride; Chat rendered the paid-confirmed-only empty
+  state without `FirebaseFailure`; Request a Trip opened the complete manual form;
+  0 app fatal, Flutter-error, or app-ANR matches.
+- Real payment is not configured. New selections correctly stop at pending payment;
+  the seeded paid/confirmed fixture is required to demonstrate chat. This boundary
+  is a deliberate safety result, not a payment-provider pass.

@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk — 154,995,438 bytes; SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.5/app-profile.apk — 83,378,603 bytes; SHA-256 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -38,16 +38,18 @@ availability, price, and preference reasons instead of asking the model to make
 an opaque match.
 
 For a find/rider match, the user can continue to trip details, manual
-verification context, server-authoritative booking, and authorized chat. An
-offer draft ranks request listings and uses a separately server-authorized
-conversation instead of trying to book the request. If AI/network access fails,
-retry and manual search remain available. Empty Firestore results stay empty.
+verification context, and a server-authoritative pending-payment booking. An
+offer draft ranks request listings; a manually verified driver can submit a
+bounded proposal and the rider chooses the proposal. Neither path decrements
+seats, confirms a trip, or opens direct chat until payment is verified by a
+trusted server. If AI/network access fails, retry and manual search remain
+available. Empty Firestore results stay empty.
 
 ### How we built it
 
 The Android client is built in Flutter with Riverpod and GoRouter. It sends a minimal authenticated callable request to Firebase Functions. The Function uses the official OpenAI Node SDK and Responses API with `gpt-5.6`, strict JSON Schema output, independent validation, bounded tokens, timeouts, safe error mapping, and per-user throttling. The OpenAI key is a managed server secret and never ships in Dart or the APK. The authenticated live matrix passed English ride, English package, and Arabic ride requests.
 
-After the structured draft returns, deterministic Dart code filters and ranks Firestore trips. GPT-5.6 handles language understanding; application code controls operational eligibility and explains the result. Booking runs through a Firestore transaction that verifies authentication, ownership, trip state, departure, manual verification, duplicate requests, and seat inventory atomically.
+After the structured draft returns, deterministic Dart code filters and ranks Firestore trips. GPT-5.6 handles language understanding; application code controls operational eligibility and explains the result. Booking/proposal Functions verify authentication, roles, ownership, trip state, departure, manual verification, duplicates, budget, and inventory. New selections remain pending payment; only a trusted payment finalizer could later confirm them and unlock seats/chat.
 
 Firestore and Storage rules default-deny unknown access, protect verification state, keep Copilot throttle records private, and restrict chat to participants.
 
@@ -122,7 +124,8 @@ Natural-language request (English or Arabic)
   → explicit user confirmation
   → deterministic Firestore ranking with reasons
   → trip details / manual verification context
-  → transactional booking
+  → pending-payment booking/proposal
+  → trusted paid confirmation (seeded fixture in contest build)
   → participant-only chat
 ```
 
@@ -144,7 +147,7 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 
 ## Testing instructions summary
 
-Install the universal Android APK, sign in with the privately supplied judge account, tap **Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it, inspect the transparent match reasons, and continue through details, verification context, booking, and chat. Then try the fixed-date Arabic or package prompt in the judge guide. No payment or OpenAI account is required.
+Install the universal Android APK, sign in with the privately supplied judge account, tap **Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it, and inspect the transparent match reasons plus details. Verify that a new selection says payment required and does not unlock chat. Use the seeded paid/confirmed fixture to demonstrate Chat. Then try the fixed-date Arabic or package prompt in the judge guide. No payment card or OpenAI account is required.
 
 Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
@@ -156,7 +159,11 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
 - Maps/location autocomplete and broader Arabic UI are outside the core submission path unless stabilized.
-- The superseding public APK passed anonymous-link checks, download/hash verification, emulator installation, Motorola installation/cold launch, legacy-notification compatibility, live GPT-5.6 draft and transparent matching, match-to-details handoff, transactional fictional booking, confirmed-chat authorization, and realtime fictional message rendering.
+- The v1.0.5 public APK passed download/hash verification, emulator installation,
+  Motorola installation/cold launch, authenticated Home, payment-gated Chat empty
+  state, manual request creation, and app-specific crash-log checks. The live GPT-5.6
+  draft, transparent match, details, seeded confirmed Chat, and fictional realtime
+  message evidence remains recorded from its source-compatible predecessor.
 
 ## Suggested screenshot/image captions
 
@@ -164,7 +171,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 2. **Natural-language input:** “Describe a ride or package in everyday English or Arabic, with clear AI and privacy boundaries.”
 3. **Reviewable draft:** “GPT-5.6 returns a strict, editable draft—never an automatic booking.”
 4. **Transparent matches:** “Real Firestore trips are ranked deterministically with route, time, availability, price, and preference reasons.”
-5. **Trust and booking:** “Manual verification context leads into an authenticated, atomic booking transaction.”
+5. **Trust and booking:** “A new selection remains pending payment; only a trusted paid confirmation can unlock inventory and participant chat.”
 6. **Architecture:** “Flutter → secured Firebase Function → OpenAI Responses API/GPT-5.6 → validated draft → deterministic matching.”
 
 ## Final fields to replace
@@ -172,7 +179,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **DONE:** stable APK URL, size, and SHA-256
-- **DONE:** release tag `fitareeaee-copilot-v1.0.3` / sanitized source commit `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
+- **DONE:** release tag `fitareeaee-copilot-v1.0.5` / sanitized source commit `6d67f306203886d3d1623f9966f36764589b9cfb`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID
