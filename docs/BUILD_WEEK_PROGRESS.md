@@ -3069,3 +3069,69 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: obtain the owner's explicit preserve-or-retire decision for the exact
   36 names, plus provider-side legacy credential rotation confirmation. Continue the
   exact-public phone gate independently as soon as the device reconnects.
+
+## 2026-07-20 06:08 CDT / 2026-07-20 04:08 PDT - v1.0.10 verification, map, and reachable-action checkpoint
+
+- Objective: remove the reported `type null is not a subtype of type String`
+  verification failure, make tapping either `From` or `To` open the interactive map,
+  and audit the reachable user/admin actions before final submission.
+- Replaced generated verification JSON parsing with an explicit legacy-safe parser.
+  Missing/null/wrong-type strings, booleans, and Firestore/String/serialized-map
+  timestamps now normalize without reaching generated `as String` casts. Added a
+  regression fixture containing explicit nulls and malformed legacy values.
+- Hardened Verification Center error/retry, country-code, phone-number, expired-code,
+  email, and SMS error paths. A live fictional rider verification document loaded on
+  API 36 with `3 approved, 0 pending of 6 checks`; the reported null/string crash and
+  raw exception UI were absent.
+- Made each complete From/To field read-only and map-first. Tapping the field body,
+  its map icon, or its explicit map button opens the same pan/zoom/tap OpenStreetMap
+  picker with linked attribution. Widget tests cover both fields; emulator taps on
+  the field bodies opened `Choose starting point` and `Choose destination`.
+- Removed a dead booking verification action: the current user's action routes to
+  Verification Center, while an unverified counterparty now shows a non-clickable
+  `Awaiting participant` status. Booking detail/auth load failures now provide safe
+  retry actions rather than raw exception text.
+- Hardened the shipped admin verification console against null/wrong-type legacy
+  fields, short user IDs, missing document references, invalid timestamps, duplicate
+  approve/reject taps, image failures, stream failures, and raw exception disclosure.
+  Approve/reject remains the authenticated `reviewVerification` callable and urgent
+  events remain admin-only under the passing rules suite. A live admin-screen smoke
+  was not claimed because no authorized admin app fixture was available; no account
+  was elevated or production authorization mutated for testing.
+- Added a whole-tree reachable-action contract: every literal GoRouter button target
+  belongs to a registered route family, and handwritten UI contains no empty button
+  or tap callback. Manual review also covered dynamic chat, Copilot, rating, booking,
+  proposal, and trip-detail routes. Intentional disabled/loading states remain disabled.
+- Fresh-install/update emulator audit passed for Login/Home, Request Trip, both map
+  fields, Verification Center, Notifications, all four Trips tabs, confirmed and
+  potential Matches, Past, paid-confirmed trip details, confirmed chat/history,
+  non-destructive cancellation confirmation, Settings, Support/contact modal/FAQ,
+  Payments, Copilot examples, and microphone permission. No cancellation, rating,
+  support ticket, trip, booking, or admin mutation was submitted during this audit.
+- Exact gate results: `dart format --output=none --set-exit-if-changed lib test`
+  PASS (121 files, 0 changed); `flutter analyze` PASS (0 issues); `flutter test`
+  PASS (30/30); Functions TypeScript build PASS; Functions contracts PASS (28/28);
+  Firestore/Storage rules PASS (9/9); callable integration PASS (7/7); universal
+  debug and profile APK builds PASS.
+- v1.0.10 profile APK: `build/app/outputs/flutter-apk/app-profile.apk`;
+  85,276,887 bytes; SHA-256
+  `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`;
+  built `2026-07-20T06:05:22.2634386-05:00`; source commit
+  `9b92625f20912607d3c7ce32db9902fc76971eae`; package
+  `com.fitareeaee.app`; version `1.0.10` / code `20260724`; min API 24; target API 36.
+- Exact profile install/update and cold launch: PASS on `emulator-5554`, Android 16 /
+  API 36. App UI loaded and the post-launch fatal/Flutter/FirebaseFailure/raw-error
+  scan returned 0 matches. A physical-phone result is not claimed because the phone
+  was disconnected and only the emulator appeared in `flutter devices`.
+- Files changed in the source checkpoint: verification provider/screen, trip-create
+  location input, booking confirmation, admin verification console, version metadata,
+  and three focused/action-contract test files. No Firebase production deploy or data
+  deletion occurred.
+- Commit: `9b92625f20912607d3c7ce32db9902fc76971eae`. Tag and sanitized push are pending.
+  GitHub CLI 2.96.0 was installed, but its stored GitHub token is invalid and needs an
+  owner `gh auth refresh -h github.com` before the supported CLI publishing path can
+  complete. The local checkpoint is durable even if connectivity is interrupted.
+- Rollback point: immutable public v1.0.9 prerelease and phone-tested stable v1.0.5.
+  Next action: commit this evidence, synchronize and rescan the sanitized clone, then
+  publish/tag the exact v1.0.10 bytes once GitHub authentication is refreshed; install
+  and smoke the exact downloaded asset on the physical phone when reconnected.

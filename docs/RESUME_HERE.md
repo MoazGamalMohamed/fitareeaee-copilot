@@ -1,11 +1,12 @@
 # Resume Here
 
-Last updated: 2026-07-20 03:29 CDT / 2026-07-20 01:29 PDT
+Last updated: 2026-07-20 06:08 CDT / 2026-07-20 04:08 PDT
 
 ## Current objective
 
-Install and smoke the already-published, anonymously byte-verified v1.0.9 download
-on the owner's reconnected phone, then promote it from prerelease if it passes.
+Publish the passing v1.0.10 verification/map/action-audit checkpoint through the
+sanitized clone after GitHub authentication is refreshed, anonymously re-download
+and verify it, then install that exact artifact on the owner's reconnected phone.
 Finish the video, `/feedback`, legal review, and owner-performed Devpost submission.
 Do not replace the payment gate with simulated money.
 
@@ -13,7 +14,9 @@ Do not replace the payment gate with simulated money.
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private application source: `ab792130938601370f5ccf87ef4af3ff0290076e`
+- Passing private application source: `9b92625f20912607d3c7ce32db9902fc76971eae`
+- v1.0.10 evidence is appended in `docs/BUILD_WEEK_PROGRESS.md` but still needs its
+  own private evidence commit after this resume update.
 - Private v1.0.9 local-evidence commit: `d23cafdc83923e00aa16b678d63e893c11464445`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
@@ -27,8 +30,11 @@ Do not replace the payment gate with simulated money.
   connected GitHub integration returned HTTP 403 for metadata and comment writes;
   this does not affect the pushed v1.0.9 source, tag, release, or direct APK. Update
   the PR wording manually only if write access is not restored before submission.
-- Public v1.0.9 is tagged at sanitized application source `ef2eecb7` and remains an
-  accurately labeled prerelease pending the physical-phone pass.
+- Public v1.0.9 is still the latest published prerelease at sanitized application
+  source `ef2eecb7`. Local v1.0.10 has not yet been represented as public.
+- GitHub CLI 2.96.0 is installed at the WinGet user link, but `gh auth status`
+  reports the stored token is invalid. The owner must run
+  `gh auth refresh -h github.com` before the supported CLI publish/release path.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
 
@@ -66,9 +72,9 @@ Do not replace the payment gate with simulated money.
 
 ## Passing gates
 
-- Dart format: 119 files, 0 changes.
+- Dart format: 121 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 25/25.
+- Flutter tests: 30/30.
 - Functions TypeScript/contracts: 28/28.
 - Firestore/Storage rules: 9/9.
 - Auth/Firestore/Functions integration: 7/7.
@@ -77,13 +83,20 @@ Do not replace the payment gate with simulated money.
 
 ## Current APK and emulator evidence
 
-- Local v1.0.9 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Local v1.0.10 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 85,276,819 bytes
-- SHA-256: `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`
-- Version: `1.0.9` / code `20260723`
+- Size: 85,276,887 bytes
+- SHA-256: `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`
+- Version: `1.0.10` / code `20260724`
 - Package/API: `com.fitareeaee.app`, minimum 24, target/compile 36
-- API 36 emulator update over the authenticated fictional driver session: PASS.
+- API 36 emulator update over the authenticated fictional rider session: PASS.
+- v1.0.10 fixes null/wrong-type legacy verification parsing, makes both complete
+  From/To fields open the map, removes a dead counterparty Verify button, adds safe
+  retry states, and hardens admin verification actions against malformed data and
+  duplicate submissions.
+- v1.0.10 emulator audit passed Verification Center, From map, To map, all Trips
+  tabs, paid-confirmed chat, cancellation confirmation without mutation, Settings,
+  Support, Payments, Notifications, Copilot examples, and microphone permission.
 - Exact candidate UI passes: Home actions; manual map picker; speech permission and
   recognition-service/audio startup; paid chat load/send; Past completed trip;
   completed details without Book Trip; rating entry; Verified identity; and
@@ -91,7 +104,7 @@ Do not replace the payment gate with simulated money.
 - Final app-specific fatal/Flutter/FirebaseFailure/ANR scan: 0 matches.
 - v1.0.9 additionally fixes owned-trip badges: the active trip now says Confirmed
   and the past trip Completed, while driver chat/start/emergency actions remain.
-- Physical v1.0.9 phone result: PENDING because the owner disconnected the phone.
+- Physical v1.0.10 phone result: PENDING because the owner disconnected the phone.
 - Public v1.0.9 release:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9`
 - Public v1.0.9 APK:
@@ -116,12 +129,13 @@ Do not replace the payment gate with simulated money.
 6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
 7. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
-8. Optionally update draft PR #1's title/body from v1.0.8 to v1.0.9 if the GitHub
-   integration still lacks metadata-write permission; the branch head is already current.
+8. Refresh GitHub CLI authentication, publish v1.0.10 from the sanitized clone, and
+   update draft PR #1's stale title/body if write access is restored.
 
 ## Exact next action
 
-When the phone returns, install the exact anonymous public v1.0.9 bytes and run the
-Home, Copilot, matches, details, payment-gate, seeded paid Chat/Past/rating, and
-driver-lifecycle paths. Scan app logs, record the device result, then promote the
-same immutable release only if every phone check passes.
+First refresh GitHub CLI authentication, synchronize/rescan the sanitized clone,
+publish v1.0.10 as a prerelease, and verify an anonymous re-download matches the
+local hash. When the phone returns, install those exact public bytes and run Home,
+Copilot, verification, both map fields, matches/details/payment-gate, seeded paid
+Chat/Past/rating, and driver lifecycle. Promote only if every phone check passes.
