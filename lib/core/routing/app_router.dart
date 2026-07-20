@@ -78,7 +78,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.copilot,
         name: 'copilot',
-        builder: (context, state) => const CopilotScreen(),
+        builder: (context, state) =>
+            CopilotScreen(role: state.uri.queryParameters['role']),
       ),
       GoRoute(
         path: AppRoutes.copilotResults,

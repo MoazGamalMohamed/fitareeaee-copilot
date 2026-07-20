@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:country_picker/country_picker.dart';
+import '../../../../core/location/location_catalog.dart';
+import '../../../../core/user_path.dart';
+import '../../../../core/widgets/assisted_text_form_field.dart';
+import '../../../trips/presentation/pages/trip_location_picker_screen.dart';
 import '../providers/profile_provider.dart';
 import '../../domain/entities/user_profile.dart';
 
@@ -27,8 +32,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   String _countryCode = '+20'; // Default to Egypt
   String? _verificationId;
 
-  Set<String> _selectedRoles = {};
-  final List<String> _availableRoles = ['rider', 'sender', 'driver', 'courier'];
+  MarketplacePath _selectedPath = MarketplacePath.rider;
+  String? _initializedProfileId;
+  double? _latitude;
+  double? _longitude;
 
   final Map<String, String> _countryCodes = {
     '+1': '🇺🇸 US',
@@ -77,28 +84,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
   }
 
-  void _toggleRole(String role) {
-    setState(() {
-      if (_selectedRoles.contains(role)) {
-        _selectedRoles.remove(role);
-      } else {
-        _selectedRoles.add(role);
-
-        // Show verification requirement for driver/courier
-        if (role == 'driver' || role == 'courier') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Adding $role role requires additional verification. '
-                'Please complete the verification process after saving.',
-              ),
-              duration: const Duration(seconds: 5),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-      }
-    });
+  void _selectPath(MarketplacePath path) {
+    if (_selectedPath == path) return;
+    setState(() => _selectedPath = path);
+    if (path.isDriver) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'The driver/courier path requires approved identity, driver licence, and vehicle registration before offers can be published.',
+          ),
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
   }
 
   Future<void> _verifyPhoneNumber() async {
@@ -327,6 +326,66 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
+  Iterable<String> get _countryNames =>
+      CountryService().getAll().map((country) => country.name);
+
+  Iterable<String> get _placeLabels =>
+      placeSuggestions.map((place) => place.label);
+
+  void _applyPlace(String value) {
+    final place = placeSuggestionForLabel(value);
+    if (place == null) return;
+    setState(() {
+      _addressController.text = place.label;
+      _cityController.text = place.city;
+      _countryController.text = place.country;
+      _latitude = place.latitude;
+      _longitude = place.longitude;
+    });
+  }
+
+  void _applyCity(String value) {
+    final place = placeSuggestionForLabel(value);
+    if (place == null) return;
+    setState(() {
+      _cityController.text = place.city;
+      _countryController.text = place.country;
+      _latitude = place.latitude;
+      _longitude = place.longitude;
+    });
+  }
+
+  Future<void> _pickProfileLocation() async {
+    final result = await Navigator.of(context).push<TripLocationSelection>(
+      MaterialPageRoute(
+        builder: (_) => TripLocationPickerScreen(
+          title: 'Choose home area',
+          initialLatitude: _latitude,
+          initialLongitude: _longitude,
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      _latitude = result.latitude;
+      _longitude = result.longitude;
+      if (_addressController.text.trim().isEmpty) {
+        _addressController.text = 'Map pin ${result.coordinateLabel}';
+      }
+    });
+  }
+
+  void _showCountryOptions() {
+    showCountryPicker(
+      context: context,
+      showPhoneCode: false,
+      searchAutofocus: true,
+      onSelect: (country) {
+        setState(() => _countryController.text = country.name);
+      },
+    );
+  }
+
   void _saveProfile(UserProfile currentProfile) {
     if (_formKey.currentState!.validate()) {
       final phone = _phoneController.text.trim();
@@ -348,7 +407,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         address: _addressController.text,
         city: _cityController.text,
         country: _countryController.text,
-        roles: _selectedRoles.toList(),
+        latitude: _latitude,
+        longitude: _longitude,
+        roles: rolesForMarketplacePath(_selectedPath),
         isPhoneVerified: _isPhoneVerified,
         updatedAt: DateTime.now(),
       );
@@ -370,8 +431,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             return const Center(child: Text('Profile not found'));
           }
 
-          // Initialize form fields with current profile data
-          if (_nameController.text.isEmpty) {
+          // Initialize once without overwriting deliberate user edits on rebuild.
+          if (_initializedProfileId != profile.userId) {
+            _initializedProfileId = profile.userId;
             _nameController.text = profile.name;
             _phoneController.text = profile.phone ?? '';
             _addressController.text = profile.address ?? '';
@@ -382,8 +444,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             _isPhoneVerified = profile.isPhoneVerified;
             _originalPhone = profile.phone;
 
-            // Initialize roles
-            _selectedRoles = profile.roles.toSet();
+            _latitude = profile.latitude;
+            _longitude = profile.longitude;
+            _selectedPath = marketplacePathForRoles(profile.roles);
           }
 
           return SingleChildScrollView(
@@ -543,7 +606,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ],
                   const SizedBox(height: 16),
 
-                  // Roles section
+                  // One marketplace path keeps payment and trip responsibilities clear.
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -551,50 +614,36 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'User Roles',
+                            'Marketplace path',
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Select the roles you want to have in the app. Driver and Courier roles require additional verification.',
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          Text(
+                            _selectedPath.isDriver
+                                ? 'Driver/courier: publish offers and receive payment.'
+                                : 'Rider/sender: request rides or deliveries and pay after confirmation.',
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _availableRoles.map((role) {
-                              final isSelected = _selectedRoles.contains(role);
-                              final requiresVerification =
-                                  role == 'driver' || role == 'courier';
-
-                              return FilterChip(
-                                label: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      role[0].toUpperCase() + role.substring(1),
-                                    ),
-                                    if (requiresVerification) ...[
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.verified_user,
-                                        size: 16,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.orange,
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                                selected: isSelected,
-                                onSelected: (selected) => _toggleRole(role),
-                                selectedColor: requiresVerification
-                                    ? Colors.orange
-                                    : Colors.blue,
-                                checkmarkColor: Colors.white,
-                              );
-                            }).toList(),
+                          SegmentedButton<MarketplacePath>(
+                            segments: const [
+                              ButtonSegment(
+                                value: MarketplacePath.rider,
+                                icon: Icon(Icons.person_search),
+                                label: Text('Request'),
+                              ),
+                              ButtonSegment(
+                                value: MarketplacePath.driver,
+                                icon: Icon(Icons.drive_eta),
+                                label: Text('Offer'),
+                              ),
+                            ],
+                            selected: {_selectedPath},
+                            onSelectionChanged: (selection) =>
+                                _selectPath(selection.first),
                           ),
                         ],
                       ),
@@ -602,35 +651,74 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Address field
-                  TextFormField(
-                    controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Address',
-                      hintText: 'Enter your address',
-                      prefixIcon: Icon(Icons.location_on),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // City field
-                  TextFormField(
-                    controller: _cityController,
-                    decoration: const InputDecoration(
-                      labelText: 'City',
-                      hintText: 'Enter your city',
-                      prefixIcon: Icon(Icons.location_city),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Country field
-                  TextFormField(
-                    controller: _countryController,
-                    decoration: const InputDecoration(
-                      labelText: 'Country',
-                      hintText: 'Enter your country',
-                      prefixIcon: Icon(Icons.public),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Location',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Choose a suggestion, place a map pin, or type your own location.',
+                          ),
+                          const SizedBox(height: 16),
+                          AssistedTextFormField(
+                            controller: _addressController,
+                            label: 'Address or area',
+                            hint: 'Start typing a city or area',
+                            icon: Icons.location_on_outlined,
+                            suggestions: _placeLabels,
+                            onSelected: _applyPlace,
+                            suffixIcon: IconButton(
+                              tooltip: 'Choose address on map',
+                              onPressed: _pickProfileLocation,
+                              icon: const Icon(Icons.map_outlined),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          AssistedTextFormField(
+                            controller: _cityController,
+                            label: 'City',
+                            hint: 'Start typing a city',
+                            icon: Icons.location_city_outlined,
+                            suggestions: _placeLabels,
+                            onSelected: _applyCity,
+                          ),
+                          const SizedBox(height: 16),
+                          AssistedTextFormField(
+                            controller: _countryController,
+                            label: 'Country',
+                            hint: 'Start typing a country',
+                            icon: Icons.public,
+                            suggestions: _countryNames,
+                            suffixIcon: IconButton(
+                              tooltip: 'Browse countries',
+                              onPressed: _showCountryOptions,
+                              icon: const Icon(
+                                Icons.arrow_drop_down_circle_outlined,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          FilledButton.tonalIcon(
+                            onPressed: _pickProfileLocation,
+                            icon: const Icon(Icons.pin_drop_outlined),
+                            label: const Text('Choose precisely on map'),
+                          ),
+                          if (_latitude != null && _longitude != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              'Saved map pin: ${_latitude!.toStringAsFixed(5)}, ${_longitude!.toStringAsFixed(5)}',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),

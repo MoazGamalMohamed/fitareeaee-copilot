@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../verification/domain/models/verification_model.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
@@ -17,8 +18,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     final user = ref
@@ -27,6 +26,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final verificationAsync = user == null
         ? const AsyncValue<UserVerification?>.data(null)
         : ref.watch(verificationStatusProvider(user.id));
+    final marketplacePath = marketplacePathForRoles(user?.roles ?? const []);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,59 +82,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               const SizedBox(height: 40),
 
-              Material(
-                elevation: 3,
-                borderRadius: BorderRadius.circular(18),
-                child: InkWell(
-                  onTap: () => context.push('/copilot'),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.deepPurple, Colors.indigo.shade500],
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.white24,
-                          child: Icon(Icons.auto_awesome, color: Colors.white),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Plan with AI',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Describe a ride or package in English or Arabic',
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.arrow_forward, color: Colors.white),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              _buildCircularCopilotAction(context, marketplacePath),
 
               const SizedBox(height: 32),
 
               // Explicit browse and creation paths.
               Text(
-                'What would you like to do?',
+                marketplacePath.isDriver
+                    ? 'Find requests that fit your route'
+                    : 'Find a trip that fits your needs',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -146,34 +102,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildPrimaryActionCard(
                 context,
                 icon: Icons.search,
-                title: 'Browse Available Trips',
-                subtitle: 'Find live ride offers and package delivery',
-                color: Colors.blue,
+                title: marketplacePath.isDriver
+                    ? 'Browse Ride & Delivery Requests'
+                    : 'Browse Available Trips',
+                subtitle: marketplacePath.isDriver
+                    ? 'See rider and sender requests you can fulfill'
+                    : 'Find live ride offers and package delivery',
+                color: marketplacePath.isDriver ? Colors.green : Colors.blue,
                 onTap: () {
-                  // Navigate to rider flow - search/browse trips
-                  context.push('/trips?role=rider');
+                  context.push('/trips?role=${marketplacePath.routeRole}');
                 },
-              ),
-              const SizedBox(height: 16),
-
-              _buildPrimaryActionCard(
-                context,
-                icon: Icons.add_location_alt_outlined,
-                title: 'Request a Trip',
-                subtitle: 'Post a ride or package request manually',
-                color: Colors.indigo,
-                onTap: () => context.push('/trips/create?role=rider'),
-              ),
-              const SizedBox(height: 16),
-
-              // Offer a Ride - PRIMARY BUTTON
-              _buildPrimaryActionCard(
-                context,
-                icon: Icons.drive_eta,
-                title: 'Offer a Ride',
-                subtitle: 'Driver and vehicle verification required',
-                color: Colors.green,
-                onTap: () => _handleOfferRide(context, verificationAsync),
               ),
 
               const SizedBox(height: 40),
@@ -193,7 +131,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       context,
                       icon: Icons.people,
                       label: 'Matches',
-                      onTap: () => context.push('/trips?tab=matches'),
+                      onTap: () => context.push(
+                        '/trips?tab=matches&role=${marketplacePath.routeRole}',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -202,7 +142,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       context,
                       icon: Icons.history,
                       label: 'Past Trips',
-                      onTap: () => context.push('/trips?tab=past'),
+                      onTap: () => context.push(
+                        '/trips?tab=past&role=${marketplacePath.routeRole}',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -230,16 +172,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+        currentIndex: 0,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          setState(() => _selectedIndex = index);
           switch (index) {
             case 0:
               // Already on home
               break;
             case 1:
-              context.push('/trips');
+              if (marketplacePath.isDriver) {
+                _handleOfferRide(context, verificationAsync);
+              } else {
+                context.push('/trips/create?role=rider');
+              }
               break;
             case 2:
               context.push('/chat');
@@ -249,15 +194,94 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: [
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'Trips',
+            icon: Icon(
+              marketplacePath.isDriver ? Icons.add_road : Icons.person_search,
+            ),
+            label: marketplacePath.creationLabel,
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.message),
+            label: 'Chat',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCircularCopilotAction(
+    BuildContext context,
+    MarketplacePath marketplacePath,
+  ) {
+    final action = marketplacePath.isDriver ? 'offer' : 'request';
+    return Center(
+      child: Semantics(
+        button: true,
+        label: 'Plan a trip $action with AI',
+        child: Material(
+          elevation: 10,
+          shadowColor: Colors.deepPurple.withValues(alpha: 0.45),
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            width: 176,
+            height: 176,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.deepPurple, Colors.indigo.shade600],
+              ),
+            ),
+            child: InkWell(
+              key: const ValueKey('home-copilot-action'),
+              customBorder: const CircleBorder(),
+              onTap: () =>
+                  context.push('/copilot?role=${marketplacePath.routeRole}'),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.auto_awesome,
+                      color: Colors.white,
+                      size: 42,
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Plan with AI',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      marketplacePath.isDriver
+                          ? 'Create an offer'
+                          : 'Create a request',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

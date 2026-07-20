@@ -1,4 +1,5 @@
 import 'package:fitareeaee/core/routing/app_router.dart';
+import 'package:fitareeaee/core/user_path.dart';
 import 'package:fitareeaee/core/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +23,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  final List<String> _selectedRoles = [];
+  MarketplacePath? _selectedPath;
 
   @override
   void dispose() {
@@ -201,32 +202,46 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Role selection
+                // One account path keeps rider and driver responsibilities clear.
                 Text(
-                  'What would you like to do?',
+                  'Choose your marketplace path',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  children: ['driver', 'courier', 'rider', 'sender'].map((
-                    role,
-                  ) {
-                    final isSelected = _selectedRoles.contains(role);
-                    return FilterChip(
-                      label: Text(role.toUpperCase()),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _selectedRoles.add(role);
-                          } else {
-                            _selectedRoles.remove(role);
-                          }
-                        });
-                      },
+                SegmentedButton<MarketplacePath>(
+                  emptySelectionAllowed: true,
+                  showSelectedIcon: true,
+                  segments: const [
+                    ButtonSegment(
+                      value: MarketplacePath.rider,
+                      icon: Icon(Icons.person_search),
+                      label: Text('Request'),
+                      tooltip: 'Rider or sender',
+                    ),
+                    ButtonSegment(
+                      value: MarketplacePath.driver,
+                      icon: Icon(Icons.drive_eta),
+                      label: Text('Offer'),
+                      tooltip: 'Driver or courier',
+                    ),
+                  ],
+                  selected: {if (_selectedPath != null) _selectedPath!},
+                  onSelectionChanged: (selection) {
+                    setState(
+                      () => _selectedPath = selection.isEmpty
+                          ? null
+                          : selection.first,
                     );
-                  }).toList(),
+                  },
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _selectedPath == MarketplacePath.driver
+                      ? 'Drivers and couriers publish offers and receive payment. Driver and vehicle verification is required before offering.'
+                      : _selectedPath == MarketplacePath.rider
+                      ? 'Riders and senders request rides or deliveries and are the paying side after a real payment provider is enabled.'
+                      : 'Choose Request for the rider/sender path or Offer for the verified driver/courier path.',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 32),
 
@@ -236,11 +251,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       ? null
                       : () {
                           if (_formKey.currentState!.validate()) {
-                            if (_selectedRoles.isEmpty) {
+                            if (_selectedPath == null) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    'Please select at least one role',
+                                    'Please choose Request or Offer',
                                   ),
                                 ),
                               );
@@ -255,7 +270,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                                       _confirmPasswordController.text,
                                   name: _nameController.text,
                                   phone: _phoneController.text,
-                                  roles: _selectedRoles,
+                                  roles: rolesForMarketplacePath(
+                                    _selectedPath!,
+                                  ),
                                 );
                           }
                         },

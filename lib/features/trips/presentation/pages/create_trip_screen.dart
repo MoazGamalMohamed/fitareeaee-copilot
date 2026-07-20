@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/user_path.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../copilot/domain/copilot_draft.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 import '../../domain/entities/trip.dart';
@@ -83,7 +85,14 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(createTripProvider);
-    final offering = _role == 'offer';
+    final account = ref.watch(currentUserProvider);
+    final accountPath = account.maybeWhen(
+      data: (user) => marketplacePathForRoles(user?.roles ?? const []),
+      orElse: () =>
+          _role == 'offer' ? MarketplacePath.driver : MarketplacePath.rider,
+    );
+    final effectiveRole = accountPath.isDriver ? 'offer' : 'request';
+    final offering = effectiveRole == 'offer';
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final driverReady =
         !offering ||
@@ -134,26 +143,6 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                 onPressed: () => context.push('/verification'),
                 icon: const Icon(Icons.verified_user_outlined),
                 label: const Text('Complete driver and vehicle verification'),
-              ),
-            ],
-            if (widget.role == null && widget.initialDraft == null) ...[
-              const SizedBox(height: 16),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'request',
-                    icon: Icon(Icons.person_search),
-                    label: Text('Request'),
-                  ),
-                  ButtonSegment(
-                    value: 'offer',
-                    icon: Icon(Icons.drive_eta),
-                    label: Text('Offer'),
-                  ),
-                ],
-                selected: {_role},
-                onSelectionChanged: (value) =>
-                    setState(() => _role = value.first),
               ),
             ],
             const SizedBox(height: 20),
@@ -452,11 +441,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     }
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
+    final appUser = ref.read(currentUserProvider).asData?.value;
+    final role = marketplacePathForRoles(appUser?.roles ?? const []).isDriver
+        ? 'offer'
+        : 'request';
     final now = DateTime.now();
     final trip = Trip(
       id: '',
       type: _type,
-      role: _role,
+      role: role,
       driverId: userId,
       originAddress: _origin.text.trim(),
       destinationAddress: _destination.text.trim(),
@@ -494,13 +487,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _role == 'offer'
-              ? 'Ride offer published.'
-              : 'Trip request published.',
+          role == 'offer' ? 'Ride offer published.' : 'Trip request published.',
         ),
       ),
     );
-    context.go('/trips?tab=my');
+    context.go('/trips?tab=my&role=${role == 'offer' ? 'driver' : 'rider'}');
   }
 
   String _safeError(Object error) {

@@ -1,18 +1,51 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../../../../core/location/location_catalog.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/assisted_text_form_field.dart';
 import '../../data/copilot_repository.dart';
 import '../../domain/copilot_draft.dart';
 
 typedef CopilotPlanner = Future<CopilotPlanResult> Function(String request);
 
+String copilotIntentForRole(String? role) =>
+    role == 'driver' ? 'offer' : 'find';
+
+String copilotVoiceErrorMessage(String rawError) {
+  final error = rawError.toLowerCase().replaceAll('-', '_');
+  final denied =
+      error.contains('permission') ||
+      error.contains('not_allowed') ||
+      error.contains('not allowed') ||
+      error.contains('denied');
+  if (denied) {
+    return 'Microphone permission is off. Enable it in Android Settings > Apps > Fitareeaee Copilot > Permissions, then retry.';
+  }
+  final noSpeech =
+      error.contains('speech_timeout') ||
+      error.contains('no_match') ||
+      error.contains('no match') ||
+      error.contains('no speech') ||
+      error.contains('timeout');
+  if (noSpeech) {
+    return 'No speech was heard. Tap the microphone and speak after listening starts, or type the request.';
+  }
+  if (error.contains('busy')) {
+    return 'Android speech recognition is busy. Wait a moment, then tap the microphone again.';
+  }
+  return 'Voice input stopped. Tap the microphone to try again or type the request.';
+}
+
 class CopilotScreen extends StatefulWidget {
   final CopilotPlanner? planner;
+  final String? role;
 
-  const CopilotScreen({super.key, this.planner});
+  const CopilotScreen({super.key, this.planner, this.role});
 
   @override
   State<CopilotScreen> createState() => _CopilotScreenState();
@@ -37,8 +70,17 @@ class _CopilotScreenState extends State<CopilotScreen> {
   bool _loading = false;
   bool _speechReady = false;
   bool _listening = false;
+  bool _startingVoice = false;
+  int _voiceSecondsRemaining = 180;
+  Timer? _voiceTimer;
+  String _voicePrefix = '';
   String _voiceLanguage = 'auto';
   String? _error;
+
+  bool get _driverPath => widget.role == 'driver';
+  String get _pathIntent => copilotIntentForRole(widget.role);
+  List<String> get _visibleExamples =>
+      _driverPath ? [_examples[1]] : [_examples[0], _examples[2], _examples[3]];
 
   static const _examples = [
     'I need a ride from Dallas to Austin on August 10, 2026 at 9 AM for two people under \$40.',
@@ -49,6 +91,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
 
   @override
   void dispose() {
+    _voiceTimer?.cancel();
     _speech.stop();
     _scrollController.dispose();
     _requestFocus.dispose();
@@ -69,6 +112,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   }
 
   Future<void> _plan() async {
+    if (_listening) await _stopVoiceInput();
     FocusScope.of(context).unfocus();
     setState(() {
       _loading = true;
@@ -108,7 +152,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   }
 
   void _loadDraft(CopilotDraft draft) {
-    _intent = draft.intent;
+    _intent = _pathIntent;
     _tripType = draft.tripType;
     _origin.text = draft.origin ?? '';
     _destination.text = draft.destination ?? '';
@@ -183,6 +227,24 @@ class _CopilotScreenState extends State<CopilotScreen> {
         padding: const EdgeInsets.all(20),
         children: [
           _disclosure(),
+          const SizedBox(height: 12),
+          Card(
+            color: _driverPath ? Colors.green.shade50 : Colors.blue.shade50,
+            child: ListTile(
+              leading: Icon(
+                _driverPath ? Icons.drive_eta : Icons.person_search,
+                color: _driverPath ? Colors.green.shade700 : Colors.blue,
+              ),
+              title: Text(
+                _driverPath ? 'Driver / Courier path' : 'Rider / Sender path',
+              ),
+              subtitle: Text(
+                _driverPath
+                    ? 'AI drafts an offer. This account cannot create rider requests.'
+                    : 'AI drafts a request. This account cannot create driver offers.',
+              ),
+            ),
+          ),
           const SizedBox(height: 20),
           TextField(
             controller: _request,
@@ -205,7 +267,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
           const SizedBox(height: 8),
           Text('Try an example', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
-          ..._examples.map(
+          ..._visibleExamples.map(
             (example) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: OutlinedButton(
@@ -262,20 +324,28 @@ class _CopilotScreenState extends State<CopilotScreen> {
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
-            onPressed: _loading ? null : _toggleVoiceInput,
+            onPressed: _loading || _startingVoice ? null : _toggleVoiceInput,
             icon: Icon(
-              _listening ? Icons.stop_circle_outlined : Icons.mic_outlined,
+              _startingVoice
+                  ? Icons.hourglass_top
+                  : _listening
+                  ? Icons.stop_circle_outlined
+                  : Icons.mic_outlined,
             ),
             label: Text(
-              _listening ? 'Stop listening' : 'Describe trip by voice',
+              _startingVoice
+                  ? 'Starting microphone…'
+                  : _listening
+                  ? 'Stop listening'
+                  : 'Describe trip by voice',
             ),
           ),
           if (_listening) ...[
             const SizedBox(height: 8),
             Semantics(
               liveRegion: true,
-              child: const Text(
-                'Listening… Speak in English or Arabic. Your words appear above.',
+              child: Text(
+                'Listening • ${_formatVoiceTime(_voiceSecondsRemaining)} remaining. Speak in English or Arabic; your words appear above.',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -296,8 +366,14 @@ class _CopilotScreenState extends State<CopilotScreen> {
           TextButton(
             onPressed: _loading
                 ? null
-                : () => context.push('/trips?role=rider'),
-            child: const Text('Use manual trip search'),
+                : () => context.push(
+                    '/trips/create?role=${_driverPath ? 'driver' : 'rider'}',
+                  ),
+            child: Text(
+              _driverPath
+                  ? 'Create an offer manually'
+                  : 'Create a request manually',
+            ),
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
@@ -383,16 +459,9 @@ class _CopilotScreenState extends State<CopilotScreen> {
         Row(
           children: [
             Expanded(
-              child: DropdownButtonFormField<String>(
-                initialValue: _intent,
-                decoration: const InputDecoration(labelText: 'Intent'),
-                items: const [
-                  DropdownMenuItem(value: 'find', child: Text('Find')),
-                  DropdownMenuItem(value: 'offer', child: Text('Offer')),
-                ],
-                onChanged: (value) {
-                  if (value != null) setState(() => _intent = value);
-                },
+              child: InputDecorator(
+                decoration: const InputDecoration(labelText: 'Account path'),
+                child: Text(_driverPath ? 'Offer' : 'Request'),
               ),
             ),
             const SizedBox(width: 12),
@@ -412,8 +481,8 @@ class _CopilotScreenState extends State<CopilotScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        _field(_origin, 'Origin', Icons.trip_origin),
-        _field(_destination, 'Destination', Icons.location_on_outlined),
+        _locationField(_origin, 'Origin', Icons.trip_origin),
+        _locationField(_destination, 'Destination', Icons.location_on_outlined),
         Row(
           children: [
             Expanded(
@@ -449,6 +518,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
         _field(_preferences, 'Preferences (comma separated)', Icons.tune),
         const SizedBox(height: 8),
         FilledButton.icon(
+          key: const ValueKey('copilot-confirm-draft'),
           onPressed: _confirm,
           icon: const Icon(Icons.search),
           label: const Text('Confirm draft and find transparent matches'),
@@ -471,9 +541,100 @@ class _CopilotScreenState extends State<CopilotScreen> {
 
   Future<void> _toggleVoiceInput() async {
     if (_listening) {
-      await _speech.stop();
-      if (mounted) setState(() => _listening = false);
+      await _stopVoiceInput();
       return;
+    }
+
+    setState(() => _startingVoice = true);
+    try {
+      if (!await _ensureSpeechReady()) return;
+      final locales = await _speech.locales();
+      final inferredArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(_request.text);
+      final requestedPrefix = _voiceLanguage == 'auto'
+          ? (inferredArabic ? 'ar' : null)
+          : _voiceLanguage;
+      String? localeId;
+      if (requestedPrefix != null) {
+        for (final locale in locales) {
+          if (locale.localeId.toLowerCase().startsWith(requestedPrefix)) {
+            localeId = locale.localeId;
+            break;
+          }
+        }
+        if (localeId == null) {
+          _setVoiceError(
+            requestedPrefix == 'ar'
+                ? 'Arabic speech recognition is not installed. Install an Arabic speech language or choose Auto.'
+                : 'English speech recognition is not installed. Install an English speech language or choose Auto.',
+          );
+          return;
+        }
+      }
+      if (!mounted) return;
+      _voicePrefix = _request.text.trim();
+      setState(() {
+        _error = null;
+        _listening = true;
+        _voiceSecondsRemaining = 180;
+      });
+      _startVoiceTimer();
+      await _speech.listen(
+        listenOptions: SpeechListenOptions(
+          localeId: localeId,
+          listenFor: const Duration(minutes: 3),
+          pauseFor: const Duration(seconds: 10),
+          cancelOnError: true,
+          partialResults: true,
+          listenMode: ListenMode.dictation,
+        ),
+        onResult: (result) {
+          if (!mounted) return;
+          final recognized = result.recognizedWords.trim();
+          final combined = [
+            if (_voicePrefix.isNotEmpty) _voicePrefix,
+            if (recognized.isNotEmpty) recognized,
+          ].join(' ');
+          setState(() {
+            _request.text = combined;
+            _request.selection = TextSelection.collapsed(
+              offset: combined.length,
+            );
+          });
+        },
+      );
+    } catch (_) {
+      _setVoiceError(
+        'Voice recognition could not start. Check microphone permission and the device speech service, then retry.',
+      );
+    } finally {
+      if (mounted) setState(() => _startingVoice = false);
+    }
+  }
+
+  Future<bool> _ensureSpeechReady() async {
+    final alreadyGranted = await _speech.hasPermission;
+    if (!alreadyGranted) {
+      final continueWithPermission = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          icon: const Icon(Icons.mic_outlined),
+          title: const Text('Use your microphone?'),
+          content: const Text(
+            'Fitareeaee uses Android speech recognition to turn your words into this editable trip draft. Listening stops automatically after three minutes. Audio is not saved by Fitareeaee.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Allow and start'),
+            ),
+          ],
+        ),
+      );
+      if (continueWithPermission != true || !mounted) return false;
     }
 
     if (!_speechReady) {
@@ -481,78 +642,69 @@ class _CopilotScreenState extends State<CopilotScreen> {
         onStatus: (status) {
           if (!mounted) return;
           if (status == 'done' || status == 'notListening') {
-            setState(() => _listening = false);
+            _finishVoiceSession();
+          } else if (status == 'listening' && !_listening) {
+            setState(() => _listening = true);
           }
         },
         onError: (error) {
           if (!mounted) return;
-          setState(() {
-            _listening = false;
-            _error = error.permanent
-                ? 'Microphone speech recognition is unavailable. Check the app microphone permission.'
-                : 'Voice input stopped. Try again or type the request.';
-          });
+          _setVoiceError(copilotVoiceErrorMessage(error.errorMsg));
         },
       );
     }
-    if (!_speechReady) {
-      if (mounted) {
-        setState(() {
-          _error =
-              'Speech recognition is not available on this device. You can still type the request.';
-        });
-      }
-      return;
+    final granted = await _speech.hasPermission;
+    if (!_speechReady || !granted) {
+      _setVoiceError(
+        granted
+            ? 'Android speech recognition is unavailable. Install or enable the device speech service, or type the request.'
+            : 'Microphone permission was not granted. Enable it in Android Settings, then tap the microphone again.',
+      );
+      return false;
     }
+    return true;
+  }
 
-    final locales = await _speech.locales();
-    final inferredArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(_request.text);
-    final requestedPrefix = _voiceLanguage == 'auto'
-        ? (inferredArabic ? 'ar' : null)
-        : _voiceLanguage;
-    String? localeId;
-    if (requestedPrefix != null) {
-      for (final locale in locales) {
-        if (locale.localeId.toLowerCase().startsWith(requestedPrefix)) {
-          localeId = locale.localeId;
-          break;
-        }
-      }
-      if (localeId == null) {
-        if (mounted) {
-          setState(() {
-            _error = requestedPrefix == 'ar'
-                ? 'Arabic speech recognition is not installed on this device. Install an Arabic speech language or choose Auto.'
-                : 'English speech recognition is not installed on this device. Install an English speech language or choose Auto.';
-          });
-        }
+  void _startVoiceTimer() {
+    _voiceTimer?.cancel();
+    _voiceTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || !_listening) {
+        timer.cancel();
         return;
       }
-    }
+      if (_voiceSecondsRemaining <= 1) {
+        timer.cancel();
+        unawaited(_stopVoiceInput());
+        return;
+      }
+      setState(() => _voiceSecondsRemaining--);
+    });
+  }
+
+  Future<void> _stopVoiceInput() async {
+    _voiceTimer?.cancel();
+    if (_speechReady) await _speech.stop();
+    _finishVoiceSession();
+  }
+
+  void _finishVoiceSession() {
+    _voiceTimer?.cancel();
+    if (mounted && _listening) setState(() => _listening = false);
+  }
+
+  void _setVoiceError(String message) {
+    _voiceTimer?.cancel();
     if (!mounted) return;
     setState(() {
-      _error = null;
-      _listening = true;
+      _listening = false;
+      _error = message;
     });
-    await _speech.listen(
-      listenOptions: SpeechListenOptions(
-        localeId: localeId,
-        listenFor: const Duration(seconds: 60),
-        pauseFor: const Duration(seconds: 5),
-        cancelOnError: true,
-        partialResults: true,
-        listenMode: ListenMode.dictation,
-      ),
-      onResult: (result) {
-        if (!mounted) return;
-        setState(() {
-          _request.text = result.recognizedWords;
-          _request.selection = TextSelection.collapsed(
-            offset: _request.text.length,
-          );
-        });
-      },
-    );
+  }
+
+  String _formatVoiceTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainder = seconds % 60;
+    return '$minutes:${remainder.toString().padLeft(2, '0')}';
   }
 
   void _announceDraft(CopilotDraft draft) {
@@ -589,6 +741,23 @@ class _CopilotScreenState extends State<CopilotScreen> {
           prefixIcon: Icon(icon),
           border: const OutlineInputBorder(),
         ),
+      ),
+    );
+  }
+
+  Widget _locationField(
+    TextEditingController controller,
+    String label,
+    IconData icon,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AssistedTextFormField(
+        controller: controller,
+        label: label,
+        hint: 'Start typing a city or enter your own',
+        icon: icon,
+        suggestions: placeSuggestions.map((place) => place.label),
       ),
     );
   }

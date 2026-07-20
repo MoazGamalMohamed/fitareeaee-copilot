@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/domain/entities/user_profile.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
@@ -70,17 +71,25 @@ class SettingsScreen extends ConsumerWidget {
                   avatar: const Icon(Icons.language, size: 18),
                   label: const Text('English'),
                   selected: settings.preferredLanguages.contains('en'),
-                  onSelected: (_) => ref
-                      .read(settingsProvider.notifier)
-                      .togglePreferredLanguage('en'),
+                  onSelected: (_) async => _saveSetting(
+                    context,
+                    () => ref
+                        .read(settingsProvider.notifier)
+                        .togglePreferredLanguage('en'),
+                    'Language preferences updated.',
+                  ),
                 ),
                 FilterChip(
                   avatar: const Icon(Icons.translate, size: 18),
                   label: const Text('Arabic'),
                   selected: settings.preferredLanguages.contains('ar'),
-                  onSelected: (_) => ref
-                      .read(settingsProvider.notifier)
-                      .togglePreferredLanguage('ar'),
+                  onSelected: (_) async => _saveSetting(
+                    context,
+                    () => ref
+                        .read(settingsProvider.notifier)
+                        .togglePreferredLanguage('ar'),
+                    'Language preferences updated.',
+                  ),
                 ),
               ],
             ),
@@ -99,9 +108,14 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   )
                   .toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 if (value != null) {
-                  ref.read(settingsProvider.notifier).setCurrency(value);
+                  await _saveSetting(
+                    context,
+                    () =>
+                        ref.read(settingsProvider.notifier).setCurrency(value),
+                    'Currency changed to $value.',
+                  );
                 }
               },
             ),
@@ -111,9 +125,13 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Notifications'),
             subtitle: const Text('Booking, chat, support, and system updates'),
             value: settings.notificationsEnabled,
-            onChanged: ref
-                .read(settingsProvider.notifier)
-                .setNotificationsEnabled,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setNotificationsEnabled(value),
+              value ? 'App alerts enabled.' : 'App alerts disabled.',
+            ),
           ),
           SwitchListTile(
             secondary: const Icon(Icons.location_on_outlined),
@@ -122,9 +140,15 @@ class SettingsScreen extends ConsumerWidget {
               'Reserved for active confirmed trip tracking.',
             ),
             value: settings.locationSharingEnabled,
-            onChanged: ref
-                .read(settingsProvider.notifier)
-                .setLocationSharingEnabled,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setLocationSharingEnabled(value),
+              value
+                  ? 'Active-trip location sharing preference enabled.'
+                  : 'Active-trip location sharing preference disabled.',
+            ),
           ),
           const Divider(),
           _section('Payments'),
@@ -142,7 +166,15 @@ class SettingsScreen extends ConsumerWidget {
               'Preference only. No card details are collected in this judge build.',
             ),
             value: settings.savePaymentMethod,
-            onChanged: ref.read(settingsProvider.notifier).setSavePaymentMethod,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setSavePaymentMethod(value),
+              value
+                  ? 'Future payment-method saving preference enabled.'
+                  : 'Future payment-method saving preference disabled.',
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.receipt_long_outlined),
@@ -158,6 +190,20 @@ class SettingsScreen extends ConsumerWidget {
           _buildDriverMetric(context, profileAsync),
           const Divider(),
           _section('Account'),
+          ListTile(
+            leading: const Icon(Icons.manage_accounts_outlined),
+            title: const Text('Profile, address, and marketplace path'),
+            subtitle: profileAsync.maybeWhen(
+              data: (profile) => Text(
+                marketplacePathForRoles(profile?.roles ?? const []).title,
+              ),
+              orElse: () => const Text('Edit your account details'),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: user == null
+                ? null
+                : () => context.push('/profile/edit', extra: user.id),
+          ),
           ListTile(
             leading: Icon(Icons.logout, color: AppColors.error),
             title: Text('Sign Out', style: TextStyle(color: AppColors.error)),
@@ -236,6 +282,29 @@ class SettingsScreen extends ConsumerWidget {
     final acceptanceScore = acceptance.clamp(0, 1).toDouble() * 25;
     final completionScore = completion.clamp(0, 1).toDouble() * 15;
     return ratingScore + acceptanceScore + completionScore;
+  }
+
+  Future<void> _saveSetting(
+    BuildContext context,
+    Future<void> Function() action,
+    String successMessage,
+  ) async {
+    try {
+      await action();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(successMessage)));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('That setting could not be saved. Please retry.'),
+          ),
+        );
+    }
   }
 
   void _showPrivacyAndSafety(BuildContext context) {

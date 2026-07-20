@@ -15,6 +15,31 @@ void main() {
     );
   });
 
+  test('account role deterministically locks the Copilot intent', () {
+    expect(copilotIntentForRole('driver'), 'offer');
+    expect(copilotIntentForRole('rider'), 'find');
+    expect(copilotIntentForRole(null), 'find');
+  });
+
+  test('voice errors distinguish permission, silence, and busy states', () {
+    expect(
+      copilotVoiceErrorMessage('error_permission'),
+      contains('permission is off'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_speech_timeout'),
+      contains('No speech was heard'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_no_match'),
+      contains('No speech was heard'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_recognizer_busy'),
+      contains('recognition is busy'),
+    );
+  });
+
   testWidgets('Copilot failure keeps retry and manual fallback available', (
     tester,
   ) async {
@@ -36,7 +61,7 @@ void main() {
           ),
         ),
         GoRoute(
-          path: '/trips',
+          path: '/trips/create',
           builder: (context, state) => const Scaffold(body: Text('Manual')),
         ),
       ],
@@ -54,7 +79,7 @@ void main() {
     expect(tester.getCenter(error).dy, inInclusiveRange(0, 1800));
     expect(find.textContaining('temporarily unavailable'), findsNothing);
     expect(find.text('Create AI draft'), findsOneWidget);
-    expect(find.text('Use manual trip search'), findsOneWidget);
+    expect(find.text('Create a request manually'), findsOneWidget);
   });
 
   testWidgets('AI output remains a draft until explicit confirmation', (
@@ -90,7 +115,7 @@ void main() {
           },
         ),
         GoRoute(
-          path: '/trips',
+          path: '/trips/create',
           builder: (context, state) =>
               const Scaffold(body: Text('Manual search')),
         ),
@@ -124,6 +149,36 @@ void main() {
 
     expect(confirmedDraft, isNotNull);
     expect(find.text('Deterministic results'), findsOneWidget);
+  });
+
+  testWidgets('driver Copilot locks a returned draft to the offer path', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 5000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = GoRouter(
+      initialLocation: '/copilot',
+      routes: [
+        GoRoute(
+          path: '/copilot',
+          builder: (context, state) => CopilotScreen(
+            role: 'driver',
+            planner: (_) async => throw UnimplementedError(),
+          ),
+        ),
+        GoRoute(
+          path: '/trips/create',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Manual offer')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    expect(find.text('Driver / Courier path'), findsOneWidget);
+    expect(find.text('Create an offer manually'), findsOneWidget);
   });
 }
 
