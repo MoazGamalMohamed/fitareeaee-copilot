@@ -14,6 +14,22 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Complete verification and confirmed chat — v1.0.13
+
+- Enforced one client/server publication boundary: riders/senders need verified
+  email, phone, manually approved ID, and selfie; drivers/couriers additionally need
+  approved driver licence and vehicle records.
+- Made Verification Center role-specific with four rider checks or six driver checks,
+  accurate approved/pending progress, and no driver-only requirements shown to riders.
+- Removed the unused Firestore typing-status prototype that generated permission
+  failures while preserving paid-confirmed participant messages.
+- Extended Functions and emulator coverage through publication rejection, potential
+  unpaid bookings, proposal selection, paid confirmation, chat, start, completion,
+  closed chat, one-time rating, and urgent emergency admin review.
+- Published, anonymously downloaded, hash-matched, and installed the v1.0.13 APK;
+  exact-public emulator chat/lifecycle passed. Physical phone and managed OpenAI
+  secret/deployment remain explicitly pending owner actions.
+
 ### Final judge polish — v1.0.11
 
 - Separated rider/sender Request accounts from driver/courier Offer accounts across

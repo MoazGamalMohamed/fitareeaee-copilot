@@ -1,11 +1,12 @@
 # Resume Here
 
-Last updated: 2026-07-20 08:30 CDT / 2026-07-20 06:30 PDT
+Last updated: 2026-07-20 10:38 CDT / 2026-07-20 08:38 PDT
 
 ## Current objective
 
-Install the already-published and anonymously verified v1.0.11 artifact on the
-owner's reconnected phone and complete the physical release gate.
+Privately configure/deploy the GPT-5.6 managed secret, then install the already
+published and byte-verified v1.0.13 artifact on the owner's reconnected phone to
+complete the two remaining technical release gates.
 Finish the video, `/feedback`, legal review, and owner-performed Devpost submission.
 Do not replace the payment gate with simulated money.
 
@@ -13,20 +14,19 @@ Do not replace the payment gate with simulated money.
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private v1.0.11 application source:
-  `b05c91fd2b6856952a028866ec57a83c57ac116e`.
-- Private annotated tag `fitareeaee-copilot-v1.0.11` peels to that source.
+- Passing private v1.0.13 application source:
+  `7a764178106bf38ece5151a2913aec35a752902f`.
+- Private annotated tag `fitareeaee-copilot-v1.0.13` peels to that source.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Public v1.0.11 source: `4e1439b098c53c41bf9d95b9f82f3a607b0240bc`.
-- Public annotated tag `fitareeaee-copilot-v1.0.11` peels to that source.
-- Private/public application trees match across all 349 tracked paths.
+- Public v1.0.13 source is
+  `ffb5929094b4d48e9991499f65839f75c4479125`; all 351 tracked paths match the
+  private application source.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- PR #1 is current, draft, unmerged, and titled for v1.0.11.
-- Public v1.0.11 is the latest published prerelease at sanitized application source
-  `4e1439b0`.
+- PR #1 is open, draft, unmerged, and updated for v1.0.13 at the public source SHA.
+- Public v1.0.13 is the latest prerelease; the branch/tag were pushed without force.
 - GitHub CLI 2.96.0 is installed and authenticated through the Windows keyring.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
@@ -49,15 +49,19 @@ Do not replace the payment gate with simulated money.
   `paid`. There is no real payment provider in the contest build.
 - A clearly labeled fictional paid/confirmed fixture demonstrates active private
   chat. A completed fixture demonstrates Past, closed chat, and one immutable rating.
-- Contact Support uses GPT-5.6 first and supports explicit/automatic staff escalation.
+- Contact Support is designed to use GPT-5.6 first and supports explicit/automatic
+  staff escalation; until the managed secret is deployed it returns safe recovery
+  guidance rather than fabricating an answer.
 
 ## Deployed Firebase state
 
 - Confirmed project: `fitareeaee`.
-- All submitted booking, matching, chat, support, verification, lifecycle, rating,
-  projection, and Copilot callables remain deployed.
-- `planTripWithCopilot` uses managed `OPENAI_API_KEY` version 2; obsolete version 1
-  is destroyed. No key is in Flutter, Git, docs, logs, or the APK.
+- Booking, matching, chat, support, verification, lifecycle, rating, and projection
+  callables remain deployed. The latest narrow deployment updated only `createTrip`,
+  `createBooking`, and `proposeForTripRequest` after their tests passed.
+- Live `planTripWithCopilot` is not currently deployed because the managed
+  `OPENAI_API_KEY` secret is absent. No key is in Flutter, Git, docs, logs, or the
+  APK; the owner must set it privately before the final GPT-5.6 deployment.
 - Firestore ruleset `fd6ed8ec-2250-46d8-ac9a-34eed9736f3f` was deployed July 20
   after 9/9 emulator contracts. It permits a participant to check their deterministic
   one-rating document before creation while keeping all rating writes server-only.
@@ -69,44 +73,45 @@ Do not replace the payment gate with simulated money.
 
 ## Passing gates
 
-- Dart format: 128 files, 0 changes.
+- Dart format: 130 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 40/40.
-- Functions TypeScript/contracts: 28/28.
+- Flutter tests: 43/43.
+- Functions TypeScript/contracts: 30/30.
 - Firestore/Storage rules: 9/9.
-- Auth/Firestore/Functions integration: 7/7.
+- Auth/Firestore/Functions integration: 9/9.
 - Universal debug and optimized profile APK builds: PASS.
-- Scoped Firestore-rule deployment to `fitareeaee`: PASS.
+- Scoped callable deployment to `fitareeaee`: PASS.
 
 ## Current APK and emulator evidence
 
-- Local v1.0.11 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Local v1.0.13 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
 - Size: 109,583,813 bytes
-- SHA-256: `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`
-- Version: `1.0.11` / code `20260725`
+- SHA-256: `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`
+- Version: `1.0.13` / code `20260727`
 - Package/API: `com.fitareeaee.app`, minimum 24, target/compile 36
-- API 36 emulator update over the authenticated fictional rider session: PASS.
-- v1.0.11 separates account creation paths, adds the circular Home Copilot action,
-  explicit three-minute microphone flow, accurate no-speech/permission/busy errors,
-  assisted profile locations, and persisted Settings feedback.
+- API 36 emulator fresh-account and fictional-rider lifecycle smoke: PASS.
+- v1.0.13 requires email, phone, approved ID, and approved selfie before a rider can
+  publish; drivers additionally need approved driver licence and vehicle. Verification
+  shows four rider checks or six driver checks with real role-specific progress.
 - Exact candidate UI passes: circular Home Copilot; rider bottom Request; manual map
-  picker; microphone explanation, Android prompt, recognition-service/audio startup,
-  and accurate silent-emulator recovery; profile Dallas suggestion; Settings language
-  toggle; and Support route. The previously passing paid Chat/Past/rating/payment
-  boundary remains covered by the unchanged backend/integration suites.
+  picker; microphone explanation and Android prompt; phone and ID verification entry;
+  Settings/Support; potential unpaid match disclosure; paid-confirmed details and real
+  participant chat; Payments; completed Past trip; and one-time rating form.
 - Final app-specific fatal/Flutter/FirebaseFailure/ANR scan: 0 matches.
 - v1.0.9 additionally fixes owned-trip badges: the active trip now says Confirmed
   and the past trip Completed, while driver chat/start/emergency actions remain.
-- Physical v1.0.11 phone result: PENDING because only the emulator is connected.
-- Public v1.0.11 release:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.11`
-- Public v1.0.11 APK:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.11/app-profile.apk`
-- Anonymous re-download: `build/published-download-v111/app-profile.apk`; exact
-  109,583,813-byte/hash/byte match. The downloaded copy installed and authenticated
-  as the fictional rider; Home semantics, package version, and the app-specific fatal
-  scan passed on API 36.
+- Confirmed chat log scan: no visible error, `FirebaseFailure`, `typing_status`,
+  `PERMISSION_DENIED`, fatal exception, or `E/flutter` match.
+- Physical v1.0.13 phone result: PENDING because only the emulator is connected.
+- Public v1.0.13 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13`
+- Public v1.0.13 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk`
+- Anonymous re-download: `build/published-download-v113/app-profile.apk`; exact
+  109,583,813-byte/hash/byte match. The downloaded copy installed over the
+  authenticated fictional rider and reopened paid-confirmed chat with its real
+  fixture message and no matched fatal/chat-permission error on API 36.
 - Phone-tested rollback remains public v1.0.5.
 
 ## Remaining owner-only actions
@@ -122,12 +127,15 @@ Do not replace the payment gate with simulated money.
 6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
 7. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
-8. No further GitHub source/release action is needed unless the phone gate passes;
-   then promote the existing prerelease without replacing its APK bytes.
+8. Set `OPENAI_API_KEY` privately as a managed Firebase secret so the tested GPT-5.6
+   callable can be deployed; never paste the value into chat or commit it.
+9. Real payment-provider onboarding remains intentionally outside this contest
+   checkpoint. Do not represent the fictional paid fixture as a real charge.
 
 ## Exact next action
 
-When the phone returns, install the already-downloaded exact public v1.0.11 bytes
-and run Home,
-Copilot, verification, both map fields, matches/details/payment-gate, seeded paid
-Chat/Past/rating, and driver lifecycle. Promote only if every phone check passes.
+Owner: privately set `OPENAI_API_KEY`, then deploy only `planTripWithCopilot` and run
+the three live language/type calls. When ADB sees a non-emulator device, install the
+already downloaded exact public v1.0.13 bytes and run Home, Copilot, verification,
+both map fields, matches/details/payment gate, seeded paid Chat/Past/rating, and
+driver lifecycle. Promote only if every phone check passes.

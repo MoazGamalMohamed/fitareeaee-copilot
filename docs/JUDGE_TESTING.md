@@ -2,22 +2,21 @@
 
 Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
 
-> Release status: the hardened backend, rules, judge fixtures, authenticated
-> GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
-> v1.0.5 APK was downloaded, hash-matched, and installed on a Motorola phone.
-> Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
-> and app-specific crash logs passed on that exact public artifact.
+> Release status: the hardened lifecycle backend, rules, fictional judge fixtures,
+> and v1.0.13 public Android artifact are verified. The v1.0.13 APK was anonymously
+> downloaded, hash-matched, installed, and lifecycle-smoked on Android API 36. Its
+> physical-phone gate and live GPT-5.6 secret/deployment remain owner-only pending
+> actions. v1.0.5 remains the exact-public phone-tested rollback.
 
-> Superseding candidate: v1.0.11 retains the secure payment-gated lifecycle and adds
-> account-locked rider/sender versus driver/courier creation paths, a circular Home
-> Plan with AI control, explicit three-minute Android voice permission/listening,
-> accurate voice recovery messages, and editable profile location suggestions with
-> country and map selection. Its 40/40 Flutter tests, backend/rules gates, and API 36
-> authenticated UI smoke pass. The
-> [v1.0.11 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.11)
+> Superseding candidate: v1.0.13 retains the secure payment-gated lifecycle and adds
+> complete role-specific publication verification: four rider/sender checks or six
+> driver/courier checks. Its 43/43 Flutter tests, 30/30 Functions contracts, 9/9
+> rules tests, 9/9 callable lifecycle integration, and API 36 authenticated UI smoke
+> pass. The
+> [v1.0.13 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13)
 > is public and its 109,583,813-byte APK was anonymously redownloaded, SHA-256
 > matched, installed, authenticated as the fictional rider, and tested. Keep v1.0.5
-> as the phone-tested rollback until the exact v1.0.11 download is tested on the
+> as the phone-tested rollback until this exact v1.0.13 download is tested on the
 > owner's phone.
 
 Phone-tested rollback: universal profile APK, 83,378,603 bytes, SHA-256
@@ -32,23 +31,23 @@ matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
 - Final source branch: [agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support)
 - Repository root/support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.11/app-profile.apk)
+- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk)
 - Build type: universal AOT profile Android judge APK, debug-signed for sideloading
-- SHA-256: `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`
-- Source tag/commit: `fitareeaee-copilot-v1.0.11` / sanitized `4e1439b098c53c41bf9d95b9f82f3a607b0240bc`
+- SHA-256: `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`
+- Source tag/commit: `fitareeaee-copilot-v1.0.13` / sanitized `ffb5929094b4d48e9991499f65839f75c4479125`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
-Live Copilot verification: **PASS** — authenticated English ride, English
-package, and Arabic ride requests returned validated drafts through the deployed
-Firebase callable after the obsolete secret version was retired.
+Live Copilot verification: **BLOCKED** — the tested strict Responses API callable
+requires the owner to set `OPENAI_API_KEY` privately as a managed Firebase secret
+and deploy it. Retry and manual creation/search remain available; no key is in Git,
+Flutter, docs, logs, or the APK.
 
-Physical judge path: **PASS** — the fixed English request returned a reviewable
-GPT-5.6 draft and one transparent live match. The match opened Trip Details; a
-separate seeded paid/confirmed fixture opened participant Chat and rendered a
-fictional realtime message. No real payment or real identity is involved.
+Current physical-phone judge path: **PENDING** — only the API 36 emulator is visible
+to ADB. The exact public v1.0.13 artifact passes the equivalent fictional rider path;
+the older v1.0.5 artifact remains phone-tested. No real payment or identity is used.
 
-New bookings in v1.0.11 are deliberately **not confirmed before payment**. Since
+New bookings in v1.0.13 are deliberately **not confirmed before payment**. Since
 the contest build has no real payment provider, selecting a trip or driver creates
 only a pending-payment record and does not decrement seats or unlock chat. Use the
 seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.

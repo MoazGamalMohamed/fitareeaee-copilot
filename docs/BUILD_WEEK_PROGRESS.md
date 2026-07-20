@@ -3305,3 +3305,123 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   phone-tested public v1.0.5. Next action: publish this current-version evidence,
   then install the exact downloaded v1.0.11 bytes and exercise spoken transcription
   plus the full demo path when the owner phone reconnects.
+
+## 2026-07-20 10:38 CDT / 2026-07-20 08:38 PDT - v1.0.13 complete verification gate and clean confirmed chat
+
+- Objective: make the new-account judge path truthful and role-specific before trip
+  publication, remove the remaining confirmed-chat permission failure, and produce a
+  fresh installable candidate covering request, payment-gated confirmation, chat,
+  completion, rating, and Past trips.
+- Source checkpoints: `8cd962a8d3a0168dd39dfdba0259472c3cacf468` first placed
+  role-aware verification in front of publication; application source
+  `7a76417` completes the email, phone, manually approved ID, and selfie gate for
+  riders/senders and additionally requires approved driver licence and vehicle for
+  drivers/couriers. This checkpoint is version `1.0.13` / code `20260727`.
+- Verification Center now derives its checklist from the immutable account path:
+  riders see four relevant checks and drivers see six. Approved and pending counts,
+  progress, badge, and publication guidance use those exact checks; driver-only
+  documents no longer make a rider appear incomplete. Legacy nullable verification
+  records remain covered by focused tests and no longer trigger the reported
+  `null`-to-`String` crash.
+- The Flutter and callable gates now agree: publishing, proposing, and booking require
+  verified email, phone, ID, and selfie; the driver side additionally requires driver
+  licence and vehicle approval. The fictional judge fixture and future seed script
+  were updated with `phoneVerified: true`; the live repair was narrowly limited to
+  the two `@example.test` Build Week fixture documents after checking the exact
+  `fitareeaee` project and fixture markers. No user/trip/booking data was reset.
+- Removed the unused `typing_status` read/write provider. Firestore rules intentionally
+  did not expose that prototype collection, so the listener generated repeated
+  `PERMISSION_DENIED` noise even though real participant messages loaded. The rebuilt
+  confirmed-trip chat loaded an existing real fixture message with no visible error,
+  no `FirebaseFailure`, no `typing_status`/`PERMISSION_DENIED`, and no matched fatal
+  Flutter/Android log entry.
+- Targeted live backend deployment to the exact project `fitareeaee`: updated only
+  `createTrip`, `createBooking`, and `proposeForTripRequest`. Deployment passed. No
+  function deletion, production-data deletion, broad deploy, billing change, secret
+  read, or payment action occurred.
+- Final gates: Dart format PASS (130 files, 0 changed); Flutter analyze PASS (0
+  issues); Flutter tests PASS (43/43); Functions TypeScript build PASS; Functions
+  contracts PASS (30/30); Firestore/Storage emulator authorization PASS (9/9); and
+  Auth/Functions/Firestore lifecycle integration PASS (9/9). Integration covers
+  verified and rejected publication, unpaid/potential behavior, idempotent booking,
+  proposal selection, paid confirmation, active chat, completion, closed chat,
+  one-time rating, and urgent emergency cancellation/admin review.
+- Final debug APK: `build/app/outputs/flutter-apk/app-debug.apk`; 156,418,610 bytes;
+  SHA-256 `E08DBC1C5E616D51BAC53BFBF2F5327267F4953AABDDFA31F479C30CA819DDBD`;
+  built `2026-07-20T15:25:55.1388804Z`.
+- Final profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT
+  profile/debug-signed judge build; 109,583,813 bytes; SHA-256
+  `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`;
+  built `2026-07-20T15:27:32.4042321Z`; package `com.fitareeaee.app`; minimum API 24;
+  target API 36.
+- Emulator installation/smoke on `emulator-5554` (Android API 36): PASS. Fresh rider
+  signup/login, four-check publication gate, phone dialog, ID camera permission,
+  empty Chat, Support, Copilot disclosure/system microphone permission/active speech
+  recognizer, manual Request, interactive OpenStreetMap picker, Matches, paid-confirmed
+  details/chat, potential-payment disclosure, Payments, completed Past trip, and
+  rating form were exercised. The reachable-action contract also found no empty
+  handwritten button/tap callbacks and all reachable GoRouter route families exist.
+- Device inventory still contains only `emulator-5554`; no physical handset is
+  visible to ADB, so no physical-phone claim is made. Git tag, sanitized GitHub
+  publication, exact-public download/hash/install, and physical-phone install remain
+  pending. OpenAI GPT-5.6 live deployment still requires the owner to set
+  `OPENAI_API_KEY` privately; no real payment provider is configured, so unpaid
+  requests correctly remain potential and never unlock inventory/chat.
+- Rollback point: source `7a76417`, public v1.0.11 prerelease, and phone-tested public
+  v1.0.5. Next action: create the v1.0.13 evidence checkpoint and annotated tag,
+  mirror/rescan/push the sanitized repository, publish and redownload this exact APK,
+  install that downloaded copy, then install it on the physical phone when ADB sees it.
+
+## 2026-07-20 11:05 CDT / 2026-07-20 09:05 PDT - v1.0.13 sanitized release and exact-public emulator gate
+
+- Objective: publish the passing v1.0.13 checkpoint without exposing private
+  configuration, verify GitHub's bytes independently, and leave only genuine
+  credential/physical-owner actions outstanding.
+- Private application source is
+  `7a764178106bf38ece5151a2913aec35a752902f`; evidence checkpoint before this entry
+  is `280d89519c0d28e9fe2f05df9b4454a8b538c0ce`. Private annotated tag object
+  `c38ea951e0bc1f848de5e7b2e5e2ee70579037df` peels to the application source.
+- Mirrored the source commit through a credential-path-blocking archive into only the
+  sanitized clone. Compared all 351 tracked private/public paths by Git blob ID:
+  exact match, zero missing/extra/content-different files. Sanitized source commit is
+  `ffb5929094b4d48e9991499f65839f75c4479125`.
+- Reachable sanitized-history audit: 115 revisions, 2,650 objects, zero forbidden
+  `.env`/Firebase config/keystore/service-account/private credential path objects,
+  zero high-signal OpenAI/Google/GitHub/Slack/private-key/Stripe-live secret paths,
+  and zero `refs/original`.
+- Pushed the existing `agent/payment-gated-chat-trip-support` branch and annotated
+  `fitareeaee-copilot-v1.0.13` tag without force. Remote branch and tag peel both
+  resolve to `ffb5929094b4d48e9991499f65839f75c4479125`; public tag object is
+  `53fea7e1166b8e728b24661be3bc833a5c649b8b`.
+- Draft PR #1 remains OPEN, draft, unmerged, base `main`, and was updated to
+  `Ship Fitareeaee Copilot v1.0.13 verified trip lifecycle`; GitHub read-back reports
+  its head at the exact sanitized source SHA.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk`.
+  GitHub reports Android-package content type, 109,583,813 bytes, and digest
+  `sha256:e51d34c5c5b0b0bdba4f8180d2cca149a495d03617f4968d2f50a9a304fa39bb`.
+- Downloaded the public URL anonymously to
+  `build/published-download-v113/app-profile.apk`. Downloaded and local files are
+  exactly 109,583,813 bytes with SHA-256
+  `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`.
+- Installed that exact public download over the authenticated API 36 emulator,
+  confirmed package `com.fitareeaee.app`, version `1.0.13` / code `20260727`, and
+  cold-launched directly into the paid-confirmed chat. Its real fictional fixture
+  message loaded with no visible conversation error and no matched `FirebaseFailure`,
+  chat permission denial, fatal exception, `E/flutter`, or app ANR. Exact-public
+  emulator gate: PASS.
+- Updated README, changelog, judge guide, test matrix, demo setup, Devpost draft,
+  owner actions, checklist, and resume handoff to current v1.0.13 values and removed
+  stale claims that the GPT-5.6 secret/callable is live.
+- No Firebase data mutation/deletion, payment action, billing change, PR merge,
+  force push, stable promotion, or private-repository push occurred. `adb devices -l`
+  still shows only `emulator-5554`; physical v1.0.13 installation is not claimed.
+- Remaining blockers: the owner must set `OPENAI_API_KEY` privately and authorize the
+  one-callable deploy/live matrix; reconnect/unlock/authorize the physical phone;
+  record/upload the video; run `/feedback`; place private judge credentials; review
+  legal statements; and perform the final Devpost submission.
+- Rollback point: public v1.0.13 prerelease and phone-tested public v1.0.5. Next
+  action: commit/publish this documentation mapping, then immediately run the scoped
+  Copilot and physical-phone gates when their owner-controlled prerequisites arrive.

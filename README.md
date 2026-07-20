@@ -206,15 +206,16 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.11 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.11)
-separates rider/sender requests from driver/courier offers, moves the role-specific
-creation action into Home's bottom navigation, adds a circular Plan with AI action,
-and hardens English/Arabic voice planning with explicit Android consent and a
-three-minute cap. Profile locations now support editable suggestions, country
-selection, manual entry, and an interactive map pin. Its public 109,583,813-byte APK
-was anonymously redownloaded, byte-matched at SHA-256
-`54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`,
-installed, authenticated, and smoke-tested on API 36. It remains a prerelease until
+[v1.0.13 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.13)
+separates rider/sender requests from driver/courier offers, adds a circular Home
+Copilot action, and hardens English/Arabic voice planning with explicit Android
+consent and a three-minute cap. Publication now requires verified email, phone,
+manually approved ID, and selfie; drivers additionally require approved licence and
+vehicle records. Its public 109,583,813-byte APK was anonymously redownloaded,
+byte-matched at SHA-256
+`E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`,
+installed, authenticated, and lifecycle-tested on API 36, including real confirmed
+fixture chat without the former permission failure. It remains a prerelease until
 that exact public download passes the physical-phone smoke; v1.0.5 remains the
 phone-tested rollback.
 

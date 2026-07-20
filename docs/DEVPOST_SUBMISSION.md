@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.11/app-profile.apk — 109,583,813 bytes; SHA-256 `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.13/app-profile.apk — 109,583,813 bytes; SHA-256 `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -155,7 +155,14 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 
 ## Testing instructions summary
 
-Install the universal Android APK, sign in with the privately supplied judge account, tap **Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it, and inspect the transparent match reasons plus details. Verify that a new selection says payment required and does not unlock chat. Use the seeded paid/confirmed fixture to demonstrate Chat. Then try the fixed-date Arabic or package prompt in the judge guide. No payment card or OpenAI account is required.
+After the owner privately configures and deploys the managed OpenAI secret, install
+the universal Android APK, sign in with the privately supplied judge account, tap
+**Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at
+9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it,
+and inspect the transparent match reasons plus details. Verify that a new selection
+says payment required and does not unlock chat. Use the seeded paid/confirmed fixture
+to demonstrate Chat. Then try the fixed-date Arabic or package prompt in the judge
+guide. No payment card or OpenAI account is required by the judge.
 
 Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
@@ -166,7 +173,8 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.11 candidate includes interactive map pins, permanent linked
+- The v1.0.13 candidate includes complete role-specific publication verification,
+  repaired confirmed chat, interactive map pins, permanent linked
   OpenStreetMap attribution, English/Arabic speech entry, and editable curated
   location suggestions. It does not include turn-by-turn navigation, routing-service
   ETA, network-wide geocoding autocomplete, or full Arabic UI localization.
@@ -189,9 +197,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.11 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
-- **PENDING:** exact-public v1.0.11 physical-phone smoke and stable promotion
-- **DONE:** release tag `fitareeaee-copilot-v1.0.11` / sanitized source commit `4e1439b098c53c41bf9d95b9f82f3a607b0240bc`
+- **DONE:** v1.0.13 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
+- **PENDING:** managed OpenAI secret/scoped Copilot deployment and fresh live matrix
+- **PENDING:** exact-public v1.0.13 physical-phone smoke and stable promotion
+- **DONE:** release tag `fitareeaee-copilot-v1.0.13` / sanitized source commit `ffb5929094b4d48e9991499f65839f75c4479125`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID

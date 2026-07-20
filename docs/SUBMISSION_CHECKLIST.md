@@ -40,14 +40,15 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
 - [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
-- [ ] Owner confirms provider-side revocation of the key exposed in the build conversation. A different valid key is privately installed as managed version 2; obsolete managed version 1 is destroyed.
+- [ ] Owner confirms provider-side revocation of exposed keys and privately sets a
+  fresh `OPENAI_API_KEY` managed secret; never paste it into chat.
 - [x] Deploy only to confirmed Firebase project `fitareeaee`.
 - [x] Deploy hardened booking, verification, chat, and public-projection Functions.
 - [x] Deploy Firestore and Storage rules.
 - [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
-- [x] Deploy `planTripWithCopilot` with managed OpenAI secret version 2.
-- [x] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests, including a post-retirement rerun.
-- [x] Run exact-public Contact Support UI smoke: GPT-5.6 first answer, explicit
+- [ ] Deploy only `planTripWithCopilot` after the fresh managed secret is set.
+- [ ] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests.
+- [ ] Re-run exact-public Contact Support UI smoke after that deploy: GPT-5.6 first answer, explicit
   `Need a person?` handoff, Human queue state, staff confirmation, and clean logs.
 - [x] Run exact-public Settings/Payments UI smoke: Support, English/Arabic, USD,
   no-card/no-escrow boundary, rider-pay/driver-receive activity, and the 50-trip
@@ -166,7 +167,18 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   `1.0.11` / code `20260725`, circular Copilot, role-specific Request, map,
   profile suggestions, Settings, Support, microphone permission/audio, accurate
   no-speech recovery, and 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches.
-- [ ] Install that exact public v1.0.11 download on the owner's reconnected phone,
+- [x] Publish v1.0.13 source/tag/prerelease; compare all 351 tracked source paths,
+  scan 115 reachable revisions/2,650 objects with 0 forbidden credential paths or
+  high-signal secret hits, then anonymously redownload and byte-match 109,583,813
+  bytes and SHA-256
+  `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`.
+- [x] Install that exact public v1.0.13 download on API 36; verify version
+  `1.0.13` / code `20260727`, complete rider verification gate, role-specific
+  creation, potential/paid boundary, confirmed real fixture chat, Past/rating, and
+  0 visible or matched chat-permission/fatal errors.
+- [ ] Privately set `OPENAI_API_KEY`, deploy only `planTripWithCopilot`, and pass
+  authenticated English ride, English package, and Arabic ride live calls.
+- [ ] Install that exact public v1.0.13 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials
@@ -177,7 +189,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.11
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.13
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on
@@ -211,7 +223,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 Exact owner steps and the inherited Function set are recorded in
 [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
 
-1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
+1. Owner confirms provider-side revocation of exposed old OpenAI keys, privately
+   sets a fresh managed `OPENAI_API_KEY`, and authorizes the scoped Copilot deploy.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Exact-public v1.0.11 phone install/smoke, YouTube upload, `/feedback`, private
+3. Exact-public v1.0.13 phone install/smoke, YouTube upload, `/feedback`, private
    credential placement, legal confirmation, and final Devpost submit action.

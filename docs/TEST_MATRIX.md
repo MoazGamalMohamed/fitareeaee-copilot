@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.11 candidate source: 128 files, 0 changes |
-| Static analysis | `flutter analyze` | PASS | v1.0.11 candidate source: `No issues found!` |
-| Flutter suite | `flutter test` | PASS | v1.0.11 candidate source: 40/40 tests |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.13 candidate source: 130 files, 0 changes |
+| Static analysis | `flutter analyze` | PASS | v1.0.13 candidate source: `No issues found!` |
+| Flutter suite | `flutter test` | PASS | v1.0.13 candidate source: 43/43 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
-| Functions contracts | Booking/cancellation, lifecycle, matching, support, trip-scoped conversations, projections, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | Current Functions source: 28/28 tests |
+| Functions contracts | Booking/cancellation, lifecycle, matching, support, trip-scoped conversations, projections, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | Current Functions source: 30/30 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 9/9 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
-| Callable integration | Proposal/payment boundary, idempotency, verification, chat, start, completion, rating, and emergency cancellation | PASS | 7/7 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.11 universal debug and optimized profile builds passed; code `20260725` |
+| Callable integration | Proposal/payment boundary, idempotency, verification, chat, start, completion, rating, and emergency cancellation | PASS | 9/9 against real Auth/Functions/Firestore emulators |
+| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.13 universal debug and optimized profile builds passed; code `20260727` |
 
 ## Copilot behavior
 
@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — earlier English/package/Arabic matrix passed; a fresh authenticated English ride request passed July 20 after secret version 1 was destroyed |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — strict callable contracts pass, but the owner must set `OPENAI_API_KEY` privately and deploy the callable before a fresh live-model gate |
 
 ## Security and transactional behavior
 
@@ -67,7 +67,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
 | Transaction/verification/chat callables | PASS | `authorizeBookingConversation` is deployed and `ACTIVE` with the retained hardened callables in `us-central1` |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
-| Copilot callable | PASS | Deployed with managed secret version 2; official Firebase SDK authentication and English ride, English package, and Arabic ride model calls passed after obsolete version 1 was destroyed |
+| Copilot callable | BLOCKED | Tested implementation is present, but live deployment awaits a privately configured `OPENAI_API_KEY` managed secret; no key is stored client-side or in Git |
 | Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. A July 20 exact-public v1.0.9 UI smoke created a fictional ticket, rendered a bounded GPT-5.6 first answer, exposed `Need a person?`, moved the ticket to the Human queue, and rendered staff-escalation confirmation with 0 app-specific fatal/FirebaseFailure matches. |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
@@ -90,10 +90,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Fresh-install end-to-end run #2 | PASS (emulator) | Exact anonymously downloaded public v1.0.9 profile APK clean install, fictional rider sign-in, manual map pin/attribution, voice service/audio startup, payment gate, paid Chat, completed-only Past, and rating entry passed. Physical-phone repetition remains pending. |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Tagged judge APK candidate | PASS (prerelease) | v1.0.11 private source `b05c91f` is tree-equivalent across 349 tracked paths to sanitized/tagged source `4e1439b0`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested rollback. |
-| Public sanitized repository | PASS | Draft PR branch and v1.0.11 tag were pushed without force; the tag peels to `4e1439b0`. A 112-revision/2,578-object reachable-history scan found 0 forbidden private config/credential path objects and 0 high-signal secret signatures. The original private repository still has no remote. |
-| Published APK download and hash comparison | PASS | Public v1.0.11 asset downloaded anonymously; 109,583,813 bytes and SHA-256 `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD` exactly match local and GitHub's digest. |
-| Published APK install | PASS (emulator) | Exact downloaded v1.0.11 asset installed and authenticated as the fictional rider. Circular Copilot, role-specific Request, interactive map, profile suggestions, Settings persistence, Support, real microphone permission/audio startup, and accurate no-speech recovery passed on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone transcription/install remains pending. |
+| Tagged judge APK candidate | PASS (prerelease) | v1.0.13 private source `7a764178106bf38ece5151a2913aec35a752902f` is tree-equivalent across 351 tracked paths to sanitized/tagged source `ffb5929094b4d48e9991499f65839f75c4479125`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested rollback. |
+| Public sanitized repository | PASS | Draft PR branch and v1.0.13 tag were pushed without force; the tag peels to `ffb59290`. A 115-revision/2,650-object reachable-history scan found 0 forbidden private config/credential path objects and 0 high-signal secret signatures. The original private repository still has no remote. |
+| Published APK download and hash comparison | PASS | Public v1.0.13 asset downloaded anonymously; 109,583,813 bytes and SHA-256 `E51D34C5C5B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB` exactly match local and GitHub's digest. |
+| Published APK install | PASS (emulator) | Exact downloaded v1.0.13 asset installed over the authenticated fictional rider. Version `1.0.13` / code `20260727` loaded the paid-confirmed chat and its real fixture message with no visible error, `FirebaseFailure`, `PERMISSION_DENIED`, fatal exception, or `E/flutter` match. Physical-phone transcription/install remains pending. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
