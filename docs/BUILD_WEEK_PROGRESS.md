@@ -3548,3 +3548,33 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Rollback point: exact public v1.0.14 prerelease, source tag above, and phone-tested
   public v1.0.5. Next action: physical-phone microphone and complete demo-path smoke,
   then record the video and finish the owner-only submission checklist.
+
+## 2026-07-20 13:36 CDT / 2026-07-20 11:36 PDT — final v1.0.14 documentation synchronization
+
+- Committed the final public-release mapping locally as private documentation commit
+  `f0a04ae` and mechanically applied that reviewed commit to only the sanitized clone.
+- Private and public documentation trees exactly match at
+  `b78fef53fcc5caf54ddcb0f4d3ceb488ecfcfe49`; both worktrees were clean after the
+  checkpoint. Relative Markdown validation reported zero missing local targets and
+  `git diff --check` passed.
+- Repeated the sanitized reachable-history audit after the documentation commit:
+  121 revisions, 2,772 object/path lines, zero forbidden credential/config paths,
+  zero high-signal secret-hit files, and zero rewrite refs.
+- Pushed without force. Remote branch
+  `agent/payment-gated-chat-trip-support` exactly matches sanitized documentation head
+  `7a59df6902a505045157df0bb74f8af43198a066`. The immutable annotated
+  `fitareeaee-copilot-v1.0.14` tag object remains
+  `11dbddd2c2dc803795ec15202e329ab3d1756dc5` and peels to exact tested application
+  source `ed3a967585a4bb5854a6975173f77c4661f077de`.
+- Draft PR #1 remains OPEN, draft, unmerged, and cleanly mergeable with base `main`,
+  exact head `7a59df69`, and no force push:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- No application source, APK, Firebase resource, production data, payment/billing
+  state, release tag, or GitHub release asset changed in this documentation-only
+  synchronization.
+- Rollback point: tagged v1.0.14 application source/public prerelease above, with
+  v1.0.5 retained as the exact-public physical-phone-tested fallback. Next action:
+  reconnect the owner's unlocked USB-debug phone, install the exact anonymously
+  downloaded v1.0.14 APK, run the spoken-microphone and full demo smoke, then complete
+  the owner-only video, `/feedback`, private credentials, legal review, and Devpost
+  submission steps.
