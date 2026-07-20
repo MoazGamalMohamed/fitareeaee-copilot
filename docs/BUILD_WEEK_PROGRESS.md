@@ -2820,3 +2820,21 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   Next action: replay this publication evidence into the sanitized branch, rerun
   reachable-history secret/tree checks and update draft PR #1, then install these
   exact public v1.0.9 bytes on the reconnected phone before stable promotion.
+
+## 2026-07-20 03:37 CDT / 2026-07-20 01:37 PDT - v1.0.9 publication evidence synchronized
+
+- Replayed private public-artifact/driver-smoke evidence commit
+  `54367090ee43ac93f7d41f8ce75a6662cfcc4258` as sanitized commit
+  `a064e7aa69757a17d8ebf8341ff74c917d18cfcc`; README and the complete `docs/`
+  directory are tree-identical between those checkpoints at tree
+  `82268e71c511e9fce25289e1d187fd357b1dea6f`.
+- Sanitized history audit at `a064e7aa`: 91 reachable revisions, 0 forbidden
+  private config/credential path objects (`.env.example` intentionally remains as
+  a value-free setup template), and 0 high-signal secret-hit files. Worktree clean.
+- Updated README, judge instructions, Devpost draft, test matrix, changelog,
+  checklist, resume handoff, and publication mapping for the exact public v1.0.9
+  source, URLs, hash, emulator lifecycle/chat evidence, and honest phone-pending state.
+- Rollback point remains immutable public v1.0.8 plus phone-tested stable v1.0.5.
+  Next action after the mapping-only publication tail is the exact public v1.0.9
+  physical-phone install/smoke when the owner reconnects; video, `/feedback`, legal
+  review, and final Devpost submit remain owner-only actions.

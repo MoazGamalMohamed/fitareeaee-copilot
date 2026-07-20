@@ -18,8 +18,8 @@ Do not replace the payment gate with simulated money.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Recorded public v1.0.9 pre-publication evidence checkpoint:
-  `7beb96fc5c9295e21caab4258d53d3ad4718008d`. A later publication/mapping tail may
+- Recorded public v1.0.9 artifact/driver-smoke evidence checkpoint:
+  `a064e7aa69757a17d8ebf8341ff74c917d18cfcc`. A later mapping-only tail may
   advance the branch; use `git ls-remote` for the current remote head.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`

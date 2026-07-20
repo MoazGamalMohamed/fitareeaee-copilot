@@ -57,6 +57,7 @@ evidence to the sanitized publication history:
 | v1.0.8 public artifact evidence | `45452a4c968600438506b493c2939f1f4c4a8266` | `5f2819c574622accdaa420064751cdc9c1b5a827` |
 | v1.0.9 truthful owned-trip status source and tag | `ab792130938601370f5ccf87ef4af3ff0290076e` | `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56` |
 | v1.0.9 local release evidence | `d23cafdc83923e00aa16b678d63e893c11464445` | `7beb96fc5c9295e21caab4258d53d3ad4718008d` |
+| v1.0.9 public artifact and driver-smoke evidence | `54367090ee43ac93f7d41f8ce75a6662cfcc4258` | `a064e7aa69757a17d8ebf8341ff74c917d18cfcc` |
 
 The annotated tag names are preserved:
 
