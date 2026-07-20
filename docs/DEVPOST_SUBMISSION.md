@@ -10,7 +10,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Tagline:** Plan rides and packages in English or Arabic—with AI drafts you control and matches you can understand.
 
-**Repository:** https://github.com/MoazGamalMohamed/fitareeaee-copilot
+**Repository:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 

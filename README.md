@@ -249,7 +249,11 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - Verification indicates an admin-reviewed workflow, not a guarantee of personal safety.
 - Live GPT-5.6 and physical-phone results are recorded only after their corresponding credential/device checks actually pass.
 
-Public repository and support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot) and its Issues tab.
+Final judge source:
+[agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support).
+Public repository and non-sensitive support:
+[github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
+and its Issues tab. Draft PR #1 remains deliberately unmerged pending owner approval.
 
 ## License
 

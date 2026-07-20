@@ -31,7 +31,8 @@ matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
 ## Final release information
 
-- Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
+- Final source branch: [agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support)
+- Repository root/support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
 - APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.5/app-profile.apk)
 - Build type: universal AOT profile Android judge APK, debug-signed for sideloading
 - SHA-256: `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`

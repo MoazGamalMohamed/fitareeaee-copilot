@@ -33,6 +33,10 @@ The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
 `https://github.com/MoazGamalMohamed/fitareeaee-copilot`; both sanitized branches
 and annotated tags are pushed. The private original still has no remote.
+Use the final branch URL in Devpost:
+`https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support`.
+The default `main` intentionally remains the draft PR base. Do not point judges only
+at the repository root unless the owner first approves and completes PR #1's merge.
 The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
 annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
@@ -153,7 +157,7 @@ Central**. The internal target remains 3:00 PM Central.
    cut under three minutes, include audible narration covering both Codex and
    GPT-5.6, use no copyrighted music, and show no private notification or credential.
 6. Upload the video as **public** on YouTube and verify it while signed out. Then
-   verify the repository, latest stable release, direct APK, and video links in the Devpost
+   verify the final branch URL, latest stable release, direct APK, and video links in the Devpost
    preview.
 7. Paste the English copy from `docs/DEVPOST_SUBMISSION.md`, review every legal and
    eligibility statement, submit personally, and save a screenshot/PDF/text copy of

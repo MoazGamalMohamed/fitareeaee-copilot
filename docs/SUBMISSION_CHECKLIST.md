@@ -157,7 +157,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final repository URL.
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.9
+  source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on
   repository authentication. The still-missing YouTube/Devpost fields remain below.

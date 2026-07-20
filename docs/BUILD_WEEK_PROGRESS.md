@@ -2925,3 +2925,19 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Added a README judge-preview gallery and media captions. The owner must still
   confirm launcher-art authorization and review any final video/audio created outside
   the repository before Devpost upload.
+
+## 2026-07-20 04:18 CDT / 2026-07-20 02:18 PDT - final judge source URL corrected without unauthorized merge
+
+- Remote ref audit found final source/media on public branch
+  `agent/payment-gated-chat-trip-support`, while `main` and `build-week/final`
+  intentionally remain at the draft PR base `202a6c0f`. PR #1 is still unmerged as
+  required by the owner's explicit no-merge-without-confirmation boundary.
+- Updated Devpost copy and judge instructions to use the branch-specific final source
+  URL:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support`.
+  Repository-root/Issues links remain available for non-sensitive support.
+- No branch rewrite, force push, merge, or default-branch mutation was performed.
+  The owner may later approve PR #1 merge; until then, submit the final branch URL so
+  judges land on the correct v1.0.9 README, evidence, and media.
+- Anonymous signed-out HTTP HEAD checks returned 200 for the final branch URL, a
+  branch media file, and the public v1.0.9 release page.
