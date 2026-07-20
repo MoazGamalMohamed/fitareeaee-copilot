@@ -8,6 +8,13 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
 > and app-specific crash logs passed on that exact public artifact.
 
+> Superseding candidate: v1.0.6 adds interactive origin/destination map pins,
+> English/Arabic speech entry, completed-only Past Trips, and server-authoritative
+> start/complete/cancel/rating lifecycle controls. Its local profile APK passed
+> the complete automated gate and authenticated API 36 emulator smoke. Keep using
+> the v1.0.5 link below until v1.0.6 is published, redownloaded, hash-matched, and
+> tested on the owner's phone.
+
 Final artifact: universal profile APK, 83,378,603 bytes, SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
 private release-gate source `4630703b5a69e151d07d6e6c9683deced6298302`
@@ -31,10 +38,9 @@ package, and Arabic ride requests returned validated drafts through the deployed
 Firebase callable after the obsolete secret version was retired.
 
 Physical judge path: **PASS** — the fixed English request returned a reviewable
-GPT-5.6 draft and one transparent live match; the match opened Trip Details and
-confirmed Chat. A separate fictional booking in the same test session completed
-through the server transaction and its test message rendered through the realtime
-conversation stream. No real payment or real identity is involved.
+GPT-5.6 draft and one transparent live match. The match opened Trip Details; a
+separate seeded paid/confirmed fixture opened participant Chat and rendered a
+fictional realtime message. No real payment or real identity is involved.
 
 New bookings in v1.0.5 are deliberately **not confirmed before payment**. Since
 the contest build has no real payment provider, selecting a trip or driver creates
@@ -97,16 +103,18 @@ Using the provided seeded trip/account:
 
 1. Open trip details.
 2. Review manual verification context.
-3. If **Book Trip** is shown, book once and verify the transaction succeeds. If the
-   shared fictional fixture is already booked, verify **Open Confirmed Chat** is shown
-   instead of another booking action.
-4. Open participant chat and send only a clearly fictional test message.
+3. If **Book Trip** is shown, select it once and verify the server creates a
+   **payment required** state without decrementing inventory or opening chat.
+4. Open the separately supplied seeded paid/confirmed fixture and verify
+   **Open Confirmed Chat** is shown instead of another booking action.
+5. Open participant chat and send only a clearly fictional test message.
 
 No real payment is requested or processed.
 
 For an **offer** prompt, the expected result is a compatible request listing.
-Opening it offers a server-authorized conversation with the requester; a request
-listing is not itself booked.
+The verified driver may submit only a bounded proposal. Direct participant chat
+stays closed until the rider selects the proposal and trusted payment confirmation
+makes the resulting booking paid/confirmed.
 
 ### 5. Try Arabic or a package
 
@@ -144,7 +152,9 @@ Flutter Android app
 ## Known limitations
 
 - The APK is distributed directly for judging, not through Google Play.
-- Location/map/autocomplete and broader Arabic UI are not required for the core Copilot path.
+- The v1.0.6 candidate includes an interactive map pin picker and English/Arabic
+  speech entry. It does not provide turn-by-turn navigation, address autocomplete,
+  full Arabic localization, or a routing-service ETA.
 - AI output may misunderstand language; the user must review the draft.
 - Matching depends on available Firestore trips and does not guarantee a result.
 - Verification is manual context, not an assurance that a person or trip is safe.

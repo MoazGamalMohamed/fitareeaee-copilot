@@ -74,6 +74,9 @@ No rank score is a declaration of personal safety or endorsement of a participan
   Contact/profile PII is excluded and the collection cannot be listed.
 - The app reads server-maintained `public_trips`; exact coordinates, passenger
   IDs, package photos, descriptions, and arbitrary metadata remain private.
+- Manual origin/destination map pins are stored with the private trip. The public
+  trip projection exposes only coarsened coordinates needed for marketplace
+  proximity ordering; it does not expose the user's live device location.
 - A conversation can be created only after a booking or after the server checks
   a live request trip and the offerer's manual verification.
 - Verification images remain in owner/admin-scoped Firebase Storage and are
@@ -100,7 +103,10 @@ These are basic submission safeguards, not a complete production abuse-preventio
 
 ## Excluded prototypes and limitations
 
-Simulated payment, escrow, wallet, payout, AI identity-verification, destructive reset, and incomplete tracking/support paths are not part of the submitted judge flow. No real payments are processed.
+Simulated payment, escrow, wallet, payout, AI identity-verification, destructive
+reset, and turn-by-turn tracking are not part of the submitted judge flow. The
+interactive map is a trip-planning pin picker, not continuous live tracking. No
+real payments are processed.
 
 The current release process must still verify the deployed backend, judge accounts, retention/availability through judging, and the final APK. See [`TEST_MATRIX.md`](TEST_MATRIX.md) and [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md).
 

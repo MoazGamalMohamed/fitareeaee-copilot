@@ -202,6 +202,10 @@ Before submission, rerun and record all mandatory commands on the exact tagged r
   `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`;
   clean install, cold launch, fictional judge authentication, and Home role-action
   smoke PASS on API 36.
+- APK metadata/signature: PASS; package `com.fitareeaee.app`, version `1.0.6`
+  (`20260720`), min API 24, target/compile API 36, Android Signature Scheme v2,
+  and the expected single Android Debug signer certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
 - Exact final x86_64 split: clean install and explicit cold-launch retry PASS;
   Login/Welcome rendered, process alive, no matching app fatal/Flutter/bootstrap/ANR
   logs. Universal emulator install was blocked only by emulator free space.

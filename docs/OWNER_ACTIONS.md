@@ -24,7 +24,7 @@ exist only in owner-restricted, Git-ignored `.judge-credentials.local.json`.
 Keep the eventual judge login credentials only in the private Devpost testing
 field, not the public repository, video, screenshots, or progress log.
 
-### 3. GitHub publication — completed
+### 3. GitHub publication — v1.0.5 complete; v1.0.6 pending
 
 The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
@@ -33,6 +33,12 @@ and annotated tags are pushed. The private original still has no remote.
 The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
 annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
+
+The superseding v1.0.6 lifecycle/map/voice source and 85,293,151-byte profile APK
+are passing locally and on the API 36 emulator. Publication is waiting for GitHub
+CLI installation/authentication; physical testing is waiting for the phone to be
+reconnected. Do not replace the v1.0.5 links until the new public download is
+hash-matched and installed from that same URL.
 
 ### 4. Approve or decline inherited Function retirement
 
@@ -133,7 +139,7 @@ Central**. The internal target remains 3:00 PM Central.
    cut under three minutes, include audible narration covering both Codex and
    GPT-5.6, use no copyrighted music, and show no private notification or credential.
 5. Upload the video as **public** on YouTube and verify it while signed out. Then
-   verify the repository, v1.0.3 release, direct APK, and video links in the Devpost
+   verify the repository, latest stable release, direct APK, and video links in the Devpost
    preview.
 6. Paste the English copy from `docs/DEVPOST_SUBMISSION.md`, review every legal and
    eligibility statement, submit personally, and save a screenshot/PDF/text copy of

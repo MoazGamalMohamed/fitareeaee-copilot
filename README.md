@@ -27,7 +27,7 @@ Fitareeaee was an existing Flutter marketplace prototype before Build Week. The 
 | Legacy OpenRouter and unused AI-verification prototypes | Official OpenAI SDK + Responses API + GPT-5.6 callable |
 | Client-side/non-transactional booking paths | Authenticated server-authoritative transactional booking |
 | Broad/inconsistent data access | Default-deny Firestore/Storage rules and admin-only verification decisions |
-| Simulated payment, wallet, map and tracking surfaces | Those unstable surfaces removed from the submitted product |
+| Simulated payment, wallet, map and tracking surfaces | Finance/tracking prototypes excluded; interactive manual trip map picker added |
 | Six domain smoke tests | Copilot, booking, verification, authorization and ranking contracts |
 
 The append-only evidence log is [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_PROGRESS.md), and the detailed change list is [`docs/BUILD_WEEK_CHANGELOG.md`](docs/BUILD_WEEK_CHANGELOG.md).
@@ -43,6 +43,14 @@ The append-only evidence log is [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_
 7. Create or select a match. The server records it as **payment required**, not
    confirmed; seats and chat remain locked.
 8. Use the seeded paid/confirmed judge fixture to demonstrate participant chat.
+
+Users can also create a request or verified-driver offer manually. The shared
+form supports ride/package details, accessibility preferences, origin and
+destination pins on an interactive OpenStreetMap, and explicit review before a
+server-authoritative write. Copilot additionally accepts English or Arabic
+speech-to-text and can announce the returned draft through Android accessibility
+services. Those conveniences never bypass the same confirmation, role, payment,
+or verification rules.
 
 That booking path applies to a rider/sender finding an offered trip. An **offer**
 draft instead ranks compatible request listings; a manually verified driver can
@@ -93,7 +101,7 @@ GPT-5.6 interprets language; it does not select a person, approve identity, decl
 - Every model result is an **AI draft — review required**.
 - Identity and selfie decisions remain manual/admin controlled.
 - Empty Firestore results stay empty; the app never invents live trips.
-- Payments, escrow, wallets, payouts, incomplete tracking, and AI identity verification are excluded.
+- Payments, escrow, wallets, payouts, turn-by-turn tracking, and AI identity verification are excluded.
 
 Full boundaries and limitations are in [`docs/PRIVACY_AND_SAFETY.md`](docs/PRIVACY_AND_SAFETY.md).
 
@@ -207,7 +215,9 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 ## Known limitations
 
 - This contest build supports Android sideloading, not Google Play distribution.
-- Matching uses city/address token compatibility rather than a maps/geocoding service.
+- Manual trip creation includes an interactive map pin picker, but matching still
+  uses deterministic route/date/capacity criteria rather than a routing or
+  geocoding service; turn-by-turn navigation is not included.
 - It does not implement real payments or emergency dispatch.
 - Verification indicates an admin-reviewed workflow, not a guarantee of personal safety.
 - Live GPT-5.6 and physical-phone results are recorded only after their corresponding credential/device checks actually pass.

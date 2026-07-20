@@ -118,6 +118,10 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
 - [x] Install the exact public v1.0.5 APK on the Motorola phone; cold launch,
   authenticated Home, Chat empty state, manual Request form, and crash-log scan pass.
+- [x] Build and emulator-test the v1.0.6 lifecycle/map/voice profile candidate;
+  verify package/version/API metadata and its expected debug signature.
+- [ ] Publish sanitized v1.0.6 source/tag/APK, redownload and hash-match it, then
+  install that downloaded copy on the owner's reconnected phone.
 
 ## Devpost materials
 

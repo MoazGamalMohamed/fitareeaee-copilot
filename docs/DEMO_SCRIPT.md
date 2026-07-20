@@ -4,8 +4,9 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
-Release gate status: **satisfied for public v1.0.3**. Before recording, enable Do
-Not Disturb, close messaging notifications, and use only the fictional judge account.
+Release gate status: **satisfied for public v1.0.5**. Repeat the public-download
+and phone gate before recording with v1.0.6. Before recording, enable Do Not
+Disturb, close messaging notifications, and use only the fictional judge account.
 
 ## Recording setup
 
@@ -33,9 +34,9 @@ Not Disturb, close messaging notifications, and use only the fictional judge acc
 
 ### 0:29–0:53 — Natural-language planning
 
-**On screen:** Enter: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create AI draft**.
+**On screen:** Tap the microphone and say, or paste as a recording fallback: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create AI draft**.
 
-**Say:** “I can describe a ride or package naturally in English or Arabic. The app sends only the redacted request, locale, timezone, and current date through an authenticated Firebase Function. Contact details and links in free text are filtered.”
+**Say:** “I can type or speak a ride or package naturally in English or Arabic. The app sends only the redacted request, locale, timezone, and current date through an authenticated Firebase Function. Contact details and links in free text are filtered.”
 
 ### 0:53–1:17 — Structured, reviewable draft
 
@@ -51,10 +52,11 @@ Not Disturb, close messaging notifications, and use only the fictional judge acc
 
 ### 1:39–1:58 — Trust, booking, and chat
 
-**On screen:** Open trip details and show verification context. If **Book Trip** is
-available, book once; otherwise show the existing confirmed state. Open confirmed chat.
+**On screen:** Open trip details and show verification context. Select once and
+show **payment required** with chat still locked. Then open the separate seeded
+paid/confirmed fixture and show its participant chat.
 
-**Say:** “The journey continues through trip details and manual verification context. These demo badges are fictional fixtures—not a safety claim. Booking runs as an authenticated transaction that checks ownership, verification, duplicates, status, and seats atomically. A confirmed booking unlocks a trip-specific conversation for only the server-authorized participants.”
+**Say:** “The journey continues through trip details and manual verification context. These demo badges are fictional—not a safety claim. A new selection stays pending payment and cannot change seats or unlock chat. Only this seeded paid-confirmed fixture opens a trip-specific conversation for server-authorized participants.”
 
 ### 1:58–2:20 — Architecture and safety
 

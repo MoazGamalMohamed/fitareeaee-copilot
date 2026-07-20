@@ -30,6 +30,12 @@ Fitareeaee Copilot starts with the way people naturally ask for help. It turns a
 
 From Home, a user taps **Plan with AI** and describes a ride they need, a trip they can offer, or a package they want to send. GPT-5.6 interprets the request into a strict draft containing intent, type, origin, destination, departure date/time, people or seats, package details, maximum budget, preferences, a concise summary, missing information, and a clarification question when needed.
 
+For accessibility, the same Home-only Copilot accepts English or Arabic speech
+and can announce its draft through Android accessibility services. A user who
+prefers a form can create a ride/package request or, after driver and vehicle
+verification, an offer manually and place origin/destination pins on an
+interactive OpenStreetMap.
+
 The draft is visibly labeled as AI-generated and remains editable. Copilot never
 writes a trip or booking: confirming the reviewed draft only performs
 deterministic search over real Firestore trips. Booking, when applicable, is a
@@ -57,7 +63,7 @@ Firestore and Storage rules default-deny unknown access, protect verification st
 
 Fitareeaee existed before Build Week as a Flutter/Firebase marketplace prototype. That earlier authentication, profile, marketplace, chat, and prototype feature work is not claimed as new.
 
-During Build Week we added the central Fitareeaee Copilot extension: the Home entry point, English/Arabic structured planning, official GPT-5.6 Responses API backend, review/edit/confirmation flow, transparent deterministic matching, privacy and safety boundaries, retry/manual fallback, transactional booking hardening, server-side verification authorization, restrictive data rules, expanded tests, Android checkpoints, and submission evidence.
+During Build Week we added the central Fitareeaee Copilot extension: the Home entry point, English/Arabic structured planning and speech entry, official GPT-5.6 Responses API backend, review/edit/confirmation flow, transparent deterministic matching, privacy and safety boundaries, retry/manual fallback, interactive manual trip map pins, transactional booking and lifecycle hardening, server-side verification authorization, restrictive data rules, expanded tests, Android checkpoints, and submission evidence.
 
 The repository preserves an explicit pre-Build Week baseline commit/tag and an append-only progress log so judges can distinguish the extension from older work.
 
@@ -108,6 +114,8 @@ After judging, the next steps are stronger multilingual PII detection, Firebase 
 - Strict JSON Schema structured output
 - Node test runner
 - Flutter widget and domain tests
+- flutter_map / OpenStreetMap tiles
+- speech_to_text and Android accessibility announcements
 - Android SDK / Gradle / ADB
 - Git and Codex
 
@@ -158,7 +166,9 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- Maps/location autocomplete and broader Arabic UI are outside the core submission path unless stabilized.
+- The v1.0.6 candidate includes interactive map pins and English/Arabic speech
+  entry, but not turn-by-turn navigation, routing-service ETA, address autocomplete,
+  or full Arabic UI localization.
 - The v1.0.5 public APK passed download/hash verification, emulator installation,
   Motorola installation/cold launch, authenticated Home, payment-gated Chat empty
   state, manual request creation, and app-specific crash-log checks. The live GPT-5.6
@@ -178,7 +188,9 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** stable APK URL, size, and SHA-256
+- **DONE:** stable v1.0.5 fallback APK URL, size, and SHA-256
+- **PENDING:** replace the test-build fields with v1.0.6 only after publication,
+  public redownload/hash verification, and physical-phone smoke
 - **DONE:** release tag `fitareeaee-copilot-v1.0.5` / sanitized source commit `6d67f306203886d3d1623f9966f36764589b9cfb`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
