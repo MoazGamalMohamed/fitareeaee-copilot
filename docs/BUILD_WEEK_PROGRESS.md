@@ -2977,3 +2977,34 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Verified Driver quality shows `Driver priority metric` but does not calculate or
   expose a priority score before 50 completed rides/deliveries; the fictional rider
   correctly showed current history 0. No raw error UI was present.
+
+## 2026-07-20 04:51 CDT / 2026-07-20 02:51 PDT - final public-access and cold-launch integrity audit
+
+- Rechecked the exact anonymously downloaded public v1.0.9 APK without rebuilding
+  it: 85,276,819 bytes; SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+- Signed-out HTTP HEAD checks returned 200 for the final branch and v1.0.9 release
+  page. The release asset redirected normally and returned 200 with content length
+  85,276,819 and Android-package content type.
+- Force-stopped and cold-launched the installed exact-public artifact on API 36.
+  Android reported package `com.fitareeaee.app`, version `1.0.9`, code `20260723`,
+  min API 24, target API 36, and foreground focus on `MainActivity`.
+- Final cold-launch log scan found 0 app-specific fatal, Flutter, FirebaseFailure,
+  or ANR matches. This supplements the already-passing authenticated rider, driver,
+  GPT-5.6, trip, chat, support, map, voice-service, Settings, and Payments smokes.
+- Confirmed the sanitized publication clone is clean at public branch checkpoint
+  `5313a939`; the private evidence checkpoint before this append is `618ec33`.
+  Application/tag source and APK remain unchanged at private `ab79213`, sanitized
+  `ef2eecb7`, and annotated tag object `8142cb0`.
+- Probed Windows SAPI file-output formats for an optional offline demo narration;
+  none produced a valid audio file in this environment. No generated media was
+  published. The verified screenshot pack and 2:40 narration script remain the
+  reliable owner-reviewed recording path; no unreviewed synthetic voice is claimed.
+- Phone result remains honestly pending for exact-public v1.0.9 because only
+  `emulator-5554` is connected. Public v1.0.5 remains the phone-tested rollback.
+- Files changed: this append-only progress record only. Rollback point: public
+  v1.0.9 tag/release and clean public source checkpoint `5313a939`.
+- Next action: when the owner reconnects and unlocks the Motorola phone, install
+  `build/published-download-v109/app-profile.apk`, repeat the final authenticated
+  smoke and crash scan, record the device result, then promote v1.0.9 from
+  prerelease if and only if the exact public bytes pass.
