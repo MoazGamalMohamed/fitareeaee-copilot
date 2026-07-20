@@ -2552,3 +2552,119 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Recovery points: private `919c8b1`; sanitized/remote branch `8e35a76d`; tagged
   source `9194066a`; public APK SHA-256
   `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+
+## 2026-07-20 02:54 CDT / 2026-07-20 00:54 PDT - v1.0.8 voice, verification, chat, Past, and lifecycle release candidate
+
+### Objective and outcome
+
+- Closed the last emulator-observed judge-path defects instead of treating source
+  inspection as completion. The exact optimized v1.0.8 APK now passes fictional
+  authentication, manual map creation, Android speech-service startup, paid chat,
+  completed Past trips, one-time rating entry, legacy verification compatibility,
+  and the pre-payment booking boundary.
+- Android speech discovery now declares `RecognitionService` for API 30+ and the
+  Copilot exposes Auto/device, English, and Arabic recognition choices. On the
+  silent emulator, permission, `RecognitionService#onStartListening`, the online
+  recognizer, `en-US`, and audio input opened; no transcript is claimed without
+  spoken audio.
+- Legacy verification documents that omitted `createdAt` no longer collapse to a
+  masked provider error and false Pending state. New fictional judge fixtures now
+  persist both audit timestamps. Review and Pay visibly rendered Verified.
+- Added two explicit fictional Build Week lifecycle fixtures: one paid/confirmed
+  active booking with an authorized private conversation, and one completed booking
+  whose conversation authorization is closed. These are labeled fixtures and do
+  not claim a real payment provider transaction.
+- The completed-trip details screen no longer offers Book Trip. It states that chat
+  is closed, exposes Contact Support, and links to one immutable server-owned rating.
+  The signed-in participant may safely check their deterministic rating document
+  before it exists; all rating writes remain callable/server-only.
+
+### Files changed
+
+- `android/app/src/main/AndroidManifest.xml`
+- `lib/features/copilot/presentation/pages/copilot_screen.dart`
+- `lib/features/verification/presentation/providers/verification_provider.dart`
+- `lib/features/trips/presentation/pages/trip_details_screen.dart`
+- `functions/scripts/seed-judge-data.cjs`
+- `firestore.rules`
+- `functions/src/rules.contract.test.ts`
+- `test/platform/android_manifest_contract_test.dart`
+- `test/features/verification/verification_provider_test.dart`
+- `pubspec.yaml` (`1.0.8+20260722`)
+
+### Commands and exact results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS after applying
+  one mechanical format; 118 files, 0 changed.
+- `flutter analyze`: PASS; no issues found.
+- `flutter test`: PASS; 23/23.
+- Focused voice/verification regression suite: PASS; 3/3.
+- `cd functions; node --check scripts/seed-judge-data.cjs`: PASS.
+- `cd functions; npm run build`: PASS.
+- `cd functions; npm test`: PASS; 28/28.
+- First rules attempts from the wrong subfolder and without Java on process PATH:
+  environment setup failures only; no contract was counted. Corrected root command
+  with Android Studio JBR 21: PASS; 9/9 Firestore/Storage contracts.
+- Existing Auth/Functions/Firestore lifecycle integration from this same callable
+  source remains PASS; 7/7, covering proposal/payment, booking idempotency,
+  verification, chat, start, complete, rating, cancellation, and refund review.
+- `flutter build apk --debug`: PASS.
+- `flutter build apk --profile`: PASS.
+- `firebase use`: confirmed `fitareeaee`.
+- Scoped `firebase deploy --only firestore:rules --project fitareeaee`: PASS;
+  ruleset `fd6ed8ec-2250-46d8-ac9a-34eed9736f3f` released. No data, index,
+  Storage-rule, Function, or billing change occurred.
+- Fictional judge fixture upsert explicitly targeted `fitareeaee`: PASS; six
+  private/public trip fixtures plus fictional profiles, two bookings, conversation
+  authorizations, and one non-sensitive starter message. Credentials remained only
+  in ignored `.judge-credentials.local.json` and were never printed.
+
+### Exact APK and emulator evidence
+
+- Build type: optimized universal Flutter profile APK, Android Debug signed for
+  contest sideloading; no safe private production keystore exists.
+- Path: `build/app/outputs/flutter-apk/app-profile.apk`.
+- Size: 109,174,213 bytes.
+- Build timestamp: `2026-07-20T07:42:57.8328423Z`.
+- SHA-256: `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`.
+- Package/version: `com.fitareeaee.app`, `1.0.8`, code `20260722`, minimum API 24,
+  target/compile API 36.
+- Signature: APK Signature Scheme v2, one Android Debug signer; certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- Tested device: `emulator-5554`, `sdk_gphone64_x86_64`, API 36.
+- Fresh uninstall/install: PASS; `firstInstallTime=2026-07-20 02:43:31`.
+- Fictional UI sign-in: PASS. A direct Firebase Auth check independently confirmed
+  the ignored local credential/UID pair; no credential was logged.
+- Manual Request a Trip and OpenStreetMap origin picker: PASS; location confirmation
+  and attribution visible.
+- Voice: PASS for permission/discovery/service/audio startup; silent input produced
+  no speech text and is not mislabeled as transcription success.
+- Paid chat: PASS; starter and newly sent `Judge smoke test` messages rendered; no
+  `Error loading conversation` or `FirebaseFailure`.
+- Past/completed/rating: PASS; Dallas to Waco completed booking rendered, Book Trip
+  was absent, closed-chat disclosure rendered, and Rate Your Trip opened.
+- Payment gate: PASS; identity rendered Verified; request became `Payment required -
+  not confirmed`; seats remained 3/3; confirmed chat stayed unavailable.
+- App-specific fatal exception / `E/flutter` / `FirebaseFailure` / app ANR scan:
+  PASS; zero matches in the final flow.
+
+### Git, deployment, rollback, and next action
+
+- Passing private source commit: `3817ed587bc141856c7c20eed126aa8c5508091e`
+  (`fix(release): close voice and trip lifecycle gaps`). The private repository still
+  has no remote and was not pushed.
+- Firestore rules and fictional judge fixtures are live only in the confirmed
+  `fitareeaee` project. No production data was deleted.
+- Tag/push/PR/release status at this entry: v1.0.8 sanitized publication pending;
+  public v1.0.7 remains untouched until the sanitized replay, reachable-history
+  scan, tree comparison, release upload, anonymous re-download, and exact hash test
+  pass.
+- Physical phone: disconnected by the owner for this work window. No v1.0.8 phone
+  result is claimed. Existing public v1.0.5 phone evidence remains the rollback.
+- Known limitation: the contest build deliberately has no real payment processor;
+  unverified payments never confirm a booking. The paid/confirmed lifecycle is
+  demonstrated with clearly labeled fictional judge fixtures.
+- Next action: publish this passing source from the sanitized clone using the
+  `github:yeet` protocol, tag and prerelease v1.0.8, anonymously download and
+  emulator-test the public bytes, then install those exact bytes on the owner's
+  reconnected phone before promotion.
