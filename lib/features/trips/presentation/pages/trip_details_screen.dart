@@ -8,6 +8,7 @@ import '../../domain/entities/trip.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
+import '../../../ratings/presentation/providers/rating_provider.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
@@ -159,6 +160,24 @@ class TripDetailsScreen extends ConsumerWidget {
             },
             orElse: () => null,
           );
+          final completedBooking = participantBookingsAsync.maybeWhen(
+            data: (bookings) {
+              final completed = bookings
+                  .where(
+                    (booking) =>
+                        booking.tripId == trip.id &&
+                        booking.status == 'completed',
+                  )
+                  .toList();
+              if (bookingId != null) {
+                for (final booking in completed) {
+                  if (booking.id == bookingId) return booking;
+                }
+              }
+              return completed.isEmpty ? null : completed.first;
+            },
+            orElse: () => null,
+          );
 
           return Padding(
             padding: const EdgeInsets.all(16),
@@ -286,6 +305,37 @@ class TripDetailsScreen extends ConsumerWidget {
                     userId,
                     bookingState is AsyncLoading,
                   )
+                else if (completedBooking != null)
+                  _buildCompletedBookingActions(
+                    context,
+                    ref,
+                    completedBooking,
+                    userId,
+                  )
+                else if (trip.status == 'completed' ||
+                    trip.status == 'cancelled' ||
+                    trip.isPast)
+                  Card(
+                    child: ListTile(
+                      leading: Icon(
+                        trip.status == 'cancelled'
+                            ? Icons.cancel_outlined
+                            : Icons.flag_outlined,
+                      ),
+                      title: Text(
+                        trip.status == 'cancelled'
+                            ? 'Trip cancelled'
+                            : 'Trip closed',
+                      ),
+                      subtitle: const Text(
+                        'This trip no longer accepts bookings.',
+                      ),
+                      trailing: TextButton(
+                        onPressed: () => context.push('/support'),
+                        child: const Text('Support'),
+                      ),
+                    ),
+                  )
                 else if (isOwnTrip)
                   ElevatedButton(
                     onPressed: null,
@@ -369,6 +419,67 @@ class TripDetailsScreen extends ConsumerWidget {
         loading: () => const SizedBox.shrink(),
         error: (_, _) => const SizedBox.shrink(),
       ),
+    );
+  }
+
+  Widget _buildCompletedBookingActions(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) {
+    final ratedUserId = booking.passengerId == userId
+        ? booking.driverId
+        : booking.passengerId;
+    final ratingExists = ref.watch(
+      ratingExistsProvider((bookingId: booking.id, userId: userId)),
+    );
+    final ratingRoute =
+        '/trips/${booking.tripId}/rate'
+        '?bookingId=${Uri.encodeQueryComponent(booking.id)}'
+        '&ratedUserId=${Uri.encodeQueryComponent(ratedUserId)}';
+
+    return Column(
+      children: [
+        const Card(
+          child: ListTile(
+            leading: Icon(Icons.flag_outlined),
+            title: Text('Trip completed'),
+            subtitle: Text(
+              'Private trip chat is closed. Each participant may submit one rating.',
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ratingExists.when(
+          data: (exists) => FilledButton.icon(
+            onPressed: exists ? null : () => context.push(ratingRoute),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: Icon(exists ? Icons.check : Icons.star_outline),
+            label: Text(exists ? 'Rating submitted' : 'Rate this trip'),
+          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => OutlinedButton.icon(
+            onPressed: () => context.push(ratingRoute),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: const Icon(Icons.star_outline),
+            label: const Text('Rate this trip'),
+          ),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => context.push('/support'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+          ),
+          icon: const Icon(Icons.support_agent_outlined),
+          label: const Text('Questions? Contact support'),
+        ),
+      ],
     );
   }
 

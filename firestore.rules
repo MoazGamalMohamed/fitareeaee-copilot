@@ -116,7 +116,15 @@ service cloud.firestore {
     }
 
     match /ratings/{ratingId} {
-      allow read: if signedIn()
+      // A participant may check their deterministic one-rating document even
+      // before it exists. Existing ratings remain visible only to either
+      // participant or an administrator.
+      allow get: if signedIn()
+        && (ratingId.matches('^.+_' + request.auth.uid + '$')
+          || resource.data.ratedByUserId == request.auth.uid
+          || resource.data.ratedUserId == request.auth.uid
+          || isAdmin());
+      allow list: if signedIn()
         && (resource.data.ratedByUserId == request.auth.uid
           || resource.data.ratedUserId == request.auth.uid
           || isAdmin());

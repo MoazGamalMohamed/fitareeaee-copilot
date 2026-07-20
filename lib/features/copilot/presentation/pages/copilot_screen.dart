@@ -37,6 +37,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   bool _loading = false;
   bool _speechReady = false;
   bool _listening = false;
+  String _voiceLanguage = 'auto';
   String? _error;
 
   static const _examples = [
@@ -228,6 +229,38 @@ class _CopilotScreenState extends State<CopilotScreen> {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
+          InputDecorator(
+            decoration: const InputDecoration(
+              labelText: 'Voice recognition language',
+              prefixIcon: Icon(Icons.translate_outlined),
+              border: OutlineInputBorder(),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _voiceLanguage,
+                isExpanded: true,
+                onChanged: _loading || _listening
+                    ? null
+                    : (value) {
+                        if (value != null) {
+                          setState(() => _voiceLanguage = value);
+                        }
+                      },
+                items: const [
+                  DropdownMenuItem(
+                    value: 'auto',
+                    child: Text('Auto / device language'),
+                  ),
+                  DropdownMenuItem(value: 'en', child: Text('English')),
+                  DropdownMenuItem(
+                    value: 'ar',
+                    child: Text('Arabic / العربية'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _loading ? null : _toggleVoiceInput,
             icon: Icon(
@@ -473,14 +506,27 @@ class _CopilotScreenState extends State<CopilotScreen> {
     }
 
     final locales = await _speech.locales();
-    final wantsArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(_request.text);
+    final inferredArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(_request.text);
+    final requestedPrefix = _voiceLanguage == 'auto'
+        ? (inferredArabic ? 'ar' : null)
+        : _voiceLanguage;
     String? localeId;
-    for (final locale in locales) {
-      final id = locale.localeId.toLowerCase();
-      if ((wantsArabic && id.startsWith('ar')) ||
-          (!wantsArabic && id.startsWith('en'))) {
-        localeId = locale.localeId;
-        break;
+    if (requestedPrefix != null) {
+      for (final locale in locales) {
+        if (locale.localeId.toLowerCase().startsWith(requestedPrefix)) {
+          localeId = locale.localeId;
+          break;
+        }
+      }
+      if (localeId == null) {
+        if (mounted) {
+          setState(() {
+            _error = requestedPrefix == 'ar'
+                ? 'Arabic speech recognition is not installed on this device. Install an Arabic speech language or choose Auto.'
+                : 'English speech recognition is not installed on this device. Install an English speech language or choose Auto.';
+          });
+        }
+        return;
       }
     }
     if (!mounted) return;

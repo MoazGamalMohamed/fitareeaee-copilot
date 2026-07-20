@@ -10,6 +10,34 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 
 final firebaseStorageProvider = Provider((ref) => FirebaseStorage.instance);
 
+/// Parses current and legacy verification documents without hiding otherwise
+/// valid verification flags when an older document omitted audit timestamps.
+UserVerification userVerificationFromFirestoreData(
+  String userId,
+  Map<String, dynamic> data,
+) {
+  String? timestampAsIso8601(dynamic value) {
+    if (value is Timestamp) return value.toDate().toIso8601String();
+    if (value is DateTime) return value.toIso8601String();
+    if (value is String && DateTime.tryParse(value) != null) return value;
+    return null;
+  }
+
+  final createdAt =
+      timestampAsIso8601(data['createdAt']) ??
+      timestampAsIso8601(data['updatedAt']) ??
+      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true).toIso8601String();
+  final updatedAt = timestampAsIso8601(data['updatedAt']) ?? createdAt;
+  final processedData = FirestoreHelpers.convertTimestamps({
+    ...data,
+    'userId': userId,
+    'createdAt': createdAt,
+    'updatedAt': updatedAt,
+  });
+
+  return UserVerification.fromJson(processedData);
+}
+
 /// Provider for user verification data
 final userVerificationProvider =
     StreamProvider.family<UserVerification?, String>((ref, userId) {
@@ -20,14 +48,7 @@ final userVerificationProvider =
           .map((doc) {
             if (!doc.exists) return null;
             final data = doc.data()!;
-
-            // Convert Timestamp to ISO8601 strings using helper
-            final processedData = FirestoreHelpers.convertTimestamps({
-              ...data,
-              'userId': userId,
-            });
-
-            return UserVerification.fromJson(processedData);
+            return userVerificationFromFirestoreData(userId, data);
           });
     });
 

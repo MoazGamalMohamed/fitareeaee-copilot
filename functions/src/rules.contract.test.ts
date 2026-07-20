@@ -362,6 +362,9 @@ test("ratings are server-owned and urgent events are admin-only", async () => {
   const rider = environment.authenticatedContext("rider").firestore();
   const outsider = environment.authenticatedContext("outsider").firestore();
   const admin = environment.authenticatedContext("admin").firestore();
+  await assertSucceeds(
+    getDoc(doc(rider, "ratings/not-yet-rated-booking_rider"))
+  );
   await assertSucceeds(getDoc(doc(rider, "ratings/booking-1_rider")));
   await assertFails(getDoc(doc(outsider, "ratings/booking-1_rider")));
   await assertFails(
