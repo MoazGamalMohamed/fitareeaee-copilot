@@ -198,6 +198,10 @@ Before submission, rerun and record all mandatory commands on the exact tagged r
   completed-only Past state PASS.
 - Final universal APK: 194,300,168 bytes; SHA-256
   `9DB36ED8D8A18684D50BA316AA2B5AC433929D1D89B33BCE50EDEDBDF1024EF3`.
+- Optimized universal profile judge candidate: 85,293,151 bytes; SHA-256
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`;
+  clean install, cold launch, fictional judge authentication, and Home role-action
+  smoke PASS on API 36.
 - Exact final x86_64 split: clean install and explicit cold-launch retry PASS;
   Login/Welcome rendered, process alive, no matching app fatal/Flutter/bootstrap/ANR
   logs. Universal emulator install was blocked only by emulator free space.

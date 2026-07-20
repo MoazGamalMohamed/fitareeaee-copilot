@@ -2224,3 +2224,20 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: install GitHub CLI or otherwise make the required publishing workflow
   available, publish sanitized v1.0.6, download/hash-test that artifact, then install
   it on the owner's phone and perform the final demo-path smoke.
+
+## 2026-07-19 23:14 CDT / 2026-07-19 21:14 PDT - v1.0.6 optimized APK correction
+
+- Built the optimized universal profile APK from committed application source
+  `47f49ce`; the documentation-only head at this moment was `4ea1257`.
+- Artifact: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT profile,
+  debug-signed for sideloading; 85,293,151 bytes; version `1.0.6` / code
+  `20260720`; built 2026-07-19 23:09:09 CDT / 21:09:09 PDT; SHA-256
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+- API 36 emulator: clean install PASS; cold launch PASS in 18.675 seconds; Login and
+  Welcome rendered; authenticated fictional judge-rider sign-in PASS; Home visibly
+  rendered Plan with AI, Request a Trip, and Offer a Ride; process alive; no matching
+  app fatal, `E/flutter`, Firebase-bootstrap, or app-ANR logs.
+- This profile APK supersedes the larger debug APK as the local v1.0.6 judge
+  candidate. GitHub publication, same-URL redownload/hash verification, and physical
+  phone installation remain pending because `gh` is not installed and the owner
+  reserved the phone during this checkpoint.

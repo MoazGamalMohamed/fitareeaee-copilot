@@ -112,6 +112,11 @@ required GitHub CLI is unavailable in the current environment; v1.0.5 remains th
 published rollback artifact until v1.0.6 is sanitized, pushed, downloaded, and
 device-tested.
 
+The optimized local v1.0.6 judge APK is 85,293,151 bytes with SHA-256
+`39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+It clean-installed, cold-launched, authenticated, and rendered all three Home entry
+actions on the API 36 emulator without matching application-fatal logs.
+
 The current APK source is private
 `4630703b5a69e151d07d6e6c9683deced6298302`; its tree-equivalent sanitized
 public source is `6d67f306203886d3d1623f9966f36764589b9cfb`, tagged

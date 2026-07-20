@@ -77,6 +77,17 @@ simulated money.
 
 ## Current APK and device evidence
 
+- Local v1.0.6 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Type: optimized universal AOT profile APK, debug-signed for contest sideloading
+- Size: 85,293,151 bytes
+- SHA-256: `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`
+- Version: `1.0.6` / code `20260720`
+- API 36 emulator: clean install and cold launch PASS; fictional judge login and
+  authenticated Home actions PASS; no matching app fatal/Flutter/bootstrap/ANR log.
+- v1.0.6 GitHub link and physical-phone result: PENDING (`gh` unavailable; phone
+  reserved by owner). Do not replace the stable v1.0.5 public links below until the
+  new artifact is uploaded, redownloaded, hash-matched, and device-tested.
+
 - Local profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Public re-download path: `build/published-download-v105/app-profile.apk`
 - Type: universal AOT profile APK, debug-signed for contest sideloading
