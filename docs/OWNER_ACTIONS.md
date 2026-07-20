@@ -31,7 +31,7 @@ printing it. The public repository exists at
 `https://github.com/MoazGamalMohamed/fitareeaee-copilot`; both sanitized branches
 and annotated tags are pushed. The private original still has no remote.
 The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
-annotated tag, prerelease, and direct APK are published. The public APK was
+annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
 
 ### 4. Approve or decline inherited Function retirement

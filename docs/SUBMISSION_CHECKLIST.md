@@ -113,7 +113,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Clean-install the public v1.0.4 download on the emulator and visibly confirm
   Fitareeaee Login/top-resumed/process-alive with zero app-specific fatal log matches.
 - [x] Publish v1.0.5 source to draft PR #1, push the annotated source tag, and
-  publish the 83,378,603-byte profile APK as an accurately labeled pre-release.
+  publish the 83,378,603-byte profile APK as the latest stable judge release.
 - [x] Redownload v1.0.5 from GitHub and verify SHA-256
   `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
 - [x] Install the exact public v1.0.5 APK on the Motorola phone; cold launch,

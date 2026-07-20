@@ -2121,3 +2121,14 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   privately add judge credentials, run `/feedback` in this primary thread and save
   the Session ID, complete the final rules/eligibility checkbox review, and perform
   the legally binding Devpost submission action.
+
+## 2026-07-19 19:18 CDT / 2026-07-19 17:18 PDT - v1.0.5 release-status correction
+
+- After the exact public v1.0.5 APK passed physical-phone install, cold launch,
+  authenticated navigation, and app-specific crash-log checks, promoted the GitHub
+  artifact from prerelease to the latest stable judge release.
+- Updated release notes to record the physical result and the deliberate no-real-
+  payment boundary. The tag and APK bytes did not change: the tag still peels to
+  `6d67f306`, and the APK remains 83,378,603 bytes with SHA-256
+  `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
+- Draft PR #1 remains open and unmerged; no Devpost legal submission was performed.
