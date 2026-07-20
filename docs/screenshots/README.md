@@ -15,6 +15,7 @@ Suggested Devpost order:
 6. `04-payment-locked.png` — Pending payment, unchanged seats, and locked chat.
 7. `05-past-rating.png` — Completed-only Past trip and one-time rating entry.
 8. `08-architecture.png` — Flutter → Firebase → GPT-5.6 → deterministic matching and lifecycle architecture.
+9. `09-support-escalation.png` — Unified Contact Support with GPT-5.6 first response and explicit human handoff.
 
 `../ARCHITECTURE.svg` is the editable vector source for the architecture image.
 

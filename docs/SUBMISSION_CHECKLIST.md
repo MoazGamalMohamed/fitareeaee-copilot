@@ -47,6 +47,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
 - [x] Deploy `planTripWithCopilot` with managed OpenAI secret version 2.
 - [x] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests, including a post-retirement rerun.
+- [x] Run exact-public Contact Support UI smoke: GPT-5.6 first answer, explicit
+  `Need a person?` handoff, Human queue state, staff confirmation, and clean logs.
 - [x] Confirm OpenAI test spend remains below USD $5.
 - [x] Create dedicated fictional judge accounts and fixed August 10 demo trips; keep passwords out of Git.
 - [ ] Verify backend/test access remains free and available through judging.

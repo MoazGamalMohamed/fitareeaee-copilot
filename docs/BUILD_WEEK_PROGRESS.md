@@ -2941,3 +2941,21 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   judges land on the correct v1.0.9 README, evidence, and media.
 - Anonymous signed-out HTTP HEAD checks returned 200 for the final branch URL, a
   branch media file, and the public v1.0.9 release page.
+
+## 2026-07-20 04:23 CDT / 2026-07-20 02:23 PDT - exact-public unified AI-to-human support flow passed
+
+- From the exact public v1.0.9 clean-install rider session, Home Quick Links opened
+  Help Center and the unified Contact Support modal. The modal explicitly disclosed
+  GPT-5.6-first support, the human handoff, and the sensitive-data boundary.
+- Submitted one fictional `Chat access` question. The deployed support callable
+  created the ticket and returned a bounded GPT-5.6 response explaining that private
+  trip chat opens only on the confirmed path without claiming access to a specific
+  booking or guaranteeing timing.
+- Tapped `Need a person?`; the ticket moved to `Human queue` / `inProgress` and the
+  conversation rendered `This conversation was escalated to a human support
+  reviewer.` This verifies the requested AI-first, staff-second behavior from the
+  actual published Android artifact.
+- Raw error UI: absent. Final app-specific fatal/Flutter/FirebaseFailure/ANR scan:
+  0 matches. Captured and visually inspected fictional screenshot
+  `docs/screenshots/09-support-escalation.png`; no credential or private user data is
+  visible.

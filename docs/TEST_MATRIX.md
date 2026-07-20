@@ -68,7 +68,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Transaction/verification/chat callables | PASS | `authorizeBookingConversation` is deployed and `ACTIVE` with the retained hardened callables in `us-central1` |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
 | Copilot callable | PASS | Deployed with managed secret version 2; official Firebase SDK authentication and English ride, English package, and Arabic ride model calls passed after obsolete version 1 was destroyed |
-| Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. A July 20 fictional `contactSupport` smoke created a ticket, returned a GPT-5.6 answer, and escalated the payment question for staff follow-up. |
+| Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. A July 20 exact-public v1.0.9 UI smoke created a fictional ticket, rendered a bounded GPT-5.6 first answer, exposed `Need a person?`, moved the ticket to the Human queue, and rendered staff-escalation confirmation with 0 app-specific fatal/FirebaseFailure matches. |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
