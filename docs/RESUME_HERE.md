@@ -97,9 +97,10 @@ Do not replace the payment gate with simulated money.
 - Public v1.0.9 APK:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.9/app-profile.apk`
 - Anonymous re-download: `build/published-download-v109/app-profile.apk`; exact
-  85,276,819-byte/hash/byte match. The downloaded copy installed over the
-  authenticated fictional-driver session; My Trips, active lifecycle controls,
-  confirmed Chat, and the final app-specific log scan PASS on API 36.
+  85,276,819-byte/hash/byte match. The downloaded copy clean-installed and signed
+  in as the fictional rider; Home/manual map, voice service, payment lock, paid Chat,
+  Past, rating, and final app-specific log scan passed. A separate driver-session
+  update passed My Trips and active lifecycle controls on API 36.
 - Phone-tested rollback remains public v1.0.5.
 
 ## Remaining owner-only actions

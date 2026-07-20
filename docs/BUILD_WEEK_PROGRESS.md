@@ -2878,3 +2878,28 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Remaining blockers are unchanged and owner-only: reconnect/unlock the phone,
   record/upload the final narrated video, place judge credentials privately, run
   `/feedback`, make eligibility/legal confirmations, and click final Devpost submit.
+
+## 2026-07-20 03:53 CDT / 2026-07-20 01:53 PDT - exact public v1.0.9 clean-install rider flow passed
+
+- Removed the emulator package/data, installed the already-anonymously-downloaded
+  public `build/published-download-v109/app-profile.apk`, cold-launched, and signed
+  in with the ignored fictional rider credentials without printing or recording them.
+- Home rendered Plan with AI, Browse Available Trips, Request a Trip, and the
+  verification-gated Offer a Ride action. Manual Request opened the paying-side
+  disclosure, complete form, interactive origin map, permanent linked OpenStreetMap
+  attribution, movable pin, coordinate update, and successful return to the form.
+- Copilot rendered the GPT-5.6 draft disclosure and Auto/device voice control.
+  Android showed the microphone permission, then logged
+  `RecognitionService#onStartListening`, online recognizer start, `en-US`, and
+  `AudioRecord` creation. The silent emulator was not treated as a transcript pass.
+- Past rendered only the completed Dallas-to-Waco booking with chat closed and one
+  Rate this trip action; the rating screen opened. Available Trips rendered real
+  fictional offers. The pending Dallas-to-Austin selection showed `Payment required
+  - not confirmed`, seats `3/3`, explicit server-payment unlock copy, and no Open
+  Confirmed Chat action.
+- Chat list and the paid/confirmed conversation loaded without `FirebaseFailure` or
+  raw error UI. No message contents or credentials were added to evidence.
+- Package/version check: `com.fitareeaee.app`, `1.0.9`, code `20260723`, min API 24,
+  target API 36. Final app-specific fatal/Flutter/FirebaseFailure/ANR matches: 0.
+- This is now the complete exact-public clean-install emulator flow #2. Physical
+  phone verification remains pending because only `emulator-5554` is connected.

@@ -17,7 +17,8 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > gates, and API 36 authenticated lifecycle smoke pass. The
 > [v1.0.9 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9)
 > is public and its 85,276,819-byte APK was anonymously redownloaded, SHA-256
-> matched, installed over an authenticated driver session, and tested. Keep using stable v1.0.5
+> matched, clean-installed, authenticated as the fictional rider, and tested. A
+> separate authenticated driver update tested the driver controls. Keep using stable v1.0.5
 > below until the exact v1.0.9 download is tested on the owner's phone.
 
 Final artifact: universal profile APK, 83,378,603 bytes, SHA-256

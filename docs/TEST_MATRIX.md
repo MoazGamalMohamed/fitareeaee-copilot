@@ -86,13 +86,13 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | v1.0.9 owned-trip labels | PASS | Exact candidate driver UI labels the active booking `Confirmed` and the past trip `Completed`; neither is falsely labeled `Full`. Assigned-driver start/chat/emergency actions remain visible. |
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PASS | On the Motorola phone, a live GPT-5.6 draft produced one transparent live match and handed off to Trip Details then enabled confirmed Chat. In the same fictional session, the server-authoritative booking transaction opened an authorized conversation and a sent message rendered through the realtime stream. The judge account's prior verification state was already satisfied; no real payment is claimed. |
 | Fresh-install end-to-end run #1 | INTERRUPTED | Public v1.0.3 local data clear/reinstall, 3.706 s cold launch, private fictional sign-in, Home, live GPT-5.6 draft, one match, and Trip Details all passed. The phone disconnected before the final booking confirmation tap. |
-| Fresh-install end-to-end run #2 | PASS (emulator) | Exact local v1.0.8 profile APK clean install, fictional sign-in, map, voice service, payment gate, paid chat, Past, completed details, and rating entry all passed; exact public-download and physical-phone repetition remain pending. |
+| Fresh-install end-to-end run #2 | PASS (emulator) | Exact anonymously downloaded public v1.0.9 profile APK clean install, fictional rider sign-in, manual map pin/attribution, voice service/audio startup, payment gate, paid Chat, completed-only Past, and rating entry passed. Physical-phone repetition remains pending. |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
 | Tagged judge APK candidate | PASS (prerelease) | v1.0.9 private source `ab79213` is tree-equivalent to sanitized/tagged source `ef2eecb7`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested stable rollback. |
 | Public sanitized repository | PASS | Draft PR branch was pushed without force; v1.0.9 tag source is `ef2eecb7`. Artifact-evidence checkpoint `a064e7aa` contains 91 reachable revisions, 0 forbidden private config/credential path objects, and 0 high-signal secret-hit files; a mapping-only tail may advance the branch. The original private repository still has no remote. |
 | Published APK download and hash comparison | PASS | Public v1.0.9 asset downloaded anonymously; 85,276,819 bytes and SHA-256 `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1` exactly match local and GitHub's digest. |
-| Published APK install | PASS (emulator) | Exact downloaded v1.0.9 asset installed over an authenticated fictional-driver session and smoke-tested for Confirmed/Completed labels, paid lifecycle controls, and confirmed Chat on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone install remains pending. |
+| Published APK install | PASS (emulator) | Exact downloaded v1.0.9 asset clean-installed and authenticated as the fictional rider, then separately tested in an authenticated driver session. Map/voice, Past/rating, payment lock, paid Chat, truthful driver labels, and lifecycle controls passed on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone install remains pending. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -210,8 +210,10 @@ Before submission, rerun and record all mandatory commands on the exact tagged r
   signer certificate SHA-256
   `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
 - Anonymous download exactly matched local bytes and GitHub's asset digest. That
-  exact downloaded copy installed on API 36 over the authenticated fictional
-  driver session. My Trips rendered Confirmed and Completed instead of false Full;
+  exact downloaded copy clean-installed and authenticated as the fictional rider;
+  Home/manual map, speech-service/audio startup, payment lock with seats unchanged,
+  paid Chat, completed Past, and rating entry passed. A separate authenticated
+  driver update rendered Confirmed and Completed instead of false Full;
   the active details exposed paid/confirmed Chat, driver start, and emergency-admin
   cancellation; the confirmed conversation loaded; 0 app-specific fatal/Flutter/
   FirebaseFailure/ANR matches were found.
