@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | BLOCKED — strict callable contracts pass, but the owner must set `OPENAI_API_KEY` privately and deploy the callable before a fresh live-model gate |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — exact public v1.0.13 APK returned strict `gpt-5.6` review drafts for an English ride, 5 kg English package, and Arabic ride on July 20 |
 
 ## Security and transactional behavior
 
@@ -67,8 +67,8 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Required message indexes | PASS | Added without deleting ten legacy indexes; both new indexes report `READY` |
 | Transaction/verification/chat callables | PASS | `authorizeBookingConversation` is deployed and `ACTIVE` with the retained hardened callables in `us-central1` |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
-| Copilot callable | BLOCKED | Tested implementation is present, but live deployment awaits a privately configured `OPENAI_API_KEY` managed secret; no key is stored client-side or in Git |
-| Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. A July 20 exact-public v1.0.9 UI smoke created a fictional ticket, rendered a bounded GPT-5.6 first answer, exposed `Need a person?`, moved the ticket to the Human queue, and rendered staff-escalation confirmation with 0 app-specific fatal/FirebaseFailure matches. |
+| Copilot callable | PASS | Live function inventory includes `planTripWithCopilot`; metadata-only checks show managed secret version 2 enabled and version 1 destroyed; fresh authenticated three-prompt matrix passed without reading the key |
+| Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. Exact-public v1.0.13 reopened the fictional payment ticket, rendered the bounded GPT-5.6 answer, showed Human queue escalation, and produced no visible support loading error. |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks

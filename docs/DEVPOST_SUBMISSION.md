@@ -155,8 +155,7 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 
 ## Testing instructions summary
 
-After the owner privately configures and deploys the managed OpenAI secret, install
-the universal Android APK, sign in with the privately supplied judge account, tap
+Install the universal Android APK, sign in with the privately supplied judge account, tap
 **Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at
 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it,
 and inspect the transparent match reasons plus details. Verify that a new selection
@@ -198,7 +197,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
 - **DONE:** v1.0.13 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
-- **PENDING:** managed OpenAI secret/scoped Copilot deployment and fresh live matrix
+- **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
 - **PENDING:** exact-public v1.0.13 physical-phone smoke and stable promotion
 - **DONE:** release tag `fitareeaee-copilot-v1.0.13` / sanitized source commit `ffb5929094b4d48e9991499f65839f75c4479125`
 - **PENDING:** private judge credential placement

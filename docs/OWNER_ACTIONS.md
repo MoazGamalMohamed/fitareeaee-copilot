@@ -7,15 +7,14 @@ Codex chat, Git, documentation, screenshots, or the APK.
 
 ## Immediate unblock bundle
 
-### 1. Privately configure the OpenAI managed secret
+### 1. Confirm provider-side revocation of the exposed old OpenAI key
 
-Confirm in the OpenAI dashboard that every previously exposed key is revoked. Create
-a fresh restricted key, then set `OPENAI_API_KEY` through Firebase CLI's hidden
-secret prompt or the Firebase/Google Cloud console. Never paste the key into chat.
-Afterward deploy only `planTripWithCopilot` to project `fitareeaee` and run the
-authenticated English ride, English package, and Arabic ride live matrix. The code,
-strict contracts, authentication, redaction, throttling, and safe-error tests pass,
-but the current live callable/secret are absent and must not be represented as live.
+Metadata-only checks confirm managed `OPENAI_API_KEY` version 2 is enabled, obsolete
+version 1 is destroyed, and `planTripWithCopilot` is deployed. The exact public
+v1.0.13 APK returned strict review drafts for an authenticated English ride, English
+package, and Arabic ride on July 20. In the OpenAI dashboard, confirm that every old
+key exposed before rotation is revoked. Never paste any active key into chat; no key
+was read during this verification.
 
 ### 2. Judge users and fixtures — completed
 

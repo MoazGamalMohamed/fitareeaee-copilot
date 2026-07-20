@@ -40,15 +40,17 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
 - [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
-- [ ] Owner confirms provider-side revocation of exposed keys and privately sets a
-  fresh `OPENAI_API_KEY` managed secret; never paste it into chat.
+- [ ] Owner confirms provider-side revocation of exposed old keys; managed version 2
+  is enabled and was not read during verification.
 - [x] Deploy only to confirmed Firebase project `fitareeaee`.
 - [x] Deploy hardened booking, verification, chat, and public-projection Functions.
 - [x] Deploy Firestore and Storage rules.
 - [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
-- [ ] Deploy only `planTripWithCopilot` after the fresh managed secret is set.
-- [ ] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests.
-- [ ] Re-run exact-public Contact Support UI smoke after that deploy: GPT-5.6 first answer, explicit
+- [x] Confirm deployed `planTripWithCopilot` and enabled managed secret version 2
+  through metadata only; obsolete version 1 is destroyed.
+- [x] Run capped live GPT-5.6 tests through exact public v1.0.13 for English ride,
+  English package, and Arabic ride requests.
+- [x] Re-open exact-public v1.0.13 Contact Support: GPT-5.6 first answer, explicit
   `Need a person?` handoff, Human queue state, staff confirmation, and clean logs.
 - [x] Run exact-public Settings/Payments UI smoke: Support, English/Arabic, USD,
   no-card/no-escrow boundary, rider-pay/driver-receive activity, and the 50-trip
@@ -176,8 +178,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   `1.0.13` / code `20260727`, complete rider verification gate, role-specific
   creation, potential/paid boundary, confirmed real fixture chat, Past/rating, and
   0 visible or matched chat-permission/fatal errors.
-- [ ] Privately set `OPENAI_API_KEY`, deploy only `planTripWithCopilot`, and pass
-  authenticated English ride, English package, and Arabic ride live calls.
+- [x] Verify managed secret/callable metadata and pass authenticated English ride,
+  English package, and Arabic ride live calls through the exact public APK.
 - [ ] Install that exact public v1.0.13 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
@@ -223,8 +225,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 Exact owner steps and the inherited Function set are recorded in
 [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
 
-1. Owner confirms provider-side revocation of exposed old OpenAI keys, privately
-   sets a fresh managed `OPENAI_API_KEY`, and authorizes the scoped Copilot deploy.
+1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
+   managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
 3. Exact-public v1.0.13 phone install/smoke, YouTube upload, `/feedback`, private
    credential placement, legal confirmation, and final Devpost submit action.

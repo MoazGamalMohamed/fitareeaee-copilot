@@ -4,9 +4,10 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 
 > Release status: the hardened lifecycle backend, rules, fictional judge fixtures,
 > and v1.0.13 public Android artifact are verified. The v1.0.13 APK was anonymously
-> downloaded, hash-matched, installed, and lifecycle-smoked on Android API 36. Its
-> physical-phone gate and live GPT-5.6 secret/deployment remain owner-only pending
-> actions. v1.0.5 remains the exact-public phone-tested rollback.
+> downloaded, hash-matched, installed, and lifecycle-smoked on Android API 36. Fresh
+> authenticated English ride, English package, and Arabic ride GPT-5.6 drafts passed
+> through that exact public APK. Its physical-phone gate remains owner-only pending;
+> v1.0.5 is the exact-public phone-tested rollback.
 
 > Superseding candidate: v1.0.13 retains the secure payment-gated lifecycle and adds
 > complete role-specific publication verification: four rider/sender checks or six
@@ -38,10 +39,10 @@ matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
-Live Copilot verification: **BLOCKED** — the tested strict Responses API callable
-requires the owner to set `OPENAI_API_KEY` privately as a managed Firebase secret
-and deploy it. Retry and manual creation/search remain available; no key is in Git,
-Flutter, docs, logs, or the APK.
+Live Copilot verification: **PASS** — managed secret version 2 is enabled, obsolete
+version 1 is destroyed, and `planTripWithCopilot` is deployed. On July 20 the exact
+public v1.0.13 APK returned validated `gpt-5.6` review drafts for an English ride, a
+5 kg English package, and an Arabic ride. No key was read or exposed.
 
 Current physical-phone judge path: **PENDING** — only the API 36 emulator is visible
 to ADB. The exact public v1.0.13 artifact passes the equivalent fictional rider path;

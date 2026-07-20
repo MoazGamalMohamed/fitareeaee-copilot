@@ -3425,3 +3425,37 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Rollback point: public v1.0.13 prerelease and phone-tested public v1.0.5. Next
   action: commit/publish this documentation mapping, then immediately run the scoped
   Copilot and physical-phone gates when their owner-controlled prerequisites arrive.
+
+## 2026-07-20 11:22 CDT / 2026-07-20 09:22 PDT - v1.0.13 fresh live GPT-5.6 correction and support read-back
+
+- Correction to the immediately preceding handoff: a metadata-only live check showed
+  that `OPENAI_API_KEY` does exist in project `fitareeaee`, managed secret version 2
+  is `enabled`, version 1 is `destroyed`, and `planTripWithCopilot` is deployed. The
+  earlier conclusion that the live secret/callable were absent was stale. No secret
+  value was accessed, printed, logged, copied, or placed in the client.
+- Used only the exact anonymously downloaded public v1.0.13 APK already installed on
+  `emulator-5554` and the fictional rider session. Three bounded authenticated calls
+  returned reviewable strict drafts labeled `gpt-5.6`:
+  - English ride: Request/Ride, Dallas to Austin, August 10, 2026 at 9:00 AM, two
+    people, maximum USD 40, with review/confirmation disclosure.
+  - English package: Package, Chicago to Milwaukee, 5 kg details, with the same
+    strict review boundary.
+  - Arabic ride: an Arabic assistant summary for Dallas to Austin, the fixed date/
+    time, two people, and USD 40, while preserving the same structured fields.
+- No call showed retry, unavailable, FirebaseFailure, authentication, rate-limit, or
+  fatal UI state. The calls stayed within the server's 8-second minimum interval and
+  12-per-hour limit and did not approach the authorized USD 5 test cap.
+- Exact-public v1.0.13 also reopened the fictional Support payment ticket, rendered
+  the bounded `Fitareeaee AI Support (GPT-5.6)` explanation, showed `Human queue`,
+  and displayed no support loading/FirebaseFailure error. No new sensitive ticket
+  content was created.
+- Corrected README-adjacent judge documents, test matrix, demo setup, owner actions,
+  checklist, Devpost copy, changelog, and resume handoff back to fresh live PASS while
+  preserving the provider-side old-key-revocation reminder.
+- `adb devices -l` still reports only `emulator-5554`. The exact-public physical-phone
+  install and spoken-microphone/lifecycle smoke remain pending; no phone claim is made.
+- Rollback point: public v1.0.13 prerelease at sanitized source tag
+  `ffb5929094b4d48e9991499f65839f75c4479125`, documentation branch head before this
+  correction `fc7d880fc877096f5ddc94a1ff34e0f57e721cc0`, and phone-tested v1.0.5.
+  Next action: publish this correction, then install the exact public v1.0.13 APK on
+  the non-emulator phone as soon as Windows/ADB detects it.

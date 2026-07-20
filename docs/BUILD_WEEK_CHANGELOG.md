@@ -27,8 +27,8 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
   unpaid bookings, proposal selection, paid confirmation, chat, start, completion,
   closed chat, one-time rating, and urgent emergency admin review.
 - Published, anonymously downloaded, hash-matched, and installed the v1.0.13 APK;
-  exact-public emulator chat/lifecycle passed. Physical phone and managed OpenAI
-  secret/deployment remain explicitly pending owner actions.
+  exact-public emulator chat/lifecycle and fresh English ride, English package, and
+  Arabic ride GPT-5.6 calls passed. Physical phone remains the technical owner gate.
 
 ### Final judge polish — v1.0.11
 

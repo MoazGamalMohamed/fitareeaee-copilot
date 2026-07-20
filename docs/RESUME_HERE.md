@@ -4,9 +4,8 @@ Last updated: 2026-07-20 10:38 CDT / 2026-07-20 08:38 PDT
 
 ## Current objective
 
-Privately configure/deploy the GPT-5.6 managed secret, then install the already
-published and byte-verified v1.0.13 artifact on the owner's reconnected phone to
-complete the two remaining technical release gates.
+Install the already published, byte-verified, and freshly GPT-5.6-tested v1.0.13
+artifact on the owner's reconnected phone to complete the remaining technical gate.
 Finish the video, `/feedback`, legal review, and owner-performed Devpost submission.
 Do not replace the payment gate with simulated money.
 
@@ -49,9 +48,8 @@ Do not replace the payment gate with simulated money.
   `paid`. There is no real payment provider in the contest build.
 - A clearly labeled fictional paid/confirmed fixture demonstrates active private
   chat. A completed fixture demonstrates Past, closed chat, and one immutable rating.
-- Contact Support is designed to use GPT-5.6 first and supports explicit/automatic
-  staff escalation; until the managed secret is deployed it returns safe recovery
-  guidance rather than fabricating an answer.
+- Contact Support uses the deployed GPT-5.6 backend first and supports
+  explicit/automatic staff escalation.
 
 ## Deployed Firebase state
 
@@ -59,9 +57,10 @@ Do not replace the payment gate with simulated money.
 - Booking, matching, chat, support, verification, lifecycle, rating, and projection
   callables remain deployed. The latest narrow deployment updated only `createTrip`,
   `createBooking`, and `proposeForTripRequest` after their tests passed.
-- Live `planTripWithCopilot` is not currently deployed because the managed
-  `OPENAI_API_KEY` secret is absent. No key is in Flutter, Git, docs, logs, or the
-  APK; the owner must set it privately before the final GPT-5.6 deployment.
+- Live `planTripWithCopilot` is deployed. Metadata-only verification shows managed
+  `OPENAI_API_KEY` version 2 enabled and version 1 destroyed. Exact-public v1.0.13
+  returned strict English ride, English package, and Arabic ride review drafts; no
+  key is in Flutter, Git, docs, logs, or the APK and no key value was read.
 - Firestore ruleset `fd6ed8ec-2250-46d8-ac9a-34eed9736f3f` was deployed July 20
   after 9/9 emulator contracts. It permits a participant to check their deterministic
   one-rating document before creation while keeping all rating writes server-only.
@@ -127,15 +126,12 @@ Do not replace the payment gate with simulated money.
 6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
 7. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
-8. Set `OPENAI_API_KEY` privately as a managed Firebase secret so the tested GPT-5.6
-   callable can be deployed; never paste the value into chat or commit it.
-9. Real payment-provider onboarding remains intentionally outside this contest
+8. Real payment-provider onboarding remains intentionally outside this contest
    checkpoint. Do not represent the fictional paid fixture as a real charge.
 
 ## Exact next action
 
-Owner: privately set `OPENAI_API_KEY`, then deploy only `planTripWithCopilot` and run
-the three live language/type calls. When ADB sees a non-emulator device, install the
-already downloaded exact public v1.0.13 bytes and run Home, Copilot, verification,
-both map fields, matches/details/payment gate, seeded paid Chat/Past/rating, and
-driver lifecycle. Promote only if every phone check passes.
+When ADB sees a non-emulator device, install the already downloaded exact public
+v1.0.13 bytes and run Home, Copilot, verification, both map fields,
+matches/details/payment gate, seeded paid Chat/Past/rating, and driver lifecycle.
+Promote only if every phone check passes.
