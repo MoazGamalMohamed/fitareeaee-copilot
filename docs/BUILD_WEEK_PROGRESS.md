@@ -3186,3 +3186,37 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   install/smoke is pending because the owner intentionally disconnected the phone.
   Next action: update judge-facing current-version references, push that docs-only
   checkpoint, then install this exact downloaded APK when the phone reconnects.
+
+## 2026-07-20 06:44 CDT / 2026-07-20 04:44 PDT - v1.0.10 judge handoff published and remotely verified
+
+- Updated README, judge testing, test matrix, Devpost draft, demo script, owner
+  actions, submission checklist, resume handoff, progress, and publication mapping
+  to make public v1.0.10 the current candidate while retaining v1.0.5 as the
+  explicitly phone-tested rollback and v1.0.9 entries as historical evidence.
+- Private documentation checkpoints: judge handoff
+  `deecf6ec12144ae94e4509e1810fdbcff7b3005e`; mapping
+  `7f98765`. Sanitized checkpoints: judge handoff
+  `6ce1141d8d9283adffc79986cc835bf632e75be1`; mapping
+  `43d25829fa0a600950acd0f910b8fa979923576a`.
+- Final pre-push sanitized history audit covered 110 reachable revisions and found
+  zero forbidden credential/config paths and zero high-signal secret signatures.
+  The value-free `.env.example` remains intentionally public. Worktree and
+  whitespace checks passed.
+- Pushed the sanitized branch without force. Read-back confirmed local and remote
+  branch at `43d25829fa0a600950acd0f910b8fa979923576a`; source tag v1.0.10 still peels to
+  `fe73ad5509ac348f120b025688eee1abd2c009d8`.
+- Updated draft PR #1 to `Ship Fitareeaee Copilot v1.0.10 secure AI trip lifecycle`.
+  GitHub read-back confirmed it is OPEN, draft, unmerged, on the expected branch,
+  and at the verified remote head.
+- GitHub release read-back confirmed prerelease tag `fitareeaee-copilot-v1.0.10`,
+  asset `app-profile.apk`, Android-package content type, 85,276,887 bytes, and digest
+  `sha256:f476b31f2097845daf7159157166f2f940551f6838a9ec75bd493e21f884ce59`.
+- `adb devices -l` showed only `emulator-5554`; no physical phone was connected, so
+  no physical v1.0.10 result is claimed. The exact public download remains at
+  `build/published-download-v110/app-profile.apk` ready for that gate.
+- No app/backend source changed in this handoff, so the recorded full v1.0.10 gate
+  and exact-public emulator pass remain authoritative. No deploy, production-data
+  mutation, PR merge, force push, billing change, or stable promotion occurred.
+- Rollback point: public v1.0.10 prerelease and phone-tested public v1.0.5. Next
+  action: reconnect/unlock the owner phone, approve USB debugging, install the exact
+  public v1.0.10 bytes, and run the final device smoke before promotion/video.
