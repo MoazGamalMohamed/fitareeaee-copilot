@@ -2233,6 +2233,100 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   debug-signed for sideloading; 85,293,151 bytes; version `1.0.6` / code
   `20260720`; built 2026-07-19 23:09:09 CDT / 21:09:09 PDT; SHA-256
   `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
+
+## 2026-07-20 01:05 CDT / 2026-07-19 23:05 PDT — v1.0.7 map-compliance prerelease
+
+### Objective and completed work
+
+- Continued emulator/release work while the owner's phone was intentionally
+  disconnected. The existing manual trip creation, origin/destination map pins,
+  English/Arabic speech entry, completed-only Past Trips, payment gate, lifecycle,
+  rating, support, and admin judge path remained intact.
+- Rechecked the live OpenStreetMap Foundation tile policy. The existing exact HTTPS
+  tile URL, `com.fitareeaee.app` User-Agent identity, viewport-only loading, and
+  `flutter_map` 8.3.1 HTTP-header-aware native cache passed. The audit found one
+  real defect: OSM attribution was behind a toggle even though the live policy says
+  it must not be hidden.
+- Replaced the toggle attribution with a permanently visible clickable
+  `© OpenStreetMap contributors` credit linked to the OSM copyright/ODbL page.
+  Added a focused widget contract and raised Android metadata to
+  `1.0.7+20260721`.
+- Audited every direct Flutter and Functions dependency license, confirmed the APK
+  embeds Flutter's generated `NOTICES.Z`, and added
+  `docs/THIRD_PARTY_NOTICES.md`. Recorded OSM service/privacy/availability
+  boundaries without claiming a production SLA.
+- Added explicit `ROTATE_JUDGE_PASSWORDS=fitareeaee` support to the owner-only
+  provisioner. Rotation preserves existing fictional bookings unless the separate
+  explicit reset confirmation is supplied.
+
+### Exact verification results
+
+- `dart format --output=none --set-exit-if-changed lib test`: initial check found
+  the new test needed formatting; after applying Dart format, PASS — 116 files,
+  0 changed.
+- Focused map attribution widget test: PASS, 1/1.
+- `flutter analyze --no-pub`: PASS, no issues (93.3 seconds).
+- `flutter test --no-pub --reporter expanded`: PASS, 20/20.
+- `cd functions && npm run build && npm test`: PASS; TypeScript build and 28/28
+  implementation contracts.
+- After the provisioner change, `node --check`, Functions TypeScript build, and
+  the complete 28/28 implementation contracts were rerun and passed.
+- Relative Markdown link audit: PASS — all 51 Markdown files scanned, 0 missing
+  local targets. Diff whitespace and high-signal secret scans: PASS, 0 findings.
+- Direct rules attempts first failed correctly because the emulators were absent;
+  one unquoted PowerShell `--only` attempt started none. The corrected command with
+  Android Studio JBR 21 and quoted `"firestore,storage"` passed 9/9 authorization
+  contracts and shut both emulators down cleanly.
+- `flutter build apk --debug --no-pub`: PASS; 156,381,054 bytes.
+- `flutter build apk --profile --no-pub`: PASS; 85,260,359 bytes.
+- `aapt dump badging`: PASS — package `com.fitareeaee.app`, version `1.0.7`, code
+  `20260721`, min API 24, target/compile API 36.
+- `apksigner verify --verbose --print-certs`: PASS — APK Signature Scheme v2, one
+  Android Debug signer, certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+
+### APK, emulator, publication, and security evidence
+
+- Local/public profile SHA-256:
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+  Local build timestamp: `2026-07-20T05:30:28.5628399Z`.
+- Exact APK source checkpoint: private
+  `96343be6eb348e3ef9dd407ff2b2d84c83d2e801`; tree-equivalent sanitized/tagged
+  `06195d02398c32783fa894f7e1bb5ab1d5fb4daf`; shared tree
+  `0da079592d723eb149fbcaf75cb822305a60e54b`.
+- Sanitized reachable-path scan: 0 forbidden `.env`, Firebase Android config,
+  keystore, or service-account paths. Public worktree was clean; private/public
+  source trees matched exactly. The private repository still has no remote.
+- Pushed the existing public branch without force and pushed annotated tag
+  `fitareeaee-copilot-v1.0.7`. Published an accurately labeled prerelease at
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7`.
+- Anonymous download to `build/published-download-v107/app-profile.apk`: PASS;
+  exact 85,260,359-byte and SHA-256 match. API 36 reinstall: PASS; version lines
+  present, top-resumed activity true, process alive, and 0 app-specific fatal,
+  Flutter, FirebaseFailure, or app-ANR log matches.
+- Separate clean API 36 cold launch: PASS in 16.475 seconds with visible Login,
+  top-resumed process, and 0 matching app errors.
+- Long ADB character injection mangled the fictional credentials and produced an
+  emulator not-responding dialog, so it was abandoned and is not counted as an
+  authenticated v1.0.7 pass. Credential-bearing captures were deleted, emulator
+  app data was cleared, and both fictional judge passwords were rotated after the
+  final attempt. The final rotation passed and preserved existing fixtures.
+
+### Recovery, known issues, and next action
+
+- Files changed: map picker, focused map test, `pubspec.yaml`, owner-only judge
+  provisioner, README, changelog, judge/release/privacy/test/Devpost/recovery
+  documents, and new third-party notices.
+- Stable rollback remains public v1.0.5; superseded prerelease rollback remains
+  v1.0.6. v1.0.7 stays a prerelease until tested through the normal keyboard and
+  final demo path on the owner's physical phone.
+- Physical phone: PENDING because the owner intentionally disconnected it. Do not
+  relabel v1.0.5 phone evidence or v1.0.6 authenticated-emulator evidence as
+  v1.0.7.
+- Next action: commit/publish the provisioner and evidence documentation, confirm
+  the draft PR remains open, then when the phone reconnects install the exact
+  public v1.0.7 download, authenticate normally, run the mapped/voice/trip/chat
+  demo path and app-specific log scan, and promote only if every check passes.
 - API 36 emulator: clean install PASS; cold launch PASS in 18.675 seconds; Login and
   Welcome rendered; authenticated fictional judge-rider sign-in PASS; Home visibly
   rendered Plan with AI, Request a Trip, and Offer a Ride; process alive; no matching

@@ -50,6 +50,7 @@ evidence to the sanitized publication history:
 | v1.0.6 optimized APK evidence | `199fd6a0c33aff5f3af2223e826ac540a3ca0904` | `27c706c6cf81f90ba0976f463e95bd90ff57e9ae` |
 | v1.0.6 judge-document audit | `9d9705af510a0a00cb988670fe25ee6a39a13894` | `8510b07f4c441deeba808655b4b1f9334527d715` |
 | v1.0.6 release-audit evidence | `6f2e9c7d4f8d43593378f8045088eda1f59dac97` | `17b499ef24aac60a068be9a6ed4efceb4162ce84` |
+| v1.0.7 visible OSM-attribution source/tag | `96343be6eb348e3ef9dd407ff2b2d84c83d2e801` | `06195d02398c32783fa894f7e1bb5ab1d5fb4daf` |
 
 The annotated tag names are preserved:
 

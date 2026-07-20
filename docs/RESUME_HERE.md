@@ -1,10 +1,10 @@
 # Resume Here
 
-Last updated: 2026-07-19 23:47 CDT / 2026-07-19 21:47 PDT
+Last updated: 2026-07-20 00:46 CDT / 2026-07-19 22:46 PDT
 
 ## Current objective
 
-Phone-test and promote the published v1.0.6 lifecycle/map/voice prerelease, then
+Phone-test and promote the published v1.0.7 lifecycle/map/voice/map-compliance prerelease, then
 finish owner-required credential rotation, video, `/feedback`, legal review, and
 Devpost submission. Do not restart the audit or replace the payment gate with
 simulated money.
@@ -13,17 +13,18 @@ simulated money.
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private source: `47f49ce`; current private evidence head `add3cc2`
+- Passing private APK source: `96343be`; current private evidence head is the
+  latest local `build-week/final` commit shown by `git log -1`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Passing sanitized source/tag: `9194066a38777d8fba9fd9b84810f688f5bc3a2e`
-- Current sanitized branch head: `455a8706f6443832f1f48928c21686998fc65d83`
-- Private/public tree: `1d84b1b414dbd3b4d5dee81c8db3a97db4940fcd`
+- Passing sanitized source/tag: `06195d02398c32783fa894f7e1bb5ab1d5fb4daf`
+- Current sanitized branch head before the documentation follow-up: `06195d02`
+- Private/public APK-source tree: `0da079592d723eb149fbcaf75cb822305a60e54b`
 - Draft PR #1 is open and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- Annotated tag `fitareeaee-copilot-v1.0.6` exists locally/remotely and peels to
-  `9194066a`. The matching APK is an accurately labeled prerelease; no force push
+- Annotated tag `fitareeaee-copilot-v1.0.7` exists locally/remotely and peels to
+  `06195d02`. The matching APK is an accurately labeled prerelease; no force push
   was used. v1.0.5 remains the stable rollback.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan.
@@ -66,9 +67,9 @@ simulated money.
 
 ## Passing gates
 
-- Dart format: 115 files, 0 changes.
+- Dart format: 116 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 19/19.
+- Flutter tests: 20/20, including permanent actionable OSM attribution.
 - Functions TypeScript/contracts: 28/28.
 - Firestore/Storage rules: 9/9.
 - Auth/Firestore/Functions integration: 7/7. This proves proposal/payment,
@@ -79,20 +80,22 @@ simulated money.
 
 ## Current APK and device evidence
 
-- Local v1.0.6 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Local v1.0.7 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 85,293,151 bytes
-- SHA-256: `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`
-- Version: `1.0.6` / code `20260720`
-- API 36 emulator: clean install and cold launch PASS; fictional judge login and
-  authenticated Home actions PASS; no matching app fatal/Flutter/bootstrap/ANR log.
-- Public v1.0.6 release:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6`
-- Public v1.0.6 APK:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.6/app-profile.apk`
-- Public re-download path: `build/published-download-v106/app-profile.apk`; exact
-  size/hash match PASS; clean API 36 install/cold launch/Login/top-resumed/0 fatal
-  matches PASS. Physical-phone result remains PENDING while the phone is disconnected.
+- Size: 85,260,359 bytes
+- SHA-256: `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`
+- Version: `1.0.7` / code `20260721`
+- API 36 emulator: clean cold launch and exact public-APK reinstall PASS; visible
+  Login, top-resumed process, process alive, and 0 matching app fatal/Flutter/
+  Firebase/ANR logs. Synthetic ADB credential typing is not counted as an
+  authenticated pass; v1.0.6 retains the last authenticated emulator evidence.
+- Public v1.0.7 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7`
+- Public v1.0.7 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.7/app-profile.apk`
+- Public re-download path: `build/published-download-v107/app-profile.apk`; exact
+  size/hash match and API 36 reinstall/launch PASS. Physical-phone result remains
+  PENDING while the phone is disconnected.
 
 - Local profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Public re-download path: `build/published-download-v105/app-profile.apk`
@@ -128,7 +131,7 @@ simulated money.
 
 ## Exact next action
 
-Reconnect the owner's phone, install the exact public v1.0.6 download, run the final
+Reconnect the owner's phone, install the exact public v1.0.7 download, run the final
 demo-path smoke and app-specific log scan, then promote the prerelease to stable and
 replace the final v1.0.5 Devpost fields. Open `docs/DEMO_SCRIPT.md` and follow
 `docs/SUBMISSION_CHECKLIST.md`. Preserve v1.0.5 as the rollback release.

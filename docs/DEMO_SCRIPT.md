@@ -5,7 +5,7 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
 Release gate status: **satisfied for public v1.0.5**. Repeat the public-download
-and phone gate before recording with v1.0.6. Before recording, enable Do Not
+and phone gate before recording with v1.0.7. Before recording, enable Do Not
 Disturb, close messaging notifications, and use only the fictional judge account.
 
 ## Recording setup

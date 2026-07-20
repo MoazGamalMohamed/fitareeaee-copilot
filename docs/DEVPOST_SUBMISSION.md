@@ -166,7 +166,8 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.6 candidate includes interactive map pins and English/Arabic speech
+- The v1.0.7 candidate includes interactive map pins, permanent linked
+  OpenStreetMap attribution, and English/Arabic speech
   entry, but not turn-by-turn navigation, routing-service ETA, address autocomplete,
   or full Arabic UI localization.
 - The v1.0.5 public APK passed download/hash verification, emulator installation,
@@ -190,7 +191,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **PENDING:** public YouTube URL
 - **DONE:** stable v1.0.5 fallback APK URL, size, and SHA-256
 - **PENDING:** replace the test-build fields with the already published/hash-matched
-  v1.0.6 prerelease only after physical-phone smoke and stable promotion
+  v1.0.7 prerelease only after physical-phone smoke and stable promotion
 - **DONE:** release tag `fitareeaee-copilot-v1.0.5` / sanitized source commit `6d67f306203886d3d1623f9966f36764589b9cfb`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support

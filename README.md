@@ -195,9 +195,10 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.6 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6)
-adds the mapped voice-enabled lifecycle. Its public 85,293,151-byte APK was
-redownloaded, hash-matched, clean-installed, and cold-launched on API 36. It
+[v1.0.7 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7)
+adds the mapped voice-enabled lifecycle and permanently visible, linked
+OpenStreetMap attribution. Its public 85,260,359-byte APK was anonymously
+redownloaded, SHA-256 matched, reinstalled, and cold-launched on API 36. It
 remains a prerelease until that exact public download passes the physical-phone
 smoke; v1.0.5 remains the stable rollback meanwhile.
 
@@ -215,6 +216,7 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_PROGRESS.md) — append-only checkpoints
 - [`docs/PUBLICATION_HISTORY.md`](docs/PUBLICATION_HISTORY.md) — original-to-sanitized commit map
 - [`docs/PLAY_STORE_READINESS.md`](docs/PLAY_STORE_READINESS.md) — Android/Google Play readiness gaps
+- [`docs/THIRD_PARTY_NOTICES.md`](docs/THIRD_PARTY_NOTICES.md) — dependency, map-data, and tile-service notices
 
 - [`docs/RESUME_HERE.md`](docs/RESUME_HERE.md) — current recovery checkpoint and exact next action
 - [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) — consequential scope and safety decisions
@@ -225,6 +227,9 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - Manual trip creation includes an interactive map pin picker, but matching still
   uses deterministic route/date/capacity criteria rather than a routing or
   geocoding service; turn-by-turn navigation is not included.
+- Standard OpenStreetMap tiles are a best-effort contest dependency with no SLA;
+  the app shows permanent linked attribution, uses an identifying User-Agent,
+  honors HTTP cache headers, and does not prefetch or offer offline maps.
 - It does not implement real payments or emergency dispatch.
 - Verification indicates an admin-reviewed workflow, not a guarantee of personal safety.
 - Live GPT-5.6 and physical-phone results are recorded only after their corresponding credential/device checks actually pass.

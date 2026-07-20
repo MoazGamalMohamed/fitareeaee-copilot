@@ -188,6 +188,35 @@ available.
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
 
+## Public v1.0.7 map-compliant prerelease candidate
+
+- Exact APK source: private `96343be`; tree-equivalent sanitized/tagged
+  `06195d02398c32783fa894f7e1bb5ab1d5fb4daf`; shared tree
+  `0da079592d723eb149fbcaf75cb822305a60e54b`.
+- Format/analyze/Flutter: 116 files/0 changed, 0 issues, 20/20. The new focused
+  test proves OpenStreetMap attribution is permanently visible and actionable.
+- Functions/contracts/rules: TypeScript build PASS, 28/28 implementation
+  contracts, and 9/9 Firestore/Storage emulator authorization contracts.
+- Android builds: universal debug and optimized universal profile PASS.
+- Profile APK: 85,260,359 bytes; SHA-256
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`;
+  package `com.fitareeaee.app`, version `1.0.7` / code `20260721`, min API 24,
+  target/compile API 36, APK Signature Scheme v2, one expected Android Debug
+  signer certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- Public release: `fitareeaee-copilot-v1.0.7` prerelease. Anonymous download
+  exactly matched the local size/hash and passed API 36 reinstall, version,
+  top-resumed process, process-alive, and 0 app-specific fatal/Flutter/Firebase/
+  ANR log checks.
+- A clean API 36 cold launch reached the visible Login screen in 16.475 seconds.
+  Long synthetic ADB character injection was abandoned after it mangled test
+  input and triggered an emulator not-responding dialog; it is not used as an
+  authenticated v1.0.7 pass. The test app data and credential-bearing captures
+  were deleted and the fictional judge passwords were rotated afterward.
+- Physical phone and normal-keyboard authenticated demo path: PENDING while the
+  phone is disconnected. Existing v1.0.5 phone and v1.0.6 authenticated-emulator
+  evidence is not relabeled as v1.0.7.
+
 ## Public v1.0.6 lifecycle/map/voice prerelease candidate
 
 - Source: private `47f49ce`; tree-equivalent sanitized/tagged `9194066a`.

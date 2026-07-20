@@ -8,14 +8,14 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
 > and app-specific crash logs passed on that exact public artifact.
 
-> Superseding candidate: v1.0.6 adds interactive origin/destination map pins,
-> English/Arabic speech entry, completed-only Past Trips, and server-authoritative
-> start/complete/cancel/rating lifecycle controls. Its local profile APK passed
-> the complete automated gate and authenticated API 36 emulator smoke. The
-> [v1.0.6 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.6)
-> is public and its APK was anonymously redownloaded, hash-matched, clean-installed,
-> and cold-launched on API 36. Keep using the stable v1.0.5 information below until
-> that exact v1.0.6 download is tested on the owner's phone.
+> Superseding candidate: v1.0.7 adds interactive origin/destination map pins,
+> English/Arabic speech entry, completed-only Past Trips, server-authoritative
+> lifecycle controls, and permanently visible linked OpenStreetMap attribution.
+> Its 20/20 Flutter tests, backend/rules gates, and API 36 clean-launch smoke pass.
+> The [v1.0.7 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7)
+> is public and its 85,260,359-byte APK was anonymously redownloaded, SHA-256
+> matched, reinstalled, and cold-launched. Keep using the stable v1.0.5 information
+> below until that exact v1.0.7 download is tested on the owner's phone.
 
 Final artifact: universal profile APK, 83,378,603 bytes, SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
@@ -154,7 +154,7 @@ Flutter Android app
 ## Known limitations
 
 - The APK is distributed directly for judging, not through Google Play.
-- The v1.0.6 candidate includes an interactive map pin picker and English/Arabic
+- The v1.0.7 candidate includes an interactive map pin picker and English/Arabic
   speech entry. It does not provide turn-by-turn navigation, address autocomplete,
   full Arabic localization, or a routing-service ETA.
 - AI output may misunderstand language; the user must review the draft.

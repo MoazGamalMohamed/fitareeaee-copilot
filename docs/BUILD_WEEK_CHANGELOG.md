@@ -150,3 +150,26 @@ payment-gated Chat empty state, manual trip creation, and app-specific crash log
 The earlier live reviewable Copilot draft, transparent matching, details,
 server-authoritative fictional booking, confirmed Chat, and realtime message
 evidence remains recorded against the source-compatible judge fixtures.
+
+### v1.0.7 map attribution and release-compliance correction
+
+- Replaced toggle-hidden map credit with a permanently visible clickable
+  `© OpenStreetMap contributors` attribution linked to the ODbL/copyright page.
+- Verified the required standard tile URL, stable package User-Agent,
+  HTTP-header-aware native cache, and absence of prefetch/offline behavior against
+  the live OSM Foundation tile policy.
+- Added a focused widget test proving the permanent attribution is present and
+  actionable; the complete Flutter suite now passes 20/20.
+- Added third-party dependency, map-data, tile-service, and submission-media
+  notices, including the production limitation of the best-effort community tile
+  service.
+- Added an explicit owner-only judge-password rotation mode that preserves
+  existing fictional bookings and fixtures.
+
+The exact APK source is private `96343be` and tree-equivalent sanitized/tagged
+`06195d02398c32783fa894f7e1bb5ab1d5fb4daf`. The public v1.0.7 prerelease APK is
+85,260,359 bytes with SHA-256
+`CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+Its anonymous public redownload matched exactly and passed reinstall, version,
+top-resumed process, and zero app-specific fatal/error-log checks on API 36.
+Physical-phone verification remains pending; v1.0.5 remains the stable rollback.

@@ -122,7 +122,13 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   verify package/version/API metadata and its expected debug signature.
 - [x] Publish sanitized v1.0.6 source/tag/prerelease APK; anonymously redownload,
   hash-match, clean-install, and cold-launch it on API 36.
-- [ ] Install that exact public v1.0.6 download on the owner's reconnected phone,
+- [x] Publish the v1.0.7 attribution-compliant source/tag/prerelease APK;
+  anonymously redownload and exactly match 85,260,359 bytes and SHA-256
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+- [x] Reinstall and cold-launch that public v1.0.7 download on API 36; verify
+  version `1.0.7` / code `20260721`, top-resumed process, and 0 app-specific
+  fatal/Flutter/Firebase/ANR matches.
+- [ ] Install that exact public v1.0.7 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials

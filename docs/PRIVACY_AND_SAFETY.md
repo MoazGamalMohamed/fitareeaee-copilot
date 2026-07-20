@@ -77,6 +77,11 @@ No rank score is a declaration of personal safety or endorsement of a participan
 - Manual origin/destination map pins are stored with the private trip. The public
   trip projection exposes only coarsened coordinates needed for marketplace
   proximity ordering; it does not expose the user's live device location.
+- The interactive picker requests only visible raster tiles from OpenStreetMap.
+  The tile service receives normal network metadata and viewport tile paths, but
+  the app sends it no Fitareeaee user ID, contact detail, chat content, or private
+  trip document. Permanent linked attribution and the OSM tile policy are recorded
+  in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - A conversation can be created only after a booking or after the server checks
   a live request trip and the offerer's manual verification.
 - Verification images remain in owner/admin-scoped Firebase Storage and are
