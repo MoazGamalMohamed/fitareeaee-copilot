@@ -134,7 +134,14 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Fresh-install and authenticate that exact public v1.0.8 download on API 36;
   verify Home, paid chat, Past, version `1.0.8` / code `20260722`, and 0
   app-specific fatal/Flutter/Firebase/ANR matches.
-- [ ] Install that exact public v1.0.8 download on the owner's reconnected phone,
+- [x] Publish v1.0.9 source/tag/prerelease; anonymously redownload and byte-match
+  85,276,819 bytes and SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+- [x] Install that exact public v1.0.9 download on API 36; verify version
+  `1.0.9` / code `20260723`, Confirmed and Completed owned-trip labels, paid
+  driver lifecycle controls, confirmed chat, and 0 app-specific
+  fatal/Flutter/FirebaseFailure/ANR matches.
+- [ ] Install that exact public v1.0.9 download on the owner's reconnected phone,
   run the final demo-path smoke, then promote it from prerelease to stable.
 
 ## Devpost materials

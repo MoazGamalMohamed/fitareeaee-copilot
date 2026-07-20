@@ -55,6 +55,8 @@ evidence to the sanitized publication history:
 | v1.0.8 voice/verification/lifecycle source and tag | `3817ed587bc141856c7c20eed126aa8c5508091e` | `54b1654cf42d716d47d56b1e649da139d6f9b097` |
 | v1.0.8 emulator release evidence | `eb78ecf81b9ce898c24c15ba076d2004ebe7eadc` | `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993` |
 | v1.0.8 public artifact evidence | `45452a4c968600438506b493c2939f1f4c4a8266` | `5f2819c574622accdaa420064751cdc9c1b5a827` |
+| v1.0.9 truthful owned-trip status source and tag | `ab792130938601370f5ccf87ef4af3ff0290076e` | `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56` |
+| v1.0.9 local release evidence | `d23cafdc83923e00aa16b678d63e893c11464445` | `7beb96fc5c9295e21caab4258d53d3ad4718008d` |
 
 The annotated tag names are preserved:
 

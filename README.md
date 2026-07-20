@@ -196,13 +196,16 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.8 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8)
+[v1.0.9 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9)
 adds reliable Android speech discovery and explicit English/Arabic voice locale
 selection, legacy verification compatibility, paid/confirmed judge chat,
-completed Past trips, and the corrected closed-trip/rating experience. Its public
-109,174,213-byte APK was anonymously redownloaded, SHA-256 matched, fresh-installed,
-authenticated, and smoke-tested on API 36. It remains a prerelease until that exact
-public download passes the physical-phone smoke; v1.0.5 remains the stable rollback.
+completed Past trips, the corrected closed-trip/rating experience, and truthful
+Confirmed/Completed owned-trip status badges. Its public 85,276,819-byte APK was
+anonymously redownloaded, byte-matched at SHA-256
+`95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`,
+installed, authenticated, and smoke-tested on API 36. It remains a prerelease until
+that exact public download passes the physical-phone smoke; v1.0.5 remains the
+stable rollback.
 
 ## Codex collaboration
 

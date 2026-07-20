@@ -8,15 +8,17 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > Authenticated Home, manual trip creation, payment-gated Chat, version metadata,
 > and app-specific crash logs passed on that exact public artifact.
 
-> Superseding candidate: v1.0.8 includes interactive origin/destination map pins,
+> Superseding candidate: v1.0.9 includes interactive origin/destination map pins,
 > reliable English/Arabic speech-service discovery, completed-only Past Trips,
 > payment-gated chat, closed completed chat, one-time ratings, and permanently
-> visible linked OpenStreetMap attribution. Its 23/23 Flutter tests, backend/rules
+> visible linked OpenStreetMap attribution. It also labels active and completed
+> owned trips truthfully instead of deriving a misleading `Full` label from
+> availability. Its 25/25 Flutter tests, backend/rules
 > gates, and API 36 authenticated lifecycle smoke pass. The
-> [v1.0.8 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8)
-> is public and its 109,174,213-byte APK was anonymously redownloaded, SHA-256
-> matched, fresh-installed, authenticated, and tested. Keep using stable v1.0.5
-> below until the exact v1.0.8 download is tested on the owner's phone.
+> [v1.0.9 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9)
+> is public and its 85,276,819-byte APK was anonymously redownloaded, SHA-256
+> matched, installed over an authenticated driver session, and tested. Keep using stable v1.0.5
+> below until the exact v1.0.9 download is tested on the owner's phone.
 
 Final artifact: universal profile APK, 83,378,603 bytes, SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,

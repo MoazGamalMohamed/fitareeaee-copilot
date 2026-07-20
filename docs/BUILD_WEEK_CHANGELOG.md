@@ -195,3 +195,25 @@ The exact APK source is private `3817ed5` and tree-equivalent sanitized/tagged
 Its anonymous public redownload matched exactly and passed fresh installation,
 authentication, paid Chat, completed Past, and zero app-specific fatal/error-log
 checks on API 36. Physical-phone verification remains pending.
+
+### v1.0.9 truthful owned-trip lifecycle status
+
+- Replaced the binary available/full badge derivation on owned trips with explicit
+  lifecycle labels: Available, Full, Confirmed, In progress, Completed, or
+  Cancelled.
+- Added focused regression coverage for every label boundary; final gates are
+  format 119/0, analyzer 0, Flutter 25/25, and Functions 28/28.
+- Verified on the exact public APK that the driver sees Confirmed for the active
+  paid booking and Completed for the past trip, while confirmed chat, start-trip,
+  and emergency-admin cancellation controls remain available only on the active
+  lifecycle.
+
+The exact APK source is private `ab79213` and tree-equivalent sanitized/tagged
+`ef2eecb7`. The public
+[v1.0.9 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9)
+APK is 85,276,819 bytes with SHA-256
+`95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+Its anonymous public redownload matched byte-for-byte, installed as version
+`1.0.9` / code `20260723`, and passed the authenticated driver lifecycle/chat
+smoke with zero app-specific fatal/Flutter/FirebaseFailure/ANR matches on API 36.
+Physical-phone verification remains pending while the owner device is disconnected.

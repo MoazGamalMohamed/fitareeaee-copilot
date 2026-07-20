@@ -89,10 +89,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Fresh-install end-to-end run #2 | PASS (emulator) | Exact local v1.0.8 profile APK clean install, fictional sign-in, map, voice service, payment gate, paid chat, Past, completed details, and rating entry all passed; exact public-download and physical-phone repetition remain pending. |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Tagged judge APK candidate | PENDING | Local v1.0.9 source is private `ab79213`; sanitized tag/release publication is next. Public v1.0.8 remains the exact authenticated rollback prerelease and v1.0.5 the phone-tested stable rollback. |
-| Public sanitized repository | PASS | Draft PR branch/remote head `d2e81d3f`; all 86 reachable revisions contain 0 forbidden credential/config path objects and 0 current high-signal secret matches; original private repository still has no remote. |
-| Published APK download and hash comparison | PASS | Public v1.0.8 asset downloaded anonymously; 109,174,213 bytes and SHA-256 `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18` exactly match local. |
-| Published APK install | PASS | Exact downloaded v1.0.8 asset fresh-installed, cold-launched, authenticated, and smoke-tested for Home, paid Chat, and Past on API 36; 0 app-specific fatal/Flutter/Firebase/ANR matches. Physical-phone install remains pending. |
+| Tagged judge APK candidate | PASS (prerelease) | v1.0.9 private source `ab79213` is tree-equivalent to sanitized/tagged source `ef2eecb7`; the public prerelease and exact asset are available. v1.0.5 remains the phone-tested stable rollback. |
+| Public sanitized repository | PASS | Draft PR branch was pushed without force; v1.0.9 tag source is `ef2eecb7`. The pre-evidence branch checkpoint `7beb96fc` contained 90 reachable revisions, 0 forbidden credential/config path objects, and 0 current high-signal secret matches; original private repository still has no remote. |
+| Published APK download and hash comparison | PASS | Public v1.0.9 asset downloaded anonymously; 85,276,819 bytes and SHA-256 `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1` exactly match local and GitHub's digest. |
+| Published APK install | PASS (emulator) | Exact downloaded v1.0.9 asset installed over an authenticated fictional-driver session and smoke-tested for Confirmed/Completed labels, paid lifecycle controls, and confirmed Chat on API 36; 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches. Physical-phone install remains pending. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -194,6 +194,32 @@ available.
 ## Release gate
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
+
+## Public v1.0.9 truthful-status prerelease candidate
+
+- Exact APK source: private `ab792130938601370f5ccf87ef4af3ff0290076e`;
+  tree-equivalent sanitized/tagged
+  `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56`.
+- Format/analyze/Flutter: 119 files/0 changed, 0 issues, 25/25.
+- Functions/contracts: TypeScript build PASS and 28/28. Rules and callable source
+  were unchanged from the passing deployed 9/9 and 7/7 checkpoints.
+- Public profile APK: 85,276,819 bytes; SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`;
+  package `com.fitareeaee.app`, version `1.0.9` / code `20260723`, min API 24,
+  target/compile API 36, APK Signature Scheme v2, one expected Android Debug
+  signer certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- Anonymous download exactly matched local bytes and GitHub's asset digest. That
+  exact downloaded copy installed on API 36 over the authenticated fictional
+  driver session. My Trips rendered Confirmed and Completed instead of false Full;
+  the active details exposed paid/confirmed Chat, driver start, and emergency-admin
+  cancellation; the confirmed conversation loaded; 0 app-specific fatal/Flutter/
+  FirebaseFailure/ANR matches were found.
+- Public release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9`.
+- Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.9/app-profile.apk`.
+- Physical phone: PENDING while disconnected. Stable v1.0.5 remains the rollback.
 
 ## Public v1.0.8 voice/verification/lifecycle prerelease candidate
 

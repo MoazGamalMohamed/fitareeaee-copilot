@@ -2783,3 +2783,40 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Physical phone: still disconnected; no v1.0.9 phone result is claimed. Next action:
   sanitized v1.0.9 publication, anonymous byte verification/emulator install, then
   the exact public physical-phone smoke when the owner reconnects.
+
+## 2026-07-20 03:29 CDT / 2026-07-20 01:29 PDT - v1.0.9 published bytes and driver lifecycle authenticated
+
+- Published the passing v1.0.9 source through the sanitized clone using the
+  `github:yeet` protocol. Private application source
+  `ab792130938601370f5ccf87ef4af3ff0290076e` is tree-equivalent to sanitized/tagged
+  source `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56`; private local-evidence commit
+  `d23cafdc83923e00aa16b678d63e893c11464445` maps to sanitized checkpoint
+  `7beb96fc5c9295e21caab4258d53d3ad4718008d`.
+- Push used no force. Local/remote branch equality passed at the pre-publication-
+  evidence checkpoint. The annotated tag `fitareeaee-copilot-v1.0.9` has tag object
+  `8142cb0c6ac36e1e2c1eb0d18f765bb309b7d82c` and peels to exact application source
+  `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56`.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.9`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.9/app-profile.apk`.
+- GitHub asset metadata: uploaded, prerelease, 85,276,819 bytes, digest
+  `sha256:95b172ee6003d9a35d407033a8e88d272859a6147fa9ad1e30d647b43e0047c1`.
+  Anonymous download path `build/published-download-v109/app-profile.apk` matched
+  local size, SHA-256, and bytes exactly.
+- Exact downloaded public APK install: PASS on `emulator-5554`; package
+  `com.fitareeaee.app`, version `1.0.9`, code `20260723`. The install updated the
+  authenticated fictional-driver session. My Trips rendered Confirmed for the
+  active paid fixture and Completed for the past fixture, with no false Full badge.
+- Active Trip Details rendered Paid and confirmed, Open Confirmed Chat, Confirm trip
+  start, and Emergency cancel and alert admin. The confirmed conversation loaded
+  its two existing messages without exposing message text in committed evidence.
+  Final app-specific fatal/Flutter/FirebaseFailure/ANR scan: PASS, zero matches.
+- Tested device: API 36 Android emulator only. `adb devices -l` showed no physical
+  phone because the owner intentionally disconnected it. No v1.0.9 phone result is
+  claimed; v1.0.5 remains the phone-tested stable rollback and immutable v1.0.8 the
+  preceding authenticated-emulator rollback.
+- Rollback point: public v1.0.8 prerelease/tag and stable v1.0.5 remain unchanged.
+  Next action: replay this publication evidence into the sanitized branch, rerun
+  reachable-history secret/tree checks and update draft PR #1, then install these
+  exact public v1.0.9 bytes on the reconnected phone before stable promotion.
