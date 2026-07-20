@@ -61,6 +61,8 @@ evidence to the sanitized publication history:
 | Final public-access and cold-launch integrity audit | `358a639daca99672d315009097433db4612e7a99` | `12e34a4e32bd9fd499b3c8ef1d136046d6a744b8` |
 | Complete current-source release-gate rerun | `f92f4e57369da413260be3eb3d923e62381d4232` | `e26b61dd245201f30761c27ee02f13dcfcc3c906` |
 | Read-only inherited Function inventory revalidation | `0a710d42a6b8fecaf70d123c79eedfcda21fc32b` | `c727ca376f43f0953cdf4da1d4ecb74d8485977e` |
+| v1.0.10 verification/map/action source | `9b92625f20912607d3c7ce32db9902fc76971eae` | `fe73ad5509ac348f120b025688eee1abd2c009d8` |
+| v1.0.10 verification gate evidence | `ffa6e34811e4682a7ea8ce01990a645bcecdc86f` | `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2` |
 
 The annotated tag names are preserved:
 
