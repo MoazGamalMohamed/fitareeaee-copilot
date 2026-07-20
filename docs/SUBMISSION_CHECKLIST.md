@@ -162,7 +162,9 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Preview the repository, release, APK, and English judge copy without relying on
   repository authentication. The still-missing YouTube/Devpost fields remain below.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
-- [ ] Capture final screenshots with fictional data and no PII.
+- [x] Capture and visually inspect final screenshots from the exact public v1.0.9
+  APK using fictional data and no credentials, real identity data, or private
+  notifications; add an editable architecture graphic.
 - [x] Audit repository packages and fictional fixture data; retain package notices
   and permanent linked OpenStreetMap attribution.
 - [ ] Owner confirms authorization for launcher artwork and audits final screenshots

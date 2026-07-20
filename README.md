@@ -87,6 +87,16 @@ server, and maps failures to safe messages.
 
 GPT-5.6 interprets language; it does not select a person, approve identity, declare anyone safe, guarantee availability, save a trip, or book. Deterministic ranking complements AI interpretation because route, time, seats, budget, and preference scores are reproducible and explainable.
 
+## Judge preview
+
+| Home | Reviewable GPT-5.6 draft | Transparent live match |
+| --- | --- | --- |
+| <img src="docs/screenshots/01-home.png" width="240" alt="Fitareeaee Home with Plan with AI, manual request, and verified-driver offer actions"> | <img src="docs/screenshots/06-ai-draft.png" width="240" alt="Editable GPT-5.6 ride draft with explicit confirmation"> | <img src="docs/screenshots/07-transparent-matches.png" width="240" alt="Deterministically ranked live trip with transparent compatibility reasons"> |
+
+[View the complete judge-safe screenshot set](docs/screenshots/README.md), including
+manual map selection, the payment/chat boundary, completed Past trips, and the
+[editable architecture graphic](docs/ARCHITECTURE.svg).
+
 ## Privacy and safety
 
 - Only the redacted natural-language request, locale, timezone, and a

@@ -2903,3 +2903,25 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   target API 36. Final app-specific fatal/Flutter/FirebaseFailure/ANR matches: 0.
 - This is now the complete exact-public clean-install emulator flow #2. Physical
   phone verification remains pending because only `emulator-5554` is connected.
+
+## 2026-07-20 04:13 CDT / 2026-07-20 02:13 PDT - exact-public judge media and fresh GPT-5.6 evidence prepared
+
+- Captured and visually inspected seven 1080x2400 Android screenshots from the exact
+  anonymous public v1.0.9 APK: Home, Copilot input/voice, interactive map and linked
+  attribution, payment-required/chat-locked details, completed Past/rating, live
+  editable AI draft, and transparent deterministic match. All use fictional routes;
+  no credential, real identity document, private notification, or real user data is
+  visible.
+- Ran one additional capped authenticated English ride request from the clean public
+  APK. GPT-5.6 returned a strict editable Find/Ride draft for Dallas-to-Austin with
+  normalized date/time, two people, and a $40 maximum. The UI labeled it `AI draft
+  - review required`; no trip or booking was created by the model response.
+- Explicit confirmation ran deterministic Firestore search and rendered one real
+  fictional live trip at score 100 with route, date, time, two-seat availability,
+  and budget reasons. The screen also exposed the manual create-request continuation.
+- Added a 1600x900 editable SVG/PNG architecture graphic covering Flutter,
+  authenticated Firebase callable, OpenAI Responses API/GPT-5.6 strict output,
+  deterministic Firestore ranking, and server-authoritative payment/chat lifecycle.
+- Added a README judge-preview gallery and media captions. The owner must still
+  confirm launcher-art authorization and review any final video/audio created outside
+  the repository before Devpost upload.
