@@ -42,6 +42,14 @@ evidence to the sanitized publication history:
 | Judge-path roles/chat/support source | `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c` | `eaa4378` |
 | Physical-device checkpoint evidence | `708fb6b` | `5ad4b94` |
 | Authorized Chat-list query correction | `832a543cd94c4f5a2a8c17163e73113da85aba24` | `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43` |
+| Payment-gated proposal source / v1.0.5 APK source | `4630703b5a69e151d07d6e6c9683deced6298302` | `6d67f306203886d3d1623f9966f36764589b9cfb` |
+| v1.0.5 physical-phone evidence | `a156c8fdef67b018f014d7cece9e5956da9ce4d2` | `b353facc46c3bd4b2918f91458df9d80aea9903d` |
+| v1.0.5 stable-release promotion | `dd1378a69bfa072c80542e86d79ab2f74ffbfc0c` | `ffb8a39bb81716b1873efd49efc969a53a607606` |
+| v1.0.6 mapped voice/lifecycle source | `47f49ce72504d90446058c9ea2dc3e3db845e3d4` | `9194066a38777d8fba9fd9b84810f688f5bc3a2e` |
+| v1.0.6 lifecycle evidence | `4ea1257b9bc3d2df9af34a7fdb965027ac1a5646` | `c5f6d60f0464483603026f52e73c2e2ab575ded2` |
+| v1.0.6 optimized APK evidence | `199fd6a0c33aff5f3af2223e826ac540a3ca0904` | `27c706c6cf81f90ba0976f463e95bd90ff57e9ae` |
+| v1.0.6 judge-document audit | `9d9705af510a0a00cb988670fe25ee6a39a13894` | `8510b07f4c441deeba808655b4b1f9334527d715` |
+| v1.0.6 release-audit evidence | `6f2e9c7d4f8d43593378f8045088eda1f59dac97` | `17b499ef24aac60a068be9a6ed4efceb4162ce84` |
 
 The annotated tag names are preserved:
 
