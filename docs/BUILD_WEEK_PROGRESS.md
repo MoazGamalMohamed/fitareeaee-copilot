@@ -2350,6 +2350,34 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
 - Remaining next action is only the disconnected-phone gate plus owner-only video,
   private credential placement, `/feedback`, legal review, and final submission.
+
+## 2026-07-20 01:39 CDT / 2026-07-19 23:39 PDT — live backend revalidation
+
+- Rechecked current state rather than relying on earlier evidence: private branch
+  and sanitized clone were clean; both local and anonymously downloaded v1.0.7
+  APKs remained exactly 85,260,359 bytes with SHA-256
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+- `adb devices -l` still enumerated only API 36 emulator `emulator-5554`; the
+  owner's physical phone remains disconnected, so no phone result was inferred.
+- Read-only Firebase inventory on exact project `fitareeaee`: 57 deployed
+  Functions. Every submitted Copilot, support, proposal/matching, booking, trip
+  lifecycle/rating, chat authorization, verification, and projection Function
+  was present.
+- Read-only Secret Manager metadata: `OPENAI_API_KEY` version 2 is `enabled`;
+  obsolete version 1 is `destroyed`. No secret value was read or logged.
+- Fresh authenticated live Copilot smoke with the rotated fictional rider: PASS.
+  Firebase Auth succeeded; callable response used schema version 1 and model
+  `gpt-5.6`, interpreted `find` / `ride` from Dallas to Austin, returned no missing
+  information, and included an assistant summary.
+- Fresh fictional `contactSupport` smoke: PASS. The callable created a ticket,
+  returned an AI answer, and escalated the payment-gate question for staff follow-up,
+  proving the intended GPT-5.6-first/human-escalation boundary on the live backend.
+- Corrected stale automated/release rows in `docs/TEST_MATRIX.md` to current
+  v1.0.7 evidence: format 116/0, Flutter 20/20, Functions 28/28, rules 9/9,
+  integration 7/7, current source/tag/public hash, and honest phone/UI pending state.
+- No application, Function, rule, Firebase configuration, APK, tag, or release
+  mutation was made. Next action remains exact-public-v1.0.7 phone install and
+  normal-keyboard full demo-path smoke when the device reconnects.
 - API 36 emulator: clean install PASS; cold launch PASS in 18.675 seconds; Login and
   Welcome rendered; authenticated fictional judge-rider sign-in PASS; Home visibly
   rendered Plan with AI, Request a Trip, and Offer a Ride; process alive; no matching

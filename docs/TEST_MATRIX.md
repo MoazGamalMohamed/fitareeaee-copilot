@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | Release-cleanup revision: 111 files, 0 changes |
-| Static analysis | `flutter analyze` | PASS | `No issues found!` |
-| Flutter suite | `flutter test` | PASS | Final phone-fixed revision: 19/19 tests |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.7 release source: 116 files, 0 changes |
+| Static analysis | `flutter analyze --no-pub` | PASS | v1.0.7 release source: `No issues found!` |
+| Flutter suite | `flutter test --no-pub` | PASS | v1.0.7 release source: 20/20 tests |
 | Copilot ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | Copilot interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff | PASS | Three focused tests: two widget tests plus one route/unit test |
-| Functions contracts | Booking/cancellation, trip-scoped conversation IDs, public-trip projection, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | 19/19 tests |
+| Functions contracts | Booking/cancellation, lifecycle, matching, support, trip-scoped conversations, projections, verification, Copilot validation/auth/redaction/Arabic/throttling/diagnostics | PASS | Current Functions source: 28/28 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
-| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 8/8 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
-| Callable integration | Concurrent final-seat booking, idempotent retry, cancellation inventory, unverified rejection | PASS | 3/3 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` | PASS | Universal debug APK rebuilt from application source `15baa23`; version code `20260718` |
+| Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 9/9 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
+| Callable integration | Proposal/payment boundary, idempotency, verification, chat, start, completion, rating, and emergency cancellation | PASS | 7/7 against real Auth/Functions/Firestore emulators |
+| Android build | `flutter build apk --debug --no-pub` and `flutter build apk --profile --no-pub` | PASS | v1.0.7 universal debug and optimized profile builds passed; code `20260721` |
 
 ## Copilot behavior
 
@@ -35,7 +35,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Confirmation before persistence | Confirmation performs deterministic search only | PASS — widget/code contract |
 | No matching Firestore trips | Empty state; no fabricated trip | PASS — domain/widget behavior |
 | AI/backend failure | Retry plus manual-search fallback | PASS — focused widget test |
-| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — three authenticated cases passed before and after obsolete secret version 1 was destroyed |
+| Live GPT-5.6 English/Arabic/package prompts | Real deployed Responses API behavior | PASS — earlier English/package/Arabic matrix passed; a fresh authenticated English ride request passed July 20 after secret version 1 was destroyed |
 
 ## Security and transactional behavior
 
@@ -68,6 +68,7 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Transaction/verification/chat callables | PASS | `authorizeBookingConversation` is deployed and `ACTIVE` with the retained hardened callables in `us-central1` |
 | Public profile/trip projections | PASS | Gen 2 functions report `ACTIVE` in `europe-west1`; Eventarc source region is `eur3` |
 | Copilot callable | PASS | Deployed with managed secret version 2; official Firebase SDK authentication and English ride, English package, and Arabic ride model calls passed after obsolete version 1 was destroyed |
+| Support/matching/lifecycle callables | PASS | Current live inventory confirms support, proposal selection/withdrawal, trip start/complete/cancel/rating, and conversation authorization Functions are deployed. A July 20 fictional `contactSupport` smoke created a ticket, returned a GPT-5.6 answer, and escalated the payment question for staff follow-up. |
 | Inherited prototype Functions retirement | BLOCKED | Exact 36-function production deletion set requires a fresh owner confirmation because removal can interrupt legacy clients |
 
 ## Android and release checks
@@ -76,16 +77,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | --- | --- | --- |
 | Clean emulator install | PASS | Universal APK on `sdk_gphone64_x86_64`, API 36.1, `emulator-5554`; exact current package was removed to reclaim storage, then installation succeeded |
 | Cold launch to Login | PASS | Login semantics present; no fatal Firebase/Flutter error |
-| Credentialed emulator sign-in | BLOCKED | Credentials entered exactly in memory, but the emulator had no IP/DNS egress and Firebase Auth returned a network error; no invalid-credential or app crash occurred |
+| Credentialed v1.0.7 UI sign-in | PENDING | Direct Firebase Auth plus a live Copilot request passes with the rotated fictional rider. Exact v1.0.7 UI sign-in awaits normal keyboard entry on the reconnected phone; synthetic ADB typing is deliberately not counted. |
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PASS | On the Motorola phone, a live GPT-5.6 draft produced one transparent live match and handed off to Trip Details then enabled confirmed Chat. In the same fictional session, the server-authoritative booking transaction opened an authorized conversation and a sent message rendered through the realtime stream. The judge account's prior verification state was already satisfied; no real payment is claimed. |
 | Fresh-install end-to-end run #1 | INTERRUPTED | Public v1.0.3 local data clear/reinstall, 3.706 s cold launch, private fictional sign-in, Home, live GPT-5.6 draft, one match, and Trip Details all passed. The phone disconnected before the final booking confirmation tap. |
-| Fresh-install end-to-end run #2 | PENDING | Must be recorded after deployment |
+| Fresh-install end-to-end run #2 | PENDING | Exact public v1.0.7 clean install/cold launch passes; the authenticated full demo path must be recorded on the reconnected phone |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Final deployed/tagged judge APK | PASS | Tag `fitareeaee-copilot-v1.0.5`; private source `4630703`, sanitized source `6d67f306`, identical source tree verified |
-| Public sanitized repository | PASS | Draft PR branch resolves to sanitized source `6d67f306`; v1.0.5 peels exactly to that source; original private repository has no remote |
-| Published APK download and hash comparison | PASS | Public v1.0.5 asset downloaded; 83,378,603 bytes and SHA-256 exactly match the phone-tested local artifact |
-| Published APK install | PASS | Exact downloaded v1.0.5 asset clean-installed/launched on emulator and installed/cold-launched on Motorola; Chat empty state rendered without the prior error |
+| Tagged judge APK candidate | PASS | Prerelease tag `fitareeaee-copilot-v1.0.7` peels to sanitized APK source `06195d02`, tree-equivalent to private `96343be`; v1.0.5 remains the phone-tested stable rollback |
+| Public sanitized repository | PASS | Draft PR branch/remote head `2c72f326`; v1.0.7 source tag peels to `06195d02`; original private repository still has no remote |
+| Published APK download and hash comparison | PASS | Public v1.0.7 asset downloaded anonymously; 85,260,359 bytes and SHA-256 `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6` exactly match local |
+| Published APK install | PASS | Exact downloaded v1.0.7 asset reinstalled/cold-launched on API 36 with correct version, top-resumed process, and 0 app-specific fatal/Flutter/Firebase/ANR matches; physical-phone install remains pending |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,

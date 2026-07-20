@@ -1,6 +1,6 @@
 # Resume Here
 
-Last updated: 2026-07-20 01:13 CDT / 2026-07-19 23:13 PDT
+Last updated: 2026-07-20 01:39 CDT / 2026-07-19 23:39 PDT
 
 ## Current objective
 
@@ -19,8 +19,9 @@ simulated money.
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
 - Passing sanitized source/tag: `06195d02398c32783fa894f7e1bb5ab1d5fb4daf`
-- Current sanitized branch head after the documentation follow-up:
-  `329f5c656dec48cf86c9f9e8e7d4849bdd966d15`
+- Recorded sanitized evidence checkpoint: `329f5c656dec48cf86c9f9e8e7d4849bdd966d15`;
+  its mapping-only tail was `2c72f326008abc2769af089f1b9d45dff4ed77c2`.
+  Use `git ls-remote` for the current remote head after later evidence-only pushes.
 - Private/public APK-source tree: `0da079592d723eb149fbcaf75cb822305a60e54b`
 - Draft PR #1 is open and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
@@ -60,6 +61,14 @@ simulated money.
   projection, Firestore rules, Storage rules, and indexes remain deployed.
 - `planTripWithCopilot` uses managed `OPENAI_API_KEY`; no key is in Flutter, Git,
   docs, logs, or the APK.
+- Fresh July 20 live inventory: 57 deployed Functions; every submitted Copilot,
+  support, matching, booking, trip lifecycle, rating, conversation, verification,
+  and projection endpoint is present. Managed secret version 2 is enabled and
+  obsolete version 1 is destroyed.
+- Fresh authenticated live smoke: the rotated fictional rider signed in; GPT-5.6
+  returned a valid Dallas-to-Austin ride draft with no missing information. A
+  fictional support smoke created a ticket, returned an AI answer, and escalated
+  the payment question for staff follow-up.
 - Fictional judge users/fixtures remain provisioned. Credentials stay only in ignored
   `.judge-credentials.local.json` and must be placed privately in Devpost.
 - The inherited prototype Function set remains live pending the owner's explicit
