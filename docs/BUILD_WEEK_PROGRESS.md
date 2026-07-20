@@ -2376,3 +2376,34 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Remaining owner-only actions are provider-side legacy credential rotation, video,
   private judge credential placement, `/feedback`, legal review, and the final
   Devpost submit action.
+
+## 2026-07-19 23:52 CDT / 2026-07-19 21:52 PDT - live rules, FAQ, resources, and judging audit
+
+- Re-opened the authoritative live Official Rules, FAQ, Overview, Resources, and
+  Updates pages after v1.0.6 publication. The deadline remains July 21, 2026 at
+  5:00 PM Pacific / 7:00 PM Central; judging runs through August 5 at 5:00 PM
+  Pacific, so the public APK, backend, and free fictional judge account must remain
+  available through that date.
+- Confirmed mandatory product requirements remain: meaningful Codex and GPT-5.6
+  use; an installable, consistently running project; clear disclosure/evidence for
+  work added to a pre-existing project during the submission period; authorization
+  for third-party SDKs/data; and one selected track.
+- Confirmed submission requirements remain: English description/testing materials;
+  public licensed repository with setup/sample/test guidance and specific Codex,
+  human-decision, and GPT-5.6 explanation; a public YouTube demo no longer than
+  three minutes with audio covering the working product, Codex, and GPT-5.6; and a
+  `/feedback` Session ID from the primary build thread.
+- Confirmed the four equally weighted judging criteria remain Technological
+  Implementation, Design, Potential Impact, and Quality of the Idea. The current
+  judge package explicitly addresses each through non-trivial tested implementation,
+  a coherent review/payment/lifecycle experience, a ride/package accessibility use
+  case, and transparent multilingual planning rather than opaque AI decisions.
+- No application, backend, or APK change was required by this audit. Remaining
+  compliance actions are unchanged: exact public-v1.0.6 phone smoke, final
+  authorized-asset/video review, public English YouTube upload, private judge
+  credential placement, `/feedback`, owner eligibility/legal review, final Devpost
+  preview, and owner-performed submit before the deadline. Once the submission
+  period ends, the official rules do not permit ordinary submission changes.
+- Recovery points: private `919c8b1`; sanitized/remote branch `8e35a76d`; tagged
+  source `9194066a`; public APK SHA-256
+  `39557F17E593F51620249DA5E1E218463B1EAA237BB0C170FB2F2FB2013F12F0`.
