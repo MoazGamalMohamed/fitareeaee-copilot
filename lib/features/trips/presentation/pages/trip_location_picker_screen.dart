@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripLocationSelection {
   const TripLocationSelection({
@@ -33,7 +34,31 @@ class TripLocationPickerScreen extends StatefulWidget {
 }
 
 class _TripLocationPickerScreenState extends State<TripLocationPickerScreen> {
+  static final Uri _openStreetMapCopyrightUri = Uri.parse(
+    'https://www.openstreetmap.org/copyright',
+  );
+
   late LatLng _selected;
+
+  Future<void> _openOpenStreetMapCopyright() async {
+    try {
+      final launched = await launchUrl(
+        _openStreetMapCopyrightUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open map licence details.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open map licence details.')),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -99,10 +124,9 @@ class _TripLocationPickerScreenState extends State<TripLocationPickerScreen> {
                     ),
                   ],
                 ),
-                const RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution('OpenStreetMap contributors'),
-                  ],
+                SimpleAttributionWidget(
+                  source: const Text('OpenStreetMap contributors'),
+                  onTap: _openOpenStreetMapCopyright,
                 ),
               ],
             ),
