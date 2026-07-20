@@ -3050,3 +3050,22 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Next action: publish this evidence through the sanitized branch after its full
   reachable-history scan, then perform the exact-public phone gate immediately when
   the owner reconnects/unlocks the device.
+
+## 2026-07-20 05:14 CDT / 2026-07-20 03:14 PDT - live Function inventory revalidated without mutation
+
+- Ran a read-only `firebase functions:list --project fitareeaee --json` inventory
+  with Firebase debug output disabled. The confirmed project has 57 `ACTIVE`
+  Functions: 21 current submitted/hardened endpoints and exactly the 36 inherited
+  prototype names already enumerated in `docs/OWNER_ACTIONS.md`.
+- No unexpected Function name appeared and none of the 36 inherited names was
+  silently removed. No deploy, update, disable, deletion, secret access, data write,
+  billing change, or production mutation was performed.
+- The owner decision remains consequential: deleting or replacing this exact set
+  could break an unknown older client, while preserving it prevents describing the
+  whole legacy backend as fully production-hardened. The submitted v1.0.9 navigation
+  excludes the prototype financial, payout, automated-ID, and reset surfaces.
+- Files changed: append-only progress evidence and the owner-action inventory note.
+  Application source, public APK, tag, and deployed submitted path are unchanged.
+- Next action: obtain the owner's explicit preserve-or-retire decision for the exact
+  36 names, plus provider-side legacy credential rotation confirmation. Continue the
+  exact-public phone gate independently as soon as the device reconnects.
