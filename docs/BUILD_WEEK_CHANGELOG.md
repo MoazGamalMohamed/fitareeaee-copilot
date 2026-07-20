@@ -14,6 +14,22 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Final judge polish — v1.0.11
+
+- Separated rider/sender Request accounts from driver/courier Offer accounts across
+  signup, Home, Trips, manual creation, and Copilot.
+- Removed duplicate Home creation cards, added a circular Plan with AI action, and
+  made Home's bottom creation destination role-specific.
+- Added an explicit Android microphone explanation, system permission flow,
+  Auto/English/Arabic selection, three-minute cap, partial editable transcription,
+  and distinct permission/no-speech/busy recovery messages.
+- Added editable curated address/city/country suggestions, complete country choice,
+  manual entry, and an OpenStreetMap profile pin.
+- Made Settings preference actions await local persistence and report success/failure;
+  added focused role, voice, location, and Settings tests.
+- Published and anonymously byte-verified the v1.0.11 prerelease; physical-phone
+  spoken transcription remains an honestly recorded owner-device gate.
+
 ### Stage 0 — reliable Android/Firebase foundation
 
 - Aligned the Android application with the confirmed Firebase project `fitareeaee` and package `com.fitareeaee.app`.

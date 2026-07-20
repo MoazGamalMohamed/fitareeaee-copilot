@@ -27,7 +27,7 @@ The passwords were rotated after emulator automation exposed a test value; all
 values shown during that attempt are invalid. Existing judge fixtures/bookings
 were preserved.
 
-### 3. GitHub publication — v1.0.10 prerelease complete; phone gate pending
+### 3. GitHub publication — v1.0.11 prerelease complete; phone gate pending
 
 The existing `github.com` Git credential was validated in memory without
 printing it. The public repository exists at
@@ -41,15 +41,15 @@ The current judge candidate is `fitareeaee-copilot-v1.0.5`; the public source,
 annotated tag, stable judge release, and direct APK are published. The public APK was
 redownloaded and its exact size/SHA-256 were verified before phone installation.
 
-The superseding v1.0.10 verification/map/action-audit source and 85,276,887-byte
-profile APK are published as an accurately labeled prerelease. The public APK was
+The superseding v1.0.11 role-path/voice/location source and 109,583,813-byte profile
+APK are published as an accurately labeled prerelease. The public APK was
 anonymously redownloaded, byte-matched at SHA-256
-`F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`, and passed
-an authenticated API 36 verification, map, trip, chat, settings, support, and
-payment-boundary smoke with zero app-specific fatal/Flutter/FirebaseFailure/ANR
-matches. Physical testing is waiting for the phone to be reconnected. Do not promote
-v1.0.10 to stable or retire the final v1.0.5 rollback until that exact public
-download passes on the phone.
+`54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`, and passed an
+authenticated API 36 role-specific creation, map, profile suggestions, Settings,
+Support, microphone service/audio, and recovery-message smoke with zero app-specific
+fatal/Flutter/FirebaseFailure/ANR matches. Physical testing is waiting for the phone
+to be reconnected. Do not promote v1.0.11 to stable or retire the final v1.0.5
+rollback until that exact public download passes on the phone.
 
 ### 4. Approve or decline inherited Function retirement
 
@@ -123,9 +123,9 @@ Runtime Config privately. Do not share replacement values in chat.
   source-compatible predecessor. New v1.0.5 selections deliberately stop at pending
   payment because no real payment provider is configured; do not enter a real card
   or claim a real payment pass.
-- Exact-public v1.0.10 phone verification is still pending while the owner device is
+- Exact-public v1.0.11 phone verification is still pending while the owner device is
   disconnected. When it reconnects, install the already-downloaded public bytes at
-  `build/published-download-v110/app-profile.apk`; do not rebuild or substitute a
+  `build/published-download-v111/app-profile.apk`; do not rebuild or substitute a
   local APK for this gate.
 
 - Physical phone installation is complete. The downloaded public v1.0.3 APK installed,

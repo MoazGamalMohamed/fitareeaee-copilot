@@ -3220,3 +3220,88 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
 - Rollback point: public v1.0.10 prerelease and phone-tested public v1.0.5. Next
   action: reconnect/unlock the owner phone, approve USB debugging, install the exact
   public v1.0.10 bytes, and run the final device smoke before promotion/video.
+
+## 2026-07-20 08:30 CDT / 2026-07-20 06:30 PDT - v1.0.11 role paths, accessible voice, and assisted-location release
+
+- Objective: remove the duplicate Home trip action, keep rider/sender and
+  driver/courier creation paths separate, make the Home AI action presentation-ready,
+  repair the three-minute Android voice-permission flow, add professional assisted
+  profile locations, and verify that Settings actions are functional.
+- Added a canonical marketplace-path resolver. Signup now chooses one Request or
+  Offer path; rider/sender accounts create requests and remain the paying side, while
+  driver/courier accounts create verification-gated offers and remain the receiving
+  side. Home, Trips, manual creation, and Copilot derive their intent from that
+  account path rather than letting a query parameter flip roles.
+- Removed the duplicate Home Request/Offer cards. Home now presents one circular
+  gradient `Plan with AI` action and a role-specific bottom `Request` or `Offer`
+  destination. The authenticated fictional rider reached `Request a Trip`, whose
+  copy states that it posts a need and does not confirm a booking.
+- Copilot now explains microphone use before Android's system prompt, supports
+  Auto/English/Arabic recognition, caps listening at three minutes, appends partial
+  speech to editable text, and preserves retry/manual fallback. Emulator testing
+  exposed and fixed a real defect where silent-recognition timeout was mislabeled as
+  permission denial; permission, no-speech, recognizer-busy, and generic errors now
+  have distinct recovery guidance.
+- Added privacy-preserving editable address/city/country suggestions, full country
+  selection, manual entry, and the existing OpenStreetMap pin picker to Edit Profile.
+  The installed APK displayed `Dallas, Texas, United States` for temporary `Dallas`
+  input without saving the test edit. Manual Request `From` opened `Choose starting
+  point` with pan/zoom/tap instructions and linked OpenStreetMap attribution.
+- Settings Support, verification, privacy, payments, profile, and sign-out actions
+  remain implemented. English/Arabic, currency, notifications, active-trip location,
+  and future payment-method preferences now await persistence and report success or
+  retry. A new persistence test covers their stored state; an installed Arabic toggle
+  changed selected state and was restored after verification.
+- Source/test files changed: marketplace path and location helpers; reusable assisted
+  field; router; signup; Home; Copilot; Edit Profile; Settings; Trips list/create;
+  version metadata; and seven focused role/location/voice/Settings/Copilot test files.
+- Final exact gates: `dart format --output=none --set-exit-if-changed lib test` PASS
+  (128 files, 0 changed); `flutter analyze --no-pub` PASS (0 issues); `flutter test`
+  PASS (40/40); focused Copilot/voice suite PASS (7/7); Functions TypeScript build
+  PASS; Functions contracts PASS (28/28); Firestore/Storage emulator authorization
+  PASS (9/9); Auth/Functions/Firestore callable integration PASS (7/7).
+- The first debug attempt correctly failed because this machine had not accepted the
+  new Flutter-required NDK 28.2 license. Android SDK licenses were accepted through
+  `sdkmanager`; NDK 28.2, Build Tools 35, Platform 36/34, Platform Tools, and CMake
+  3.22.1 installed, then both `flutter build apk --debug` and
+  `flutter build apk --profile` passed. No paid service or application dependency was
+  enabled by this machine-level prerequisite.
+- Final debug APK: `build/app/outputs/flutter-apk/app-debug.apk`; 175,633,294 bytes;
+  SHA-256 `0CA77D5F00A2096419560E380E6F758E8A3D448E4D20F9F8867A2F625301AF34`;
+  built `2026-07-20T07:59:07.1237663-05:00`.
+- Final profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; optimized
+  universal AOT profile/debug-signed judge build; 109,583,813 bytes; SHA-256
+  `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`;
+  built `2026-07-20T08:01:49.2790356-05:00`; package `com.fitareeaee.app`;
+  version `1.0.11` / code `20260725`; minimum API 24; target API 36.
+- Installed profile smoke on `emulator-5554` (`sdk_gphone64_x86_64`, Android 16 / API
+  36): PASS. Confirmed circular Copilot, rider bottom Request, map launch, profile
+  suggestions, Settings toggle, Support route, in-app microphone disclosure, Android
+  permission prompt, foreground audio use, silent-emulator recovery, and 0 matching
+  app-specific fatal/Flutter/FirebaseFailure/ANR logs. Actual spoken transcription on
+  a real microphone remains a physical-phone gate and is not falsely recorded as
+  passing.
+- Private application source commit:
+  `b05c91fd2b6856952a028866ec57a83c57ac116e`. Sanitized/tagged tree-equivalent
+  source: `4e1439b098c53c41bf9d95b9f82f3a607b0240bc`. All 349 tracked paths match.
+  Annotated tag `fitareeaee-copilot-v1.0.11` peels to the corresponding source in
+  each repository.
+- Sanitized audit before push: 112 reachable revisions, 2,578 objects, zero forbidden
+  private-config/credential path objects, and zero high-signal secret signatures.
+  Branch and tag pushed without force; draft PR #1 remains open, draft, and unmerged.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.11`.
+  GitHub reports the APK at 109,583,813 bytes with digest
+  `sha256:54e60fe42884a8efb7fab8c76da21f9f43d2c4a2ba55a21c6da3dacfbcc44edd`.
+  Anonymous download to `build/published-download-v111/app-profile.apk` exactly
+  matched local size/hash, installed successfully, rendered authenticated Home with
+  circular AI/Request/Past/Support semantics, reported version 1.0.11/code 20260725,
+  and produced 0 app-specific fatal matches.
+- No Firebase deployment, production-data mutation/deletion, billing change, real
+  payment action, PR merge, stable promotion, or force push occurred. Only
+  `emulator-5554` was connected at the final device inventory; no physical-phone
+  result is claimed.
+- Rollback point: public v1.0.11 prerelease, public v1.0.10 prerelease, and
+  phone-tested public v1.0.5. Next action: publish this current-version evidence,
+  then install the exact downloaded v1.0.11 bytes and exercise spoken transcription
+  plus the full demo path when the owner phone reconnects.

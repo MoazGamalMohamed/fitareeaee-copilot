@@ -206,13 +206,14 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.10 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.10)
-adds reliable Android speech discovery, explicit English/Arabic voice locale
-selection, null-safe legacy verification compatibility, paid/confirmed judge chat,
-completed Past trips, truthful Confirmed/Completed statuses, and full-field
-interactive map launch for both origin and destination. Its public 85,276,887-byte
-APK was anonymously redownloaded, byte-matched at SHA-256
-`F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`,
+[v1.0.11 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.11)
+separates rider/sender requests from driver/courier offers, moves the role-specific
+creation action into Home's bottom navigation, adds a circular Plan with AI action,
+and hardens English/Arabic voice planning with explicit Android consent and a
+three-minute cap. Profile locations now support editable suggestions, country
+selection, manual entry, and an interactive map pin. Its public 109,583,813-byte APK
+was anonymously redownloaded, byte-matched at SHA-256
+`54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`,
 installed, authenticated, and smoke-tested on API 36. It remains a prerelease until
 that exact public download passes the physical-phone smoke; v1.0.5 remains the
 phone-tested rollback.

@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.10/app-profile.apk — 85,276,887 bytes; SHA-256 `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.11/app-profile.apk — 109,583,813 bytes; SHA-256 `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -166,10 +166,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.10 candidate includes interactive map pins, permanent linked
-  OpenStreetMap attribution, and English/Arabic speech
-  entry, but not turn-by-turn navigation, routing-service ETA, address autocomplete,
-  or full Arabic UI localization.
+- The v1.0.11 candidate includes interactive map pins, permanent linked
+  OpenStreetMap attribution, English/Arabic speech entry, and editable curated
+  location suggestions. It does not include turn-by-turn navigation, routing-service
+  ETA, network-wide geocoding autocomplete, or full Arabic UI localization.
 - The v1.0.5 public APK passed download/hash verification, emulator installation,
   Motorola installation/cold launch, authenticated Home, payment-gated Chat empty
   state, manual request creation, and app-specific crash-log checks. The live GPT-5.6
@@ -189,9 +189,9 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.10 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
-- **PENDING:** exact-public v1.0.10 physical-phone smoke and stable promotion
-- **DONE:** release tag `fitareeaee-copilot-v1.0.10` / sanitized source commit `fe73ad5509ac348f120b025688eee1abd2c009d8`
+- **DONE:** v1.0.11 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
+- **PENDING:** exact-public v1.0.11 physical-phone smoke and stable promotion
+- **DONE:** release tag `fitareeaee-copilot-v1.0.11` / sanitized source commit `4e1439b098c53c41bf9d95b9f82f3a607b0240bc`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID
