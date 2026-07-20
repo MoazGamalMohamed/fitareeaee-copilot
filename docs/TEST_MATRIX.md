@@ -188,6 +188,23 @@ available.
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
 
+## Local v1.0.6 lifecycle/map/voice candidate
+
+- Source: private `47f49ce`.
+- Format/analyze/Flutter: 115 files/0 changed, 0 issues, 19/19.
+- Functions/rules/integration: 28/28, 9/9, 7/7.
+- Authenticated emulator UI: Home role actions, manual request form, interactive map
+  pin return, speech permission/live listening, Trips role chooser, driver gate, and
+  completed-only Past state PASS.
+- Final universal APK: 194,300,168 bytes; SHA-256
+  `9DB36ED8D8A18684D50BA316AA2B5AC433929D1D89B33BCE50EDEDBDF1024EF3`.
+- Exact final x86_64 split: clean install and explicit cold-launch retry PASS;
+  Login/Welcome rendered, process alive, no matching app fatal/Flutter/bootstrap/ANR
+  logs. Universal emulator install was blocked only by emulator free space.
+- Physical phone: NOT RETESTED for v1.0.6; user reserved/disconnected it during this
+  checkpoint. Existing v1.0.5 phone evidence must not be relabeled as v1.0.6.
+- Publication: pending because `gh` is missing; stable public v1.0.5 remains intact.
+
 ## Superseding v1.0.5 judge candidate
 
 - Source: private `4630703b5a69e151d07d6e6c9683deced6298302`; sanitized

@@ -92,6 +92,26 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## Latest locally verified checkpoint
 
+### v1.0.6 trip lifecycle, map, and accessibility extension
+
+- Added real origin/destination map pin selection to manual request and verified
+  driver-offer creation.
+- Added English/Arabic speech-to-text planning with explicit microphone permission
+  and a visible listening state.
+- Added server-authoritative paid-trip start, completion, emergency cancellation,
+  urgent admin refund review, closed-after-trip chat, and one-time ratings.
+- Corrected Past Trips to show completed owned trips and participant bookings.
+- Aligned FlutterFire native/Dart channel versions, fixing the Android Firebase
+  bootstrap failure found during fresh emulator installation.
+- Passed 19 Flutter tests, 28 Functions contracts, 9 authorization contracts, and
+  7 full callable lifecycle integrations; deployed the scoped backend/rules to
+  `fitareeaee`.
+
+The local passing source is `47f49ce`. Publication is pending only because the
+required GitHub CLI is unavailable in the current environment; v1.0.5 remains the
+published rollback artifact until v1.0.6 is sanitized, pushed, downloaded, and
+device-tested.
+
 The current APK source is private
 `4630703b5a69e151d07d6e6c9683deced6298302`; its tree-equivalent sanitized
 public source is `6d67f306203886d3d1623f9966f36764589b9cfb`, tagged

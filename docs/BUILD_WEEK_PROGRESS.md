@@ -2132,3 +2132,95 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   `6d67f306`, and the APK remains 83,378,603 bytes with SHA-256
   `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
 - Draft PR #1 remains open and unmerged; no Devpost legal submission was performed.
+
+## 2026-07-19 22:56 CDT / 2026-07-19 20:56 PDT - v1.0.6 mapped trip-lifecycle checkpoint
+
+### Objective and outcome
+
+- Restored a complete manual trip-entry path for both rider/sender requests and
+  verified driver/courier offers. The role chooser is visible from Trips, while
+  Plan with AI remains a separate Home-only assisted entry point.
+- Added an interactive OpenStreetMap picker for both origin and destination. A map
+  tap moves the pin and returns coordinates to the editable form; the server now
+  derives route distance and estimated duration from those coordinates.
+- Replaced the former voice hint with real English/Arabic speech recognition,
+  microphone permission handling, live listening state, transcript handoff to the
+  Copilot field, and the existing screen-reader summary action.
+- Corrected Past Trips to merge completed participant bookings with completed trips
+  owned by the current user, without duplicating a trip represented by a booking.
+- Added server-authoritative trip start, completion, emergency cancellation, and
+  one-time rating callables. Only the assigned driver can start/complete/cancel an
+  active trip; start requires a paid, confirmed booking; completion closes chat;
+  emergency cancellation creates an urgent admin event and marks paid bookings for
+  refund review without claiming an automatic refund.
+- Kept participant chat active for paid `confirmed` and `in_progress` bookings and
+  closed it for completed/cancelled trips. Ratings are immutable, server-owned, and
+  available only after completion.
+- Fixed Android startup by aligning the complete FlutterFire family. The previous
+  lockfile combined Firebase Core 3.15.0's namespaced native channel with a platform
+  interface release that had reverted to the old channel name. The aligned Core
+  3.15.2/platform-interface 6.x family reaches Login normally.
+- Deployed only the tested lifecycle, booking/chat authorization, trip creation,
+  public-trip projection Functions and Firestore rules to confirmed project
+  `fitareeaee`. No data, indexes, billing, or unrelated Functions were changed.
+
+### Exact verification results
+
+- `dart format --output=none --set-exit-if-changed lib test`: PASS; 115 files,
+  0 changed after applying Dart format to five edited files.
+- `flutter analyze --no-pub`: PASS; no issues.
+- `flutter test --no-pub`: PASS; 19/19.
+- `cd functions && npm run build && npm test`: PASS; TypeScript build and 28/28
+  contracts.
+- Firestore/Storage emulator authorization suite: PASS; 9/9. One wrapper attempt
+  timed out during emulator startup and one direct retry found Storage already shut
+  down; neither executed rule assertions. The clean two-emulator rerun passed 9/9.
+- Auth/Functions/Firestore integration: PASS; 7/7 with
+  `FUNCTIONS_DISCOVERY_TIMEOUT=60000`. An initial 10-second discovery attempt loaded
+  no Functions and executed no application assertions; the corrected run passed the
+  potential/payment boundary, idempotency, verification, chat, start, completion,
+  rating, and emergency-cancellation scenarios.
+- Universal debug APK build: PASS. x86_64 split build: PASS.
+- Authenticated API 36 emulator: PASS before the final formatting-only rebuild for
+  Home, Request form, map pin selection/return, voice permission and live Listening
+  state, Trips role chooser, driver-verification gate, and Past completed-only state.
+- Exact final formatted-source x86_64 APK: clean install PASS; first launch hit an
+  emulator process-attach timeout during post-install dex optimization; explicit
+  retry reached Login/Welcome with the process alive and no matching app fatal,
+  `E/flutter`, Firebase-bootstrap, or app-ANR log.
+- Exact final universal APK clean install on this emulator: environment-only FAIL
+  (`INSTALL_FAILED_INSUFFICIENT_STORAGE`, 588 MB free). The smaller identical-source
+  x86_64 split supplied the final emulator smoke. The connected phone was not touched
+  because the owner explicitly disconnected/reserved it for later testing.
+- Targeted Firebase deployment: PASS for `createBooking`, `cancelBooking`,
+  `createTrip`, `startTrip`, `completeTrip`, `cancelTrip`, `submitTripRating`,
+  `authorizeBookingConversation`, `authorizeTripConversation`, `syncPublicTrip`,
+  and Firestore rules.
+
+### APK, Git, security, and recovery
+
+- Version: `1.0.6` / universal code `20260720`.
+- Universal debug APK: `build/app/outputs/flutter-apk/app-debug.apk`;
+  194,300,168 bytes; SHA-256
+  `9DB36ED8D8A18684D50BA316AA2B5AC433929D1D89B33BCE50EDEDBDF1024EF3`;
+  built 2026-07-19 22:39:14 CDT / 20:39:14 PDT.
+- Emulator x86_64 split: `build/app/outputs/flutter-apk/app-x86_64-debug.apk`;
+  73,039,672 bytes; SHA-256
+  `52E21C86AC8094827A1BD3AE3140B3D0643F8CF4F07F2F9B8B2787E2B55CD6A0`;
+  built 2026-07-19 22:45:19 CDT / 20:45:19 PDT.
+- Passing source commit: `47f49ce` (`feat(trips): complete mapped
+  voice-enabled lifecycle`). Rollback point: `dd1378a` / published v1.0.5.
+- GitHub push/PR/release: pending. The required `github:yeet` workflow was invoked,
+  but GitHub CLI `gh` is not installed; per the workflow, no push or PR mutation was
+  attempted. The existing v1.0.5 public release remains the stable fallback.
+- Firebase CLI verbose output exposed legacy Runtime Config email/payment test
+  values in a local ignored debug log. That log was immediately deleted and debug
+  output suppressed for the successful retry. Provider-side rotation of those
+  legacy values remains owner-required; no value is stored in Git, docs, or APK.
+- Known limits: no real payment provider is configured, so new bookings correctly
+  stop at pending payment; Node 20 must be upgraded before its October 2026
+  decommission date; final physical-phone testing and v1.0.6 GitHub publication
+  remain pending.
+- Next action: install GitHub CLI or otherwise make the required publishing workflow
+  available, publish sanitized v1.0.6, download/hash-test that artifact, then install
+  it on the owner's phone and perform the final demo-path smoke.

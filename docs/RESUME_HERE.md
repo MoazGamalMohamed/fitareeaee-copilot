@@ -1,18 +1,19 @@
 # Resume Here
 
-Last updated: 2026-07-19 19:03 CDT / 2026-07-19 17:03 PDT
+Last updated: 2026-07-19 22:56 CDT / 2026-07-19 20:56 PDT
 
 ## Current objective
 
-Use the published and phone-tested v1.0.5 checkpoint to finish only owner-required
-credential rotation, video, `/feedback`, legal review, and Devpost submission work.
-Do not restart the app audit or replace the payment gate with simulated money.
+Publish and phone-test the locally passing v1.0.6 lifecycle/map/voice checkpoint,
+then finish owner-required credential rotation, video, `/feedback`, legal review,
+and Devpost submission. Do not restart the audit or replace the payment gate with
+simulated money.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private source: `4630703b5a69e151d07d6e6c9683deced6298302`
+- Passing private source: `47f49ce` (documentation follow-up commit may be newer)
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
@@ -38,12 +39,19 @@ Do not restart the app audit or replace the payment gate with simulated money.
 - Chat requires a booking that is both `confirmed` and `paid`. No real payment
   provider is configured; use the seeded paid/confirmed fixture for the chat demo.
 - Contact Support uses GPT-5.6 first and supports explicit/automatic staff escalation.
+- Manual trip creation includes interactive origin/destination map pins. Copilot
+  supports English/Arabic speech recognition and read-back assistance.
+- Paid confirmed trips can be started/completed by the assigned driver; chat stays
+  open while in progress and closes after completion/cancellation; completed trips
+  support one immutable server-owned rating per participant.
 
 ## Deployed Firebase state
 
 - Confirmed project: `fitareeaee`.
-- Newly deployed and active in `us-central1`: `proposeForTripRequest`,
-  `selectTripProposal`, and `withdrawTripProposal`.
+- Newly deployed/updated lifecycle surface: `createBooking`, `cancelBooking`,
+  `createTrip`, `startTrip`, `completeTrip`, `cancelTrip`, `submitTripRating`,
+  `authorizeBookingConversation`, `authorizeTripConversation`, `syncPublicTrip`,
+  and Firestore rules.
 - Existing judge-path booking, conversation, trip, support, verification, public
   projection, Firestore rules, Storage rules, and indexes remain deployed.
 - `planTripWithCopilot` uses managed `OPENAI_API_KEY`; no key is in Flutter, Git,
@@ -56,15 +64,16 @@ Do not restart the app audit or replace the payment gate with simulated money.
 
 ## Passing gates
 
-- Dart format: 114 files, 0 changes.
+- Dart format: 115 files, 0 changes.
 - Flutter analysis: 0 issues.
 - Flutter tests: 19/19.
-- Functions TypeScript/contracts: 27/27.
-- Firestore/Storage rules: 8/8.
-- Auth/Firestore/Functions integration: 5/5. This proves proposal, selection,
-  payment, inventory, authorization, and chat boundaries.
-- Debug and profile APK builds: PASS.
-- Scoped deployment of the three proposal Functions: PASS on `fitareeaee`.
+- Functions TypeScript/contracts: 28/28.
+- Firestore/Storage rules: 9/9.
+- Auth/Firestore/Functions integration: 7/7. This proves proposal/payment,
+  inventory, authorization, chat, start, completion, rating, and emergency
+  cancellation boundaries.
+- Universal debug and per-ABI debug APK builds: PASS.
+- Scoped lifecycle/rules deployment: PASS on `fitareeaee`.
 
 ## Current APK and device evidence
 
@@ -102,6 +111,7 @@ Do not restart the app audit or replace the payment gate with simulated money.
 
 ## Exact next action
 
-Open `docs/DEMO_SCRIPT.md`, record the final video from v1.0.5 using fictional data,
-then follow `docs/SUBMISSION_CHECKLIST.md`. Preserve the v1.0.5 release and Firebase
-backend throughout judging.
+Install/authenticate GitHub CLI so `github:yeet` can publish the sanitized v1.0.6
+checkpoint. Download/hash-test the published artifact, install it on the connected
+phone, run the final demo-path smoke, then open `docs/DEMO_SCRIPT.md` and follow
+`docs/SUBMISSION_CHECKLIST.md`. Preserve v1.0.5 as the rollback release.
