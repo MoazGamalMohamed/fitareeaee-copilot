@@ -179,9 +179,10 @@ npm --prefix functions run seed:judge
 
 The script refuses any other project or identical/invalid UIDs, never accepts a
 password, and only upserts fixed `build_week_judge_*` private/public trip
-fixtures, two explicitly fictional verification summaries, and two minimal
-public profiles. Rerunning may reset those fixture documents; it must never be
-used as a general production-data migration.
+fixtures, two explicitly fictional verification summaries, two minimal public
+profiles, and labeled active/completed booking/chat lifecycle fixtures. Rerunning
+may reset those fixture documents; it must never be used as a general
+production-data migration.
 
 The current universal profile APK is available from the
 [v1.0.5 GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.5).
@@ -195,12 +196,13 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.7 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7)
-adds the mapped voice-enabled lifecycle and permanently visible, linked
-OpenStreetMap attribution. Its public 85,260,359-byte APK was anonymously
-redownloaded, SHA-256 matched, reinstalled, and cold-launched on API 36. It
-remains a prerelease until that exact public download passes the physical-phone
-smoke; v1.0.5 remains the stable rollback meanwhile.
+[v1.0.8 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8)
+adds reliable Android speech discovery and explicit English/Arabic voice locale
+selection, legacy verification compatibility, paid/confirmed judge chat,
+completed Past trips, and the corrected closed-trip/rating experience. Its public
+109,174,213-byte APK was anonymously redownloaded, SHA-256 matched, fresh-installed,
+authenticated, and smoke-tested on API 36. It remains a prerelease until that exact
+public download passes the physical-phone smoke; v1.0.5 remains the stable rollback.
 
 ## Codex collaboration
 

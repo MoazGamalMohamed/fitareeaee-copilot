@@ -2668,3 +2668,73 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   `github:yeet` protocol, tag and prerelease v1.0.8, anonymously download and
   emulator-test the public bytes, then install those exact bytes on the owner's
   reconnected phone before promotion.
+
+## 2026-07-20 03:07 CDT / 2026-07-20 01:07 PDT - sanitized v1.0.8 prerelease published and public bytes authenticated
+
+### Outcome
+
+- Completed the required `github:yeet` publication flow from the separate sanitized
+  clone. The private repository remained remote-free and was never pushed.
+- Verified the pre-replay public head tree exactly matched private `63705f8`, replayed
+  only the two reviewed v1.0.8 commits, and verified the resulting private/public
+  trees exactly matched.
+- Scanned all 86 reachable sanitized revisions: 0 forbidden `.env`, Android Firebase
+  config, judge-credential, service-account, keystore, or signing path objects; 0
+  current high-signal secret matches. `git fsck` reported only older unreachable
+  dangling objects and no reachable corruption.
+- Pushed without force, created and pushed the annotated v1.0.8 source tag, published
+  the exact APK as a prerelease pending phone verification, anonymously downloaded
+  the public asset, proved byte identity, and fresh-installed/authenticated it on the
+  API 36 emulator.
+
+### GitHub, tag, PR, and artifact evidence
+
+- Private application source: `3817ed587bc141856c7c20eed126aa8c5508091e`.
+- Sanitized application source/tag target:
+  `54b1654cf42d716d47d56b1e649da139d6f9b097`.
+- Shared application-source tree:
+  `a70f617ef8a780664e1802fb23141c14fc3c6ac0`.
+- Private emulator-evidence head before publication:
+  `eb78ecf81b9ce898c24c15ba076d2004ebe7eadc`.
+- Sanitized branch/remote head after replay:
+  `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993`; local/remote equality PASS.
+- Annotated tag object: `c78152621ebcbf503deabb3656caee002ddcd572`;
+  remote peeled target `54b1654cf42d716d47d56b1e649da139d6f9b097`.
+- Draft PR #1 remains open, draft, and unmerged; title/body and a release-evidence
+  comment were updated:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8`.
+- Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.8/app-profile.apk`.
+- GitHub asset state: uploaded; size 109,174,213 bytes; server digest
+  `sha256:333174aafc5cc1bc12060fcb41f3a1372f51f5453c50792650aff9a9721c2b18`.
+
+### Anonymous public-download verification
+
+- Download path: `build/published-download-v108/app-profile.apk`.
+- Local/public sizes: 109,174,213 / 109,174,213 bytes.
+- Local/public SHA-256:
+  `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18` /
+  `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`.
+- Byte identity: PASS.
+- Public APK fresh uninstall/install: PASS on `emulator-5554`; version `1.0.8`,
+  code `20260722`, and new `firstInstallTime=2026-07-20 03:02:55`.
+- Cold launch: PASS; Login visible, `MainActivity` top-resumed, process alive.
+- Fictional authenticated public-binary smoke: PASS; Home actions, paid Chat, and
+  completed Past rendered. No `Error loading conversation` or raw Firebase failure.
+- Public-binary app-specific fatal exception / `E/flutter` / `FirebaseFailure` /
+  app ANR scan: PASS; zero matches.
+
+### Remaining boundary and next action
+
+- v1.0.8 remains an accurately labeled prerelease because the owner disconnected the
+  physical phone. No physical v1.0.8 result is claimed; v1.0.5 remains the stable,
+  phone-tested rollback.
+- No real payment processor is claimed. The published app keeps unpaid bookings
+  pending, leaves seats unchanged, and keeps participant chat locked. Clearly labeled
+  fictional paid/confirmed fixtures demonstrate the subsequent lifecycle.
+- Next engineering action: install the exact anonymous v1.0.8 download on the
+  reconnected phone, run the final authenticated demo/log smoke, and promote the
+  existing release only if it passes. Owner-only video, private credential placement,
+  `/feedback`, legal review, and final Devpost submission still remain.

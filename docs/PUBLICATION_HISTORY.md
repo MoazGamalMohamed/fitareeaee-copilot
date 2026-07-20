@@ -52,6 +52,8 @@ evidence to the sanitized publication history:
 | v1.0.6 release-audit evidence | `6f2e9c7d4f8d43593378f8045088eda1f59dac97` | `17b499ef24aac60a068be9a6ed4efceb4162ce84` |
 | v1.0.7 visible OSM-attribution source/tag | `96343be6eb348e3ef9dd407ff2b2d84c83d2e801` | `06195d02398c32783fa894f7e1bb5ab1d5fb4daf` |
 | v1.0.7 release evidence and credential hardening | `23f1ae0f85cd887307fcaaadae3de5c4b678eda3` | `329f5c656dec48cf86c9f9e8e7d4849bdd966d15` |
+| v1.0.8 voice/verification/lifecycle source and tag | `3817ed587bc141856c7c20eed126aa8c5508091e` | `54b1654cf42d716d47d56b1e649da139d6f9b097` |
+| v1.0.8 emulator release evidence | `eb78ecf81b9ce898c24c15ba076d2004ebe7eadc` | `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993` |
 
 The annotated tag names are preserved:
 

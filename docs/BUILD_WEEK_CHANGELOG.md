@@ -173,3 +173,25 @@ The exact APK source is private `96343be` and tree-equivalent sanitized/tagged
 Its anonymous public redownload matched exactly and passed reinstall, version,
 top-resumed process, and zero app-specific fatal/error-log checks on API 36.
 Physical-phone verification remains pending; v1.0.5 remains the stable rollback.
+
+### v1.0.8 speech, verification, and completed-lifecycle correction
+
+- Declared Android `RecognitionService` discovery and added Auto/English/Arabic
+  recognition selection; API 36 permission, online recognition, and microphone
+  startup were directly observed.
+- Made legacy verification summaries tolerate missing audit timestamps and added
+  regression coverage plus complete new judge fixtures.
+- Added explicitly fictional paid/confirmed and completed lifecycle fixtures so
+  judges can see authorized private chat, completed-only Past, closed completed
+  chat, and one-time ratings without claiming a real payment processor.
+- Removed booking actions from completed/departed trips and deployed the passing
+  participant-owned rating-existence read rule.
+- Final gates: format 118/0, analyzer 0, Flutter 23/23, Functions 28/28, rules 9/9,
+  and existing callable integration 7/7.
+
+The exact APK source is private `3817ed5` and tree-equivalent sanitized/tagged
+`54b1654c`. The public v1.0.8 prerelease APK is 109,174,213 bytes with SHA-256
+`333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`.
+Its anonymous public redownload matched exactly and passed fresh installation,
+authentication, paid Chat, completed Past, and zero app-specific fatal/error-log
+checks on API 36. Physical-phone verification remains pending.

@@ -4,10 +4,9 @@ Last updated: 2026-07-20 02:54 CDT / 2026-07-20 00:54 PDT
 
 ## Current objective
 
-Publish the passing v1.0.8 candidate through the sanitized GitHub clone, verify the
-anonymous public download on the emulator, then install and smoke that exact public
-APK on the owner's reconnected phone. Finish the video, `/feedback`, legal review,
-and owner-performed Devpost submission. Do not replace the payment gate with
+Install and smoke the exact public v1.0.8 download on the owner's reconnected phone,
+then promote it from prerelease to stable. Finish the video, `/feedback`, legal
+review, and owner-performed Devpost submission. Do not replace the payment gate with
 simulated money.
 
 ## Source and GitHub state
@@ -18,11 +17,11 @@ simulated money.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Current public v1.0.7 branch before the pending replay: `2929cb6a`.
+- Current public branch/remote head: `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993`.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- Public v1.0.7 remains the current prerelease. v1.0.8 has not yet been tagged or
-  uploaded at this checkpoint.
+- Public v1.0.8 is tagged at sanitized application source `54b1654c` and remains an
+  accurately labeled prerelease pending the physical-phone pass.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
 
@@ -84,8 +83,13 @@ simulated money.
   `Payment required - not confirmed` with seats unchanged and chat locked.
 - Final app-specific fatal/Flutter/FirebaseFailure/ANR scan: 0 matches.
 - Physical v1.0.8 phone result: PENDING because the owner disconnected the phone.
-- Current public fallback:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.7`
+- Public v1.0.8 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.8`
+- Public v1.0.8 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.8/app-profile.apk`
+- Anonymous re-download: `build/published-download-v108/app-profile.apk`; exact
+  size/hash match, fresh install, fictional sign-in, paid Chat, Past, and final
+  app-specific log scan PASS on API 36.
 - Phone-tested rollback remains public v1.0.5.
 
 ## Remaining owner-only actions
@@ -104,8 +108,9 @@ simulated money.
 
 ## Exact next action
 
-Replay `3817ed5` plus this documentation checkpoint into the sanitized clone, scan
-all reachable history, verify private/public tree equality, push without force,
-create `fitareeaee-copilot-v1.0.8`, upload the exact APK, anonymously re-download it,
-compare SHA-256, and fresh-install that public copy on the emulator. When the phone
-returns, install the same downloaded bytes and run the final demo-path/log smoke.
+When the phone returns, install
+`build/published-download-v108/app-profile.apk`, verify version `1.0.8` / code
+`20260722`, run Home → Copilot → matches → details → payment gate and the seeded
+paid Chat/Past/rating paths, then scan app-specific logs. If it passes, promote the
+existing v1.0.8 prerelease without replacing the asset and update the final stable
+judge fields.

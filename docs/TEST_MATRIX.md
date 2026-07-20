@@ -88,10 +88,10 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Fresh-install end-to-end run #2 | PASS (emulator) | Exact local v1.0.8 profile APK clean install, fictional sign-in, map, voice service, payment gate, paid chat, Past, completed details, and rating entry all passed; exact public-download and physical-phone repetition remain pending. |
 | Physical Android phone install | PASS | Exact public v1.0.5 candidate installed on Moto G Play (2024), cold-launched in 2.587s and 1.391s, rendered Home/Chat/manual Request, and produced zero app fatal/Flutter/ANR matches |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Tagged judge APK candidate | PENDING | Local v1.0.8 source is private `3817ed5`; sanitized tag/release publication is the next action. v1.0.7 remains the current public prerelease and v1.0.5 the phone-tested rollback. |
-| Public sanitized repository | PASS | Draft PR branch/remote head `2c72f326`; v1.0.7 source tag peels to `06195d02`; original private repository still has no remote |
-| Published APK download and hash comparison | PASS | Public v1.0.7 asset downloaded anonymously; 85,260,359 bytes and SHA-256 `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6` exactly match local |
-| Published APK install | PASS | Exact downloaded v1.0.7 asset reinstalled/cold-launched on API 36 with correct version, top-resumed process, and 0 app-specific fatal/Flutter/Firebase/ANR matches; physical-phone install remains pending |
+| Tagged judge APK candidate | PASS | Prerelease tag `fitareeaee-copilot-v1.0.8` peels to sanitized APK source `54b1654c`, tree-equivalent to private `3817ed5`; v1.0.5 remains the phone-tested stable rollback. |
+| Public sanitized repository | PASS | Draft PR branch/remote head `d2e81d3f`; all 86 reachable revisions contain 0 forbidden credential/config path objects and 0 current high-signal secret matches; original private repository still has no remote. |
+| Published APK download and hash comparison | PASS | Public v1.0.8 asset downloaded anonymously; 109,174,213 bytes and SHA-256 `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18` exactly match local. |
+| Published APK install | PASS | Exact downloaded v1.0.8 asset fresh-installed, cold-launched, authenticated, and smoke-tested for Home, paid Chat, and Past on API 36; 0 app-specific fatal/Flutter/Firebase/ANR matches. Physical-phone install remains pending. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
@@ -193,6 +193,29 @@ available.
 ## Release gate
 
 Before submission, rerun and record all mandatory commands on the exact tagged release commit, then complete the blocked Android rows above. Do not convert a pending row to pass based on code inspection alone.
+
+## Public v1.0.8 voice/verification/lifecycle prerelease candidate
+
+- Exact APK source: private `3817ed587bc141856c7c20eed126aa8c5508091e`;
+  tree-equivalent sanitized/tagged
+  `54b1654cf42d716d47d56b1e649da139d6f9b097`; shared tree
+  `a70f617ef8a780664e1802fb23141c14fc3c6ac0`.
+- Format/analyze/Flutter: 118 files/0 changed, 0 issues, 23/23.
+- Functions/contracts/rules/integration: TypeScript build PASS, 28/28, 9/9,
+  and 7/7 respectively.
+- Profile APK: 109,174,213 bytes; SHA-256
+  `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`;
+  package `com.fitareeaee.app`, version `1.0.8` / code `20260722`, min API 24,
+  target/compile API 36, APK Signature Scheme v2, one expected Android Debug
+  signer certificate SHA-256
+  `DD8994FB11A2ED8066A1DB41052FD186A8D7DC1D3680007DFE6D4ECC16BC5AC3`.
+- Anonymous public download exactly matched local size/hash. The exact downloaded
+  bytes fresh-installed and authenticated on API 36; Home, paid Chat, and completed
+  Past rendered with zero app-specific fatal/Flutter/Firebase/ANR matches.
+- The preceding local exact-binary flow also passed manual map selection, Android
+  recognition-service/audio startup, verified identity, payment-required/not-
+  confirmed booking with seats unchanged, closed completed chat, and rating entry.
+- Physical phone: PENDING while disconnected. Stable v1.0.5 remains the rollback.
 
 ## Public v1.0.7 map-compliant prerelease candidate
 
