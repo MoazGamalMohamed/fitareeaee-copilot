@@ -2838,3 +2838,20 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   Next action after the mapping-only publication tail is the exact public v1.0.9
   physical-phone install/smoke when the owner reconnects; video, `/feedback`, legal
   review, and final Devpost submit remain owner-only actions.
+
+## 2026-07-20 03:42 CDT / 2026-07-20 01:42 PDT - public branch reconciled; PR metadata permission recorded
+
+- Replayed the mapping-only evidence tail, reran the complete sanitized audit, and
+  pushed without force. Final checked public head at this point:
+  `b848877689664fc3856c5f6af403924fb360df60`; `git ls-remote` returned the same SHA.
+- Final checked sanitized state: 92 reachable revisions, 0 forbidden private
+  config/credential path objects, 0 high-signal secret-hit files, clean worktree,
+  and zero README/docs differences from private source.
+- GitHub read access confirms PR #1 is open, draft, unmerged, mergeable, and its
+  head is `b848877689664fc3856c5f6af403924fb360df60`. The connector returned HTTP 403
+  for both PR metadata update and comment creation, so its v1.0.8 wording could not
+  be changed programmatically. This is metadata-only: v1.0.9 source, tag, release,
+  APK, and branch are public and verified. The owner can optionally update the PR
+  wording manually; merging remains explicitly unperformed.
+- No phone appeared in `adb devices -l`; exact-public v1.0.9 physical verification
+  and stable promotion remain pending. No phone result is inferred.

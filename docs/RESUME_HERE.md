@@ -23,6 +23,10 @@ Do not replace the payment gate with simulated money.
   advance the branch; use `git ls-remote` for the current remote head.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
+- PR #1 head is current and mergeable. Its title/body still say v1.0.8 because the
+  connected GitHub integration returned HTTP 403 for metadata and comment writes;
+  this does not affect the pushed v1.0.9 source, tag, release, or direct APK. Update
+  the PR wording manually only if write access is not restored before submission.
 - Public v1.0.9 is tagged at sanitized application source `ef2eecb7` and remains an
   accurately labeled prerelease pending the physical-phone pass.
 - Never add a remote to or push the private original repository. Publish only from
@@ -111,6 +115,8 @@ Do not replace the payment gate with simulated money.
 6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
 7. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
+8. Optionally update draft PR #1's title/body from v1.0.8 to v1.0.9 if the GitHub
+   integration still lacks metadata-write permission; the branch head is already current.
 
 ## Exact next action
 
