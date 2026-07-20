@@ -182,14 +182,14 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   setState(() => _type = value.first),
             ),
             const SizedBox(height: 20),
-            _locationField(
+            TripLocationInput(
               controller: _origin,
               label: 'From',
               icon: Icons.trip_origin,
               selection: _originLocation,
               onPick: () => _pickLocation(origin: true),
             ),
-            _locationField(
+            TripLocationInput(
               controller: _destination,
               label: 'To',
               icon: Icons.location_on_outlined,
@@ -326,47 +326,6 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
               final normalized = value?.trim() ?? '';
               return normalized.length < 2 ? '$label is required' : null;
             },
-      ),
-    );
-  }
-
-  Widget _locationField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    required TripLocationSelection? selection,
-    required VoidCallback onPick,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextFormField(
-            controller: controller,
-            maxLength: 160,
-            decoration: InputDecoration(
-              labelText: '$label address or landmark',
-              prefixIcon: Icon(icon),
-              border: const OutlineInputBorder(),
-            ),
-            validator: (value) {
-              final normalized = value?.trim() ?? '';
-              return normalized.length < 2 ? '$label is required' : null;
-            },
-          ),
-          OutlinedButton.icon(
-            onPressed: onPick,
-            icon: Icon(
-              selection == null ? Icons.map_outlined : Icons.location_on,
-            ),
-            label: Text(
-              selection == null
-                  ? 'Pick $label on map'
-                  : '$label pin: ${selection.coordinateLabel}',
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -547,5 +506,78 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   String _safeError(Object error) {
     final message = error.toString().replaceFirst('Exception: ', '');
     return message.length > 240 ? 'Trip could not be created.' : message;
+  }
+}
+
+/// A map-first trip location input. The complete field, map icon, and explicit
+/// button all launch the same picker so tapping "From" or "To" never opens a
+/// keyboard-only dead end.
+class TripLocationInput extends StatelessWidget {
+  const TripLocationInput({
+    super.key,
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.selection,
+    required this.onPick,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final TripLocationSelection? selection;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Semantics(
+            button: true,
+            label: 'Open map for $label location',
+            child: TextFormField(
+              key: ValueKey('trip-location-$label'),
+              controller: controller,
+              readOnly: true,
+              enableInteractiveSelection: false,
+              onTap: onPick,
+              decoration: InputDecoration(
+                labelText: label,
+                hintText: 'Tap to choose on map',
+                helperText: 'Tap this field to open the interactive map',
+                prefixIcon: Icon(icon),
+                suffixIcon: IconButton(
+                  tooltip: 'Pick $label on map',
+                  onPressed: onPick,
+                  icon: Icon(
+                    selection == null ? Icons.map_outlined : Icons.location_on,
+                  ),
+                ),
+                border: const OutlineInputBorder(),
+              ),
+              validator: (value) {
+                final normalized = value?.trim() ?? '';
+                return normalized.length < 2 ? '$label is required' : null;
+              },
+            ),
+          ),
+          const SizedBox(height: 4),
+          OutlinedButton.icon(
+            onPressed: onPick,
+            icon: Icon(
+              selection == null ? Icons.map_outlined : Icons.location_on,
+            ),
+            label: Text(
+              selection == null
+                  ? 'Pick $label on map'
+                  : '$label pin: ${selection!.coordinateLabel}',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

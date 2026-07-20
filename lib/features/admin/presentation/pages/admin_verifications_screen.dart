@@ -19,6 +19,7 @@ class AdminVerificationsScreen extends ConsumerStatefulWidget {
 class _AdminVerificationsScreenState
     extends ConsumerState<AdminVerificationsScreen> {
   String _selectedFilter = 'pending'; // pending, all, approved, rejected
+  final Set<String> _reviewingKeys = <String>{};
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +54,15 @@ class _AdminVerificationsScreenState
       },
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, _) => Scaffold(
+      error: (_, _) => Scaffold(
         appBar: AppBar(title: const Text('Error')),
-        body: Center(child: Text('Error checking admin status: $error')),
+        body: Center(
+          child: FilledButton.icon(
+            onPressed: () => ref.invalidate(isAdminProvider),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry admin access check'),
+          ),
+        ),
       ),
     );
   }
@@ -104,7 +111,7 @@ class _AdminVerificationsScreenState
           ),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('verifications')
             .snapshots(),
@@ -114,7 +121,26 @@ class _AdminVerificationsScreenState
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Verification records could not be loaded safely.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: () => setState(() {}),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry records'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -141,26 +167,26 @@ class _AdminVerificationsScreenState
 
           final allDocs = snapshot.data!.docs;
           final filteredDocs = allDocs.where((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
 
             if (_selectedFilter == 'all') return true;
 
             // Pending: has URL but not verified and not rejected
             final hasPendingIdentity =
-                data['identityDocumentUrl'] != null &&
-                !(data['identityVerified'] ?? false) &&
+                _hasDocument(data['identityDocumentUrl']) &&
+                !_isTrue(data['identityVerified']) &&
                 data['identityRejectionReason'] == null;
             final hasPendingSelfie =
-                data['selfieWithIdUrl'] != null &&
-                !(data['selfieWithIdVerified'] ?? false) &&
+                _hasDocument(data['selfieWithIdUrl']) &&
+                !_isTrue(data['selfieWithIdVerified']) &&
                 data['selfieRejectionReason'] == null;
             final hasPendingLicense =
-                data['driverLicenseUrl'] != null &&
-                !(data['driverLicenseVerified'] ?? false) &&
+                _hasDocument(data['driverLicenseUrl']) &&
+                !_isTrue(data['driverLicenseVerified']) &&
                 data['licenseRejectionReason'] == null;
             final hasPendingVehicle =
-                data['vehicleRegistrationUrl'] != null &&
-                !(data['vehicleVerified'] ?? false) &&
+                _hasDocument(data['vehicleRegistrationUrl']) &&
+                !_isTrue(data['vehicleVerified']) &&
                 data['vehicleRejectionReason'] == null;
 
             if (_selectedFilter == 'pending') {
@@ -171,26 +197,26 @@ class _AdminVerificationsScreenState
             }
 
             if (_selectedFilter == 'approved') {
-              return (data['identityVerified'] ?? false) ||
-                  (data['selfieWithIdVerified'] ?? false) ||
-                  (data['driverLicenseVerified'] ?? false) ||
-                  (data['vehicleVerified'] ?? false);
+              return _isTrue(data['identityVerified']) ||
+                  _isTrue(data['selfieWithIdVerified']) ||
+                  _isTrue(data['driverLicenseVerified']) ||
+                  _isTrue(data['vehicleVerified']);
             }
 
             if (_selectedFilter == 'rejected') {
               // Only show rejected documents that are NOT verified
               final hasRejectedIdentity =
                   data['identityRejectionReason'] != null &&
-                  !(data['identityVerified'] ?? false);
+                  !_isTrue(data['identityVerified']);
               final hasRejectedSelfie =
                   data['selfieRejectionReason'] != null &&
-                  !(data['selfieWithIdVerified'] ?? false);
+                  !_isTrue(data['selfieWithIdVerified']);
               final hasRejectedLicense =
                   data['licenseRejectionReason'] != null &&
-                  !(data['driverLicenseVerified'] ?? false);
+                  !_isTrue(data['driverLicenseVerified']);
               final hasRejectedVehicle =
                   data['vehicleRejectionReason'] != null &&
-                  !(data['vehicleVerified'] ?? false);
+                  !_isTrue(data['vehicleVerified']);
 
               return hasRejectedIdentity ||
                   hasRejectedSelfie ||
@@ -202,18 +228,20 @@ class _AdminVerificationsScreenState
           }).toList();
 
           if (filteredDocs.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.filter_list_off, size: 64, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No $_selectedFilter verifications',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildOperationsOverview(context),
+                _buildUrgentAdminEvents(context),
+                const SizedBox(height: 32),
+                const Icon(Icons.filter_list_off, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  'No $_selectedFilter verifications',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             );
           }
 
@@ -224,8 +252,7 @@ class _AdminVerificationsScreenState
               _buildUrgentAdminEvents(context),
               const SizedBox(height: 16),
               ...filteredDocs.map((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                return _buildUserCard(doc.id, data);
+                return _buildUserCard(doc.id, doc.data());
               }),
             ],
           );
@@ -355,17 +382,20 @@ class _AdminVerificationsScreenState
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: FutureBuilder<DocumentSnapshot>(
+      child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         future: FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
             .get(),
         builder: (context, userSnapshot) {
-          String userName = 'User: ${userId.substring(0, 8)}...';
+          final abbreviatedId = userId.length <= 8
+              ? userId
+              : '${userId.substring(0, 8)}...';
+          String userName = 'User: $abbreviatedId';
           if (userSnapshot.hasData && userSnapshot.data!.exists) {
-            final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
-            final fullName = userData?['fullName'] as String?;
-            final email = userData?['email'] as String?;
+            final userData = userSnapshot.data!.data();
+            final fullName = _optionalText(userData?['fullName']);
+            final email = _optionalText(userData?['email']);
             if (fullName != null && fullName.isNotEmpty) {
               userName = fullName;
             } else if (email != null) {
@@ -408,11 +438,11 @@ class _AdminVerificationsScreenState
               // Show only rejected documents in rejected filter
               if (_selectedFilter == 'rejected') ...[
                 if (data['identityRejectionReason'] != null &&
-                    !(data['identityVerified'] ?? false))
+                    !_isTrue(data['identityVerified']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Identity Document',
-                    imageUrl: data['identityDocumentUrl'] ?? '',
+                    imageUrl: _documentReference(data['identityDocumentUrl']),
                     isVerified: false,
                     isRejected: true,
                     rejectionReason: data['identityRejectionReason']
@@ -422,11 +452,11 @@ class _AdminVerificationsScreenState
                     urlField: 'identityDocumentUrl',
                   ),
                 if (data['selfieRejectionReason'] != null &&
-                    !(data['selfieWithIdVerified'] ?? false))
+                    !_isTrue(data['selfieWithIdVerified']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Selfie with ID',
-                    imageUrl: data['selfieWithIdUrl'] ?? '',
+                    imageUrl: _documentReference(data['selfieWithIdUrl']),
                     isVerified: false,
                     isRejected: true,
                     rejectionReason: data['selfieRejectionReason']?.toString(),
@@ -435,11 +465,11 @@ class _AdminVerificationsScreenState
                     urlField: 'selfieWithIdUrl',
                   ),
                 if (data['licenseRejectionReason'] != null &&
-                    !(data['driverLicenseVerified'] ?? false))
+                    !_isTrue(data['driverLicenseVerified']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Driver License',
-                    imageUrl: data['driverLicenseUrl'] ?? '',
+                    imageUrl: _documentReference(data['driverLicenseUrl']),
                     isVerified: false,
                     isRejected: true,
                     rejectionReason: data['licenseRejectionReason']?.toString(),
@@ -448,11 +478,13 @@ class _AdminVerificationsScreenState
                     urlField: 'driverLicenseUrl',
                   ),
                 if (data['vehicleRejectionReason'] != null &&
-                    !(data['vehicleVerified'] ?? false))
+                    !_isTrue(data['vehicleVerified']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Vehicle Registration',
-                    imageUrl: data['vehicleRegistrationUrl'] ?? '',
+                    imageUrl: _documentReference(
+                      data['vehicleRegistrationUrl'],
+                    ),
                     isVerified: false,
                     isRejected: true,
                     rejectionReason: data['vehicleRejectionReason']?.toString(),
@@ -462,42 +494,44 @@ class _AdminVerificationsScreenState
                   ),
               ] else ...[
                 // Show all documents in other filters
-                if (data['identityDocumentUrl'] != null)
+                if (_hasDocument(data['identityDocumentUrl']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Identity Document',
-                    imageUrl: data['identityDocumentUrl'].toString(),
-                    isVerified: data['identityVerified'] ?? false,
+                    imageUrl: _documentReference(data['identityDocumentUrl']),
+                    isVerified: _isTrue(data['identityVerified']),
                     verifiedAt: data['identityVerifiedAt'],
                     fieldName: 'identityVerified',
                     urlField: 'identityDocumentUrl',
                   ),
-                if (data['selfieWithIdUrl'] != null)
+                if (_hasDocument(data['selfieWithIdUrl']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Selfie with ID',
-                    imageUrl: data['selfieWithIdUrl'].toString(),
-                    isVerified: data['selfieWithIdVerified'] ?? false,
+                    imageUrl: _documentReference(data['selfieWithIdUrl']),
+                    isVerified: _isTrue(data['selfieWithIdVerified']),
                     verifiedAt: data['selfieWithIdVerifiedAt'],
                     fieldName: 'selfieWithIdVerified',
                     urlField: 'selfieWithIdUrl',
                   ),
-                if (data['driverLicenseUrl'] != null)
+                if (_hasDocument(data['driverLicenseUrl']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Driver License',
-                    imageUrl: data['driverLicenseUrl'].toString(),
-                    isVerified: data['driverLicenseVerified'] ?? false,
+                    imageUrl: _documentReference(data['driverLicenseUrl']),
+                    isVerified: _isTrue(data['driverLicenseVerified']),
                     verifiedAt: data['driverLicenseVerifiedAt'],
                     fieldName: 'driverLicenseVerified',
                     urlField: 'driverLicenseUrl',
                   ),
-                if (data['vehicleRegistrationUrl'] != null)
+                if (_hasDocument(data['vehicleRegistrationUrl']))
                   _buildVerificationItem(
                     userId: userId,
                     title: 'Vehicle Registration',
-                    imageUrl: data['vehicleRegistrationUrl'].toString(),
-                    isVerified: data['vehicleVerified'] ?? false,
+                    imageUrl: _documentReference(
+                      data['vehicleRegistrationUrl'],
+                    ),
+                    isVerified: _isTrue(data['vehicleVerified']),
                     verifiedAt: data['vehicleVerifiedAt'],
                     fieldName: 'vehicleVerified',
                     urlField: 'vehicleRegistrationUrl',
@@ -521,6 +555,8 @@ class _AdminVerificationsScreenState
     bool isRejected = false,
     String? rejectionReason,
   }) {
+    final actionKey = '$userId:$fieldName';
+    final isReviewing = _reviewingKeys.contains(actionKey);
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -633,7 +669,14 @@ class _AdminVerificationsScreenState
                   color: Colors.grey[200],
                   child: Center(
                     child: snapshot.hasError
-                        ? const Icon(Icons.error)
+                        ? const Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.broken_image_outlined),
+                              SizedBox(height: 6),
+                              Text('Document unavailable'),
+                            ],
+                          )
                         : const CircularProgressIndicator(),
                   ),
                 );
@@ -669,10 +712,12 @@ class _AdminVerificationsScreenState
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () =>
-                        _rejectVerification(userId, fieldName, urlField),
+                    onPressed: isReviewing
+                        ? null
+                        : () =>
+                              _rejectVerification(userId, fieldName, urlField),
                     icon: const Icon(Icons.cancel),
-                    label: const Text('Reject'),
+                    label: Text(isReviewing ? 'Reviewing...' : 'Reject'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
@@ -682,10 +727,11 @@ class _AdminVerificationsScreenState
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () =>
-                        _approveVerification(userId, fieldName, title),
+                    onPressed: isReviewing
+                        ? null
+                        : () => _approveVerification(userId, fieldName, title),
                     icon: const Icon(Icons.check_circle),
-                    label: const Text('Approve'),
+                    label: Text(isReviewing ? 'Reviewing...' : 'Approve'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
@@ -702,8 +748,14 @@ class _AdminVerificationsScreenState
   }
 
   Future<String> _resolveDocumentUrl(String reference) {
-    if (reference.startsWith('https://')) return Future.value(reference);
-    return FirebaseStorage.instance.ref(reference).getDownloadURL();
+    final normalized = reference.trim();
+    if (normalized.isEmpty) {
+      return Future<String>.error(
+        const FormatException('Document reference is missing.'),
+      );
+    }
+    if (normalized.startsWith('https://')) return Future.value(normalized);
+    return FirebaseStorage.instance.ref(normalized).getDownloadURL();
   }
 
   void _showFullImage(String imageUrl, String title) {
@@ -761,6 +813,9 @@ class _AdminVerificationsScreenState
     String fieldName,
     String title,
   ) async {
+    final actionKey = '$userId:$fieldName';
+    if (_reviewingKeys.contains(actionKey)) return;
+    setState(() => _reviewingKeys.add(actionKey));
     try {
       await FirebaseFunctions.instance
           .httpsCallable('reviewVerification')
@@ -779,12 +834,19 @@ class _AdminVerificationsScreenState
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Approval could not be completed. Refresh and try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _reviewingKeys.remove(actionKey));
     }
   }
 
@@ -824,6 +886,9 @@ class _AdminVerificationsScreenState
 
     if (reason == null || reason.isEmpty) return;
 
+    final actionKey = '$userId:$fieldName';
+    if (_reviewingKeys.contains(actionKey)) return;
+    setState(() => _reviewingKeys.add(actionKey));
     try {
       await FirebaseFunctions.instance
           .httpsCallable('reviewVerification')
@@ -843,60 +908,71 @@ class _AdminVerificationsScreenState
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Rejection could not be completed. Refresh and try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _reviewingKeys.remove(actionKey));
     }
   }
 
   int _getPendingCount(Map<String, dynamic> data) {
     int count = 0;
-    if (data['identityDocumentUrl'] != null &&
-        !(data['identityVerified'] ?? false))
+    if (_hasDocument(data['identityDocumentUrl']) &&
+        !_isTrue(data['identityVerified'])) {
       count++;
-    if (data['selfieWithIdUrl'] != null &&
-        !(data['selfieWithIdVerified'] ?? false))
+    }
+    if (_hasDocument(data['selfieWithIdUrl']) &&
+        !_isTrue(data['selfieWithIdVerified'])) {
       count++;
-    if (data['driverLicenseUrl'] != null &&
-        !(data['driverLicenseVerified'] ?? false))
+    }
+    if (_hasDocument(data['driverLicenseUrl']) &&
+        !_isTrue(data['driverLicenseVerified'])) {
       count++;
-    if (data['vehicleRegistrationUrl'] != null &&
-        !(data['vehicleVerified'] ?? false))
+    }
+    if (_hasDocument(data['vehicleRegistrationUrl']) &&
+        !_isTrue(data['vehicleVerified'])) {
       count++;
+    }
     return count;
   }
 
   int _getApprovedCount(Map<String, dynamic> data) {
     int count = 0;
-    if (data['identityVerified'] ?? false) count++;
-    if (data['selfieWithIdVerified'] ?? false) count++;
-    if (data['driverLicenseVerified'] ?? false) count++;
-    if (data['vehicleVerified'] ?? false) count++;
+    if (_isTrue(data['identityVerified'])) count++;
+    if (_isTrue(data['selfieWithIdVerified'])) count++;
+    if (_isTrue(data['driverLicenseVerified'])) count++;
+    if (_isTrue(data['vehicleVerified'])) count++;
     return count;
   }
 
   String _getPendingDocumentTypes(Map<String, dynamic> data) {
     List<String> pending = [];
-    if (data['identityDocumentUrl'] != null &&
-        !(data['identityVerified'] ?? false) &&
+    if (_hasDocument(data['identityDocumentUrl']) &&
+        !_isTrue(data['identityVerified']) &&
         data['identityRejectionReason'] == null) {
       pending.add('Identity');
     }
-    if (data['selfieWithIdUrl'] != null &&
-        !(data['selfieWithIdVerified'] ?? false) &&
+    if (_hasDocument(data['selfieWithIdUrl']) &&
+        !_isTrue(data['selfieWithIdVerified']) &&
         data['selfieRejectionReason'] == null) {
       pending.add('Selfie');
     }
-    if (data['driverLicenseUrl'] != null &&
-        !(data['driverLicenseVerified'] ?? false) &&
+    if (_hasDocument(data['driverLicenseUrl']) &&
+        !_isTrue(data['driverLicenseVerified']) &&
         data['licenseRejectionReason'] == null) {
       pending.add('License');
     }
-    if (data['vehicleRegistrationUrl'] != null &&
-        !(data['vehicleVerified'] ?? false) &&
+    if (_hasDocument(data['vehicleRegistrationUrl']) &&
+        !_isTrue(data['vehicleVerified']) &&
         data['vehicleRejectionReason'] == null) {
       pending.add('Vehicle');
     }
@@ -906,36 +982,40 @@ class _AdminVerificationsScreenState
   int _getRejectedCount(Map<String, dynamic> data) {
     int count = 0;
     if (data['identityRejectionReason'] != null &&
-        !(data['identityVerified'] ?? false))
+        !_isTrue(data['identityVerified'])) {
       count++;
+    }
     if (data['selfieRejectionReason'] != null &&
-        !(data['selfieWithIdVerified'] ?? false))
+        !_isTrue(data['selfieWithIdVerified'])) {
       count++;
+    }
     if (data['licenseRejectionReason'] != null &&
-        !(data['driverLicenseVerified'] ?? false))
+        !_isTrue(data['driverLicenseVerified'])) {
       count++;
+    }
     if (data['vehicleRejectionReason'] != null &&
-        !(data['vehicleVerified'] ?? false))
+        !_isTrue(data['vehicleVerified'])) {
       count++;
+    }
     return count;
   }
 
   String _getRejectedDocumentTypes(Map<String, dynamic> data) {
     List<String> rejected = [];
     if (data['identityRejectionReason'] != null &&
-        !(data['identityVerified'] ?? false)) {
+        !_isTrue(data['identityVerified'])) {
       rejected.add('Identity');
     }
     if (data['selfieRejectionReason'] != null &&
-        !(data['selfieWithIdVerified'] ?? false)) {
+        !_isTrue(data['selfieWithIdVerified'])) {
       rejected.add('Selfie');
     }
     if (data['licenseRejectionReason'] != null &&
-        !(data['driverLicenseVerified'] ?? false)) {
+        !_isTrue(data['driverLicenseVerified'])) {
       rejected.add('License');
     }
     if (data['vehicleRejectionReason'] != null &&
-        !(data['vehicleVerified'] ?? false)) {
+        !_isTrue(data['vehicleVerified'])) {
       rejected.add('Vehicle');
     }
     return rejected.isEmpty ? 'None' : rejected.join(', ');
@@ -945,19 +1025,39 @@ class _AdminVerificationsScreenState
     if (timestamp == null) return DateTime.now();
     if (timestamp is Timestamp) return timestamp.toDate();
     if (timestamp is DateTime) return timestamp;
+    if (timestamp is String) {
+      return DateTime.tryParse(timestamp) ?? DateTime.now();
+    }
     // If it's a map (from JSON), try to parse it
     if (timestamp is Map) {
       final seconds = timestamp['_seconds'] ?? timestamp['seconds'];
       final nanoseconds =
           timestamp['_nanoseconds'] ?? timestamp['nanoseconds'] ?? 0;
-      if (seconds != null) {
+      if (seconds is num && nanoseconds is num) {
         return DateTime.fromMillisecondsSinceEpoch(
-          seconds * 1000 + nanoseconds ~/ 1000000,
+          seconds.toInt() * 1000 + nanoseconds.toInt() ~/ 1000000,
         );
       }
     }
     return DateTime.now();
   }
+
+  bool _isTrue(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value == 1;
+    if (value is String) return value.toLowerCase() == 'true';
+    return false;
+  }
+
+  String? _optionalText(dynamic value) {
+    if (value is! String) return null;
+    final normalized = value.trim();
+    return normalized.isEmpty ? null : normalized;
+  }
+
+  bool _hasDocument(dynamic value) => _optionalText(value) != null;
+
+  String _documentReference(dynamic value) => _optionalText(value) ?? '';
 }
 
 class _AdminOpsChip extends StatelessWidget {

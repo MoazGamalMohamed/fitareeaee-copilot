@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../../domain/models/verification_model.dart';
-import '../../../../core/utils/firestore_helpers.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 final firebaseStorageProvider = Provider((ref) => FirebaseStorage.instance);
@@ -16,26 +15,72 @@ UserVerification userVerificationFromFirestoreData(
   String userId,
   Map<String, dynamic> data,
 ) {
-  String? timestampAsIso8601(dynamic value) {
-    if (value is Timestamp) return value.toDate().toIso8601String();
-    if (value is DateTime) return value.toIso8601String();
-    if (value is String && DateTime.tryParse(value) != null) return value;
+  DateTime? timestampAsDateTime(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    if (value is Map) {
+      final seconds = value['_seconds'] ?? value['seconds'];
+      final nanoseconds = value['_nanoseconds'] ?? value['nanoseconds'] ?? 0;
+      if (seconds is num && nanoseconds is num) {
+        return DateTime.fromMillisecondsSinceEpoch(
+          seconds.toInt() * 1000 + nanoseconds.toInt() ~/ 1000000,
+          isUtc: true,
+        );
+      }
+    }
     return null;
   }
 
-  final createdAt =
-      timestampAsIso8601(data['createdAt']) ??
-      timestampAsIso8601(data['updatedAt']) ??
-      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true).toIso8601String();
-  final updatedAt = timestampAsIso8601(data['updatedAt']) ?? createdAt;
-  final processedData = FirestoreHelpers.convertTimestamps({
-    ...data,
-    'userId': userId,
-    'createdAt': createdAt,
-    'updatedAt': updatedAt,
-  });
+  bool flag(String field) {
+    final value = data[field];
+    if (value is bool) return value;
+    if (value is num) return value == 1;
+    if (value is String) return value.toLowerCase() == 'true';
+    return false;
+  }
 
-  return UserVerification.fromJson(processedData);
+  String? optionalText(String field) {
+    final value = data[field];
+    if (value is! String) return null;
+    final normalized = value.trim();
+    return normalized.isEmpty ? null : normalized;
+  }
+
+  final createdAt =
+      timestampAsDateTime(data['createdAt']) ??
+      timestampAsDateTime(data['updatedAt']) ??
+      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+  final updatedAt = timestampAsDateTime(data['updatedAt']) ?? createdAt;
+
+  // Construct the domain object explicitly instead of sending legacy Firestore
+  // data through generated `as String` casts. Old documents can contain explicit
+  // nulls, missing audit fields, Timestamp objects, or stale scalar types; none of
+  // those should crash the verification screen.
+  return UserVerification(
+    userId: userId,
+    emailVerified: flag('emailVerified'),
+    phoneVerified: flag('phoneVerified'),
+    identityVerified: flag('identityVerified'),
+    driverLicenseVerified: flag('driverLicenseVerified'),
+    vehicleVerified: flag('vehicleVerified'),
+    selfieWithIdVerified: flag('selfieWithIdVerified'),
+    identityDocumentUrl: optionalText('identityDocumentUrl'),
+    driverLicenseUrl: optionalText('driverLicenseUrl'),
+    vehicleRegistrationUrl: optionalText('vehicleRegistrationUrl'),
+    selfieWithIdUrl: optionalText('selfieWithIdUrl'),
+    vehiclePlateNumber: optionalText('vehiclePlateNumber'),
+    vehicleModel: optionalText('vehicleModel'),
+    vehicleColor: optionalText('vehicleColor'),
+    identityVerifiedAt: timestampAsDateTime(data['identityVerifiedAt']),
+    driverLicenseVerifiedAt: timestampAsDateTime(
+      data['driverLicenseVerifiedAt'],
+    ),
+    vehicleVerifiedAt: timestampAsDateTime(data['vehicleVerifiedAt']),
+    selfieWithIdVerifiedAt: timestampAsDateTime(data['selfieWithIdVerifiedAt']),
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }
 
 /// Provider for user verification data
@@ -124,9 +169,20 @@ Future<void> approveVerification({
   if (!verificationDoc.exists) throw Exception('Verification not found');
 
   final data = verificationDoc.data()!;
-  final userId = data['userId'] as String;
+  final userId = data['userId'] is String
+      ? (data['userId'] as String).trim()
+      : '';
+  final typeName = data['type'] is String
+      ? (data['type'] as String).trim()
+      : '';
+  if (userId.isEmpty || typeName.isEmpty) {
+    throw const FormatException('Verification request is incomplete.');
+  }
   final type = VerificationType.values.firstWhere(
-    (e) => e.name == data['type'],
+    (value) => value.name == typeName,
+    orElse: () => throw const FormatException(
+      'Verification request has an unsupported document type.',
+    ),
   );
   await FirebaseFunctions.instance.httpsCallable('reviewVerification').call({
     'schemaVersion': 1,

@@ -109,11 +109,41 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       appBar: AppBar(title: const Text('Verification Center')),
       body: verificationAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (_, _) => _buildLoadError(),
         data: (verification) => userAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (_, _) => _buildLoadError(),
           data: (_) => _buildContent(verification),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadError() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_outlined, size: 52),
+            const SizedBox(height: 12),
+            const Text(
+              'Verification could not be loaded safely.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Check your connection and try again. Your uploaded documents are not removed.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () => ref.invalidate(currentUserVerificationProvider),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry verification'),
+            ),
+          ],
         ),
       ),
     );
@@ -393,10 +423,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Email verification could not be started. Try again shortly.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -429,7 +464,12 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       // Use default
     }
 
-    Country selectedCountry = CountryParser.parseCountryCode(countryCode);
+    Country selectedCountry;
+    try {
+      selectedCountry = CountryParser.parseCountryCode(countryCode);
+    } catch (_) {
+      selectedCountry = CountryParser.parseCountryCode('US');
+    }
     final phoneController = TextEditingController();
 
     final phoneNumber = await showDialog<String>(
@@ -485,8 +525,19 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                final fullNumber =
-                    '+${selectedCountry.phoneCode}${phoneController.text.trim()}';
+                final localDigits = phoneController.text.replaceAll(
+                  RegExp(r'[^0-9]'),
+                  '',
+                );
+                final fullNumber = '+${selectedCountry.phoneCode}$localDigits';
+                if (localDigits.length < 6 || fullNumber.length > 16) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Enter a valid phone number.'),
+                    ),
+                  );
+                  return;
+                }
                 Navigator.pop(context, fullNumber);
               },
               child: const Text('Send Code'),
@@ -550,10 +601,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         },
         timeout: const Duration(seconds: 60),
       );
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Phone verification could not be started. Check the number and connection.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -599,8 +655,12 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     if (code == null || code.isEmpty) return;
 
     try {
+      final verificationId = _verificationId;
+      if (verificationId == null || verificationId.isEmpty) {
+        throw const FormatException('Verification session expired.');
+      }
       final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId!,
+        verificationId: verificationId,
         smsCode: code,
       );
 
@@ -615,11 +675,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid code: $e'),
+          const SnackBar(
+            content: Text(
+              'The code is invalid or expired. Request a new code and try again.',
+            ),
             backgroundColor: Colors.red,
           ),
         );

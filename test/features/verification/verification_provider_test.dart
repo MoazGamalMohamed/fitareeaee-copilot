@@ -27,4 +27,39 @@ void main() {
     expect(verification.createdAt, DateTime.utc(1970));
     expect(verification.updatedAt, verification.createdAt);
   });
+
+  test(
+    'explicit null and malformed legacy fields never trigger string casts',
+    () {
+      final verification = userVerificationFromFirestoreData(
+        'legacy-null-user',
+        {
+          'emailVerified': 'true',
+          'phoneVerified': 1,
+          'identityVerified': null,
+          'selfieWithIdVerified': false,
+          'identityDocumentUrl': null,
+          'driverLicenseUrl': 42,
+          'vehicleRegistrationUrl': '',
+          'vehiclePlateNumber': null,
+          'identityVerifiedAt': null,
+          'createdAt': null,
+          'updatedAt': {'seconds': 100, 'nanoseconds': 0},
+        },
+      );
+
+      expect(verification.userId, 'legacy-null-user');
+      expect(verification.emailVerified, isTrue);
+      expect(verification.phoneVerified, isTrue);
+      expect(verification.identityVerified, isFalse);
+      expect(verification.identityDocumentUrl, isNull);
+      expect(verification.driverLicenseUrl, isNull);
+      expect(verification.vehicleRegistrationUrl, isNull);
+      expect(
+        verification.createdAt,
+        DateTime.fromMillisecondsSinceEpoch(100000, isUtc: true),
+      );
+      expect(verification.updatedAt, verification.createdAt);
+    },
+  );
 }

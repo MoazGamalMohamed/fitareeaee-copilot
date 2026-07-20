@@ -32,8 +32,29 @@ class BookingConfirmationScreen extends ConsumerWidget {
     return tripAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stack) =>
-          Scaffold(body: Center(child: Text('Error: $error'))),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(title: const Text('Review and Pay')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Trip details could not be loaded safely.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => ref.invalidate(tripDetailProvider(tripId)),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       data: (trip) => currentUserAsync.when(
         data: (currentUser) {
           if (currentUser == null) {
@@ -206,7 +227,29 @@ class BookingConfirmationScreen extends ConsumerWidget {
         },
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
+        error: (e, st) => Scaffold(
+          appBar: AppBar(title: const Text('Review and Pay')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Your account could not be loaded. Check your connection and retry.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () => ref.invalidate(authStateProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -307,14 +350,15 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (!isVerified)
+              if (!isVerified && label == 'Your Identity')
                 TextButton(
-                  onPressed: () {
-                    if (label == 'Your Identity') {
-                      context.push('/verification');
-                    }
-                  },
+                  onPressed: () => context.push('/verification'),
                   child: const Text('Verify'),
+                )
+              else if (!isVerified)
+                const Chip(
+                  avatar: Icon(Icons.hourglass_top, size: 16),
+                  label: Text('Awaiting participant'),
                 ),
             ],
           ),
