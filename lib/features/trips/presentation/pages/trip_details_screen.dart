@@ -125,7 +125,8 @@ class TripDetailsScreen extends ConsumerWidget {
                   .where(
                     (booking) =>
                         booking.tripId == trip.id &&
-                        booking.status == 'confirmed' &&
+                        (booking.status == 'confirmed' ||
+                            booking.status == 'in_progress') &&
                         booking.paymentStatus == 'paid',
                   )
                   .toList();
@@ -167,6 +168,29 @@ class TripDetailsScreen extends ConsumerWidget {
                 if (activeBooking != null)
                   Column(
                     children: [
+                      Card(
+                        color: activeBooking.status == 'in_progress'
+                            ? Colors.green.shade50
+                            : Colors.blue.shade50,
+                        child: ListTile(
+                          leading: Icon(
+                            activeBooking.status == 'in_progress'
+                                ? Icons.navigation_outlined
+                                : Icons.verified_outlined,
+                          ),
+                          title: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Trip in progress'
+                                : 'Paid and confirmed',
+                          ),
+                          subtitle: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Trip chat stays open until the driver completes or cancels the trip.'
+                                : 'The assigned driver can start the trip. Both participants can use chat.',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       ElevatedButton.icon(
                         onPressed: bookingState is AsyncLoading
                             ? null
@@ -182,7 +206,55 @@ class TripDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (activeBooking.passengerId == userId)
+                      if (activeBooking.driverId == userId) ...[
+                        FilledButton.icon(
+                          onPressed: bookingState is AsyncLoading
+                              ? null
+                              : () => _transitionTrip(
+                                  context,
+                                  ref,
+                                  trip,
+                                  activeBooking,
+                                  activeBooking.status == 'in_progress'
+                                      ? 'completeTrip'
+                                      : 'startTrip',
+                                  activeBooking.status == 'in_progress'
+                                      ? 'Trip completed. Chat is now closed and ratings are available.'
+                                      : 'Trip started. Live trip chat remains available.',
+                                ),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          icon: Icon(
+                            activeBooking.status == 'in_progress'
+                                ? Icons.flag_outlined
+                                : Icons.play_arrow,
+                          ),
+                          label: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Complete trip'
+                                : 'Confirm trip start',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: bookingState is AsyncLoading
+                              ? null
+                              : () => _cancelDriverTrip(
+                                  context,
+                                  ref,
+                                  trip,
+                                  activeBooking,
+                                ),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                            foregroundColor: Colors.red.shade700,
+                          ),
+                          icon: const Icon(Icons.emergency_outlined),
+                          label: const Text('Emergency cancel and alert admin'),
+                        ),
+                      ] else if (activeBooking.passengerId == userId &&
+                          activeBooking.status == 'confirmed')
                         OutlinedButton.icon(
                           onPressed: bookingState is AsyncLoading
                               ? null
@@ -1059,6 +1131,87 @@ class TripDetailsScreen extends ConsumerWidget {
           content: Text(
             'This booking cannot be cancelled here. Contact support for help.',
           ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _transitionTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+    String callable,
+    String successMessage,
+  ) async {
+    try {
+      await FirebaseFunctions.instance.httpsCallable(callable).call({
+        'schemaVersion': 1,
+        'bookingId': booking.id,
+      });
+      ref.invalidate(participantBookingsProvider(booking.driverId));
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(userTripsProvider(trip.driverId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(successMessage)));
+      if (callable == 'completeTrip') context.go('/trips?tab=past');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip status could not be updated.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _cancelDriverTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Emergency trip cancellation?'),
+        content: const Text(
+          'This closes participant chats, alerts administrators as urgent, and marks paid bookings for refund review. It does not issue an automatic refund.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep trip'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Cancel trip'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await FirebaseFunctions.instance.httpsCallable('cancelTrip').call({
+        'schemaVersion': 1,
+        'bookingId': booking.id,
+      });
+      ref.invalidate(participantBookingsProvider(booking.driverId));
+      ref.invalidate(tripDetailProvider(trip.id));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Trip cancelled. Admin refund review was opened.'),
+        ),
+      );
+      context.go('/trips?tab=my');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip could not be cancelled.'),
         ),
       );
     }

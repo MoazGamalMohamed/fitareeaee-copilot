@@ -122,6 +122,7 @@ class _AdminVerificationsScreenState
               padding: const EdgeInsets.all(16),
               children: [
                 _buildOperationsOverview(context),
+                _buildUrgentAdminEvents(context),
                 const SizedBox(height: 16),
                 const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -220,6 +221,7 @@ class _AdminVerificationsScreenState
             padding: const EdgeInsets.all(16),
             children: [
               _buildOperationsOverview(context),
+              _buildUrgentAdminEvents(context),
               const SizedBox(height: 16),
               ...filteredDocs.map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
@@ -283,6 +285,64 @@ class _AdminVerificationsScreenState
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUrgentAdminEvents(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('admin_events')
+          .orderBy('createdAt', descending: true)
+          .limit(20)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) return const SizedBox.shrink();
+        final events =
+            snapshot.data?.docs
+                .where((document) => document.data()['status'] == 'open')
+                .toList() ??
+            const <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+        if (events.isEmpty) return const SizedBox.shrink();
+        return Card(
+          color: Colors.red.shade50,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.priority_high, color: Colors.red.shade700),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Urgent trip events (${events.length})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red.shade800,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ...events.take(5).map((document) {
+                  final event = document.data();
+                  return ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.car_crash_outlined),
+                    title: const Text('Emergency trip cancellation'),
+                    subtitle: Text(
+                      'Trip ${event['tripId'] ?? 'unknown'} • refund review required',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

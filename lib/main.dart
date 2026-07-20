@@ -22,11 +22,24 @@ class _FirebaseBootstrapState extends State<FirebaseBootstrap> {
   @override
   void initState() {
     super.initState();
-    _initialization = FirebaseConfig.initialize();
+    _initialization = _initializeFirebase();
   }
 
   void _retry() {
-    setState(() => _initialization = FirebaseConfig.initialize());
+    setState(() => _initialization = _initializeFirebase());
+  }
+
+  Future<void> _initializeFirebase() async {
+    try {
+      await FirebaseConfig.initialize();
+    } catch (error, stackTrace) {
+      assert(() {
+        debugPrint('Firebase bootstrap failed: ${error.runtimeType}: $error');
+        debugPrintStack(stackTrace: stackTrace);
+        return true;
+      }());
+      rethrow;
+    }
   }
 
   @override

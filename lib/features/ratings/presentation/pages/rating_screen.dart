@@ -7,12 +7,14 @@ import '../../domain/models/rating_model.dart';
 import '../providers/rating_provider.dart';
 
 class RatingScreen extends ConsumerStatefulWidget {
+  final String bookingId;
   final String tripId;
   final String ratedUserId;
   final String ratedUserName;
 
   const RatingScreen({
     super.key,
+    required this.bookingId,
     required this.tripId,
     required this.ratedUserId,
     required this.ratedUserName,
@@ -225,7 +227,11 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
         createdAt: DateTime.now(),
       );
 
-      await ref.read(submitRatingProvider(rating).future);
+      await ref.read(
+        submitRatingProvider(
+          TripRatingSubmission(bookingId: widget.bookingId, rating: rating),
+        ).future,
+      );
 
       if (mounted) {
         ref.read(ratingStateProvider.notifier).reset();

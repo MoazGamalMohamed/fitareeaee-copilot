@@ -64,6 +64,11 @@ export function bookingIsPaidAndConfirmed(value: Record<string, unknown>): boole
   return value.status === "confirmed" && value.paymentStatus === "paid";
 }
 
+export function bookingHasActivePaidTrip(value: Record<string, unknown>): boolean {
+  return value.paymentStatus === "paid" &&
+    (value.status === "confirmed" || value.status === "in_progress");
+}
+
 function departureDate(value: unknown): Date | null {
   if (value instanceof Timestamp) return value.toDate();
   if (typeof value === "string") {

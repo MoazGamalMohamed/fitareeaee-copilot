@@ -7,6 +7,7 @@ if (getApps().length === 0) {
 export {cancelBooking, createBooking} from "./booking";
 export {planTripWithCopilot} from "./copilot";
 export {createTrip} from "./trip";
+export {cancelTrip, completeTrip, startTrip, submitTripRating} from "./lifecycle";
 export {
   proposeForTripRequest,
   selectTripProposal,

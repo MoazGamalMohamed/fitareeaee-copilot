@@ -342,6 +342,39 @@ test("payment and wallet writes are denied", async () => {
   );
 });
 
+test("ratings are server-owned and urgent events are admin-only", async () => {
+  await seed("admins/admin", {isAdmin: true});
+  await seed("ratings/booking-1_rider", {
+    id: "booking-1_rider",
+    bookingId: "booking-1",
+    tripId: "trip-1",
+    ratedByUserId: "rider",
+    ratedUserId: "driver",
+    rating: 5,
+    createdAt: new Date(),
+  });
+  await seed("admin_events/event-1", {
+    type: "emergency_trip_cancellation",
+    tripId: "trip-1",
+    status: "open",
+    createdAt: new Date(),
+  });
+  const rider = environment.authenticatedContext("rider").firestore();
+  const outsider = environment.authenticatedContext("outsider").firestore();
+  const admin = environment.authenticatedContext("admin").firestore();
+  await assertSucceeds(getDoc(doc(rider, "ratings/booking-1_rider")));
+  await assertFails(getDoc(doc(outsider, "ratings/booking-1_rider")));
+  await assertFails(
+    setDoc(doc(rider, "ratings/forged"), {
+      ratedByUserId: "rider",
+      ratedUserId: "driver",
+      rating: 5,
+    })
+  );
+  await assertSucceeds(getDocs(collection(admin, "admin_events")));
+  await assertFails(getDocs(collection(rider, "admin_events")));
+});
+
 test("storage limits verification uploads to the owning user and images", async () => {
   const riderStorage = environment.authenticatedContext("rider").storage();
   const otherStorage = environment.authenticatedContext("other").storage();

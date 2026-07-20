@@ -134,6 +134,22 @@ export function driverVerificationComplete(data: Record<string, unknown>): boole
     data.vehicleVerified === true;
 }
 
+export function routeDistanceKm(
+  originLat: number,
+  originLng: number,
+  destinationLat: number,
+  destinationLng: number
+): number {
+  const radians = (degrees: number) => degrees * Math.PI / 180;
+  const earthRadiusKm = 6371;
+  const latitudeDelta = radians(destinationLat - originLat);
+  const longitudeDelta = radians(destinationLng - originLng);
+  const a = Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(radians(originLat)) * Math.cos(radians(destinationLat)) *
+    Math.sin(longitudeDelta / 2) ** 2;
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 /** Creates a canonical offer or request without granting clients trip write access. */
 export const createTrip = functions.https.onCall(async (rawData, context) => {
   if (!context.auth) {
@@ -156,6 +172,12 @@ export const createTrip = functions.https.onCall(async (rawData, context) => {
 
   const ref = db.collection("trips").doc();
   const now = Timestamp.now();
+  const distance = routeDistanceKm(
+    request.originLat,
+    request.originLng,
+    request.destinationLat,
+    request.destinationLng
+  );
   await ref.create({
     id: ref.id,
     schemaVersion: 1,
@@ -171,8 +193,8 @@ export const createTrip = functions.https.onCall(async (rawData, context) => {
     destination_lat: request.destinationLat,
     destination_lng: request.destinationLng,
     departure_time: Timestamp.fromDate(request.departureTime),
-    distance: 0,
-    estimated_duration: 0,
+    distance,
+    estimated_duration: Math.max(1, Math.round((distance / 80) * 60)),
     price_per_seat: request.pricePerSeat,
     total_seats: request.seats,
     available_seats: request.seats,

@@ -7,6 +7,7 @@ import '../../../copilot/domain/copilot_draft.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
+import 'trip_location_picker_screen.dart';
 
 class CreateTripScreen extends ConsumerStatefulWidget {
   const CreateTripScreen({super.key, this.role, this.initialDraft});
@@ -34,6 +35,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   TimeOfDay? _time;
   bool _withPets = false;
   bool _smoking = false;
+  TripLocationSelection? _originLocation;
+  TripLocationSelection? _destinationLocation;
 
   @override
   void initState() {
@@ -179,15 +182,19 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   setState(() => _type = value.first),
             ),
             const SizedBox(height: 20),
-            _textField(
+            _locationField(
               controller: _origin,
               label: 'From',
               icon: Icons.trip_origin,
+              selection: _originLocation,
+              onPick: () => _pickLocation(origin: true),
             ),
-            _textField(
+            _locationField(
               controller: _destination,
               label: 'To',
               icon: Icons.location_on_outlined,
+              selection: _destinationLocation,
+              onPick: () => _pickLocation(origin: false),
             ),
             Row(
               children: [
@@ -323,6 +330,74 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     );
   }
 
+  Widget _locationField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required TripLocationSelection? selection,
+    required VoidCallback onPick,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextFormField(
+            controller: controller,
+            maxLength: 160,
+            decoration: InputDecoration(
+              labelText: '$label address or landmark',
+              prefixIcon: Icon(icon),
+              border: const OutlineInputBorder(),
+            ),
+            validator: (value) {
+              final normalized = value?.trim() ?? '';
+              return normalized.length < 2 ? '$label is required' : null;
+            },
+          ),
+          OutlinedButton.icon(
+            onPressed: onPick,
+            icon: Icon(
+              selection == null ? Icons.map_outlined : Icons.location_on,
+            ),
+            label: Text(
+              selection == null
+                  ? 'Pick $label on map'
+                  : '$label pin: ${selection.coordinateLabel}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickLocation({required bool origin}) async {
+    final current = origin ? _originLocation : _destinationLocation;
+    final result = await Navigator.of(context).push<TripLocationSelection>(
+      MaterialPageRoute(
+        builder: (_) => TripLocationPickerScreen(
+          title: origin ? 'Choose starting point' : 'Choose destination',
+          initialLatitude: current?.latitude,
+          initialLongitude: current?.longitude,
+        ),
+      ),
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      if (origin) {
+        _originLocation = result;
+        if (_origin.text.trim().isEmpty) {
+          _origin.text = 'Map pin ${result.coordinateLabel}';
+        }
+      } else {
+        _destinationLocation = result;
+        if (_destination.text.trim().isEmpty) {
+          _destination.text = 'Map pin ${result.coordinateLabel}';
+        }
+      }
+    });
+  }
+
   Widget _dateField(BuildContext context) => InkWell(
     onTap: () async {
       final picked = await showDatePicker(
@@ -387,6 +462,16 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_originLocation == null || _destinationLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Pick both the starting point and destination on the map.',
+          ),
+        ),
+      );
+      return;
+    }
     if (_date == null || _time == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Choose a departure date and time.')),
@@ -416,10 +501,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       driverId: userId,
       originAddress: _origin.text.trim(),
       destinationAddress: _destination.text.trim(),
-      originLat: 0,
-      originLng: 0,
-      destinationLat: 0,
-      destinationLng: 0,
+      originLat: _originLocation!.latitude,
+      originLng: _originLocation!.longitude,
+      destinationLat: _destinationLocation!.latitude,
+      destinationLng: _destinationLocation!.longitude,
       departureTime: departure,
       distance: 0,
       estimatedDuration: 0,

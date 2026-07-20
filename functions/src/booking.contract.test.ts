@@ -82,7 +82,7 @@ test("conversation authorization IDs are deterministic and order independent", (
   );
 });
 
-test("public trip projection removes coordinates, passengers, photos, and metadata", () => {
+test("public trip projection rounds coordinates and removes passengers, photos, and metadata", () => {
   const projected = publicTripData({
     driverId: "driver",
     origin_lat: 32.7,
@@ -90,7 +90,7 @@ test("public trip projection removes coordinates, passengers, photos, and metada
     package_photo_urls: ["private.jpg"],
     metadata: {private: true},
   }, "trip-1");
-  assert.equal(projected.origin_lat, 0);
+  assert.equal(projected.origin_lat, 32.7);
   assert.deepEqual(projected.passenger_ids, []);
   assert.deepEqual(projected.package_photo_urls, []);
   assert.deepEqual(projected.metadata, {});

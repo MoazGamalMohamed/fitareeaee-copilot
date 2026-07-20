@@ -8,6 +8,7 @@ import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../ratings/presentation/providers/rating_provider.dart';
 
 class TripsListScreen extends ConsumerStatefulWidget {
   /// Optional role passed from home screen: 'rider' (finding rides) or 'driver' (offering rides)
@@ -676,7 +677,9 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
             }
             final agreedDeals = bookings
                 .where(
-                  (b) => b.status == 'confirmed' && b.paymentStatus == 'paid',
+                  (b) =>
+                      (b.status == 'confirmed' || b.status == 'in_progress') &&
+                      b.paymentStatus == 'paid',
                 )
                 .toList();
             final paymentPending = bookings
@@ -869,47 +872,94 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   Widget _buildBookingCard(BookingModel booking) {
     final encodedBookingId = Uri.encodeQueryComponent(booking.id);
     final detailsRoute = '/trips/${booking.tripId}?bookingId=$encodedBookingId';
+    final userId = ref
+        .watch(currentUserProvider)
+        .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
+    final isCompleted = booking.status == 'completed';
+    final ratedUserId = booking.passengerId == userId
+        ? booking.driverId
+        : booking.passengerId;
+    final ratingExists = isCompleted && userId.isNotEmpty
+        ? ref.watch(
+            ratingExistsProvider((bookingId: booking.id, userId: userId)),
+          )
+        : const AsyncValue<bool>.data(false);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor:
-              booking.status == 'confirmed' && booking.paymentStatus == 'paid'
-              ? Colors.green
-              : Colors.orange,
-          child: Icon(
-            booking.status == 'confirmed' && booking.paymentStatus == 'paid'
-                ? Icons.check
-                : Icons.payment_outlined,
-            color: Colors.white,
+      child: Column(
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundColor:
+                  (booking.status == 'confirmed' ||
+                          booking.status == 'in_progress' ||
+                          booking.status == 'completed') &&
+                      booking.paymentStatus == 'paid'
+                  ? Colors.green
+                  : Colors.orange,
+              child: Icon(
+                booking.status == 'completed'
+                    ? Icons.flag_outlined
+                    : booking.status == 'in_progress'
+                    ? Icons.navigation_outlined
+                    : booking.status == 'confirmed' &&
+                          booking.paymentStatus == 'paid'
+                    ? Icons.check
+                    : Icons.payment_outlined,
+                color: Colors.white,
+              ),
+            ),
+            title: Text(
+              '${booking.pickupLocation ?? 'Pickup'} → ${booking.dropoffLocation ?? 'Destination'}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                Text(
+                  booking.status == 'potential'
+                      ? 'Driver proposal - rider selection pending'
+                      : booking.status == 'pending_payment'
+                      ? 'Payment required - not confirmed'
+                      : booking.status == 'in_progress'
+                      ? 'Trip in progress - chat is open'
+                      : booking.status == 'completed'
+                      ? 'Completed - chat closed'
+                      : 'Status: ${booking.status} / ${booking.paymentStatus}',
+                ),
+                Text(
+                  'Seats: ${booking.seatsBooked} • \$${booking.totalPrice.toStringAsFixed(2)}',
+                ),
+              ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.arrow_forward_ios, size: 16),
+              onPressed: () => context.push(detailsRoute),
+            ),
+            onTap: () => context.push(detailsRoute),
           ),
-        ),
-        title: Text(
-          '${booking.pickupLocation ?? 'Pickup'} → ${booking.dropoffLocation ?? 'Destination'}',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(
-              booking.status == 'potential'
-                  ? 'Driver proposal - rider selection pending'
-                  : booking.status == 'pending_payment'
-                  ? 'Payment required - not confirmed'
-                  : 'Status: ${booking.status} / ${booking.paymentStatus}',
+          if (isCompleted)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: ratingExists.when(
+                data: (exists) => OutlinedButton.icon(
+                  onPressed: exists
+                      ? null
+                      : () => context.push(
+                          '/trips/${booking.tripId}/rate'
+                          '?bookingId=${Uri.encodeQueryComponent(booking.id)}'
+                          '&ratedUserId=${Uri.encodeQueryComponent(ratedUserId)}',
+                        ),
+                  icon: Icon(exists ? Icons.check : Icons.star_outline),
+                  label: Text(exists ? 'Rating submitted' : 'Rate this trip'),
+                ),
+                loading: () => const LinearProgressIndicator(),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
             ),
-            Text(
-              'Seats: ${booking.seatsBooked} • \$${booking.totalPrice.toStringAsFixed(2)}',
-            ),
-          ],
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.arrow_forward_ios, size: 16),
-          onPressed: () => context.push(detailsRoute),
-        ),
-        onTap: () => context.push(detailsRoute),
+        ],
       ),
     );
   }
@@ -947,19 +997,27 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
     return participantBookingsAsync.when(
       data: (bookings) => userTripsAsync.when(
         data: (myTrips) {
-          final completedBookings = bookings
-              .where((booking) => booking.status == 'completed')
-              .toList();
+          final completedBookings =
+              bookings
+                  .where((booking) => booking.status == 'completed')
+                  .toList()
+                ..sort(
+                  (a, b) => (b.dropoffTime ?? b.updatedAt).compareTo(
+                    a.dropoffTime ?? a.updatedAt,
+                  ),
+                );
           final completedTripIds = completedBookings
               .map((booking) => booking.tripId)
               .toSet();
-          final completedOwnedTrips = myTrips
-              .where(
-                (trip) =>
-                    trip.status == 'completed' &&
-                    !completedTripIds.contains(trip.id),
-              )
-              .toList();
+          final completedOwnedTrips =
+              myTrips
+                  .where(
+                    (trip) =>
+                        trip.status == 'completed' &&
+                        !completedTripIds.contains(trip.id),
+                  )
+                  .toList()
+                ..sort((a, b) => b.departureTime.compareTo(a.departureTime));
 
           if (completedBookings.isEmpty && completedOwnedTrips.isEmpty) {
             return const Center(child: Text('No completed past trips yet'));

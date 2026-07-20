@@ -267,3 +267,115 @@ test("driver proposal remains potential until the rider selects and pays", async
   assert.equal(selectedTrip.data().available_seats, 2);
   assert.equal(authorizations.size, 0);
 });
+
+test("paid trip starts, keeps chat active, completes, closes chat, and allows one rating", async () => {
+  const tripId = `integration-lifecycle-${Date.now()}`;
+  await seedTrip(tripId, 1);
+  const pending = await callable("createBooking", riderA.token, {
+    schemaVersion: 1,
+    tripId,
+    seats: 1,
+  });
+  assert.equal(pending.ok, true);
+  const bookingId = pending.body.result.bookingId;
+  await Promise.all([
+    db.collection("bookings").doc(bookingId).update({
+      status: "confirmed",
+      paymentStatus: "paid",
+    }),
+    db.collection("trips").doc(tripId).update({
+      available_seats: 0,
+      passenger_ids: [riderA.uid],
+    }),
+  ]);
+
+  const unauthorizedStart = await callable("startTrip", riderA.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(unauthorizedStart.ok, false);
+
+  const started = await callable("startTrip", driver.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(started.ok, true);
+  assert.equal(started.body.result.status, "in_progress");
+  const chatWhileMoving = await callable("authorizeBookingConversation", riderA.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(chatWhileMoving.ok, true);
+  const conversationId = chatWhileMoving.body.result.conversationId;
+
+  const completed = await callable("completeTrip", driver.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(completed.ok, true);
+  const [trip, booking, authorization] = await Promise.all([
+    db.collection("trips").doc(tripId).get(),
+    db.collection("bookings").doc(bookingId).get(),
+    db.collection("conversation_authorizations").doc(conversationId).get(),
+  ]);
+  assert.equal(trip.data().status, "completed");
+  assert.equal(booking.data().status, "completed");
+  assert.equal(authorization.data().active, false);
+
+  const chatAfterCompletion = await callable(
+    "authorizeBookingConversation",
+    riderA.token,
+    {schemaVersion: 1, bookingId},
+  );
+  assert.equal(chatAfterCompletion.ok, false);
+
+  const rated = await callable("submitTripRating", riderA.token, {
+    schemaVersion: 1,
+    bookingId,
+    rating: 5,
+    review: "Great trip",
+    tags: ["Punctual"],
+  });
+  assert.equal(rated.ok, true);
+  const duplicateRating = await callable("submitTripRating", riderA.token, {
+    schemaVersion: 1,
+    bookingId,
+    rating: 4,
+    review: "Changed mind",
+    tags: [],
+  });
+  assert.equal(duplicateRating.ok, false);
+});
+
+test("driver emergency cancellation closes chat and opens urgent admin review", async () => {
+  const tripId = `integration-emergency-${Date.now()}`;
+  await seedTrip(tripId, 1);
+  const pending = await callable("createBooking", riderA.token, {
+    schemaVersion: 1,
+    tripId,
+    seats: 1,
+  });
+  const bookingId = pending.body.result.bookingId;
+  await db.collection("bookings").doc(bookingId).update({
+    status: "confirmed",
+    paymentStatus: "paid",
+  });
+  const chat = await callable("authorizeBookingConversation", driver.token, {bookingId});
+  assert.equal(chat.ok, true);
+  const cancelled = await callable("cancelTrip", driver.token, {
+    schemaVersion: 1,
+    bookingId,
+  });
+  assert.equal(cancelled.ok, true);
+  assert.equal(cancelled.body.result.refundStatus, "staff_review");
+  const [booking, authorization, events] = await Promise.all([
+    db.collection("bookings").doc(bookingId).get(),
+    db.collection("conversation_authorizations").doc(chat.body.result.conversationId).get(),
+    db.collection("admin_events").where("tripId", "==", tripId).get(),
+  ]);
+  assert.equal(booking.data().status, "cancelled");
+  assert.equal(booking.data().paymentStatus, "refund_pending");
+  assert.equal(authorization.data().active, false);
+  assert.equal(events.size, 1);
+  assert.equal(events.docs[0].data().priority, "urgent");
+});

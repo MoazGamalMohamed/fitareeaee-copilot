@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {driverVerificationComplete, parseCreateTripRequest} from "./trip";
+import {
+  driverVerificationComplete,
+  parseCreateTripRequest,
+  routeDistanceKm,
+} from "./trip";
 
 const now = Date.UTC(2026, 6, 19, 12);
 
@@ -57,4 +61,10 @@ test("driver offers require every manual driver and vehicle check", () => {
     driverLicenseVerified: true,
     vehicleVerified: false,
   }), false);
+});
+
+test("map coordinates produce a realistic route distance", () => {
+  const dallasToAustin = routeDistanceKm(32.7767, -96.797, 30.2672, -97.7431);
+  assert.ok(dallasToAustin > 280);
+  assert.ok(dallasToAustin < 310);
 });

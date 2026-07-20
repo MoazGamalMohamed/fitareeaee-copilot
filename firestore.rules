@@ -57,7 +57,7 @@ service cloud.firestore {
         )
         && get(
           /databases/$(database)/documents/bookings/$(authorization.bookingId)
-        ).data.status == 'confirmed'
+        ).data.status in ['confirmed', 'in_progress']
         && get(
           /databases/$(database)/documents/bookings/$(authorization.bookingId)
         ).data.paymentStatus == 'paid';
@@ -112,6 +112,19 @@ service cloud.firestore {
         && (resource.data.passengerId == request.auth.uid
           || resource.data.driverId == request.auth.uid
           || isAdmin());
+      allow write: if false;
+    }
+
+    match /ratings/{ratingId} {
+      allow read: if signedIn()
+        && (resource.data.ratedByUserId == request.auth.uid
+          || resource.data.ratedUserId == request.auth.uid
+          || isAdmin());
+      allow write: if false;
+    }
+
+    match /admin_events/{eventId} {
+      allow read: if isAdmin();
       allow write: if false;
     }
 

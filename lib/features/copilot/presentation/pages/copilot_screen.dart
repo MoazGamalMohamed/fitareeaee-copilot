@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../data/copilot_repository.dart';
@@ -29,10 +30,13 @@ class _CopilotScreenState extends State<CopilotScreen> {
   final _budget = TextEditingController();
   final _package = TextEditingController();
   final _preferences = TextEditingController();
+  final _speech = SpeechToText();
   CopilotPlanResult? _result;
   String _intent = 'find';
   String _tripType = 'ride';
   bool _loading = false;
+  bool _speechReady = false;
+  bool _listening = false;
   String? _error;
 
   static const _examples = [
@@ -44,6 +48,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
 
   @override
   void dispose() {
+    _speech.stop();
     _scrollController.dispose();
     _requestFocus.dispose();
     for (final controller in [
@@ -224,10 +229,24 @@ class _CopilotScreenState extends State<CopilotScreen> {
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed: _loading ? null : _showVoiceInputHint,
-            icon: const Icon(Icons.mic_outlined),
-            label: const Text('Use voice input'),
+            onPressed: _loading ? null : _toggleVoiceInput,
+            icon: Icon(
+              _listening ? Icons.stop_circle_outlined : Icons.mic_outlined,
+            ),
+            label: Text(
+              _listening ? 'Stop listening' : 'Describe trip by voice',
+            ),
           ),
+          if (_listening) ...[
+            const SizedBox(height: 8),
+            Semantics(
+              liveRegion: true,
+              child: const Text(
+                'Listening… Speak in English or Arabic. Your words appear above.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _loading || _request.text.trim().length < 5
@@ -417,40 +436,76 @@ class _CopilotScreenState extends State<CopilotScreen> {
     );
   }
 
-  void _showVoiceInputHint() {
-    _requestFocus.requestFocus();
-    showModalBottomSheet(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.mic_outlined, color: AppColors.primary),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Voice input',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Use the microphone on your Android keyboard to dictate the ride or package request in English or Arabic. Fitareeaee will turn the dictated text into a reviewable AI draft.',
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => Navigator.pop(sheetContext),
-                child: const Text('Start dictating'),
-              ),
-            ],
-          ),
-        ),
+  Future<void> _toggleVoiceInput() async {
+    if (_listening) {
+      await _speech.stop();
+      if (mounted) setState(() => _listening = false);
+      return;
+    }
+
+    if (!_speechReady) {
+      _speechReady = await _speech.initialize(
+        onStatus: (status) {
+          if (!mounted) return;
+          if (status == 'done' || status == 'notListening') {
+            setState(() => _listening = false);
+          }
+        },
+        onError: (error) {
+          if (!mounted) return;
+          setState(() {
+            _listening = false;
+            _error = error.permanent
+                ? 'Microphone speech recognition is unavailable. Check the app microphone permission.'
+                : 'Voice input stopped. Try again or type the request.';
+          });
+        },
+      );
+    }
+    if (!_speechReady) {
+      if (mounted) {
+        setState(() {
+          _error =
+              'Speech recognition is not available on this device. You can still type the request.';
+        });
+      }
+      return;
+    }
+
+    final locales = await _speech.locales();
+    final wantsArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(_request.text);
+    String? localeId;
+    for (final locale in locales) {
+      final id = locale.localeId.toLowerCase();
+      if ((wantsArabic && id.startsWith('ar')) ||
+          (!wantsArabic && id.startsWith('en'))) {
+        localeId = locale.localeId;
+        break;
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _error = null;
+      _listening = true;
+    });
+    await _speech.listen(
+      listenOptions: SpeechListenOptions(
+        localeId: localeId,
+        listenFor: const Duration(seconds: 60),
+        pauseFor: const Duration(seconds: 5),
+        cancelOnError: true,
+        partialResults: true,
+        listenMode: ListenMode.dictation,
       ),
+      onResult: (result) {
+        if (!mounted) return;
+        setState(() {
+          _request.text = result.recognizedWords;
+          _request.selection = TextSelection.collapsed(
+            offset: _request.text.length,
+          );
+        });
+      },
     );
   }
 

@@ -1,6 +1,6 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
-import {bookingIsPaidAndConfirmed} from "./booking";
+import {bookingHasActivePaidTrip} from "./booking";
 
 export function conversationDocumentId(
   tripId: string,
@@ -84,7 +84,7 @@ export const authorizeBookingConversation = functions.https.onCall(
       );
     }
 
-    if (!bookingIsPaidAndConfirmed(booking)) {
+    if (!bookingHasActivePaidTrip(booking)) {
       await conversationRef.set({
         active: false,
         status: "payment_required",

@@ -21,6 +21,7 @@ import 'package:fitareeaee/features/copilot/domain/copilot_draft.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_screen.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_screen.dart';
 import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
+import 'package:fitareeaee/features/ratings/presentation/pages/rating_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -158,6 +159,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return BookingConfirmationScreen(
             tripId: tripId,
             requestedSeats: requestedSeats,
+          );
+        },
+      ),
+      GoRoute(
+        path: '${AppRoutes.trips}/:id/rate',
+        name: 'rate-trip',
+        builder: (context, state) {
+          final tripId = state.pathParameters['id'] ?? '';
+          final bookingId = state.uri.queryParameters['bookingId'] ?? '';
+          final ratedUserId = state.uri.queryParameters['ratedUserId'] ?? '';
+          if (tripId.isEmpty || bookingId.isEmpty || ratedUserId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Rating details are incomplete.')),
+            );
+          }
+          return RatingScreen(
+            bookingId: bookingId,
+            tripId: tripId,
+            ratedUserId: ratedUserId,
+            ratedUserName: 'Trip partner',
           );
         },
       ),
