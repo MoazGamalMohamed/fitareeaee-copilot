@@ -60,6 +60,7 @@ evidence to the sanitized publication history:
 | v1.0.9 public artifact and driver-smoke evidence | `54367090ee43ac93f7d41f8ce75a6662cfcc4258` | `a064e7aa69757a17d8ebf8341ff74c917d18cfcc` |
 | Final public-access and cold-launch integrity audit | `358a639daca99672d315009097433db4612e7a99` | `12e34a4e32bd9fd499b3c8ef1d136046d6a744b8` |
 | Complete current-source release-gate rerun | `f92f4e57369da413260be3eb3d923e62381d4232` | `e26b61dd245201f30761c27ee02f13dcfcc3c906` |
+| Read-only inherited Function inventory revalidation | `0a710d42a6b8fecaf70d123c79eedfcda21fc32b` | `c727ca376f43f0953cdf4da1d4ecb74d8485977e` |
 
 The annotated tag names are preserved:
 
