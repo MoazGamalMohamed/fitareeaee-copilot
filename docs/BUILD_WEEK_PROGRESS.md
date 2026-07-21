@@ -3618,3 +3618,82 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   retains the earlier complete physical-phone smoke. Next action: reconnect/unlock the
   phone, confirm v1.0.14, stop any retained recognizer session, and resume the remaining
   fictional judge path without reinstalling or rebuilding.
+
+## 2026-07-21 03:03 CDT / 2026-07-21 01:03 PDT — final driver offer and withdrawal gate (v1.0.16)
+
+- Objective: answer whether the driver Offer path was missing, exercise it on the
+  owner's phone, repeat the complete trip lifecycle gates, and close any concrete
+  defect found without changing the payment safety boundary.
+- Confirmed that the path is role-specific rather than missing: an account created
+  with **Offer** sees Driver/Courier guidance, Home **Create an offer**, bottom
+  **Offer**, rider/sender requests to browse, and the complete **Offer a Ride** form.
+  Rider accounts remain intentionally unable to elevate themselves into drivers.
+- A real fictional driver-offer smoke found that re-picking a map point changed the
+  coordinate/distance but retained the first generated label. Added a bounded helper
+  that refreshes only generated `Map pin` labels and preserves semantic/manual place
+  names. Added explicit Home role guidance and focused tests.
+- The physical v1.0.15 test then found one final lifecycle omission: an owner could
+  publish an open trip but not withdraw it. Added authenticated `withdrawTrip` with a
+  Firestore transaction. Only the owner of a `pending` trip can use it; unpaid
+  interest is cancelled and conversations are closed, while any paid/confirmed state
+  is rejected into the existing cancellation/admin-review flow. History is preserved.
+- Scoped Firebase deployment targeted only `functions:withdrawTrip` on confirmed
+  project `fitareeaee`. Cloud Functions reports version 1, Node 20, `ACTIVE`; no
+  other Function, rule, index, production document, billing setting, or payment state
+  was changed by deployment.
+- Exact gates: `dart format --output=none --set-exit-if-changed lib test` PASS (132
+  files, 0 changes); `flutter analyze` PASS (0 issues); `flutter test` PASS (49/49);
+  `npm run test` PASS (31/31 including withdrawal validation); Functions TypeScript
+  build PASS; Firestore/Storage authorization PASS (9/9); real
+  Auth/Functions/Firestore lifecycle integration PASS (10/10 including unauthorized
+  withdrawal denial, unpaid-interest closure, and paid-trip rejection).
+- Android builds PASS. Debug APK:
+  `build/app/outputs/flutter-apk/app-debug.apk`, 156,434,186 bytes, SHA-256
+  `27FC86EB7659806826B148FA366738873AA99B53BBD826F27275CCA52E0A0903`, built
+  2026-07-21 02:49 CDT / 00:49 PDT. Profile judge APK:
+  `build/app/outputs/flutter-apk/app-profile.apk`, 85,703,283 bytes, SHA-256
+  `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`, built
+  2026-07-21 02:51 CDT / 00:51 PDT.
+- Physical Moto G Play (2024): v1.0.16 local profile update-install PASS, package
+  version `1.0.16` / code `20260730`, cold launch 2.657 seconds. The fictional driver
+  opened My Trips, saw the new withdrawal safety dialog, withdrew only the disposable
+  $25 offer through the live callable, retained it as **Cancelled** history, and
+  confirmed it was absent from Available Trips. The seeded paid/confirmed fixture
+  remained visible and untouched; matched app error scan was zero.
+- Private application source `8a1321377fab99676d6d02294c054b1dd9ad692b`
+  exactly matches sanitized source tree at public commit
+  `a827e555f789f0913eb93c0ac34160f6b85d9218`. Annotated private tag object
+  `a58f30be637cbdd382c0e9981e7d7b8187227009` and public tag object
+  `27c63dce86a0d7bff4c388f728f332fc78094560` peel to their exact application
+  source commits. Branch and tag pushed without force.
+- Pre-push sanitized audit: 125 reachable revisions, 2,824 reachable object/path
+  lines, zero forbidden credential/config paths, zero high-signal secret-hit files,
+  zero rewrite refs, and a clean public worktree. The original repository still has
+  no remote and was not pushed.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk`.
+  GitHub reports Android-package content type, 85,703,283 bytes, and digest
+  `sha256:fbdb24024908450dd8df2686099a5f6a44a147b66e03b9b5ccdd51c25712415b`.
+- Anonymous download to `build/published-download-v116/app-profile.apk` exactly
+  matched local size/hash. Those exact public bytes update-installed on the phone,
+  reported version `1.0.16` / code `20260730`, cold-launched in 2.794 seconds to
+  Driver Home with Create an offer/Offer visible, and produced zero matched app
+  errors. The phone was left on Driver Home.
+- Draft PR #1 remains OPEN, draft, unmerged, cleanly mergeable, and points to exact
+  application head `a827e555`:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Removed 175 ignored generated host XML UI-dump files and the exact temporary phone
+  XML dumps after extracting non-sensitive results. No source, APK, app data,
+  production data, fixture credentials, or Git history was deleted.
+- Known boundaries: no real payment provider or private release signing; the
+  test-only paid fixture must not be described as a real charge. Legacy Runtime Config
+  credentials still require owner/provider rotation and the inherited Function set
+  still requires an explicit retirement decision. YouTube upload, `/feedback`,
+  private judge credential placement, legal review, and final Devpost submission are
+  owner-only.
+- Rollback point: immutable exact-public v1.0.16 source/APK above; v1.0.15 remains
+  available as the immediately preceding rollback. Next action: commit/mirror/push
+  this final documentation mapping, then record the 2:40 video and complete only the
+  owner-required Devpost actions.

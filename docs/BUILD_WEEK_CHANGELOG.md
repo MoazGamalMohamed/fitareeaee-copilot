@@ -14,6 +14,26 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Verified driver offer and withdrawal path — v1.0.16
+
+- Added an explicit Home account card so rider/sender accounts clearly explain that
+  they request and pay, while driver/courier accounts clearly explain that they offer
+  and receive payment after driver and vehicle verification.
+- Kept rider and driver identities intentionally separate as selected at sign-up;
+  a rider account cannot silently elevate itself into a driver account.
+- Fixed generated origin/destination text after a map point is re-picked while
+  preserving meaningful Copilot or manually entered place names.
+- Added authenticated, transactional withdrawal for an owner's still-open unpaid
+  request/offer. Unpaid interest is closed, paid/confirmed trips are rejected into
+  the existing cancellation/admin-review flow, and the cancelled trip remains in
+  history rather than being deleted.
+- Re-ran the full 49-test Flutter gate, 31 Functions contracts, 9 rules contracts,
+  and 10 real Auth/Firestore/Functions lifecycle integrations.
+- Published, anonymously downloaded, byte-matched, installed, and exercised the
+  v1.0.16 APK on a Moto G Play (2024). Driver Home, Offer form, interactive From/To
+  maps, live withdrawal/marketplace removal, paid-confirmed chat, completed-only
+  Past, and rating availability rendered with zero matched app exceptions.
+
 ### Reusable plans and session reliability — v1.0.14
 
 - Added account-scoped, editable local trip prompt templates so a rider or driver

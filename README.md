@@ -206,19 +206,24 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.14 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14)
+[v1.0.16 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16)
 separates rider/sender requests from driver/courier offers, adds a circular Home
 Copilot action, and hardens English/Arabic voice planning with explicit Android
 consent and a three-minute cap. It also adds editable, account-scoped local trip
 templates, accurate submitted/approved verification progress, and reliable
 rider/driver account switching. Publication now requires verified email, phone,
 manually approved ID, and selfie; drivers additionally require approved licence and
-vehicle records. Its 109,878,725-byte profile APK has SHA-256
-`487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E` and passed
-the complete local gate plus authenticated API 36 login/sign-out, templates,
-verification, maps, voice-permission, payment boundary, confirmed chat, Past, and
-rating checks. It remains a prerelease until the exact public download passes the
-physical-phone smoke; v1.0.5 remains the phone-tested rollback.
+vehicle records. v1.0.16 makes that account boundary explicit on Home, fixes
+generated labels after a map pin is re-picked, and lets an owner securely withdraw
+an open unpaid trip without deleting its history. Its 85,703,283-byte profile APK has
+SHA-256
+`FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B` and passed
+the complete local gate plus exact-public installation on a Moto G Play (2024),
+driver sign-in, Offer creation UI, interactive origin/destination selection,
+live withdrawal/marketplace removal, paid-confirmed chat, completed-only Past, and
+zero matched app exceptions. It remains
+a prerelease because the owner must still record the video and perform the legal
+Devpost submission; no real payment provider is claimed.
 
 ## Codex collaboration
 

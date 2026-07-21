@@ -4,13 +4,11 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
-Release gate status: **v1.0.14 passes source, lifecycle backend, rules, local APK,
+Release gate status: **v1.0.16 passes source, lifecycle backend, rules, local APK,
 fresh English/package/Arabic GPT-5.6 evidence, reusable-plan, verification-progress,
-and authenticated API 36 emulator gates; exact-public physical-phone smoke remains
-pending**. Public v1.0.5 remains the phone-tested stable rollback. Before recording,
-finish the v1.0.14 phone gate,
-enable Do Not Disturb, close messaging notifications, and use only the fictional
-judge account.
+API 36 emulator gates, scoped open-trip withdrawal, and exact-public physical-phone
+driver/Offer/map/chat/Past smoke**. Before recording, enable Do Not Disturb, close messaging notifications,
+and use only the fictional judge accounts. Do not show their credentials.
 
 ## Recording setup
 

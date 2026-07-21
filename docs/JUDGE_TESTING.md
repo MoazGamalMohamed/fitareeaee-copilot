@@ -3,23 +3,24 @@
 Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
 
 > Release status: the hardened lifecycle backend, rules, fictional judge fixtures,
-> and v1.0.14 public Android artifact are verified. The v1.0.14 APK was anonymously
-> downloaded, hash-matched, fresh-installed, and cold-launched on Android API 36.
-> Authenticated voice/map/templates/verification/account-switch testing passed on the
-> byte-identical local source artifact. Exact-public v1.0.14 installation, rider
-> login, interactive map selection, Android microphone consent, and active speech
-> recognition also pass on the Moto G Play (2024). USB disconnected before the
-> remaining full demo smoke; v1.0.5 remains the completed phone-tested rollback.
+> and v1.0.16 public Android artifact are verified. The v1.0.16 APK was anonymously
+> downloaded, hash-matched, installed, and cold-launched on a Moto G Play (2024).
+> The exact bytes passed driver sign-in, role guidance, Offer creation UI,
+> secure owner withdrawal, paid-confirmed chat, completed-only Past, and clean app-log checks. The same
+> byte-identical local artifact passed interactive From/To map selection and generated
+> label refresh. Earlier exact-public v1.0.14 testing covers Android microphone consent
+> and active three-minute speech recognition.
 
-> Current candidate: v1.0.14 retains the secure payment-gated lifecycle, complete
+> Current candidate: v1.0.16 retains the secure payment-gated lifecycle, complete
 > role-specific verification, and live GPT-5.6 path; it adds editable local recurring
-> plans, truthful submitted/approved progress, and reliable account switching. Its
-> 47/47 Flutter tests, 30/30 Functions contracts, 9/9 rules tests, 9/9 two-account
+> plans, truthful submitted/approved progress, reliable account switching, explicit
+> rider/driver guidance, correct labels after a map pin is re-picked, and secure
+> owner withdrawal for open unpaid trips. Its 49/49 Flutter tests, 31/31 Functions
+> contracts, 9/9 rules tests, 10/10 two-account
 > lifecycle integration, and API 36 authenticated UI smoke pass. The
-> [v1.0.14 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14)
-> is public and its 109,878,725-byte APK was independently downloaded, SHA-256
-> matched, fresh-installed, and tested. Keep v1.0.5 as the phone-tested rollback
-> until this exact v1.0.14 download is tested on the owner's phone.
+> [v1.0.16 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16)
+> is public and its 85,703,283-byte APK was independently downloaded, SHA-256
+> matched, installed, and tested on the owner's phone.
 
 Phone-tested rollback: universal profile APK, 83,378,603 bytes, SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
@@ -33,10 +34,10 @@ matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
 - Final source branch: [agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support)
 - Repository root/support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk)
+- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk)
 - Build type: universal AOT profile Android judge APK, debug-signed for sideloading
-- SHA-256: `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
-- Source tag/commit: `fitareeaee-copilot-v1.0.14` / sanitized `ed3a967585a4bb5854a6975173f77c4661f077de`
+- SHA-256: `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
+- Source tag/commit: `fitareeaee-copilot-v1.0.16` / sanitized `a827e555f789f0913eb93c0ac34160f6b85d9218`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
@@ -45,14 +46,19 @@ version 1 is destroyed, and `planTripWithCopilot` is deployed. On July 20 the ex
 public v1.0.13 APK returned validated `gpt-5.6` review drafts for an English ride, a
 5 kg English package, and an Arabic ride. No key was read or exposed.
 
-Current physical-phone judge path: **PARTIAL PASS** — the exact public v1.0.14 APK is
-installed on the Moto G Play (2024), cold-launched in 1.848 seconds, authenticated the
-fictional rider, selected an interactive map pin, obtained microphone consent, and
-started live recognition. The phone then disconnected from ADB before GPT-result,
-Chat/Past/rating, and driver-role completion. The older v1.0.5 artifact retains the
-complete phone smoke. No real payment or identity is used.
+Current physical-phone judge path: **PASS** — the exact public v1.0.16 APK is
+installed on the Moto G Play (2024), reports version `1.0.16` / code `20260730`, and
+cold-launched in 2.794 seconds. It authenticated the fictional driver, displayed the
+role-specific Home/Offer actions, opened the complete Offer form, loaded the seeded
+paid-confirmed conversation without the former Firebase failure, and showed the
+completed-only Past/rating state. The byte-identical local artifact also passed a
+live secure withdrawal that removed the disposable offer from Available while
+retaining it as Cancelled history. It also passed
+interactive From/To map pin selection and distinct refreshed labels. No matched app
+fatal, Flutter, Firebase, permission, or ANR error appeared. No real payment or
+identity is used.
 
-New bookings in v1.0.14 are deliberately **not confirmed before payment**. Since
+New bookings in v1.0.16 are deliberately **not confirmed before payment**. Since
 the contest build has no real payment provider, selecting a trip or driver creates
 only a pending-payment record and does not decrement seats or unlock chat. Use the
 seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.

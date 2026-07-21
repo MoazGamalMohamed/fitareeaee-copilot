@@ -1,36 +1,35 @@
 # Resume Here
 
-Last updated: 2026-07-20 13:13 CDT / 2026-07-20 11:13 PDT
+Last updated: 2026-07-21 02:23 CDT / 2026-07-21 00:23 PDT
 
 ## Current objective
 
-Publish, anonymously redownload, and emulator-test the fully passing v1.0.14
-artifact, then install those exact bytes on the owner's reconnected phone to finish
-the remaining technical gate. Finish the video, `/feedback`, legal review, and
-owner-performed Devpost submission. Do not replace the payment gate with simulated
-money.
+Preserve the fully passing, published, and phone-tested v1.0.16 candidate. The only
+submission-critical work left is owner-performed video recording/upload, `/feedback`,
+private judge-credential placement, legal review, and final Devpost submission. Do
+not replace the payment gate with simulated money or mutate the seeded demo lifecycle.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private v1.0.14 application source:
-  `22d5317f8d900560c9fba6a92d450529aed02bfe` (tree
-  `bcfb92a99879d02cd6340b931a0b983ed71906d1`).
-- Private/public annotated v1.0.14 tags peel to tree-equivalent application source;
-  the sanitized source is `ed3a967585a4bb5854a6975173f77c4661f077de`. Use the
+- Passing private v1.0.16 application source:
+  `8a1321377fab99676d6d02294c054b1dd9ad692b` (tree
+  `4eae30a3d3f7d98173b55e6d4798023265144932`).
+- Private/public annotated v1.0.16 tags peel to tree-identical application source;
+  the sanitized source is `a827e555f789f0913eb93c0ac34160f6b85d9218`. Use the
   tracked remote branch head for later documentation-only checkpoints; never retag
   the application source to a docs commit.
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Public v1.0.14 source is
-  `ed3a967585a4bb5854a6975173f77c4661f077de`; its tree exactly matches the
-  private v1.0.14 application source.
+- Public v1.0.16 source is
+  `a827e555f789f0913eb93c0ac34160f6b85d9218`; its tree exactly matches the
+  private v1.0.16 application source.
 - Draft PR #1 is open, draft, and unmerged:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`
-- PR #1 is open, draft, unmerged, and updated for v1.0.14.
-- Public v1.0.14 is the latest prerelease; the branch/tag were pushed without force.
+- PR #1 is open, draft, unmerged, cleanly mergeable, and updated for v1.0.16.
+- Public v1.0.16 is the latest prerelease; the branch/tag were pushed without force.
 - GitHub CLI 2.96.0 is installed and authenticated through the Windows keyring.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after a reachable-history secret scan and tree comparison.
@@ -47,8 +46,15 @@ money.
 - Home provides a circular **Plan with AI** action. Its bottom creation destination
   is **Request** for rider/sender accounts or verification-gated **Offer** for
   driver/courier accounts; there is no duplicate Home request card.
+- Home now explicitly labels the signed-in path: riders/senders request and pay;
+  drivers/couriers offer and receive payment after driver/vehicle verification.
 - Manual Request/Offer uses a full editable ride/package form with interactive
   OpenStreetMap origin/destination pins and visible attribution.
+- Re-picking a generated map point refreshes its coordinate label while preserving
+  semantic Copilot or manually entered place names.
+- Owners can withdraw a still-open unpaid request/offer through a transactional
+  callable. Paid/confirmed trips are rejected into cancellation/admin review; the
+  withdrawn trip remains as Cancelled history and leaves Available Trips.
 - Copilot accepts English/Arabic text, offers Auto/English/Arabic speech recognition
   behind an explicit Android consent prompt, stops by three minutes, reads drafts
   aloud, and hands confirmed drafts into deterministic live matching.
@@ -68,7 +74,8 @@ money.
 - Confirmed project: `fitareeaee`.
 - Booking, matching, chat, support, verification, lifecycle, rating, and projection
   callables remain deployed. The latest narrow deployment updated only `createTrip`,
-  `createBooking`, and `proposeForTripRequest` after their tests passed.
+  `createBooking`, and `proposeForTripRequest` after their tests passed; the final
+  scoped deployment added only `withdrawTrip` after 10/10 lifecycle integration.
 - Live `planTripWithCopilot` is deployed. Metadata-only verification shows managed
   `OPENAI_API_KEY` version 2 enabled and version 1 destroyed. Exact-public v1.0.13
   returned strict English ride, English package, and Arabic ride review drafts; no
@@ -86,40 +93,36 @@ money.
 
 - Dart format: 132 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 47/47.
-- Functions TypeScript/contracts: 30/30.
+- Flutter tests: 49/49.
+- Functions TypeScript/contracts: 31/31.
 - Firestore/Storage rules: 9/9.
-- Auth/Firestore/Functions integration: 9/9.
+- Auth/Firestore/Functions integration: 10/10.
 - Universal debug and optimized profile APK builds: PASS.
 - Scoped callable deployment to `fitareeaee`: PASS.
 
 ## Current APK and emulator evidence
 
-- Local v1.0.14 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Local v1.0.16 profile path: `build/app/outputs/flutter-apk/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 109,878,725 bytes
-- SHA-256: `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
-- Version: `1.0.14` / code `20260728`
-- API 36 install/authenticated rider login/sign-out/templates/verification smoke:
-  PASS; cleared log had no matching Flutter/Firebase/permission/fatal errors.
-- Physical v1.0.14 phone result: PARTIAL PASS on Moto G Play (2024). The exact public
-  APK installed over v1.0.5, reported version `1.0.14` / code `20260728`, cold-launched
-  in 1.848 seconds, authenticated the fictional rider, selected an interactive map
-  pin, requested Android microphone permission, and started live recognition with a
-  2:54 remaining timer. Cleared-path scans found zero matching app fatal, Flutter,
-  Firebase, or permission errors. USB disconnected before the remaining GPT result,
-  Chat/Past/rating, and driver-role taps.
-- The v1.0.13 evidence below is historical. v1.0.14 is independently downloaded,
-  hash-matched, and fresh-installed; v1.0.5 remains the phone-tested rollback.
+- Size: 85,703,283 bytes
+- SHA-256: `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
+- Version: `1.0.16` / code `20260730`
+- Physical phone result: PASS on Moto G Play (2024). Exact public bytes installed,
+  cold-launched in 2.794 seconds, retained the fictional driver session, and rendered
+  Driver Home, Create an offer, bottom Offer, the complete verified-driver form,
+  paid-confirmed conversation, completed-only Past, and rating availability. The
+  byte-identical local artifact exercised both interactive map pins, distinct
+  refreshed labels, and live owner withdrawal/marketplace removal. Cleared log scans
+  found zero matching app errors.
 
-- Current public v1.0.14 profile path: `build/published-download-v114/app-profile.apk`
+- Current public v1.0.16 profile path: `build/published-download-v116/app-profile.apk`
 - Type: optimized universal AOT profile APK, debug-signed for contest sideloading
-- Size: 109,878,725 bytes
-- SHA-256: `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
-- Version: `1.0.14` / code `20260728`
+- Size: 85,703,283 bytes
+- SHA-256: `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
+- Version: `1.0.16` / code `20260730`
 - Package/API: `com.fitareeaee.app`, minimum 24, target/compile 36
 - API 36 emulator fresh-account and fictional-rider lifecycle smoke: PASS.
-- v1.0.14 requires email, phone, approved ID, and approved selfie before a rider can
+- v1.0.16 requires email, phone, approved ID, and approved selfie before a rider can
   publish; drivers additionally need approved driver licence and vehicle. Verification
   shows four rider checks or six driver checks with real role-specific progress.
 - Exact candidate UI passes: circular Home Copilot; rider bottom Request; manual map
@@ -131,40 +134,32 @@ money.
   and the past trip Completed, while driver chat/start/emergency actions remain.
 - Confirmed chat log scan: no visible error, `FirebaseFailure`, `typing_status`,
   `PERMISSION_DENIED`, fatal exception, or `E/flutter` match.
-- Physical v1.0.14 phone result: exact install/core smoke PASS; complete demo smoke
-  interrupted when USB disconnected during the active-recognition check.
-- Public v1.0.14 release:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14`
-- Public v1.0.14 APK:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk`
-- Anonymous re-download: `build/published-download-v114/app-profile.apk`; exact
-  109,878,725-byte/hash/byte match. After an update attempt exposed insufficient
-  emulator storage, only `com.fitareeaee.app` and its emulator-local data were
-  removed; the downloaded copy then fresh-installed and cold-launched to Login with
-  correct package/version/API metadata and no matched fatal/Firebase error.
-- Phone-tested rollback remains public v1.0.5.
+- Public v1.0.16 release:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16`
+- Public v1.0.16 APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk`
+- Anonymous re-download: `build/published-download-v116/app-profile.apk`; exact
+  85,703,283-byte/hash/byte match and physical-phone update install/cold launch PASS.
 
 ## Remaining owner-only actions
 
-1. Reconnect/unlock the phone and approve USB debugging if Android asks; v1.0.14 is
-   already installed, so resume the interrupted GPT/Chat/Past/rating/driver checks.
-2. Confirm provider-side revocation of the exposed old OpenAI key and legacy Runtime
+1. Confirm provider-side revocation of the exposed old OpenAI key and legacy Runtime
    Config email/Stripe test credentials. Never paste replacements into chat.
-3. Decide whether the exact inherited Function list in `docs/OWNER_ACTIONS.md` must
+2. Decide whether the exact inherited Function list in `docs/OWNER_ACTIONS.md` must
    be preserved or retired; no deletion is inferred.
-4. Record the final 2:40 demo with fictional data, audio narration, no private data,
+3. Record the final 2:40 demo with fictional data, audio narration, no private data,
    and no unauthorized music; upload it publicly to YouTube.
-5. Put dedicated judge credentials only in Devpost's private testing field.
-6. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
-7. Review eligibility, ownership, privacy, links, and legal attestations, then
+4. Put dedicated judge credentials only in Devpost's private testing field.
+5. Run `/feedback` in this primary thread and paste its Session ID into Devpost.
+6. Review eligibility, ownership, privacy, links, and legal attestations, then
    personally perform the final Devpost submit action.
-8. Real payment-provider onboarding remains intentionally outside this contest
+7. Real payment-provider onboarding remains intentionally outside this contest
    checkpoint. Do not represent the fictional paid fixture as a real charge.
 
 ## Exact next action
 
-When ADB sees the Motorola device again, confirm installed version `1.0.14` / code
-`20260728`, stop any retained speech session, then resume the GPT result,
-matches/details/payment gate, seeded paid Chat/Past/rating, and driver lifecycle.
-The exact-public install, Home, rider login, interactive From pin, microphone consent,
-and live recognition already pass. Promote only after the remaining checks pass.
+Use the installed v1.0.16 driver account for the Offer/map segment and the private
+fictional rider account for the GPT-5.6/matches/details/payment-boundary segment.
+Preserve the seeded paid-confirmed and completed fixtures for Chat/Past/rating. Record
+the 2:40 video, upload it publicly, run `/feedback`, add the private credentials and
+Session ID, review every public link/legal attestation, and personally submit Devpost.

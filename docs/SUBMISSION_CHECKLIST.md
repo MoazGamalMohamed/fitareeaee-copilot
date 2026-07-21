@@ -187,8 +187,19 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Install that exact public v1.0.14 download on the owner's phone; verify version,
   cold launch, rider login, interactive map selection, microphone consent, and active
   speech recognition with zero matching app errors.
-- [ ] Reconnect after the USB interruption, finish GPT-result, Chat/Past/rating, and
-  driver-role phone smoke, then promote v1.0.14 from prerelease to stable.
+- [x] Build v1.0.16 from the passing 49-test source; verify the driver role card,
+  Offer navigation, complete driver verification disclosure, and refreshed labels
+  after interactive map repicks.
+- [x] Add authenticated transactional withdrawal for an owner's open unpaid trip;
+  pass 31/31 contracts and 10/10 real lifecycle integrations, then deploy only
+  `withdrawTrip` to `fitareeaee`.
+- [x] Publish v1.0.16 without force, anonymously re-download and byte-match
+  85,703,283 bytes and SHA-256
+  `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`.
+- [x] Install the exact public v1.0.16 download on the owner's Moto G Play; verify
+  version `1.0.16` / code `20260730`, driver Home/Offer, live disposable-trip
+  withdrawal/marketplace removal, paid-confirmed chat, completed-only Past/rating,
+  and zero matched app errors.
 
 ## Devpost materials
 
@@ -198,7 +209,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.14
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.16
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on
@@ -235,6 +246,5 @@ Exact owner steps and the inherited Function set are recorded in
 1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
    managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Finish the interrupted exact-public v1.0.14 phone smoke, then complete YouTube
-   upload, `/feedback`, private credential placement, legal confirmation, and the
-   final Devpost submit action.
+3. Complete YouTube upload, `/feedback`, private credential placement, legal
+   confirmation, and the final owner-performed Devpost submit action.

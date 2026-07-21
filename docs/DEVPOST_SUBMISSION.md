@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.14/app-profile.apk — 109,878,725 bytes; SHA-256 `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk — 85,703,283 bytes; SHA-256 `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
 
 **Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
 
@@ -176,7 +176,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.14 candidate includes complete role-specific publication verification,
+- The v1.0.16 candidate includes complete role-specific publication verification,
   repaired confirmed chat, interactive map pins, permanent linked
   OpenStreetMap attribution, English/Arabic speech entry, and editable curated
   location suggestions. It does not include turn-by-turn navigation, routing-service
@@ -200,10 +200,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.14 candidate APK URL, size, SHA-256, and stable v1.0.5 rollback
+- **DONE:** v1.0.16 candidate APK URL, size, SHA-256, and exact-public phone install
 - **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
-- **PENDING:** exact-public v1.0.14 physical-phone smoke and stable promotion
-- **DONE:** release tag `fitareeaee-copilot-v1.0.14` / sanitized source commit `ed3a967585a4bb5854a6975173f77c4661f077de`
+- **DONE:** exact-public v1.0.16 driver/Offer/withdrawal/chat/Past physical-phone smoke
+- **DONE:** release tag `fitareeaee-copilot-v1.0.16` / sanitized source commit `a827e555f789f0913eb93c0ac34160f6b85d9218`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** primary Codex `/feedback` Session ID
