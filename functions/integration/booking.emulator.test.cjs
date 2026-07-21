@@ -162,6 +162,52 @@ test("unverified rider cannot publish a request", async () => {
   assert.equal(result.ok, false);
 });
 
+test("owner withdrawal cancels unpaid interest but rejects paid trips", async () => {
+  const openTripId = `withdraw-open-${Date.now()}`;
+  await seedTrip(openTripId, 2);
+  const pending = await callable("createBooking", riderA.token, {
+    schemaVersion: 1,
+    tripId: openTripId,
+    seats: 1,
+  });
+  assert.equal(pending.ok, true);
+  const unauthorized = await callable("withdrawTrip", riderA.token, {
+    schemaVersion: 1,
+    tripId: openTripId,
+  });
+  assert.equal(unauthorized.ok, false);
+
+  const withdrawn = await callable("withdrawTrip", driver.token, {
+    schemaVersion: 1,
+    tripId: openTripId,
+  });
+  assert.equal(withdrawn.ok, true);
+  assert.equal(withdrawn.body.result.status, "cancelled");
+  assert.equal((await db.collection("trips").doc(openTripId).get()).data().status, "cancelled");
+  const openBookings = await db.collection("bookings").where("tripId", "==", openTripId).get();
+  assert.equal(openBookings.docs.length, 1);
+  assert.equal(openBookings.docs[0].data().status, "cancelled");
+
+  const paidTripId = `withdraw-paid-${Date.now()}`;
+  await seedTrip(paidTripId, 1);
+  const paidPending = await callable("createBooking", riderB.token, {
+    schemaVersion: 1,
+    tripId: paidTripId,
+    seats: 1,
+  });
+  assert.equal(paidPending.ok, true);
+  await db.collection("bookings").doc(paidPending.body.result.bookingId).update({
+    status: "confirmed",
+    paymentStatus: "paid",
+  });
+  const paidWithdrawal = await callable("withdrawTrip", driver.token, {
+    schemaVersion: 1,
+    tripId: paidTripId,
+  });
+  assert.equal(paidWithdrawal.ok, false);
+  assert.equal((await db.collection("trips").doc(paidTripId).get()).data().status, "pending");
+});
+
 test("potential requests do not reserve inventory or authorize chat", async () => {
   const tripId = `integration-final-seat-${Date.now()}`;
   await seedTrip(tripId, 1);

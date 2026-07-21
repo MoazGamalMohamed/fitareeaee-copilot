@@ -7,6 +7,7 @@ import {
   participantVerificationComplete,
   routeDistanceKm,
 } from "./trip";
+import {parseTripWithdrawalRequest, tripCanBeWithdrawn} from "./lifecycle";
 
 const now = Date.UTC(2026, 6, 19, 12);
 
@@ -96,4 +97,16 @@ test("map coordinates produce a realistic route distance", () => {
   const dallasToAustin = routeDistanceKm(32.7767, -96.797, 30.2672, -97.7431);
   assert.ok(dallasToAustin > 280);
   assert.ok(dallasToAustin < 310);
+});
+
+test("only an owner can withdraw an open unconfirmed trip", () => {
+  assert.deepEqual(
+    parseTripWithdrawalRequest({schemaVersion: 1, tripId: "trip-123"}),
+    {schemaVersion: 1, tripId: "trip-123"}
+  );
+  assert.throws(() => parseTripWithdrawalRequest({tripId: "bad/id"}));
+  assert.equal(tripCanBeWithdrawn({driverId: "owner", status: "pending"}, "owner"), true);
+  assert.equal(tripCanBeWithdrawn({driverId: "other", status: "pending"}, "owner"), false);
+  assert.equal(tripCanBeWithdrawn({driverId: "owner", status: "confirmed"}, "owner"), false);
+  assert.equal(tripCanBeWithdrawn({driverId: "owner", status: "cancelled"}, "owner"), false);
 });

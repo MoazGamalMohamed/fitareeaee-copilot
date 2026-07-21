@@ -6,6 +6,11 @@ interface BookingLifecycleRequest {
   bookingId: string;
 }
 
+interface TripWithdrawalRequest {
+  schemaVersion: 1;
+  tripId: string;
+}
+
 function parseLifecycleRequest(value: unknown): BookingLifecycleRequest {
   if (value === null || typeof value !== "object") {
     throw new functions.https.HttpsError("invalid-argument", "A booking is required.");
@@ -17,6 +22,23 @@ function parseLifecycleRequest(value: unknown): BookingLifecycleRequest {
     throw new functions.https.HttpsError("invalid-argument", "A valid booking is required.");
   }
   return {schemaVersion: 1, bookingId};
+}
+
+export function parseTripWithdrawalRequest(value: unknown): TripWithdrawalRequest {
+  if (value === null || typeof value !== "object") {
+    throw new functions.https.HttpsError("invalid-argument", "A trip is required.");
+  }
+  const data = value as Record<string, unknown>;
+  const tripId = typeof data.tripId === "string" ? data.tripId.trim() : "";
+  if ((data.schemaVersion !== undefined && data.schemaVersion !== 1) ||
+      !tripId || tripId.length > 256 || tripId.includes("/")) {
+    throw new functions.https.HttpsError("invalid-argument", "A valid trip is required.");
+  }
+  return {schemaVersion: 1, tripId};
+}
+
+export function tripCanBeWithdrawn(data: Record<string, unknown>, ownerId: string): boolean {
+  return data.driverId === ownerId && data.status === "pending";
 }
 
 function callableError(error: unknown, fallback: string): never {
@@ -227,6 +249,70 @@ export const cancelTrip = functions.https.onCall(async (rawData, context) => {
     });
   } catch (error) {
     return callableError(error, "Trip could not be cancelled.");
+  }
+});
+
+/** Withdraws an owner's unpublished/unpaid marketplace trip without deleting history. */
+export const withdrawTrip = functions.https.onCall(async (rawData, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError("unauthenticated", "Sign in before withdrawing a trip.");
+  }
+  const request = parseTripWithdrawalRequest(rawData);
+  const db = getFirestore();
+  const tripRef = db.collection("trips").doc(request.tripId);
+
+  try {
+    return await db.runTransaction(async (transaction) => {
+      const tripSnapshot = await transaction.get(tripRef);
+      if (!tripSnapshot.exists) {
+        throw new functions.https.HttpsError("not-found", "Trip not found.");
+      }
+      const trip = tripSnapshot.data()!;
+      if (!tripCanBeWithdrawn(trip, context.auth!.uid)) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "Only the owner can withdraw an open, unconfirmed trip."
+        );
+      }
+
+      const relatedQuery = db.collection("bookings").where("tripId", "==", request.tripId);
+      const relatedBookings = await transaction.get(relatedQuery);
+      const hasPaidOrConfirmedBooking = relatedBookings.docs.some((document) => {
+        const booking = document.data();
+        return booking.paymentStatus === "paid" ||
+          booking.status === "confirmed" || booking.status === "in_progress";
+      });
+      if (hasPaidOrConfirmedBooking) {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "A paid or confirmed trip must use the cancellation and admin-review flow."
+        );
+      }
+
+      const now = Timestamp.now();
+      transaction.update(tripRef, {
+        status: "cancelled",
+        cancelled_at: now,
+        updated_at: now,
+      });
+      for (const document of relatedBookings.docs) {
+        const booking = document.data();
+        if (booking.status === "completed" || booking.status === "cancelled") continue;
+        transaction.update(document.ref, {status: "cancelled", updatedAt: now});
+        const conversationId = typeof booking.conversationId === "string" ?
+          booking.conversationId : "";
+        if (conversationId) {
+          transaction.set(
+            db.collection("conversation_authorizations").doc(conversationId),
+            {active: false, status: "cancelled", updatedAt: now},
+            {merge: true}
+          );
+        }
+      }
+      return {schemaVersion: 1, tripId: request.tripId, status: "cancelled"};
+    });
+  } catch (error) {
+    return callableError(error, "Trip could not be withdrawn.");
   }
 });
 

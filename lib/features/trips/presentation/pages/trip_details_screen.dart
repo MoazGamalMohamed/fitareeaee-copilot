@@ -337,13 +337,24 @@ class TripDetailsScreen extends ConsumerWidget {
                     ),
                   )
                 else if (isOwnTrip)
-                  ElevatedButton(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.grey[300],
-                    ),
-                    child: const Text('Your Own Trip'),
+                  Column(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () => _withdrawOwnTrip(context, ref, trip),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          foregroundColor: Colors.red.shade700,
+                        ),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Withdraw this trip'),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => context.push('/support'),
+                        icon: const Icon(Icons.support_agent_outlined),
+                        label: const Text('Need help? Contact support'),
+                      ),
+                    ],
                   )
                 else if (trip.isRequest)
                   ElevatedButton.icon(
@@ -1323,6 +1334,54 @@ class TripDetailsScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error.message ?? 'Trip could not be cancelled.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _withdrawOwnTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Withdraw this trip?'),
+        content: const Text(
+          'This removes the open trip from the marketplace and closes unpaid proposals. Paid or confirmed trips must use the cancellation and admin-review flow.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep trip'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Withdraw trip'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await FirebaseFunctions.instance.httpsCallable('withdrawTrip').call({
+        'schemaVersion': 1,
+        'tripId': trip.id,
+      });
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(userTripsProvider(trip.driverId));
+      ref.invalidate(availableTripsProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip withdrawn from the marketplace.')),
+      );
+      context.go('/trips?tab=my');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip could not be withdrawn.'),
         ),
       );
     }
