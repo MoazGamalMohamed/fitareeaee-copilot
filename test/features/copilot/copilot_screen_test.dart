@@ -48,6 +48,24 @@ void main() {
     );
   });
 
+  test('voice transcript preserves text and ignores an empty reset result', () {
+    const typed = 'I need an accessible ride';
+    final partial = mergeCopilotVoiceTranscript(typed, 'from Dallas');
+    expect(partial, 'I need an accessible ride from Dallas');
+
+    // Native recognizers may emit an empty callback after useful partial text.
+    // The screen retains the last non-empty transcript before calling merge.
+    expect(mergeCopilotVoiceTranscript(typed, ''), typed);
+    expect(
+      mergeCopilotVoiceTranscript('أحتاج رحلة', 'من دالاس إلى أوستن'),
+      'أحتاج رحلة من دالاس إلى أوستن',
+    );
+    expect(
+      mergeCopilotVoiceTranscript('Keep trailing space ', 'and add'),
+      'Keep trailing space and add',
+    );
+  });
+
   testWidgets('Copilot failure keeps retry and manual fallback available', (
     tester,
   ) async {

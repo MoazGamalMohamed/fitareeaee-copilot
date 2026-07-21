@@ -48,6 +48,14 @@ String copilotVoiceErrorMessage(String rawError) {
   return 'Voice input stopped. Tap the microphone to try again or type the request.';
 }
 
+String mergeCopilotVoiceTranscript(String existingText, String transcript) {
+  final recognized = transcript.trim();
+  if (recognized.isEmpty) return existingText;
+  if (existingText.isEmpty) return recognized;
+  final separator = RegExp(r'\s$').hasMatch(existingText) ? '' : ' ';
+  return '$existingText$separator$recognized';
+}
+
 class CopilotScreen extends StatefulWidget {
   final CopilotPlanner? planner;
   final String? role;
@@ -89,6 +97,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   int _voiceSecondsRemaining = 180;
   Timer? _voiceTimer;
   String _voicePrefix = '';
+  String _voiceTranscript = '';
   String _voiceLanguage = 'auto';
   String? _error;
   List<TripPromptTemplate> _templates = const [];
@@ -855,7 +864,8 @@ class _CopilotScreenState extends State<CopilotScreen> {
         }
       }
       if (!mounted) return;
-      _voicePrefix = _request.text.trim();
+      _voicePrefix = _request.text;
+      _voiceTranscript = '';
       setState(() {
         _error = null;
         _listening = true;
@@ -874,14 +884,18 @@ class _CopilotScreenState extends State<CopilotScreen> {
         onResult: (result) {
           if (!mounted) return;
           final recognized = result.recognizedWords.trim();
-          final combined = [
-            if (_voicePrefix.isNotEmpty) _voicePrefix,
-            if (recognized.isNotEmpty) recognized,
-          ].join(' ');
+          // Android can emit an empty/reset callback after useful partial
+          // results. Keep the latest non-empty transcript so that callback
+          // cannot erase either the user's typed request or dictated words.
+          if (recognized.isNotEmpty) _voiceTranscript = recognized;
+          final combined = mergeCopilotVoiceTranscript(
+            _voicePrefix,
+            _voiceTranscript,
+          );
           setState(() {
-            _request.text = combined;
-            _request.selection = TextSelection.collapsed(
-              offset: combined.length,
+            _request.value = TextEditingValue(
+              text: combined,
+              selection: TextSelection.collapsed(offset: combined.length),
             );
           });
         },
