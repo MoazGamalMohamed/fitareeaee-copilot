@@ -224,6 +224,15 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Install the exact public v1.0.18 download on the owner's Moto G Play and verify
   both actions, both map forms, the two-choice Trips menu, both GPT manual actions,
   and zero matched app fatal/FirebaseFailure/unhandled/ANR errors.
+- [x] Publish v1.0.19 searchable address choices, reverse-geocoded pins, Android
+  current-location consent, English/Arabic locale/RTL, and canonical USD/AED/SAR
+  input/display handling.
+- [x] Pass v1.0.19 format 136/0, analysis 0 issues, Flutter 56/56, Functions build,
+  debug/profile Android builds, live phone location permission/reverse-address smoke,
+  and exact-public APK installation.
+- [x] Publish/tag sanitized source `9feaf5c07090f960585b59a7b34500b59b706b88`
+  without force; anonymously resume/download and byte-match 88,963,947 bytes and
+  SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
 
 ## Devpost materials
 
@@ -233,7 +242,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.18
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.19
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on

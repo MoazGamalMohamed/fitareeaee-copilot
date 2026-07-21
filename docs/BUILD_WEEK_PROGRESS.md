@@ -3917,3 +3917,69 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   credentials, record/upload the public under-three-minute video, place fictional
   judge credentials privately, run `/status` for the Session ID, review legal/
   eligibility statements, and click Devpost's final submit action.
+
+## 2026-07-21 17:04 CDT / 2026-07-21 15:04 PDT — v1.0.19 searchable map, locale, and currency release
+
+- Objective: fix the reported raw-pin-only map, missing address choices, ineffective
+  app-language preference, and hard-coded currency display without changing the secure
+  payment/chat/trip lifecycle.
+- Completed: address search now returns up to six selectable OpenStreetMap/Nominatim
+  matches; search selection recenters the map; pin taps reverse-resolve a readable
+  address; **My location** requests native Android permission; coordinate fallback and
+  permanent linked attribution remain. Trip creation and profile editing receive the
+  resolved address/city/country.
+- Completed: app interface language is independent from accepted GPT/voice languages;
+  Flutter Material/Widgets/Cupertino localization delegates, English/Arabic locale,
+  RTL direction, and primary Home/settings/map translations are wired to the persisted
+  setting. Dark-mode persistence is also honored by the app shell.
+- Completed: USD/AED/SAR are functional input/display preferences across trip creation,
+  proposals, matches, details, booking, payments, and trip history. Firebase amounts
+  remain canonical USD; AED/SAR use their official USD pegs and the UI discloses this.
+- Main files changed: map geocoder/picker, trip/profile location handoff, Android
+  manifest, localization/app shell/Home/settings, currency formatter and price
+  surfaces, dependencies/version metadata, and focused regression tests. Version is
+  `1.0.19+20260733`.
+- Exact gates: `dart format --output=none --set-exit-if-changed lib test` PASS — 136
+  files, 0 changes; `flutter analyze` PASS — no issues; `flutter test` PASS — 56/56;
+  focused map/settings/currency tests PASS; `npm run build` in `functions/` PASS;
+  `flutter build apk --debug` PASS; `flutter build apk --profile` PASS.
+- Local profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT
+  profile, debug-signed; 88,963,947 bytes; SHA-256
+  `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`;
+  built 2026-07-21 16:34:56 CDT / 14:34:56 PDT from private application commit
+  `afe6da7f02795728293b3ee7d6fe558719a3c4a0`.
+- Physical phone: local APK and then exact anonymously downloaded public APK both
+  update-installed successfully on Moto G Play (2024), device `ZY22KQPKZS`.
+  Installed metadata is version `1.0.19` / code `20260733`, min API 24 / target API
+  36. Before the public reinstall, Request creation opened the new map, Android showed
+  native location consent, and the current-location pin reverse-resolved to a readable
+  county/state/country address. Further automated visual taps stopped when the owner
+  switched to WhatsApp; language/currency are covered by passing automated tests and
+  are not mislabeled as a separate phone-visual pass.
+- Private application commit `afe6da7f02795728293b3ee7d6fe558719a3c4a0` and
+  sanitized public commit `9feaf5c07090f960585b59a7b34500b59b706b88` are
+  tree-identical at `5711defb91c664244c4be8c1d6091e86f0b75222`. Annotated tag
+  `fitareeaee-copilot-v1.0.19` identifies each corresponding commit. Public branch and
+  tag were pushed without force; remote read-back matches. The private repository
+  remains remote-free.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.19`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.19/app-profile.apk`.
+  Anonymous download initially ended early at 41,709,632 bytes, was correctly rejected,
+  then resumed from that byte. Final public bytes exactly match 88,963,947 bytes and the
+  SHA-256 above and installed successfully.
+- Sanitization: staged/public diff check passed; zero forbidden credential/config paths
+  or high-signal secret-pattern matches. No Firebase deployment, production data,
+  billing/payment state, API secret, judge fixture, or lifecycle callable changed.
+- Known boundaries: public Nominatim is called only on explicit search/pin actions and
+  rate-limited to one request per second; the app keeps a coordinate fallback. A
+  production-scale launch should contract a production geocoding/tile provider. No
+  real payment processor or private release signing is configured. Existing legacy
+  credential-rotation warnings remain owner actions.
+- Rollback point: immutable v1.0.19 source/tag/APK above; v1.0.18 retains the prior
+  complete dual-action/clean-log phone evidence and v1.0.16 retains lifecycle/chat/Past
+  evidence. Next action: commit and synchronize this documentation-only evidence,
+  update draft PR metadata, verify public tree/remote links, then the owner records the
+  2:40 video, runs `/status`, places private judge credentials, completes legal review
+  and credential rotation, and performs the final Devpost submit action.

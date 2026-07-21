@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.18/app-profile.apk — 110,009,797 bytes; SHA-256 `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.19/app-profile.apk — 88,963,947 bytes; SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`
 
 **Primary Codex Session ID:** **PENDING — run `/status` in the primary build thread, then paste the displayed Session ID into Devpost's `/feedback` Session ID field**
 
@@ -176,9 +176,9 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.18 candidate includes separate Request and Offer actions, action-specific publication verification,
-  repaired confirmed chat, interactive map pins, permanent linked
-  OpenStreetMap attribution, English/Arabic speech entry, and editable curated
+- The v1.0.19 candidate includes separate Request and Offer actions, action-specific
+  publication verification, repaired confirmed chat, searchable OpenStreetMap address
+  choices, reverse-geocoded pins, English/Arabic app locale and speech entry, and editable curated
   location suggestions. It also makes Codex's engineering contribution and GPT-5.6's
   runtime role explicit in the product and evidence. It does not include turn-by-turn navigation, routing-service
   ETA, network-wide geocoding autocomplete, or full Arabic UI localization.
@@ -201,10 +201,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.18 candidate APK URL, size, SHA-256, and exact-public phone install
+- **DONE:** v1.0.19 candidate APK URL, size, SHA-256, and exact-public phone install
 - **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
-- **DONE:** exact-public v1.0.18 dual Request/Offer/Trips/GPT navigation and clean-log physical-phone smoke; v1.0.17 retains the live GPT-5.6 call evidence and v1.0.16 retains the unchanged lifecycle/chat/Past evidence
-- **DONE:** release tag `fitareeaee-copilot-v1.0.18` / sanitized source commit `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
+- **DONE:** exact-public v1.0.19 location-permission/reverse-address and install evidence; v1.0.18 retains dual Request/Offer/Trips/GPT and clean-log phone smoke, v1.0.17 retains live GPT-5.6 call evidence, and v1.0.16 retains lifecycle/chat/Past evidence
+- **DONE:** release tag `fitareeaee-copilot-v1.0.19` / sanitized source commit `9feaf5c07090f960585b59a7b34500b59b706b88`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** run `/status` in the primary Codex thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field

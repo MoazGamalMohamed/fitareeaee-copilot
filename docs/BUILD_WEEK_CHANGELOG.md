@@ -14,6 +14,28 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Searchable maps, Arabic locale, and working currencies - v1.0.19
+
+- Replaced the raw-pin-only map experience with deliberate address search returning
+  up to six selectable OpenStreetMap/Nominatim results, readable reverse-geocoded pins,
+  and a coordinate fallback when the address service is unavailable.
+- Added **My location** with Android coarse/fine permission consent and retained
+  permanent linked OpenStreetMap attribution.
+- Passed the resolved address, city, and country back into trip creation and profile
+  editing instead of storing an unexplained coordinate label.
+- Separated app-interface language from GPT planning/voice language preferences,
+  wired Flutter localization delegates and Arabic RTL, and translated the primary
+  Home/settings/map controls.
+- Made USD/AED/SAR functional display/input preferences. Existing trip and booking
+  values remain canonical USD in Firebase; AED/SAR use their official USD pegs for
+  transparent conversion on creation, proposals, results, details, booking, and
+  payment views.
+- Passed exact format (136/0), `flutter analyze` (0 issues), Flutter tests (56/56),
+  Functions TypeScript build, debug/profile Android builds, physical Android native
+  location-consent/reverse-address smoke, and exact-public APK install.
+- Published and anonymously byte-matched the 88,963,947-byte APK with SHA-256
+  `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
+
 ### Separate Request and Offer actions - v1.0.18
 
 - Replaced account-role-only creation with two clear Home actions: **Request a ride

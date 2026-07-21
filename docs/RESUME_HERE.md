@@ -1,10 +1,10 @@
 # Resume Here
 
-Last updated: 2026-07-21 14:43 CDT / 2026-07-21 12:43 PDT
+Last updated: 2026-07-21 16:59 CDT / 2026-07-21 14:59 PDT
 
 ## Current objective
 
-Preserve the fully passing, published, and phone-tested v1.0.18 judge candidate:
+Preserve the fully passing, published, and phone-installed v1.0.19 judge candidate:
 **Fitareeaee — GPT-5.6 Ride & Delivery Planner**. The only submission-critical work
 left is owner-performed video recording/upload, `/status` Session ID placement,
 private judge-credential placement, eligibility/legal review, credential rotation,
@@ -31,18 +31,18 @@ and the final Devpost submit action.
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Exact v1.0.18 application source:
-  `836a573ac269fcb1fd31421e55ba1dc285c0832f`
-- Private source tree: `63df0ffa2f0a582f8e7091ddc84021e47bddca95`
+- Exact v1.0.19 application source:
+  `afe6da7f02795728293b3ee7d6fe558719a3c4a0`
+- Private source tree: `5711defb91c664244c4be8c1d6091e86f0b75222`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Exact sanitized v1.0.18 source:
-  `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
-- Public source tree: `63df0ffa2f0a582f8e7091ddc84021e47bddca95`
+- Exact sanitized v1.0.19 source:
+  `9feaf5c07090f960585b59a7b34500b59b706b88`
+- Public source tree: `5711defb91c664244c4be8c1d6091e86f0b75222`
 - Private/public application trees: **exact match**.
-- Tag: `fitareeaee-copilot-v1.0.18`; local and remote public tags peel to
-  `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`.
+- Tag: `fitareeaee-copilot-v1.0.19`; local and remote public tags peel to
+  `9feaf5c07090f960585b59a7b34500b59b706b88`.
 - Draft PR #1: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1>
   — OPEN, draft, unmerged; the immutable application tag is `6a9b37d5` and
   later branch commits contain documentation evidence only.
@@ -53,12 +53,11 @@ and the final Devpost submit action.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after the same history scan and tree comparison.
 
-## Passing v1.0.18 gates
+## Passing v1.0.19 gates
 
-- Dart format: 133 files, 0 changes.
+- Dart format: 136 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 50/50.
-- Functions TypeScript/contracts: 33/33.
+- Flutter tests: 56/56.
 - Functions build: PASS.
 - Firestore/Storage authorization rules: 9/9.
 - Real Auth/Functions/Firestore lifecycle integration: 10/10.
@@ -72,23 +71,25 @@ and the final Devpost submit action.
 
 ## Final public Android artifact
 
-- Release: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.18>
-- Direct APK: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.18/app-profile.apk>
+- Release: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.19>
+- Direct APK: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.19/app-profile.apk>
 - Local path: `build/app/outputs/flutter-apk/app-profile.apk`
-- Anonymous public download: `build/published-download-v118/app-profile.apk`
+- Anonymous public download: `build/published-download-v119/app-profile.apk`
 - Type: universal AOT profile APK, debug-signed for contest sideloading.
-- Version: `1.0.18` / code `20260732`.
+- Version: `1.0.19` / code `20260733`.
 - Minimum/target Android: API 24 / API 36.
-- Size: 110,009,797 bytes.
+- Size: 88,963,947 bytes.
 - SHA-256:
-  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`.
+  `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
 - GitHub reports Android-package content type, the exact same size, and the exact
   same digest.
 - Anonymous re-download: exact byte/hash match.
-- Physical phone: exact public bytes update-installed on Moto G Play (2024), cold
-  launch PASS in 1.930 seconds, top-resumed `MainActivity`, separate Request/Offer,
-  both map forms, Trips/GPT two-choice paths visible, version/API metadata correct,
-  and zero matched fatal/Flutter/FirebaseFailure/unhandled/ANR errors.
+- Physical phone: exact public bytes update-installed on Moto G Play (2024), with
+  version/API metadata correct. Before the public reinstall, the identical local APK
+  requested native location consent and resolved a live pin to a readable address.
+  Automated UI navigation stopped when the owner switched to another foreground app;
+  language/currency behavior is covered by the passing suite and was not relabeled as
+  a separate physical-phone visual pass.
 - On-phone disclosure PASS: **Built with Codex • Powered by GPT-5.6** accurately
   separates engineering and runtime roles.
 - Earlier exact-public v1.0.16 evidence retains the unchanged interactive map,
@@ -112,7 +113,7 @@ and the final Devpost submit action.
 
 1. Confirm personal/team eligibility, ownership, third-party rights, and acceptance
    of the Official Rules.
-2. Record the exact v1.0.18 build using `docs/DEMO_SCRIPT.md`; keep it at 2:40 and
+2. Record the exact v1.0.19 build using `docs/DEMO_SCRIPT.md`; keep it at 2:40 and
    under three minutes, in English, with audible narration, fictional data, no
    credentials/private documents, and no unauthorized music.
 3. Upload the video publicly to YouTube and verify playback while signed out.

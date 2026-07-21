@@ -8,16 +8,16 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 
 | Area | Command / coverage | Current status | Evidence |
 | --- | --- | --- | --- |
-| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.18 source: 133 files, 0 changes |
-| Static analysis | `flutter analyze` | PASS | v1.0.18 source: `No issues found!` |
-| Flutter suite | `flutter test` | PASS | v1.0.18 source: 50/50 tests |
+| Formatting | `dart format --output=none --set-exit-if-changed lib test` | PASS | v1.0.19 source: 136 files, 0 changes |
+| Static analysis | `flutter analyze` | PASS | v1.0.19 source: `No issues found!` |
+| Flutter suite | `flutter test` | PASS | v1.0.19 source: 56/56 tests |
 | Deterministic ranking | Best-match order, hard exclusions, request/offer direction, stale trips, package capacity, Arabic city normalization | PASS | Focused ranking coverage |
 | GPT-5.6 planner interaction | Draft display, failure retry/manual fallback, explicit confirmation, seat-count handoff, account-scoped reusable plans | PASS | Widget, domain, platform, and local-store coverage |
 | Functions contracts | Booking/cancellation, action-specific participant/driver verification, owner withdrawal, lifecycle, matching, support, trip-scoped conversations, projections, verification, GPT-5.6 validation/auth/redaction/Arabic/throttling/diagnostics/safety identifier | PASS | Current Functions source: 33/33 tests |
 | Functions build | `npm run build` in `functions/` | PASS | TypeScript compiler exit 0 |
 | Firestore/Storage rules | Booking/chat/public-profile/verification/rate-limit/support authorization boundaries | PASS | 9/9 emulator contracts, including owner-scoped support tickets and blocked staff impersonation |
 | Callable integration | Proposal/payment boundary, idempotency, verification, owner withdrawal, chat, start, completion, rating, and emergency cancellation | PASS | 10/10 against real Auth/Functions/Firestore emulators |
-| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.18 universal debug and optimized profile builds passed; code `20260732` |
+| Android build | `flutter build apk --debug` and `flutter build apk --profile` | PASS | v1.0.19 universal debug and optimized profile builds passed; code `20260733` |
 
 ## GPT-5.6 planner behavior
 
@@ -42,6 +42,8 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Account switch and sign-out | Correct Home role after sign-in; Login after sign-out; no stale listener exception | PASS — v1.0.14 API 36 rider/driver regression with cleared-log scan |
 | Separate Request and Offer actions | Home, Trips, and the neutral GPT planner expose both actions; Request uses participant verification and Offer adds driver/vehicle checks | PASS — focused UI/contracts, 10/10 lifecycle integration, scoped deployment, and exact-public v1.0.18 phone smoke |
 | Generated map label after repick | A generated `Map pin` label follows the newly selected coordinate; semantic/manual place labels are preserved | PASS — focused unit test and physical From/To map selection |
+| Searchable map address selection | Deliberate address search returns multiple choices; selection returns readable address/city/country; pin reverse lookup and current-location consent retain coordinate fallback | PASS — focused widget test plus live Moto G Play permission/reverse-address smoke |
+| App locale and currency | UI language is independent from GPT input-language preferences; Arabic enables locale/RTL; USD/AED/SAR input/display converts through canonical stored USD | PASS — provider/conversion tests, full analysis, and judge-path price integration |
 | Owner withdraws an open trip | Owner can withdraw only a pending unpaid trip; unpaid interest closes, paid/confirmed state is rejected, history remains, marketplace entry disappears | PASS — contract, 10/10 integration, scoped live deployment, and v1.0.16 phone UI/live callable |
 
 ## Security and transactional behavior
@@ -95,12 +97,12 @@ Status key: **PASS** = directly observed; **PENDING** = not yet executed; **BLOC
 | Full deployed Home → Copilot → matches → details → verification → booking → chat | PASS | On the Motorola phone, a live GPT-5.6 draft produced one transparent live match and handed off to Trip Details then enabled confirmed Chat. In the same fictional session, the server-authoritative booking transaction opened an authorized conversation and a sent message rendered through the realtime stream. The judge account's prior verification state was already satisfied; no real payment is claimed. |
 | Fresh-install end-to-end run #1 | INTERRUPTED | Public v1.0.3 local data clear/reinstall, 3.706 s cold launch, private fictional sign-in, Home, live GPT-5.6 draft, one match, and Trip Details all passed. The phone disconnected before the final booking confirmation tap. |
 | Fresh-install end-to-end run #2 | PASS (emulator) | Exact anonymously downloaded public v1.0.9 profile APK clean install, fictional rider sign-in, manual map pin/attribution, voice service/audio startup, payment gate, paid Chat, completed-only Past, and rating entry passed. Physical-phone repetition remains pending. |
-| Physical Android phone install | PASS (v1.0.18) | Exact public v1.0.18 installed on Moto G Play (2024), reported version `1.0.18` / code `20260732`, cold-launched in 1.930 seconds, rendered separate Request/Offer, opened both map forms, displayed the two-choice Trips menu and both GPT manual actions, with zero matched app fatal/Flutter/FirebaseFailure/unhandled/ANR errors. |
+| Physical Android phone install | PASS (v1.0.19, scoped) | Exact public v1.0.19 installed on Moto G Play (2024), reported version `1.0.19` / code `20260733`; identical local bytes opened Request creation, requested native location consent, and reverse-resolved a live readable address. v1.0.18 retains unchanged dual-action/clean-log evidence. |
 | Universal judge APK candidate | PASS | AOT profile build, debug-signed for sideloading; no safe private release-signing configuration is present |
-| Tagged judge APK candidate | PASS (prerelease) | v1.0.18 private source `836a573ac269fcb1fd31421e55ba1dc285c0832f` is tree-identical to sanitized/tagged source `6a9b37d55ac7c85206c0ad0a174a5c31f6532422` at tree `63df0ffa2f0a582f8e7091ddc84021e47bddca95`; the public prerelease and exact asset are available. |
-| Public sanitized repository | PASS | Draft PR branch and v1.0.18 tag were pushed without force; the immutable application tag peels to `6a9b37d5`. The new staged diff contained 0 forbidden private config/credential paths and 0 high-signal secret matches; the private/public application trees match exactly. The original private repository still has no remote. |
-| Published APK download and hash comparison | PASS | Public v1.0.18 asset downloaded anonymously; 110,009,797 bytes and SHA-256 `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A` exactly match local bytes. |
-| Published APK install | PASS (physical phone) | Exact downloaded v1.0.18 asset update-installed on the Moto G Play. Version `1.0.18` / code `20260732`, minimum API 24, and target API 36 were confirmed. Dual actions, map forms, Trips/GPT choices, and zero matched app errors passed. |
+| Tagged judge APK candidate | PASS (prerelease) | v1.0.19 private source `afe6da7f02795728293b3ee7d6fe558719a3c4a0` is tree-identical to sanitized/tagged source `9feaf5c07090f960585b59a7b34500b59b706b88` at tree `5711defb91c664244c4be8c1d6091e86f0b75222`; the public prerelease and exact asset are available. |
+| Public sanitized repository | PASS | Draft PR branch and v1.0.19 tag were pushed without force; the remote application tag peels to `9feaf5c0`. The staged diff contained 0 forbidden private config/credential paths and 0 high-signal secret matches; the private/public application trees match exactly. The original private repository still has no remote. |
+| Published APK download and hash comparison | PASS | Public v1.0.19 asset downloaded anonymously (one interrupted transfer was resumed); 88,963,947 bytes and SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A` exactly match local bytes. |
+| Published APK install | PASS (physical phone) | Exact downloaded v1.0.19 asset update-installed on the Moto G Play. Version `1.0.19` / code `20260733`, minimum API 24, and target API 36 were confirmed. |
 
 Local emulator note: Firebase emulators ran under the host's Node 24 while
 `functions/package.json` declares production Node 20. All local builds,
