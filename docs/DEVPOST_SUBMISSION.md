@@ -14,7 +14,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk — 85,703,283 bytes; SHA-256 `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.17/app-profile.apk — 85,703,335 bytes; SHA-256 `5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B`
 
 **Primary Codex Session ID:** **PENDING — run `/status` in the primary build thread, then paste the displayed Session ID into Devpost's `/feedback` Session ID field**
 
@@ -176,10 +176,11 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
 - No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.16 candidate includes complete role-specific publication verification,
+- The v1.0.17 candidate includes complete role-specific publication verification,
   repaired confirmed chat, interactive map pins, permanent linked
   OpenStreetMap attribution, English/Arabic speech entry, and editable curated
-  location suggestions. It does not include turn-by-turn navigation, routing-service
+  location suggestions. It also makes Codex's engineering contribution and GPT-5.6's
+  runtime role explicit in the product and evidence. It does not include turn-by-turn navigation, routing-service
   ETA, network-wide geocoding autocomplete, or full Arabic UI localization.
 - The v1.0.5 public APK passed download/hash verification, emulator installation,
   Motorola installation/cold launch, authenticated Home, payment-gated Chat empty
@@ -200,10 +201,10 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 - **DONE:** public repository URL
 - **PENDING:** public YouTube URL
-- **DONE:** v1.0.16 candidate APK URL, size, SHA-256, and exact-public phone install
+- **DONE:** v1.0.17 candidate APK URL, size, SHA-256, and exact-public phone install
 - **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
-- **DONE:** exact-public v1.0.16 driver/Offer/withdrawal/chat/Past physical-phone smoke
-- **DONE:** release tag `fitareeaee-copilot-v1.0.16` / sanitized source commit `a827e555f789f0913eb93c0ac34160f6b85d9218`
+- **DONE:** exact-public v1.0.17 driver/Offer/live-GPT/disclosure physical-phone smoke; v1.0.16 retains the unchanged lifecycle/map/chat/Past evidence
+- **DONE:** release tag `fitareeaee-copilot-v1.0.17` / sanitized source commit `05b2e2c998ddf67a3a61130c0982573f283bbb3d`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
 - **PENDING:** run `/status` in the primary Codex thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field

@@ -215,22 +215,27 @@ for sideloading because no private release-signing configuration is available;
 no signing secret is committed.
 
 The superseding
-[v1.0.16 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16)
+[v1.0.17 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.17)
 separates rider/sender requests from driver/courier offers, adds a circular Home
 GPT-5.6 planner action, and hardens English/Arabic voice planning with explicit Android
 consent and a three-minute cap. It also adds editable, account-scoped local trip
 templates, accurate submitted/approved verification progress, and reliable
 rider/driver account switching. Publication now requires verified email, phone,
 manually approved ID, and selfie; drivers additionally require approved licence and
-vehicle records. v1.0.16 makes that account boundary explicit on Home, fixes
+vehicle records. It makes that account boundary explicit on Home, fixes
 generated labels after a map pin is re-picked, and lets an owner securely withdraw
-an open unpaid trip without deleting its history. Its 85,703,283-byte profile APK has
+an open unpaid trip without deleting its history. v1.0.17 also presents the public
+product as **Fitareeaee — GPT-5.6 Ride & Delivery Planner**, visibly distinguishes
+Codex's Build Week engineering role from GPT-5.6 runtime intelligence, and sends only
+an app-scoped hashed safety identifier on end-user OpenAI requests. Its
+85,703,335-byte profile APK has
 SHA-256
-`FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B` and passed
+`5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B` and passed
 the complete local gate plus exact-public installation on a Moto G Play (2024),
-driver sign-in, Offer creation UI, interactive origin/destination selection,
-live withdrawal/marketplace removal, paid-confirmed chat, completed-only Past, and
-zero matched app exceptions. It remains
+driver sign-in, the live deployed GPT-5.6 Offer-draft flow, exact public APK
+re-download, cold launch, and zero matched app exceptions. Earlier exact-public
+v1.0.16 evidence retains the complete interactive origin/destination,
+withdrawal/marketplace, paid-confirmed chat, and completed-only Past checks. It remains
 a prerelease because the owner must still record the video and perform the legal
 Devpost submission; no real payment provider is claimed.
 

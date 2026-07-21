@@ -62,4 +62,3 @@ If this document conflicts with the official website, the official website wins.
 3. Run `/status` in the primary Codex build thread and paste the displayed Session ID into the `/feedback` Session ID field.
 4. Paste fictional judge credentials into Devpost's private testing instructions only.
 5. Preview every link and submit before 5:00 PM Pacific; save a copy of the final submitted page.
-

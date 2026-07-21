@@ -3722,3 +3722,80 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   owner: record/upload the public under-three-minute video, place fictional credentials
   privately, run `/feedback`, review legal/eligibility statements, and click Devpost's
   final submit action.
+
+## 2026-07-21 12:56 CDT / 2026-07-21 10:56 PDT — final rules, GPT-5.6 identity, and exact-public phone gate (v1.0.17)
+
+- Objective: remove ambiguity around the word “Copilot,” make the separate Codex and
+  GPT-5.6 roles unmistakable to judges, re-audit the live contest requirements, apply
+  current official OpenAI guidance, publish an exact final APK, and install that exact
+  public artifact on the connected phone.
+- Re-checked the live Official Rules, FAQ, overview/judging criteria, resources, and
+  submission updates on July 21. Recorded the requirement-to-evidence mapping in
+  `docs/RULES_COMPLIANCE_MATRIX.md`: Apps for Your Life track, meaningful new work on
+  the honest pre-existing baseline, working Codex/GPT-5.6 project, English text,
+  public YouTube demo at or below three minutes with audio, public licensed source,
+  free judge access, testing/sample instructions, explicit Codex/human/GPT-5.6 roles,
+  and the primary-thread Session ID field.
+- Current public name is **Fitareeaee — GPT-5.6 Ride & Delivery Planner**. Android
+  launcher label is `Fitareeaee`; Home and the planner say **Plan with GPT-5.6** and
+  **GPT-5.6 Trip Planner**. Settings now exposes a working **Built with Codex • Powered
+  by GPT-5.6** disclosure. Internal `copilot` identifiers remain only to avoid an
+  unnecessary release-risk refactor.
+- Current OpenAI guidance review retained the official server SDK, Responses API,
+  `gpt-5.6`, strict JSON Schema output, independent validation, `store: false`, contact
+  redaction, bounded input/output, authentication, and throttling. Added the recommended
+  stable per-user `safety_identifier` as an app-scoped SHA-256; raw Firebase UIDs are
+  never sent. Added a contract proving stability, separation, length, and non-exposure.
+- Exact gates: Dart format PASS (132 files, 0 changes); `flutter analyze` PASS (0
+  issues); `flutter test` PASS (49/49); Functions contracts PASS (32/32); Functions
+  TypeScript build PASS; Firestore/Storage authorization PASS (9/9); real
+  Auth/Functions/Firestore lifecycle integration PASS (10/10); universal debug APK
+  PASS; optimized universal profile APK PASS.
+- Confirmed `.firebaserc` and Firebase CLI target `fitareeaee`. Deployed only the
+  tested `planTripWithCopilot`, `contactSupport`, and `sendSupportMessage` callables:
+  3 successful, 0 failed. No rule, index, production document, billing/payment state,
+  or unrelated Function changed.
+- Local profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT
+  profile, debug-signed; 85,703,335 bytes; SHA-256
+  `5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B`;
+  built 2026-07-21 12:27:15 CDT / 10:27:15 PDT; version `1.0.17` / code `20260731`.
+- Initial local update-install on Moto G Play (2024) PASS. Explicit cold launch PASS
+  in 1.228 seconds. Driver Home visibly showed Driver/Courier, Create an offer, bottom
+  Offer, and Plan with GPT-5.6. Settings disclosure rendered the distinct Codex and
+  GPT-5.6 explanations. A capped live deployed call returned a strict review-required
+  Dallas-to-Austin **Offer** draft and stopped at deterministic match search; it did
+  not create or confirm a trip. App-process fatal/FirebaseFailure/unhandled/ANR scan:
+  zero matches.
+- Private exact application source `ddddea24124eb1b2f83e27eafd108533728c0a7c`
+  has tree `14a741b721d39f1568b068f9a6a29b21750c7a5f`. Sanitized public source
+  `05b2e2c998ddf67a3a61130c0982573f283bbb3d` has the identical tree. Annotated
+  `fitareeaee-copilot-v1.0.17` tags identify those exact tree-equivalent source
+  commits. Branch and tag pushed without force.
+- Sanitized reachable-history audit before push: 128 revisions, 2,886 object/path
+  lines, zero forbidden credential/config paths, zero high-signal secret-hit files,
+  zero rewrite refs, and a clean public worktree. The original private repository
+  remains without a remote and was not pushed.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.17`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.17/app-profile.apk`.
+  GitHub reports Android-package content type, 85,703,335 bytes, and digest
+  `sha256:5c7aa44027befa3cf097abb0e57503799eeec6370bfabc01070a572a5fc6ac9b`.
+- Anonymous download to `build/published-download-v117/app-profile.apk` exactly
+  matched local size/hash. Those exact public bytes update-installed on the Moto G
+  Play, reported version `1.0.17` / code `20260731`, min API 24 / target API 36,
+  cold-launched in 2.803 seconds to Driver/Offer Home, and produced zero matched app
+  errors.
+- Draft PR #1 remains OPEN, draft, unmerged, cleanly mergeable, and points to exact
+  application head `05b2e2c998ddf67a3a61130c0982573f283bbb3d`:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Known boundaries: no real payment provider or private release signing; new
+  selections remain payment-required and the fictional paid fixture is not a real
+  charge. Inherited legacy Functions remain live pending explicit retirement approval.
+  Provider-side rotation of legacy email, Stripe test, and old OpenAI credentials is
+  owner-only. YouTube upload, private judge credential placement, `/status` Session ID,
+  eligibility/legal review, and final Devpost submission are owner-only.
+- Rollback point: immutable exact-public v1.0.17 source/APK above; v1.0.16 remains the
+  immediately preceding full lifecycle rollback. Next action: synchronize this final
+  documentation-only evidence commit to the sanitized branch, then the owner records
+  the 2:40 video and completes only the remaining owner-required Devpost actions.

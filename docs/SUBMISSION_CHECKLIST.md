@@ -200,6 +200,19 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   version `1.0.16` / code `20260730`, driver Home/Offer, live disposable-trip
   withdrawal/marketplace removal, paid-confirmed chat, completed-only Past/rating,
   and zero matched app errors.
+- [x] Publish v1.0.17 with the contest-facing GPT-5.6 product name, explicit
+  Codex-versus-runtime disclosure, hashed OpenAI safety identifier, and July 21 live
+  rules-to-evidence matrix.
+- [x] Pass v1.0.17 format 132/0, analysis 0 issues, Flutter 49/49, Functions 32/32,
+  rules 9/9, lifecycle integration 10/10, Functions build, and Android debug/profile
+  builds; deploy only the three tested GPT-5.6 callables to `fitareeaee`.
+- [x] Publish/tag sanitized source `05b2e2c998ddf67a3a61130c0982573f283bbb3d`
+  without force; anonymously download and byte-match 85,703,335 bytes and SHA-256
+  `5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B`.
+- [x] Install the exact public v1.0.17 download on the owner's Moto G Play; confirm
+  version `1.0.17` / code `20260731`, 2.803-second cold launch, Driver/Offer Home,
+  live review-required GPT-5.6 Offer draft, in-app Codex/GPT-5.6 disclosure, and zero
+  matched app fatal/FirebaseFailure/unhandled/ANR errors.
 
 ## Devpost materials
 
@@ -209,7 +222,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.16
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.17
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on

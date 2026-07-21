@@ -14,6 +14,25 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Final Codex and GPT-5.6 contest identity — v1.0.17
+
+- Renamed the contest-facing product to **Fitareeaee — GPT-5.6 Ride & Delivery
+  Planner** and changed the launcher/Home/planner labels accordingly. Internal
+  `copilot` identifiers remain only as stable implementation details.
+- Added a working in-app disclosure that separates Codex's Build Week engineering
+  contribution from GPT-5.6 runtime planning/support and from human product decisions.
+- Re-audited the July 21 live rules, FAQ, judging criteria, and GPT-5.6 guidance; added
+  `RULES_COMPLIANCE_MATRIX.md` with direct evidence and owner-only submission actions.
+- Added a stable app-scoped SHA-256 OpenAI `safety_identifier` for each authenticated
+  app user while keeping the raw Firebase UID private; retained `store: false`, strict
+  structured output, redaction, validation, authentication, and throttling.
+- Passed 49 Flutter tests, 32 Functions contracts, 9 rules contracts, 10 real
+  two-account lifecycle integrations, both Android builds, and a scoped three-callable
+  deployment to `fitareeaee`.
+- Published and anonymously byte-matched the 85,703,335-byte v1.0.17 APK, installed
+  those exact public bytes on the Moto G Play (2024), cold-launched in 2.803 seconds,
+  and ran a live review-required GPT-5.6 driver Offer draft with zero matched app errors.
+
 ### Verified driver offer and withdrawal path — v1.0.16
 
 - Added an explicit Home account card so rider/sender accounts clearly explain that
