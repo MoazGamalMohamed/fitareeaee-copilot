@@ -12,6 +12,17 @@ import '../../domain/entities/trip.dart';
 import '../providers/trip_provider.dart';
 import 'trip_location_picker_screen.dart';
 
+String tripLocationLabelAfterMapPick(
+  String currentLabel,
+  TripLocationSelection selection,
+) {
+  final normalized = currentLabel.trim();
+  if (normalized.isEmpty || normalized.startsWith('Map pin ')) {
+    return 'Map pin ${selection.coordinateLabel}';
+  }
+  return normalized;
+}
+
 class CreateTripScreen extends ConsumerStatefulWidget {
   const CreateTripScreen({super.key, this.role, this.initialDraft});
 
@@ -335,14 +346,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     setState(() {
       if (origin) {
         _originLocation = result;
-        if (_origin.text.trim().isEmpty) {
-          _origin.text = 'Map pin ${result.coordinateLabel}';
-        }
+        _origin.text = tripLocationLabelAfterMapPick(_origin.text, result);
       } else {
         _destinationLocation = result;
-        if (_destination.text.trim().isEmpty) {
-          _destination.text = 'Map pin ${result.coordinateLabel}';
-        }
+        _destination.text = tripLocationLabelAfterMapPick(
+          _destination.text,
+          result,
+        );
       }
     });
   }

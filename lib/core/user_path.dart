@@ -30,4 +30,8 @@ extension MarketplacePathPresentation on MarketplacePath {
 
   String get creationTitle =>
       isDriver ? 'Offer a ride or delivery' : 'Request a ride or delivery';
+
+  String get accountGuidance => isDriver
+      ? 'Offer rides or deliveries and receive payment. Driver and vehicle verification is required.'
+      : 'Request rides or deliveries as the paying side. Offering requires a separate driver account chosen during sign-up.';
 }

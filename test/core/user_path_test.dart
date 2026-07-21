@@ -35,4 +35,18 @@ void main() {
     );
     expect(marketplacePathForRoles(const []), MarketplacePath.rider);
   });
+
+  test(
+    'account guidance explains why rider and driver creation stay separate',
+    () {
+      expect(
+        MarketplacePath.rider.accountGuidance,
+        contains('separate driver account'),
+      );
+      expect(
+        MarketplacePath.driver.accountGuidance,
+        contains('Driver and vehicle verification'),
+      );
+    },
+  );
 }

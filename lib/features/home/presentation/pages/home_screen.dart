@@ -81,7 +81,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 12),
+
+              Card(
+                color: marketplacePath.isDriver
+                    ? Colors.green.shade50
+                    : Colors.blue.shade50,
+                child: ListTile(
+                  leading: Icon(
+                    marketplacePath.isDriver
+                        ? Icons.drive_eta_outlined
+                        : Icons.person_search_outlined,
+                    color: marketplacePath.isDriver
+                        ? Colors.green.shade700
+                        : Colors.blue.shade700,
+                  ),
+                  title: Text('${marketplacePath.title} account'),
+                  subtitle: Text(marketplacePath.accountGuidance),
+                ),
+              ),
+
+              const SizedBox(height: 28),
 
               _buildCircularCopilotAction(context, marketplacePath),
 
