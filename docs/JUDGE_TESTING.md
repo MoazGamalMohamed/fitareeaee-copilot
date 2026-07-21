@@ -6,8 +6,10 @@ Fitareeaee Copilot is an Android Flutter application. Testing is free; no paymen
 > and v1.0.14 public Android artifact are verified. The v1.0.14 APK was anonymously
 > downloaded, hash-matched, fresh-installed, and cold-launched on Android API 36.
 > Authenticated voice/map/templates/verification/account-switch testing passed on the
-> byte-identical local source artifact. Its physical-phone gate remains owner-only
-> pending; v1.0.5 is the exact-public phone-tested rollback.
+> byte-identical local source artifact. Exact-public v1.0.14 installation, rider
+> login, interactive map selection, Android microphone consent, and active speech
+> recognition also pass on the Moto G Play (2024). USB disconnected before the
+> remaining full demo smoke; v1.0.5 remains the completed phone-tested rollback.
 
 > Current candidate: v1.0.14 retains the secure payment-gated lifecycle, complete
 > role-specific verification, and live GPT-5.6 path; it adds editable local recurring
@@ -43,9 +45,12 @@ version 1 is destroyed, and `planTripWithCopilot` is deployed. On July 20 the ex
 public v1.0.13 APK returned validated `gpt-5.6` review drafts for an English ride, a
 5 kg English package, and an Arabic ride. No key was read or exposed.
 
-Current physical-phone judge path: **PENDING** — only the API 36 emulator is visible
-to ADB. The exact public v1.0.14 artifact passes the equivalent fictional rider path;
-the older v1.0.5 artifact remains phone-tested. No real payment or identity is used.
+Current physical-phone judge path: **PARTIAL PASS** — the exact public v1.0.14 APK is
+installed on the Moto G Play (2024), cold-launched in 1.848 seconds, authenticated the
+fictional rider, selected an interactive map pin, obtained microphone consent, and
+started live recognition. The phone then disconnected from ADB before GPT-result,
+Chat/Past/rating, and driver-role completion. The older v1.0.5 artifact retains the
+complete phone smoke. No real payment or identity is used.
 
 New bookings in v1.0.14 are deliberately **not confirmed before payment**. Since
 the contest build has no real payment provider, selecting a trip or driver creates

@@ -102,7 +102,13 @@ money.
 - Version: `1.0.14` / code `20260728`
 - API 36 install/authenticated rider login/sign-out/templates/verification smoke:
   PASS; cleared log had no matching Flutter/Firebase/permission/fatal errors.
-- Physical v1.0.14 phone result: PENDING because no physical ADB device is connected.
+- Physical v1.0.14 phone result: PARTIAL PASS on Moto G Play (2024). The exact public
+  APK installed over v1.0.5, reported version `1.0.14` / code `20260728`, cold-launched
+  in 1.848 seconds, authenticated the fictional rider, selected an interactive map
+  pin, requested Android microphone permission, and started live recognition with a
+  2:54 remaining timer. Cleared-path scans found zero matching app fatal, Flutter,
+  Firebase, or permission errors. USB disconnected before the remaining GPT result,
+  Chat/Past/rating, and driver-role taps.
 - The v1.0.13 evidence below is historical. v1.0.14 is independently downloaded,
   hash-matched, and fresh-installed; v1.0.5 remains the phone-tested rollback.
 
@@ -125,7 +131,8 @@ money.
   and the past trip Completed, while driver chat/start/emergency actions remain.
 - Confirmed chat log scan: no visible error, `FirebaseFailure`, `typing_status`,
   `PERMISSION_DENIED`, fatal exception, or `E/flutter` match.
-- Physical v1.0.14 phone result: PENDING because only the emulator is connected.
+- Physical v1.0.14 phone result: exact install/core smoke PASS; complete demo smoke
+  interrupted when USB disconnected during the active-recognition check.
 - Public v1.0.14 release:
   `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.14`
 - Public v1.0.14 APK:
@@ -139,7 +146,8 @@ money.
 
 ## Remaining owner-only actions
 
-1. Reconnect/unlock the phone and approve USB debugging if Android asks.
+1. Reconnect/unlock the phone and approve USB debugging if Android asks; v1.0.14 is
+   already installed, so resume the interrupted GPT/Chat/Past/rating/driver checks.
 2. Confirm provider-side revocation of the exposed old OpenAI key and legacy Runtime
    Config email/Stripe test credentials. Never paste replacements into chat.
 3. Decide whether the exact inherited Function list in `docs/OWNER_ACTIONS.md` must
@@ -155,7 +163,8 @@ money.
 
 ## Exact next action
 
-When ADB sees a non-emulator device, install the already downloaded exact public
-v1.0.14 bytes and run Home, Copilot, verification, both map fields,
+When ADB sees the Motorola device again, confirm installed version `1.0.14` / code
+`20260728`, stop any retained speech session, then resume the GPT result,
 matches/details/payment gate, seeded paid Chat/Past/rating, and driver lifecycle.
-Promote only if every phone check passes.
+The exact-public install, Home, rider login, interactive From pin, microphone consent,
+and live recognition already pass. Promote only after the remaining checks pass.

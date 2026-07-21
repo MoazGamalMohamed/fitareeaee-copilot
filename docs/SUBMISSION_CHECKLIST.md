@@ -184,8 +184,11 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   English package, and Arabic ride live calls through the exact public APK.
 - [x] Build and install v1.0.14 on API 36; verify reusable plans, accurate
   submitted/approved progress, rider/driver routing, and a clean login/sign-out log.
-- [ ] Install that exact public v1.0.14 download on the owner's reconnected phone,
-  run the final demo-path smoke, then promote it from prerelease to stable.
+- [x] Install that exact public v1.0.14 download on the owner's phone; verify version,
+  cold launch, rider login, interactive map selection, microphone consent, and active
+  speech recognition with zero matching app errors.
+- [ ] Reconnect after the USB interruption, finish GPT-result, Chat/Past/rating, and
+  driver-role phone smoke, then promote v1.0.14 from prerelease to stable.
 
 ## Devpost materials
 
@@ -232,5 +235,6 @@ Exact owner steps and the inherited Function set are recorded in
 1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
    managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Exact-public v1.0.14 phone install/smoke, YouTube upload, `/feedback`, private
-   credential placement, legal confirmation, and final Devpost submit action.
+3. Finish the interrupted exact-public v1.0.14 phone smoke, then complete YouTube
+   upload, `/feedback`, private credential placement, legal confirmation, and the
+   final Devpost submit action.

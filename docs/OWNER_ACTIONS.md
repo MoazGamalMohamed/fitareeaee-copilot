@@ -125,10 +125,12 @@ Runtime Config privately. Do not share replacement values in chat.
   source-compatible predecessor. New v1.0.5 selections deliberately stop at pending
   payment because no real payment provider is configured; do not enter a real card
   or claim a real payment pass.
-- Exact-public v1.0.14 phone verification is still pending while the owner device is
-  disconnected. When it reconnects, install the already-downloaded public bytes at
-  `build/published-download-v114/app-profile.apk`; do not rebuild or substitute a
-  local APK for this gate.
+- Exact-public v1.0.14 installation and core phone verification passed on the Moto G
+  Play (2024): update install, version metadata, 1.848-second cold launch, fictional
+  rider login, interactive map selection, microphone consent, and active recognition.
+  The phone disconnected during recognition before GPT-result, Chat/Past/rating, and
+  driver-role completion. Reconnect and resume those checks from the already-installed
+  app; do not rebuild or substitute another APK for this gate.
 
 - Physical phone installation is complete. The downloaded public v1.0.3 APK installed,
   cold-launched, rendered notifications safely, returned a live reviewable

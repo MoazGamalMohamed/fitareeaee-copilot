@@ -3578,3 +3578,43 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   downloaded v1.0.14 APK, run the spoken-microphone and full demo smoke, then complete
   the owner-only video, `/feedback`, private credentials, legal review, and Devpost
   submission steps.
+
+## 2026-07-21 01:01 CDT / 2026-07-20 23:01 PDT — exact-public v1.0.14 physical-phone core gate
+
+- Re-verified the anonymously downloaded public APK at
+  `build/published-download-v114/app-profile.apk`: 109,878,725 bytes, SHA-256
+  `487BCBB871C009494CE5FD21F79B41DE46FD28DC8744ACB85AB88C7DFA833C6E`.
+- ADB identified the physical Moto G Play (2024) and the API 36 emulator. The phone
+  previously had v1.0.5. `adb install -r` of the exact public
+  v1.0.14 bytes succeeded without clearing phone-local app data.
+- Phone package metadata: `com.fitareeaee.app`, version `1.0.14`, code `20260728`,
+  minimum API 24, target API 36. Cold launch completed in 1.848 seconds and rendered
+  Login. A stale v1.0.5 cached-session profile read produced one nonfatal Firestore
+  permission warning before the app correctly settled on Login; it was not visible.
+- Authenticated the private fictional rider without printing or persisting credentials
+  in evidence. Available trips and the role-specific rider Request path rendered;
+  cleared authentication-path logs contained zero matching `E/flutter`, fatal,
+  `FirebaseFailure`, `PERMISSION_DENIED`, or app ANR lines.
+- Home rendered the circular Plan with AI action, Browse Available Trips, Matches,
+  Past Trips, Payments, Support, and rider bottom navigation. The manual Request form
+  identified the rider/sender as paying side and opened its OpenStreetMap picker.
+  Tapped the map, confirmed pin `34.78254, -95.02818`, and returned it to the editable
+  From field with permanent OpenStreetMap attribution and zero matched app errors.
+- Copilot rendered the GPT-5.6 disclosure, rider-only intent, local saved-template
+  disclosure, English/package/Arabic examples, language chooser, voice action, AI
+  draft action, and manual fallback. With microphone initially denied, the app showed
+  its purpose/three-minute/no-audio-storage explanation, Android showed the system
+  permission dialog, and `While using the app` started recognition. Android AppOps
+  reported `RECORD_AUDIO: allow ... (running)` and the UI showed `Stop listening` plus
+  `Listening • 2:54 remaining`; cleared logs had zero matching app errors.
+- The physical USB connection disappeared during the next stop/GPT step. ADB recovery
+  and a 30-second serial-specific poll found only the emulator. Therefore the exact
+  v1.0.14 installation, login, map, permission, and recognition gates pass, but the
+  remaining GPT-result, Chat/Past/rating, and driver-role phone taps are not claimed.
+- Evidence is stored only in ignored `build/device-evidence-v114/`; it contains no
+  credential values or real identity data. No application source, APK, backend,
+  production data, payment/billing state, release, tag, or remote branch changed.
+- Rollback point: exact-public v1.0.14 remains installed on the phone; public v1.0.5
+  retains the earlier complete physical-phone smoke. Next action: reconnect/unlock the
+  phone, confirm v1.0.14, stop any retained recognizer session, and resume the remaining
+  fictional judge path without reinstalling or rebuilding.
