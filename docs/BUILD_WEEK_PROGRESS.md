@@ -3799,3 +3799,29 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   immediately preceding full lifecycle rollback. Next action: synchronize this final
   documentation-only evidence commit to the sanitized branch, then the owner records
   the 2:40 video and completes only the remaining owner-required Devpost actions.
+
+## 2026-07-21 13:01 CDT / 2026-07-21 11:01 PDT — v1.0.17 documentation synchronization
+
+- Committed the final v1.0.17 release/rules/device/submission mapping locally as
+  private documentation commit `0b58e5ed82c51873df2b16cd05e7ae132676300e`
+  and mechanically applied only that reviewed patch to sanitized documentation commit
+  `2f70ee92dc97cd1b5cf8b57c8c271a24a976bd69`.
+- Private and public documentation trees exactly matched at
+  `540ed76843296733a5b649f18597a9ba18d51a3a`; `git diff --check` passed and 43
+  relative Markdown links resolved with zero missing targets.
+- Repeated the reachable sanitized-history audit after the documentation commit:
+  129 revisions, 2,898 object/path lines, zero forbidden credential/config paths,
+  zero high-signal secret-hit files, zero rewrite refs, and a clean worktree.
+- Pushed without force. Remote branch
+  `agent/payment-gated-chat-trip-support` exactly matched sanitized documentation
+  head `2f70ee92dc97cd1b5cf8b57c8c271a24a976bd69` at read-back. The immutable v1.0.17
+  tag still peels locally/remotely to exact tested application source
+  `05b2e2c998ddf67a3a61130c0982573f283bbb3d`.
+- Draft PR #1 remains OPEN, draft, unmerged, and cleanly mergeable. The public v1.0.17
+  prerelease and exact 85,703,335-byte APK remain available at the URLs in the
+  preceding entry. No application source, APK, Firebase resource, production data,
+  billing/payment state, release tag, or fixture changed in this docs-only sync.
+- Technical build/device/publication work is complete for v1.0.17. Remaining actions
+  require the owner: record/upload the public under-three-minute video, place fictional
+  credentials privately, run `/status` for the Session ID, review eligibility/legal
+  statements, confirm legacy credential rotation, and click Devpost's final submit action.
