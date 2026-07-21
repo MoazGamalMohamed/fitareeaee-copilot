@@ -251,8 +251,8 @@ geocoding, Android current-location consent, a real English/Arabic app locale wi
 RTL, and USD/AED/SAR display/input conversion while Firebase amounts remain canonical
 USD. Its universal profile APK is 88,963,947 bytes with SHA-256
 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
-The public asset was anonymously downloaded, byte-matched, installed, and
-installed on a Moto G Play (2024). The on-phone map requested native location consent
+The public asset was anonymously downloaded, byte-matched, and installed on a
+Moto G Play (2024). The on-phone map requested native location consent
 and resolved the live pin to a readable address; 56/56 Flutter tests cover address
 choices, locale state, currency conversion, both actions, and the existing critical
 flows. Payment remains a truthful pending-payment boundary; no live payment processor
