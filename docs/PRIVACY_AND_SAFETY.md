@@ -1,15 +1,18 @@
 # Privacy, Safety, and Product Boundaries
 
-Fitareeaee Copilot helps a user express and review ride or package criteria. It is not a safety authority, identity verifier, emergency service, payment provider, or guarantee of availability.
+Fitareeaee's GPT-5.6 planner helps a user express and review ride or package criteria. It is not a safety authority, identity verifier, emergency service, payment provider, or guarantee of availability.
 
 ## Data sent to OpenAI
 
-The contest Copilot sends only the minimum needed to interpret the request:
+The contest GPT-5.6 planner sends only the minimum needed to interpret the request:
 
 - the user's natural-language ride or package request;
-- locale; and
-- timezone; and
-- a server-generated current date used to resolve relative dates.
+- locale;
+- timezone;
+- a server-generated current date used to resolve relative dates; and
+- a stable, app-scoped SHA-256 `safety_identifier` derived server-side from the
+  authenticated account. The raw Firebase UID cannot be recovered from or read
+  in this value.
 
 The request is sent from an authenticated Firebase callable Function to the official OpenAI Responses API. The Flutter client never calls OpenAI directly.
 
@@ -17,7 +20,7 @@ The implementation does not intentionally send:
 
 - identity documents or images;
 - email addresses or phone numbers;
-- Firebase/user IDs;
+- raw Firebase/user IDs;
 - profile records;
 - private chat messages;
 - verification evidence;
@@ -98,7 +101,7 @@ Users remain responsible for confirming trip details, participant identity conte
 
 ## Abuse and cost controls
 
-- Authentication is required for Copilot calls.
+- Authentication is required for GPT-5.6 planner calls.
 - Input is limited to 1,200 characters.
 - A per-user 8-second cooldown and 12-call-per-hour limit reduce automated abuse.
 - Model output is capped, the SDK timeout is 30 seconds, and the Function timeout is 45 seconds.
@@ -117,4 +120,4 @@ The current release process must still verify the deployed backend, judge accoun
 
 ## Emergency notice
 
-Fitareeaee is not an emergency service. Users should contact local emergency services when immediate help is needed and should not rely on Copilot output for urgent safety decisions.
+Fitareeaee is not an emergency service. Users should contact local emergency services when immediate help is needed and should not rely on GPT-5.6 output for urgent safety decisions.

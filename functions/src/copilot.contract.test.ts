@@ -6,6 +6,7 @@ import {
   parsePlanRequest,
   redactContactDetails,
   safeOpenAIErrorMetadata,
+  safetyIdentifierForUid,
   validateDraft,
 } from "./copilot";
 
@@ -42,6 +43,16 @@ test("Copilot request enforces length and normalizes locale", () => {
 test("Copilot rejects unauthenticated requests before model access", () => {
   assert.throws(() => authenticatedUid(undefined));
   assert.equal(authenticatedUid({uid: "rider"}), "rider");
+});
+
+test("OpenAI safety identifier is stable, scoped, and does not expose the UID", () => {
+  const first = safetyIdentifierForUid("private-firebase-user-id");
+  const second = safetyIdentifierForUid("private-firebase-user-id");
+  const other = safetyIdentifierForUid("different-user-id");
+  assert.equal(first, second);
+  assert.notEqual(first, other);
+  assert.match(first, /^[a-f0-9]{64}$/);
+  assert.equal(first.includes("private-firebase-user-id"), false);
 });
 
 test("Copilot removes email addresses and likely phone numbers", () => {

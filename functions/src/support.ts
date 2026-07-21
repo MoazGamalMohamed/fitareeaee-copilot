@@ -1,7 +1,11 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
 import OpenAI from "openai";
-import {redactContactDetails, safeOpenAIErrorMetadata} from "./copilot";
+import {
+  redactContactDetails,
+  safeOpenAIErrorMetadata,
+  safetyIdentifierForUid,
+} from "./copilot";
 
 const MODEL = "gpt-5.6";
 const CATEGORIES = new Set([
@@ -140,13 +144,14 @@ async function answerSupportQuestion(input: {
   subject: string;
   message: string;
   history: Array<{speaker: string; message: string}>;
-}): Promise<SupportAnswer> {
+}, uid: string): Promise<SupportAnswer> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("AI support is not configured");
   const client = new OpenAI({apiKey, timeout: 30_000, maxRetries: 1});
   const response = await client.responses.create({
     model: MODEL,
     store: false,
+    safety_identifier: safetyIdentifierForUid(uid),
     reasoning: {effort: "none"},
     max_output_tokens: 700,
     instructions: [
@@ -268,7 +273,7 @@ export const contactSupport = functions
         subject: redactContactDetails(input.subject),
         message: redactContactDetails(input.message),
         history: [],
-      });
+      }, context.auth.uid);
       await writeAiAnswer(ticketRef.id, answer);
       return {
         schemaVersion: 1,
@@ -349,7 +354,7 @@ export const sendSupportMessage = functions
         ),
         message: redactContactDetails(message),
         history,
-      });
+      }, context.auth.uid);
       await writeAiAnswer(ticketId, answer);
       return {
         schemaVersion: 1,

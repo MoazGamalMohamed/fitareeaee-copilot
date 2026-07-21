@@ -1,6 +1,6 @@
 # Judge Testing Instructions
 
-Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
+Fitareeaee is an Android Flutter application built with Codex and powered at runtime by GPT-5.6. Testing is free; no payment card or OpenAI account is required by a judge.
 
 > Release status: the hardened lifecycle backend, rules, fictional judge fixtures,
 > and v1.0.16 public Android artifact are verified. The v1.0.16 APK was anonymously
@@ -41,7 +41,7 @@ matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
-Live Copilot verification: **PASS** — managed secret version 2 is enabled, obsolete
+Live GPT-5.6 planner verification: **PASS** — managed secret version 2 is enabled, obsolete
 version 1 is destroyed, and `planTripWithCopilot` is deployed. On July 20 the exact
 public v1.0.13 APK returned validated `gpt-5.6` review drafts for an English ride, a
 5 kg English package, and an Arabic ride. No key was read or exposed.
@@ -78,7 +78,7 @@ seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.
    ```
 
 4. Open the APK and approve the Android installation prompt.
-5. Launch **Fitareeaee Copilot** and sign in with the dedicated judge credentials supplied privately through Devpost.
+5. Launch **Fitareeaee** and sign in with the dedicated judge credentials supplied privately through Devpost.
 
 The app is sideloaded for judging and is not a Google Play release.
 
@@ -86,11 +86,11 @@ The app is sideloaded for judging and is not a Google Play release.
 
 ### 1. Create an English AI draft
 
-From Home, tap **Plan with AI** and enter:
+From Home, tap **Plan with GPT-5.6** and enter:
 
 > I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.
 
-Tap **Create AI draft**. Verify that:
+Tap **Create GPT-5.6 draft**. Verify that:
 
 - the screen says **AI draft — review required**;
 - intent/type, route, date/time, people, budget, and preferences are structured;
@@ -134,7 +134,7 @@ makes the resulting booking paid/confirmed.
 
 ### 5. Try Arabic or a package
 
-Return to **Plan with AI** and try either:
+Return to **Plan with GPT-5.6** and try either:
 
 > أحتاج رحلة من دالاس إلى أوستن في 10 أغسطس 2026 الساعة التاسعة صباحًا لشخصين وبميزانية 40 دولارًا، بدون تدخين.
 

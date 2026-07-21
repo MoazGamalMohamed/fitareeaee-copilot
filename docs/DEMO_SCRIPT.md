@@ -26,17 +26,17 @@ and use only the fictional judge accounts. Do not show their credentials.
 
 **On screen:** Title, then Home.
 
-**Say:** “Finding a community ride—or someone to carry a package—usually means translating an everyday need into rigid forms, then guessing why one result fits. Fitareeaee Copilot makes that planning conversational and transparent.”
+**Say:** “Finding a community ride—or someone to carry a package—usually means translating an everyday need into rigid forms, then guessing why one result fits. Fitareeaee makes planning conversational, reviewable, and transparent.”
 
 ### 0:14–0:29 — Honest Build Week boundary
 
-**On screen:** Brief before/after card, then tap **Plan with AI**.
+**On screen:** Brief before/after card, then tap **Plan with GPT-5.6**.
 
-**Say:** “Fitareeaee’s Flutter marketplace existed before Build Week. During Build Week I built this new GPT-5.6 Copilot, review-first matching flow, transactional booking security, authorization rules, and judge-ready Android delivery.”
+**Say:** “Fitareeaee’s Flutter marketplace existed before Build Week. Using Codex as my primary engineering collaborator, I built this new GPT-5.6 planner, review-first matching flow, transactional booking security, authorization rules, and judge-ready Android delivery.”
 
 ### 0:29–0:53 — Natural-language planning
 
-**On screen:** Tap the microphone and say, or paste as a recording fallback: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create AI draft**.
+**On screen:** Tap the microphone and say, or paste as a recording fallback: “I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.” Tap **Create GPT-5.6 draft**.
 
 **Say:** “I can type or speak a ride or package naturally in English or Arabic. The app sends only the redacted request, locale, timezone, and current date through an authenticated Firebase Function. Contact details and links in free text are filtered.”
 
@@ -68,19 +68,19 @@ paid/confirmed fixture and show its participant chat.
 
 **On screen:** Architecture graphic: Flutter → Firebase callable → OpenAI Responses API / GPT-5.6 → validated draft → deterministic Firestore ranking.
 
-**Say:** “The OpenAI key stays in a managed server secret—never Dart, Git, logs, or the APK. The callable adds authentication, strict JSON Schema, validation, timeouts, input limits, and per-user throttling. GPT never approves identity, declares someone safe, makes emergency decisions, or guarantees a match.”
+**Say:** “The OpenAI key stays in a managed server secret—never Dart, Git, logs, or the APK. The callable adds authentication, a privacy-preserving safety identifier, strict JSON Schema, validation, timeouts, input limits, and throttling. GPT never approves identity, declares someone safe, makes emergency decisions, or guarantees a match.”
 
 ### 2:20–2:34 — Codex collaboration
 
 **On screen:** Fast montage of dated commits, tests, rules, and APK evidence.
 
-**Say:** “Codex helped turn a broad prototype into this focused extension: auditing the baseline, implementing Flutter and Functions, threat-modeling rules and booking, writing tests, running Android builds, and preserving an append-only evidence trail. I made the product, scope, privacy, and release decisions.”
+**Say:** “Codex was more than a code generator: it audited the inherited baseline, traced Flutter and Firebase defects, implemented and reviewed the extension, threat-modeled rules and booking, wrote tests, ran Android and phone gates, and preserved dated evidence. I made the product, architecture, privacy, safety, and release decisions.”
 
 ### 2:34–2:40 — Close
 
-**On screen:** Copilot result and product name.
+**On screen:** GPT-5.6 draft result and product name.
 
-**Say:** “Fitareeaee Copilot turns everyday intent into a plan you control—and matches you can understand.”
+**Say:** “Built with Codex and powered by GPT-5.6, Fitareeaee turns everyday intent into a plan you control—and matches you can understand.”
 
 ## Optional Arabic insert
 

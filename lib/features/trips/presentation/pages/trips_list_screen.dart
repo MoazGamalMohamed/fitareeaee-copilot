@@ -715,7 +715,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                           const Text('No compatible matches yet'),
                           const SizedBox(height: 8),
                           Text(
-                            'Create a request or offer, or use Plan with AI.',
+                            'Create a request or offer, or use the GPT-5.6 planner.',
                             style: TextStyle(color: Colors.grey[600]),
                             textAlign: TextAlign.center,
                           ),

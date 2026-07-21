@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
-  <title id="title">Fitareeaee Copilot Build Week architecture</title>
+  <title id="title">Fitareeaee GPT-5.6 Build Week architecture</title>
   <desc id="description">Flutter Android sends a minimal authenticated request to a secured Firebase callable, which uses the OpenAI Responses API with GPT-5.6 to return a validated draft. Deterministic Firestore logic ranks real trips and server-authoritative callables control booking and chat.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
@@ -32,7 +32,7 @@
   <circle cx="1430" cy="80" r="220" fill="#4c43c7" opacity="0.12"/>
   <circle cx="100" cy="840" r="270" fill="#ff6b35" opacity="0.08"/>
 
-  <text x="80" y="92" class="title">Fitareeaee Copilot</text>
+  <text x="80" y="92" class="title">Fitareeaee</text>
   <text x="80" y="137" class="subtitle">Review-first AI interpretation. Deterministic matching. Server-authoritative lifecycle.</text>
 
   <g filter="url(#shadow)">

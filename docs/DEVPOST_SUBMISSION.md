@@ -6,9 +6,9 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Track:** Apps for Your Life
 
-**Title:** Fitareeaee Copilot — trusted, natural-language ride and package matching
+**Title:** Fitareeaee — GPT-5.6 Ride & Delivery Planner
 
-**Tagline:** Plan rides and packages in English or Arabic—with AI drafts you control and matches you can understand.
+**Tagline:** Built with Codex. GPT-5.6 turns English or Arabic trip intent into reviewable requests or offers and transparent matches.
 
 **Repository:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support
 
@@ -16,7 +16,7 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.16/app-profile.apk — 85,703,283 bytes; SHA-256 `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`
 
-**Primary Codex Session ID:** **PENDING — run `/feedback` in the primary build thread**
+**Primary Codex Session ID:** **PENDING — run `/status` in the primary build thread, then paste the displayed Session ID into Devpost's `/feedback` Session ID field**
 
 ## Description
 
@@ -24,13 +24,13 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 Community rides and informal package delivery often begin as a simple sentence: “I need to get from Dallas to Austin Monday morning,” or “Can someone carry a small package next week?” Existing flows make people translate that intent into rigid fields before they can even see whether a compatible trip exists. They also tend to hide why a result was selected.
 
-Fitareeaee Copilot starts with the way people naturally ask for help. It turns an English or Arabic request into a structured plan the user can inspect, correct, and explicitly confirm—then ranks real community trips with reasons the user can understand.
+Fitareeaee starts with the way people naturally ask for help. Its GPT-5.6 planner turns an English or Arabic request or offer into a structured plan the user can inspect, correct, and explicitly confirm—then ranks real community trips with reasons the user can understand.
 
 ### What it does
 
-From Home, a user taps **Plan with AI** and describes a ride they need, a trip they can offer, or a package they want to send. GPT-5.6 interprets the request into a strict draft containing intent, type, origin, destination, departure date/time, people or seats, package details, maximum budget, preferences, a concise summary, missing information, and a clarification question when needed.
+From Home, a user taps **Plan with GPT-5.6** and describes a ride they need, a trip they can offer, or a package they want to send. GPT-5.6 interprets the input into a strict draft containing intent, type, origin, destination, departure date/time, people or seats, package details, maximum budget, preferences, a concise summary, missing information, and a clarification question when needed.
 
-For accessibility, the same Home-only Copilot accepts English or Arabic speech
+For accessibility, the same Home-only GPT-5.6 planner accepts English or Arabic speech
 and can announce its draft through Android accessibility services. A user who
 prefers a form can create a ride/package request or, after driver and vehicle
 verification, an offer manually and place origin/destination pins on an
@@ -40,7 +40,7 @@ Recurring natural-language requests can be saved as editable, account-scoped loc
 templates. The app clearly discloses that a template stays on the device and is
 sent to GPT-5.6 only when the user explicitly creates a new draft from it.
 
-The draft is visibly labeled as AI-generated and remains editable. Copilot never
+The draft is visibly labeled as AI-generated and remains editable. The planner never
 writes a trip or booking: confirming the reviewed draft only performs
 deterministic search over real Firestore trips. Booking, when applicable, is a
 later separate explicit action. The app explains route compatibility, time,
@@ -57,17 +57,17 @@ available. Empty Firestore results stay empty.
 
 ### How we built it
 
-The Android client is built in Flutter with Riverpod and GoRouter. It sends a minimal authenticated callable request to Firebase Functions. The Function uses the official OpenAI Node SDK and Responses API with `gpt-5.6`, strict JSON Schema output, independent validation, bounded tokens, timeouts, safe error mapping, and per-user throttling. The OpenAI key is a managed server secret and never ships in Dart or the APK. The authenticated live matrix passed English ride, English package, and Arabic ride requests.
+The Android client is built in Flutter with Riverpod and GoRouter. It sends a minimal authenticated callable request to Firebase Functions. The Function uses the official OpenAI Node SDK and Responses API with `gpt-5.6`, strict JSON Schema output, independent validation, a privacy-preserving `safety_identifier`, `store: false`, bounded tokens, timeouts, safe error mapping, and per-user throttling. The OpenAI key is a managed server secret and never ships in Dart or the APK. The authenticated live matrix passed English ride, English package, and Arabic ride requests.
 
 After the structured draft returns, deterministic Dart code filters and ranks Firestore trips. GPT-5.6 handles language understanding; application code controls operational eligibility and explains the result. Booking/proposal Functions verify authentication, roles, ownership, trip state, departure, manual verification, duplicates, budget, and inventory. New selections remain pending payment; only a trusted payment finalizer could later confirm them and unlock seats/chat.
 
-Firestore and Storage rules default-deny unknown access, protect verification state, keep Copilot throttle records private, and restrict chat to participants.
+Firestore and Storage rules default-deny unknown access, protect verification state, keep AI throttle records private, and restrict chat to participants.
 
 ### Meaningful Build Week work
 
 Fitareeaee existed before Build Week as a Flutter/Firebase marketplace prototype. That earlier authentication, profile, marketplace, chat, and prototype feature work is not claimed as new.
 
-During Build Week we added the central Fitareeaee Copilot extension: the Home entry point, English/Arabic structured planning and speech entry, official GPT-5.6 Responses API backend, review/edit/confirmation flow, transparent deterministic matching, privacy and safety boundaries, retry/manual fallback, interactive manual trip map pins, transactional booking and lifecycle hardening, server-side verification authorization, restrictive data rules, expanded tests, Android checkpoints, and submission evidence.
+During Build Week we added the central Fitareeaee GPT-5.6 planner extension: the Home entry point, English/Arabic structured planning and speech entry, official GPT-5.6 Responses API backend, review/edit/confirmation flow, transparent deterministic matching, privacy and safety boundaries, retry/manual fallback, interactive manual trip map pins, transactional booking and lifecycle hardening, server-side verification authorization, restrictive data rules, expanded tests, Android checkpoints, and submission evidence.
 
 The repository preserves an explicit pre-Build Week baseline commit/tag and an append-only progress log so judges can distinguish the extension from older work.
 
@@ -147,7 +147,7 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 
 | Before Build Week | Built during Build Week |
 | --- | --- |
-| Existing Flutter/Firebase marketplace prototype | Fitareeaee Copilot as the central new workflow |
+| Existing Flutter/Firebase marketplace prototype | GPT-5.6 planner as the central new workflow |
 | Rigid trip forms/manual browsing | English/Arabic natural-language planning |
 | Unused OpenRouter/AI-verification prototype | Official server-side GPT-5.6 Responses API integration |
 | No contest-facing structured AI result | Strict validated, editable trip draft |
@@ -160,7 +160,7 @@ GPT-5.6 interprets intent. It does not approve identity, declare users safe, mak
 ## Testing instructions summary
 
 Install the universal Android APK, sign in with the privately supplied judge account, tap
-**Plan with AI**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at
+**Plan with GPT-5.6**, and use: “I need a ride from Dallas to Austin on August 10, 2026 at
 9:00 AM for two people under $40, no smoking.” Review/edit the AI draft, confirm it,
 and inspect the transparent match reasons plus details. Verify that a new selection
 says payment required and does not unlock chat. Use the seeded paid/confirmed fixture
@@ -189,7 +189,7 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 
 ## Suggested screenshot/image captions
 
-1. **Home:** “Plan with AI makes the Build Week Copilot the clearest path into Fitareeaee.”
+1. **Home:** “Plan with GPT-5.6 makes the Build Week extension the clearest path into Fitareeaee.”
 2. **Natural-language input:** “Describe a ride or package in everyday English or Arabic, with clear AI and privacy boundaries.”
 3. **Reviewable draft:** “GPT-5.6 returns a strict, editable draft—never an automatic booking.”
 4. **Transparent matches:** “Real Firestore trips are ranked deterministically with route, time, availability, price, and preference reasons.”
@@ -206,4 +206,4 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - **DONE:** release tag `fitareeaee-copilot-v1.0.16` / sanitized source commit `a827e555f789f0913eb93c0ac34160f6b85d9218`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
-- **PENDING:** primary Codex `/feedback` Session ID
+- **PENDING:** run `/status` in the primary Codex thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field

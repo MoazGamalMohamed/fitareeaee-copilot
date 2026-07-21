@@ -59,6 +59,15 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showPrivacyAndSafety(context),
           ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome_outlined),
+            title: const Text('Built with Codex • Powered by GPT-5.6'),
+            subtitle: const Text(
+              'See the distinct Build Week role of each OpenAI technology',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showBuildWeekTechnology(context),
+          ),
           const Divider(),
           _section('Preferences'),
           Padding(
@@ -212,7 +221,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              'Fitareeaee Copilot - Build Week judge build',
+              'Fitareeaee • OpenAI Build Week judge build',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ),
@@ -360,7 +369,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Plan with AI sends only the natural-language trip request, locale, time-zone offset, and current date through an authenticated Firebase Function. Contact details are redacted before the request reaches OpenAI, and model responses are not stored by the API request.',
+                'Plan with GPT-5.6 sends only the natural-language trip request, locale, time-zone offset, and current date through an authenticated Firebase Function. Contact details are redacted before the request reaches OpenAI, and model responses are not stored by the API request.',
               ),
               const SizedBox(height: 12),
               const Text(
@@ -369,6 +378,44 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               const Text(
                 'Identity images remain in Firebase Storage for manual admin review and are removed after a review decision. Never use this prototype for emergencies.',
+              ),
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: const Text('Done'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showBuildWeekTechnology(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Built with Codex • Powered by GPT-5.6',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Codex was the primary engineering collaborator used during Build Week to audit the inherited app, implement and review Flutter and Firebase changes, harden authorization, write tests, run Android release gates, and preserve the evidence trail.',
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'GPT-5.6 is the runtime intelligence behind the trip planner and first-line support. It interprets English or Arabic into strict, validated drafts; deterministic application code—not the model—controls matching, verification, booking, payment state, and chat access.',
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'The developer made the product, scope, privacy, safety, architecture, and release decisions. Pre-existing work and the Build Week extension are documented separately in the public repository.',
               ),
               const SizedBox(height: 20),
               FilledButton(

@@ -25,7 +25,7 @@ String copilotVoiceErrorMessage(String rawError) {
       error.contains('not allowed') ||
       error.contains('denied');
   if (denied) {
-    return 'Microphone permission is off. Enable it in Android Settings > Apps > Fitareeaee Copilot > Permissions, then retry.';
+    return 'Microphone permission is off. Enable it in Android Settings > Apps > Fitareeaee > Permissions, then retry.';
   }
   final noSpeech =
       error.contains('speech_timeout') ||
@@ -241,7 +241,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Plan with AI')),
+      appBar: AppBar(title: const Text('GPT-5.6 Trip Planner')),
       body: ListView(
         controller: _scrollController,
         padding: const EdgeInsets.all(20),
@@ -276,12 +276,14 @@ class _CopilotScreenState extends State<CopilotScreen> {
                 ? TextDirection.rtl
                 : TextDirection.ltr,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(
-              labelText: 'Describe your ride or package request',
+            decoration: InputDecoration(
+              labelText: _driverPath
+                  ? 'Describe your ride or delivery offer'
+                  : 'Describe your ride or delivery request',
               hintText:
                   'Where, when, how many people/seats, budget, and preferences…',
               alignLabelWithHint: true,
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
           ),
           if (widget.templateOwnerId case final ownerId?
@@ -386,7 +388,9 @@ class _CopilotScreenState extends State<CopilotScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.auto_awesome),
-            label: Text(_loading ? 'Creating a draft…' : 'Create AI draft'),
+            label: Text(
+              _loading ? 'Creating a draft…' : 'Create GPT-5.6 draft',
+            ),
           ),
           TextButton(
             onPressed: _loading
@@ -579,7 +583,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
                       : null,
                 ),
                 const Text(
-                  'Stored locally on this device. It is sent to GPT-5.6 only when you choose Create AI draft.',
+                  'Stored locally on this device. It is sent to GPT-5.6 only when you choose Create GPT-5.6 draft.',
                   style: TextStyle(fontSize: 12),
                 ),
               ],

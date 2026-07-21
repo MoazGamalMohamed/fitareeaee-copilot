@@ -11,7 +11,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 ## Eligibility and evidence
 
 - [x] Track selected: **Apps for Your Life**.
-- [x] Product name selected: **Fitareeaee Copilot — trusted, natural-language ride and package matching**.
+- [x] Final public product name selected: **Fitareeaee — GPT-5.6 Ride & Delivery Planner**; “Copilot” remains only an internal implementation identifier.
 - [x] Pre-existing application baseline explicitly documented.
 - [x] Baseline commit/tag preserved and not claimed as Build Week work.
 - [x] Meaningful Build Week extension described separately.
@@ -25,12 +25,12 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   at or under three minutes with voiceover, public/licensed repository, free judge
   access through the August 5 judging period, Codex/GPT-5.6 explanation, and primary
   `/feedback` Session ID remain required.
-- [ ] Re-check official rules and Devpost updates on submission day.
-- [ ] Run `/feedback` in the primary Codex build thread and paste the Session ID into Devpost.
+- [x] Re-check official rules, live FAQ, overview, judging criteria, and official GPT-5.6 guidance on July 21; record the requirement-to-evidence audit in `RULES_COMPLIANCE_MATRIX.md`.
+- [ ] Run `/status` in the primary Codex build thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field.
 
 ## Product and backend
 
-- [x] Home exposes **Plan with AI**.
+- [x] Home exposes **Plan with GPT-5.6** and keeps rider **Request** separate from verified-driver **Offer**.
 - [x] English/Arabic ride and package requests supported in code.
 - [x] Official OpenAI server SDK, Responses API, and `gpt-5.6` configured server-side.
 - [x] Strict structured output plus independent server validation.
@@ -227,7 +227,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [ ] Record video from final deployed build with audible narration and no copyrighted music.
 - [ ] Verify YouTube video is public, under three minutes, and playable while signed out.
 - [ ] Add YouTube URL.
-- [ ] Add primary Codex `/feedback` Session ID.
+- [ ] Add the primary Codex Session ID displayed by `/status` to Devpost's `/feedback` Session ID field.
 - [ ] Preview every link and all English copy while signed out.
 
 ## Final manual submission
@@ -246,5 +246,5 @@ Exact owner steps and the inherited Function set are recorded in
 1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
    managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Complete YouTube upload, `/feedback`, private credential placement, legal
+3. Complete YouTube upload, `/status` Session ID capture, private credential placement, legal
    confirmation, and the final owner-performed Devpost submit action.

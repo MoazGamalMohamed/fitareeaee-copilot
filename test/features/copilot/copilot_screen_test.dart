@@ -69,9 +69,11 @@ void main() {
     );
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    expect(find.text('GPT-5.6 Trip Planner'), findsOneWidget);
+    expect(find.text('Describe your ride or delivery request'), findsOneWidget);
     await tester.enterText(find.byType(TextField).first, 'Dallas to Austin');
     await tester.pump();
-    await tester.tap(find.text('Create AI draft'));
+    await tester.tap(find.text('Create GPT-5.6 draft'));
     await tester.pumpAndSettle();
 
     expect(calls, 1);
@@ -79,7 +81,7 @@ void main() {
     expect(error, findsOneWidget);
     expect(tester.getCenter(error).dy, inInclusiveRange(0, 1800));
     expect(find.textContaining('temporarily unavailable'), findsNothing);
-    expect(find.text('Create AI draft'), findsOneWidget);
+    expect(find.text('Create GPT-5.6 draft'), findsOneWidget);
     expect(find.text('Create a request manually'), findsOneWidget);
   });
 
@@ -129,7 +131,7 @@ void main() {
       'Dallas to Austin on July 20 at 9 AM for two people',
     );
     await tester.pump();
-    final createDraft = find.text('Create AI draft');
+    final createDraft = find.text('Create GPT-5.6 draft');
     await tester.tap(createDraft);
     await tester.pumpAndSettle();
 
@@ -179,6 +181,7 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     expect(find.text('Driver / Courier path'), findsOneWidget);
+    expect(find.text('Describe your ride or delivery offer'), findsOneWidget);
     expect(find.text('Create an offer manually'), findsOneWidget);
   });
 

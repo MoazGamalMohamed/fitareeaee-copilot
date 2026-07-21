@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Fitareeaee Copilot's project-level MIT license covers repository code authored
+Fitareeaee's project-level MIT license covers repository code authored
 for this project. Third-party software and data remain under their respective
 licenses. The Android APK also embeds Flutter's generated dependency notices at
 `assets/flutter_assets/NOTICES.Z`.

@@ -1,14 +1,21 @@
-# Fitareeaee Copilot
+# Fitareeaee — GPT-5.6 Ride & Delivery Planner
 
-**Trusted, natural-language ride and package matching**
+**Built with Codex. Powered by GPT-5.6. Requests and offers you review and control.**
 
-Fitareeaee Copilot turns an everyday ride or package-delivery request in English or Arabic into a structured draft, lets the user review every field, and then ranks real community trips with transparent reasons. It is an Android/Flutter submission for OpenAI Build Week in the **Apps for Your Life** track.
+Fitareeaee turns an everyday ride or package-delivery request or offer in English or Arabic into a structured GPT-5.6 draft, lets the user review every field, and then ranks real community trips with transparent reasons. It is an Android/Flutter submission for OpenAI Build Week in the **Apps for Your Life** track.
+
+## The two required OpenAI roles
+
+| Technology | Meaningful role in the submission |
+| --- | --- |
+| **Codex** | Primary Build Week engineering collaborator: repository and rule audit, honest baseline, Flutter/Firebase implementation, threat modeling, tests, Android builds, physical-device checks, publishing, and evidence. Human decisions define product scope, privacy, safety, architecture, and release authority. |
+| **GPT-5.6** | Runtime intelligence behind the central trip planner and bounded first-line support: English/Arabic intent becomes a strict, validated, editable draft. Deterministic code retains authority over matching, verification, payment state, booking, lifecycle, and chat. |
 
 ## The problem
 
 Finding a compatible community ride often means translating a conversational need—route, time, seats, budget, package size, and preferences—into many form fields and opaque search results. That burden is harder across languages and on a phone.
 
-Fitareeaee Copilot makes intent entry conversational while keeping consequential actions deterministic and user-controlled:
+Fitareeaee's GPT-5.6 planner makes intent entry conversational while keeping consequential actions deterministic and user-controlled:
 
 - GPT-5.6 interprets the request into a strict draft.
 - The user reviews and edits the draft before confirmation.
@@ -22,20 +29,20 @@ Fitareeaee was an existing Flutter marketplace prototype before Build Week. The 
 
 | Before Build Week | Built during Build Week |
 | --- | --- |
-| Flutter authentication, trip/profile screens, chat and verification prototypes | Prominent Home → Plan with AI experience |
+| Flutter authentication, trip/profile screens, chat and verification prototypes | Prominent Home → Plan with GPT-5.6 experience |
 | Manual trip browsing and inconsistent prototype paths | English/Arabic natural-language ride and package drafting |
 | Legacy OpenRouter and unused AI-verification prototypes | Official OpenAI SDK + Responses API + GPT-5.6 callable |
 | Client-side/non-transactional booking paths | Authenticated server-authoritative transactional booking |
 | Broad/inconsistent data access | Default-deny Firestore/Storage rules and admin-only verification decisions |
 | Simulated payment, wallet, map and tracking surfaces | Finance/tracking prototypes excluded; interactive manual trip map picker added |
-| Six domain smoke tests | Copilot, booking, verification, authorization and ranking contracts |
+| Six domain smoke tests | GPT-5.6 planner, booking, verification, authorization and ranking contracts |
 
 The append-only evidence log is [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_PROGRESS.md), and the detailed change list is [`docs/BUILD_WEEK_CHANGELOG.md`](docs/BUILD_WEEK_CHANGELOG.md).
 
 ## Judge path
 
 1. Sign in with the supplied free judge account.
-2. Tap **Plan with AI** on Home.
+2. Tap **Plan with GPT-5.6** on Home.
 3. Enter an English or Arabic ride/package request.
 4. Review and edit the clearly labeled AI draft.
 5. Confirm the criteria to rank real seeded trips.
@@ -47,7 +54,7 @@ The append-only evidence log is [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_
 Users can also create a request or verified-driver offer manually. The shared
 form supports ride/package details, accessibility preferences, origin and
 destination pins on an interactive OpenStreetMap, and explicit review before a
-server-authoritative write. Copilot additionally accepts English or Arabic
+server-authoritative write. The GPT-5.6 planner additionally accepts English or Arabic
 speech-to-text and can announce the returned draft through Android accessibility
 services. Those conveniences never bypass the same confirmation, role, payment,
 or verification rules.
@@ -78,7 +85,7 @@ flowchart LR
 ```
 
 The code requires `OPENAI_API_KEY` only as a managed Firebase Functions secret;
-the Flutter app never receives it. The Copilot callable is deployed with an
+the Flutter app never receives it. The GPT-5.6 planning callable is deployed with an
 authenticated, strict-schema boundary. Its capped live smoke matrix passed for
 an English ride, an English package, and an Arabic ride request. The callable
 requires Firebase Authentication, limits input/output, redacts likely contact
@@ -91,7 +98,7 @@ GPT-5.6 interprets language; it does not select a person, approve identity, decl
 
 | Home | Reviewable GPT-5.6 draft | Transparent live match |
 | --- | --- | --- |
-| <img src="docs/screenshots/01-home.png" width="240" alt="Fitareeaee Home with Plan with AI, manual request, and verified-driver offer actions"> | <img src="docs/screenshots/06-ai-draft.png" width="240" alt="Editable GPT-5.6 ride draft with explicit confirmation"> | <img src="docs/screenshots/07-transparent-matches.png" width="240" alt="Deterministically ranked live trip with transparent compatibility reasons"> |
+| <img src="docs/screenshots/01-home.png" width="240" alt="Fitareeaee Home with the central GPT-5.6 planner, rider Request, and verified-driver Offer actions"> | <img src="docs/screenshots/06-ai-draft.png" width="240" alt="Editable GPT-5.6 ride draft with explicit confirmation"> | <img src="docs/screenshots/07-transparent-matches.png" width="240" alt="Deterministically ranked live trip with transparent compatibility reasons"> |
 
 [View the complete judge-safe screenshot set](docs/screenshots/README.md), including
 manual map selection, the payment/chat boundary, completed Past trips, and the
@@ -101,6 +108,8 @@ manual map selection, the payment/chat boundary, completed Past trips, and the
 
 - Only the redacted natural-language request, locale, timezone, and a
   server-generated current date are sent to OpenAI.
+- A stable app-scoped SHA-256 safety identifier is sent as recommended for
+  individual end users; the underlying Firebase UID is never sent.
 - App user IDs, account emails/phones, profiles, bookings, chat contents, and
   verification images are not sent to OpenAI.
 - Email addresses, URLs, and long numeric strings typed into a request are
@@ -208,7 +217,7 @@ no signing secret is committed.
 The superseding
 [v1.0.16 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.16)
 separates rider/sender requests from driver/courier offers, adds a circular Home
-Copilot action, and hardens English/Arabic voice planning with explicit Android
+GPT-5.6 planner action, and hardens English/Arabic voice planning with explicit Android
 consent and a three-minute cap. It also adds editable, account-scoped local trip
 templates, accurate submitted/approved verification progress, and reliable
 rider/driver account switching. Publication now requires verified email, phone,
@@ -235,6 +244,7 @@ Codex audited the inherited repository, preserved an honest baseline, checked cu
 - [`docs/TEST_MATRIX.md`](docs/TEST_MATRIX.md) — test evidence and pending external checks
 - [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) — 2:40 demo script
 - [`docs/DEVPOST_SUBMISSION.md`](docs/DEVPOST_SUBMISSION.md) — submission copy
+- [`docs/RULES_COMPLIANCE_MATRIX.md`](docs/RULES_COMPLIANCE_MATRIX.md) — live rules-to-evidence audit
 - [`docs/SUBMISSION_CHECKLIST.md`](docs/SUBMISSION_CHECKLIST.md) — final manual actions
 - [`docs/BUILD_WEEK_PROGRESS.md`](docs/BUILD_WEEK_PROGRESS.md) — append-only checkpoints
 - [`docs/PUBLICATION_HISTORY.md`](docs/PUBLICATION_HISTORY.md) — original-to-sanitized commit map

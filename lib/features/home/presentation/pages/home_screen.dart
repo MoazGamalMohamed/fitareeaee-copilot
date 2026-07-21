@@ -240,7 +240,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Center(
       child: Semantics(
         button: true,
-        label: 'Plan a trip $action with AI',
+        label: 'Plan a trip $action with GPT-5.6',
         child: Material(
           elevation: 10,
           shadowColor: Colors.deepPurple.withValues(alpha: 0.45),
@@ -274,7 +274,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Plan with AI',
+                      'Plan with\nGPT-5.6',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
