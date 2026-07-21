@@ -33,7 +33,7 @@ If this document conflicts with the official website, the official website wins.
 | Video avoids unauthorized copyrighted material and third-party marks | No music is bundled; the script requires no copyrighted music, private data, credentials, or unnecessary third-party branding. | Owner must audit the final recording and confirm rights/authorization. |
 | Repository URL for judging and testing | Public sanitized repository with MIT license and branch-specific final source link. | Ready |
 | README includes setup, sample/test data, testing guidance, Codex collaboration, human decisions, and GPT-5.6 use | `README.md` contains each required section and links to detailed evidence. | Ready |
-| `/feedback` Codex Session ID from the primary build thread | The live FAQ currently says to type `/status` in the primary Codex thread to display the Session ID, then paste that ID into the form's `/feedback` Session ID field. | Owner must run `/status` here and paste the displayed Session ID into Devpost. |
+| `/feedback` Codex Session ID from the primary build thread | The latest organizer checklist says to run `/feedback` from the slash menu; the FAQ's `/status` command remains the display fallback. | Owner must run `/feedback` here and paste its Session ID into Devpost. |
 | Free working access through the judging period | Direct APK and private fictional judge credentials; judges need neither a payment card nor an OpenAI account. | Owner must paste credentials only into Devpost's private testing instructions and keep Firebase/APK available through August 5. |
 | Submission materials are in English | README, Devpost copy, judge guide, captions, and narration are in English; Arabic is demonstrated only as an app input. | Ready |
 
@@ -58,7 +58,7 @@ If this document conflicts with the official website, the official website wins.
 ## Final owner-only actions
 
 1. Confirm eligibility, ownership, third-party rights, and acceptance of the Official Rules.
-2. Record the exact submitted APK with the 2:40 English voiceover; upload it publicly to YouTube and verify it signed out.
-3. Run `/status` in the primary Codex build thread and paste the displayed Session ID into the `/feedback` Session ID field.
+2. Record the exact submitted APK with the 2:40 English voiceover; upload it publicly or unlisted to YouTube and verify it signed out.
+3. Run `/feedback` in the primary Codex build thread and paste its Session ID; use `/status` only if the ID must be displayed again.
 4. Paste fictional judge credentials into Devpost's private testing instructions only.
 5. Preview every link and submit before 5:00 PM Pacific; save a copy of the final submitted page.

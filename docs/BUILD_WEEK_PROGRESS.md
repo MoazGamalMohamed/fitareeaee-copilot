@@ -4007,3 +4007,56 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   public under-three-minute video, place fictional judge credentials privately, run
   `/status` for the Session ID, review legal/eligibility statements, and click
   Devpost's final submit action.
+
+## 2026-07-21 18:05 CDT / 2026-07-21 16:05 PDT — v1.0.20 voice-preservation release gate
+
+- Objective: fix the final observed voice-input regression without disturbing the
+  passing judge path, rerun the deadline-critical lifecycle and Android gates, and
+  publish an immutable final source checkpoint before the submission deadline.
+- Fixed GPT-5.6 planner dictation so each listening session snapshots the exact
+  pre-existing typed prompt, updates only the current partial transcript, preserves
+  the latest non-empty result, and cannot erase text when Android emits an empty/reset
+  callback. Added English, Arabic, trailing-space, and empty-reset regression coverage.
+- Version: `1.0.20+20260734`. Exact gates: Dart format PASS (136 files, 0 changed);
+  Flutter analysis PASS (0 issues); Flutter tests PASS (57/57); focused Copilot suite
+  PASS (8/8); Functions contracts PASS (33/33); Functions TypeScript build PASS;
+  universal debug APK PASS; optimized universal profile APK PASS.
+- Lifecycle audit: unchanged server/UI code still covers verified Request/Offer,
+  potential and pending-payment states, trusted paid confirmation, paid-confirmed-only
+  chat, driver-only start, completion, chat closure, one immutable rating, cancellation,
+  urgent emergency/admin review, GPT-5.6 first-line support, and human escalation. The
+  attempted fresh emulator integration rerun timed out while Functions startup exceeded
+  five minutes; the prior recorded 10/10 integration remains applicable to the unchanged
+  lifecycle source and is not relabeled as a new run.
+- Truth boundary: continuous live driver GPS/ETA tracking and a real payment provider
+  are not implemented. The release includes interactive address search/map pins and a
+  secure pending-payment boundary; neither excluded feature is claimed in submission.
+- Profile APK: `build/app/outputs/flutter-apk/app-profile.apk`, 88,963,947 bytes,
+  SHA-256 `F69F1187F7CD921BBB37FC67F5C36327ACD785C293C89A56F26D3A13B1BC7113`, built
+  2026-07-21 17:42:09 CDT / 15:42:09 PDT. Debug APK: 157,872,478 bytes, SHA-256
+  `8D89ACE244C36A3C085E06735516BEA47EB3100FCDB2E103EAD9A4165A68843C`.
+- Exact private application commit: `98e5e66b0787dc10d32af8ae9b0429e50d42a4b0`.
+  Tree-equivalent sanitized application commit:
+  `f3d6d88af2970790d9cc9bbd69a36a9370500441`. Both trees are exactly
+  `24589b8760f6432aa295448ee9b85866cdd0d20e`. Annotated tag
+  `fitareeaee-copilot-v1.0.20` was created in both repositories; the sanitized branch
+  and tag were pushed without force. High-signal secret scan passed.
+- Phone result: v1.0.19 and microphone permission were confirmed before the build, but
+  the Motorola disappeared from `adb devices` before v1.0.20 installation. Installation
+  is therefore pending reconnection and is not falsely recorded as passing.
+- Release status at this checkpoint: public prerelease metadata exists and the large APK
+  asset upload is in progress. Add a correction entry after upload/download verification.
+- Rollback point: exact-public, phone-installed v1.0.19 remains available. Owner-only
+  deadline actions remain the YouTube upload, `/feedback` Session ID, private judge
+  credentials, legal review, final Submit click, and green Submitted confirmation.
+
+## 2026-07-21 18:11 CDT / 2026-07-21 16:11 PDT — v1.0.20 public APK verification correction
+
+- Public prerelease: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.20`.
+  Direct APK: `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.20/app-profile.apk`.
+- GitHub asset state is `uploaded`, size is exactly 88,963,947 bytes, and GitHub digest
+  is `sha256:f69f1187f7cd921bbb37fc67f5c36327acd785c293c89a56f26d3a13b1bc7113`.
+  An anonymous download to `build/published-download-v120/app-profile.apk` completed;
+  its size and SHA-256 exactly match the tested local bytes.
+- The phone remains absent from ADB, so v1.0.20 phone installation remains the only
+  unverified artifact step. Exact-public v1.0.19 stays the tested phone rollback.

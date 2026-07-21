@@ -347,3 +347,17 @@ Its anonymous public redownload matched byte-for-byte, installed as version
 `1.0.9` / code `20260723`, and passed the authenticated driver lifecycle/chat
 smoke with zero app-specific fatal/Flutter/FirebaseFailure/ANR matches on API 36.
 Physical-phone verification remains pending while the owner device is disconnected.
+
+### v1.0.20 final voice-preservation hotfix
+
+- Preserved the exact typed trip request when voice dictation starts.
+- Replaced only the current session's partial speech transcript, preventing duplicate
+  fragments while keeping the latest useful result when Android sends an empty reset.
+- Added English, Arabic, whitespace, and empty-result regression coverage.
+- Advanced Android metadata to `1.0.20+20260734` and synchronized the in-app version.
+- Passed format 136/0, analysis with zero issues, Flutter 57/57, focused Copilot 8/8,
+  Functions contracts 33/33, Functions build, and both universal APK builds.
+- Audited the unchanged lifecycle from verified Request/Offer through payment gating,
+  confirmed chat, start, completion, closed chat, one-time rating, emergency escalation,
+  and GPT-5.6-to-human support handoff. Continuous GPS tracking and real payments remain
+  explicitly excluded rather than simulated.

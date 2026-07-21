@@ -203,7 +203,7 @@ profiles, and labeled active/completed booking/chat lifecycle fixtures. Rerunnin
 may reset those fixture documents; it must never be used as a general
 production-data migration.
 
-The current universal profile APK is available from the
+An earlier phone-tested rollback APK is available from the
 [v1.0.5 GitHub Release](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.5).
 It is 83,378,603 bytes with SHA-256
 `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
@@ -239,8 +239,8 @@ withdrawal/marketplace, paid-confirmed chat, and completed-only Past checks. It 
 a prerelease because the owner must still record the video and perform the legal
 Devpost submission; no real payment provider is claimed.
 
-The current
-[v1.0.19 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.19)
+The final
+[v1.0.20 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.20)
 makes **Request a ride or delivery** and **Offer a ride or delivery** two explicit,
 independent actions on Home, in Trips, and in the GPT-5.6 planner. A recognized
 marketplace account can use either action after completing its applicable checks:
@@ -249,11 +249,15 @@ for Offer. Server-authoritative booking rechecks both sides. v1.0.19 adds delibe
 OpenStreetMap address search with multiple selectable results, readable reverse
 geocoding, Android current-location consent, a real English/Arabic app locale with
 RTL, and USD/AED/SAR display/input conversion while Firebase amounts remain canonical
-USD. Its universal profile APK is 88,963,947 bytes with SHA-256
-`362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
-The public asset was anonymously downloaded, byte-matched, and installed on a
-Moto G Play (2024). The on-phone map requested native location consent
-and resolved the live pin to a readable address; 56/56 Flutter tests cover address
+USD. v1.0.20 additionally preserves pre-existing typed text throughout English or
+Arabic voice dictation and ignores native empty/reset callbacks. Its universal
+profile APK is 88,963,947 bytes with SHA-256
+`F69F1187F7CD921BBB37FC67F5C36327ACD785C293C89A56F26D3A13B1BC7113`.
+The public v1.0.20 asset was anonymously downloaded and byte/hash matched to the
+local candidate.
+The prior exact-public v1.0.19 asset was anonymously downloaded, byte-matched, and
+installed on a Moto G Play (2024). Its on-phone map requested native location consent
+and resolved the live pin to a readable address; 57/57 Flutter tests now cover address
 choices, locale state, currency conversion, both actions, and the existing critical
 flows. Payment remains a truthful pending-payment boundary; no live payment processor
 is claimed.

@@ -12,11 +12,11 @@ This is judge-ready English copy, but fields marked **PENDING** must be replaced
 
 **Repository:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support
 
-**Demo video:** **PENDING — public YouTube URL, under three minutes with audio**
+**Demo video:** **PENDING — public or unlisted YouTube URL, under three minutes with audio**
 
-**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.19/app-profile.apk — 88,963,947 bytes; SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`
+**Test build:** https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.20/app-profile.apk — 88,963,947 bytes; SHA-256 `F69F1187F7CD921BBB37FC67F5C36327ACD785C293C89A56F26D3A13B1BC7113`
 
-**Primary Codex Session ID:** **PENDING — run `/status` in the primary build thread, then paste the displayed Session ID into Devpost's `/feedback` Session ID field**
+**Primary Codex Session ID:** **PENDING — run `/feedback` from the slash menu in this primary build thread and copy its Session ID; `/status` is the display fallback**
 
 ## Description
 
@@ -175,8 +175,9 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 - Matching depends on actual seeded/live Firestore trips and never guarantees a result.
 - AI interpretation can be wrong; all output requires review.
 - Verification is manual context, not a declaration that a participant is safe.
-- No real payment, escrow, wallet, payout, AI identity verification, or emergency support is included.
-- The v1.0.19 candidate includes separate Request and Offer actions, action-specific
+- No real payment, escrow, wallet, payout, AI identity verification, live GPS tracking,
+  or emergency-dispatch service is included.
+- The v1.0.20 candidate includes separate Request and Offer actions, action-specific
   publication verification, repaired confirmed chat, searchable OpenStreetMap address
   choices, reverse-geocoded pins, English/Arabic app locale and speech entry, and editable curated
   location suggestions. It also makes Codex's engineering contribution and GPT-5.6's
@@ -200,11 +201,11 @@ Full instructions: [`JUDGE_TESTING.md`](JUDGE_TESTING.md).
 ## Final fields to replace
 
 - **DONE:** public repository URL
-- **PENDING:** public YouTube URL
-- **DONE:** v1.0.19 candidate APK URL, size, SHA-256, and exact-public phone install
+- **PENDING:** public or unlisted YouTube URL
+- **DONE:** v1.0.20 candidate APK URL, size, and SHA-256
 - **DONE:** managed OpenAI secret/callable metadata and exact-public fresh live matrix
 - **DONE:** exact-public v1.0.19 location-permission/reverse-address and install evidence; v1.0.18 retains dual Request/Offer/Trips/GPT and clean-log phone smoke, v1.0.17 retains live GPT-5.6 call evidence, and v1.0.16 retains lifecycle/chat/Past evidence
-- **DONE:** release tag `fitareeaee-copilot-v1.0.19` / sanitized source commit `9feaf5c07090f960585b59a7b34500b59b706b88`
+- **DONE:** release tag `fitareeaee-copilot-v1.0.20` / sanitized source commit `f3d6d88af2970790d9cc9bbd69a36a9370500441`
 - **PENDING:** private judge credential placement
 - **DONE:** public repository Issues tab for non-sensitive support
-- **PENDING:** run `/status` in the primary Codex thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field
+- **PENDING:** run `/feedback` in the primary Codex thread and paste its Session ID; use `/status` only as the display fallback

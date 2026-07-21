@@ -1,6 +1,6 @@
 # Submission Checklist
 
-Official deadline: **July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central**. Internal target: **3:00 PM Central**.
+Official deadline: **July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central**. The project must show green **Submitted** before that cutoff.
 
 Authoritative live pages: [Official Rules](https://openai.devpost.com/rules),
 [FAQ](https://openai.devpost.com/details/faqs), and
@@ -26,7 +26,10 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   access through the August 5 judging period, Codex/GPT-5.6 explanation, and primary
   `/feedback` Session ID remain required.
 - [x] Re-check official rules, live FAQ, overview, judging criteria, and official GPT-5.6 guidance on July 21; record the requirement-to-evidence audit in `RULES_COMPLIANCE_MATRIX.md`.
-- [ ] Run `/status` in the primary Codex build thread and paste the displayed Session ID into Devpost's `/feedback` Session ID field.
+- [x] Re-check the latest organizer checklist on July 21: public or unlisted YouTube
+  is accepted, `/feedback` supplies the primary Session ID, and no edits are allowed
+  after the deadline.
+- [ ] Run `/feedback` in the primary Codex build thread and capture its Session ID; use `/status` only as the display fallback.
 
 ## Product and backend
 
@@ -233,6 +236,16 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Publish/tag sanitized source `9feaf5c07090f960585b59a7b34500b59b706b88`
   without force; anonymously resume/download and byte-match 88,963,947 bytes and
   SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
+- [x] Fix v1.0.20 voice dictation so native partial/empty callbacks preserve all
+  pre-existing typed text; cover English, Arabic, whitespace, and reset cases.
+- [x] Pass v1.0.20 format 136/0, analysis 0 issues, Flutter 57/57, focused voice 8/8,
+  Functions 33/33 plus build, and universal debug/profile Android builds.
+- [x] Publish tree-equivalent sanitized source
+  `f3d6d88af2970790d9cc9bbd69a36a9370500441` and tag
+  `fitareeaee-copilot-v1.0.20` without force.
+- [ ] Reconnect the Motorola, install the exact v1.0.20 public bytes, and record the
+  version/cold-launch/log result. Keep the exact-public phone-tested v1.0.19 as rollback
+  if this owner-only reconnection does not happen before submission.
 
 ## Devpost materials
 
@@ -258,16 +271,16 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   and video/audio; no copyrighted music, private data, credentials, or real identity
   documents.
 - [ ] Record video from final deployed build with audible narration and no copyrighted music.
-- [ ] Verify YouTube video is public, under three minutes, and playable while signed out.
+- [ ] Verify YouTube video is public or unlisted, under three minutes, and playable while signed out.
 - [ ] Add YouTube URL.
-- [ ] Add the primary Codex Session ID displayed by `/status` to Devpost's `/feedback` Session ID field.
+- [ ] Run `/feedback` in the primary thread and add its Session ID; use `/status` only as the display fallback.
 - [ ] Preview every link and all English copy while signed out.
 
 ## Final manual submission
 
 - [ ] Owner reviews all legal/eligibility statements.
 - [ ] Owner performs the final legally binding Devpost submission action.
-- [ ] Submit by the internal 3:00 PM Central target.
+- [ ] Submit before the official July 21, 2026 7:00 PM Central / 5:00 PM Pacific deadline.
 - [ ] Save a screenshot/PDF/text copy of the final submission page.
 - [ ] Record submission time, final commit/tag, APK hash, and video URL in the append-only progress log.
 
@@ -279,5 +292,5 @@ Exact owner steps and the inherited Function set are recorded in
 1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
    managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Complete YouTube upload, `/status` Session ID capture, private credential placement, legal
+3. Complete YouTube upload, `/feedback` Session ID capture, private credential placement, legal
    confirmation, and the final owner-performed Devpost submit action.

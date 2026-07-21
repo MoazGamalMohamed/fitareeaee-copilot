@@ -4,10 +4,10 @@ Target runtime: **2 minutes 40 seconds**. Hard limit: **under 3 minutes**. Recor
 
 Do not record the final take until the live backend, test data, and exact published judge build pass the end-to-end test matrix.
 
-Release gate status: **v1.0.16 passes source, lifecycle backend, rules, local APK,
-fresh English/package/Arabic GPT-5.6 evidence, reusable-plan, verification-progress,
-API 36 emulator gates, scoped open-trip withdrawal, and exact-public physical-phone
-driver/Offer/map/chat/Past smoke**. Before recording, enable Do Not Disturb, close messaging notifications,
+Release gate status: **v1.0.20 preserves typed text during English/Arabic voice
+dictation and retains the previously verified lifecycle backend, authorization rules,
+GPT-5.6 evidence, reusable plans, verification progress, interactive map, and
+prior exact-public physical-phone judge path**. Before recording, enable Do Not Disturb, close messaging notifications,
 and use only the fictional judge accounts. Do not show their credentials.
 
 ## Recording setup
@@ -97,4 +97,4 @@ Do not show two full AI calls if network latency risks exceeding three minutes.
 - The demonstrated path matches the published build.
 - GPT-5.6, Codex, the meaningful Build Week extension, and the architecture are explicitly explained.
 - No API key, password, email, phone number, user ID, identity document, private chat, or Firebase console secret is visible.
-- The upload is public on YouTube and plays while signed out.
+- The upload is public or unlisted on YouTube and plays while signed out.
