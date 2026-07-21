@@ -3892,3 +3892,28 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   sanitized branch, verify links/tree equality/remote read-back, then the owner records
   the 2:40 video, runs `/status`, places private judge credentials, completes legal
   review and credential rotation, and performs the final Devpost submit action.
+
+## 2026-07-21 14:49 CDT / 2026-07-21 12:49 PDT — v1.0.18 documentation synchronization
+
+- Committed the v1.0.18 release, rules, test, device, Devpost, and recovery evidence
+  locally as private documentation commit
+  `7929a4bd3998d3c60f964493dc280774862a69ed`, then mechanically applied only that
+  reviewed patch to sanitized public documentation commit
+  `46703fbf699f9fb6920e2be66f61122413965cc5`.
+- Private and public documentation trees exactly matched at
+  `fe1a1217844a58bb107332c3bf5f0617362c8076`; `git diff --check` passed and 43
+  relative Markdown links resolved with zero missing targets.
+- Public documentation diff scan found zero forbidden credential/config paths and
+  zero high-signal secret matches. Branch push completed without force. Remote branch
+  read-back exactly matched public head `46703fbf699f9fb6920e2be66f61122413965cc5`.
+- Remote annotated tag `fitareeaee-copilot-v1.0.18` peels to immutable exact tested
+  application source `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`.
+- Draft PR #1 is OPEN, draft, CLEAN, and unmerged at the exact remote branch head;
+  its title/body now describe the v1.0.18 root cause, scope, validation, release, and
+  truthful no-live-payment limitation.
+- No application source, APK, Firebase resource, production data, billing/payment
+  state, fixture, or release tag changed in this documentation synchronization.
+  Remaining actions require the owner: rotate the exposed legacy runtime-config
+  credentials, record/upload the public under-three-minute video, place fictional
+  judge credentials privately, run `/status` for the Session ID, review legal/
+  eligibility statements, and click Devpost's final submit action.
