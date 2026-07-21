@@ -4099,3 +4099,25 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   v1.0.19 remains the last phone-installed artifact until v1.0.21 publication/device
   verification is recorded. Next action: publish the sanitized v1.0.21 source/APK,
   verify an anonymous redownload hash, and install/test it if a device becomes visible.
+
+## 2026-07-21 18:48 CDT / 2026-07-21 16:48 PDT — v1.0.21 public verification artifact correction
+
+- Tree-equivalent sanitized application commit
+  `6f033cfde972fd3660951dab6c4869333d9c84b8` exactly matches private tested
+  application tree `743eb503b20e6697d17cc174c4c1c9365d909dce`. Sanitized documentation
+  commit `f057afef78d2e8b69e8244b59b47c45091b016bf` exactly matches the private
+  documentation tree at publication time. The branch and annotated
+  `fitareeaee-copilot-v1.0.21` tag were pushed without force.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.21`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.21/app-profile.apk`.
+- GitHub reports asset state `uploaded`, Android-package content type, size exactly
+  89,062,251 bytes, and digest
+  `sha256:55d8c2c73e278578a3b0f9a1fa86c65ea714a6bd76a963ab237019df994c2cbf`.
+  An anonymous download to `build/published-download-v121/app-profile.apk` exactly
+  matched that size and SHA-256.
+- No Firebase resource, production data, secret, real document, judge credential,
+  payment state, or billing setting changed. Physical camera/gallery submission remains
+  pending a visible Android device and owner interaction; all non-device verification
+  gates are passing.
