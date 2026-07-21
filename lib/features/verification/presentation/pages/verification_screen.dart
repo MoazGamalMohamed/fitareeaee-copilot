@@ -8,6 +8,7 @@ import 'package:country_picker/country_picker.dart';
 import '../../../../core/user_path.dart';
 import '../../domain/models/verification_model.dart';
 import '../../domain/verification_requirements.dart';
+import '../../domain/verification_upload_policy.dart';
 import '../providers/verification_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
@@ -72,18 +73,53 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
     if (source == null) return;
 
-    final pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
+    XFile? pickedFile;
+    try {
+      pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+        maxWidth: verificationImageMaxDimension,
+        maxHeight: verificationImageMaxDimension,
+        preferredCameraDevice: type == VerificationType.selfieWithId
+            ? CameraDevice.front
+            : CameraDevice.rear,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Camera or gallery could not be opened. Allow access and try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
     if (pickedFile == null) return;
+
+    final file = File(pickedFile.path);
+    final fileSize = await file.length();
+    if (!isVerificationImageSizeAllowed(fileSize)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Use a readable image smaller than 5 MB, then try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() {
       _uploadingType = type.name;
     });
 
     try {
-      final file = File(pickedFile.path);
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) throw Exception('Not authenticated');
 
@@ -408,7 +444,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                       onPressed: isUploading ? null : onTap,
                       child: Text(isUploading ? 'Uploading...' : 'Verify'),
                     )),
-        onTap: isVerified || isUploading ? null : onTap,
+        onTap: isVerified || isUploading || isPending ? null : onTap,
       ),
     );
   }
