@@ -4060,3 +4060,42 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   its size and SHA-256 exactly match the tested local bytes.
 - The phone remains absent from ADB, so v1.0.20 phone installation remains the only
   unverified artifact step. Exact-public v1.0.19 stays the tested phone rollback.
+
+## 2026-07-21 18:42 CDT / 2026-07-21 16:42 PDT — v1.0.21 verification-camera hardening gate
+
+- Objective: re-audit the complete verification path, specifically native camera and
+  gallery selection, legacy nullable Firestore data, role-specific progress, secure
+  image upload, and admin-only approval before the final submission.
+- Fixed capture reliability: camera/gallery failures are now handled without an
+  unhandled exception; captured images are bounded to 2048 × 2048 at quality 80 and
+  rejected client-side unless non-empty and strictly under 5 MiB, matching Storage and
+  callable validation. Selfies prefer the front camera and documents prefer the rear.
+  Pending evidence is no longer tappable, preventing a protected pending upload from
+  being overwritten.
+- Version: `1.0.21+20260735`. Focused Flutter verification tests PASS 9/9, including
+  explicit null/malformed legacy values, rider/driver requirements, progress counts,
+  and image-size/dimension boundaries. Full Flutter tests PASS 59/59. Flutter analysis
+  PASS with zero issues. Functions TypeScript build PASS and verification callable
+  contracts PASS 2/2.
+- Real Firestore/Storage emulator rules gate PASS 9/9. The verification-specific case
+  proves the authenticated owner can upload only one of four fixed image filenames,
+  while another user, non-image content, arbitrary filenames, and client-written
+  verification approvals are denied. Server inspection confirms reviewed images are
+  removed and approval/rejection requires an admin document.
+- Android APK manifest inspection PASS: `android.permission.CAMERA` and the Image
+  Picker FileProvider are present. UI inspection confirms **Take Photo** and **Choose
+  from Gallery** feed the same authenticated upload/manual-review path.
+- Profile APK: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT profile,
+  debug-signed; 89,062,251 bytes; SHA-256
+  `55D8C2C73E278578A3B0F9A1FA86C65EA714A6BD76A963AB237019DF994C2CBF`;
+  built 2026-07-21 18:40:39 CDT / 16:40:39 PDT from private application commit
+  `6c9ff2823ab1ea78132030394a888dd0c729520e`.
+- Physical-device boundary: `adb devices -l` returned no device during this gate, so a
+  fresh real camera/gallery/upload interaction is not claimed. No real identity image
+  was accessed, captured, logged, or committed. Live deployed-function inventory also
+  requires owner Firebase CLI reauthentication; local callable and rules contracts are
+  passing and no backend source changed.
+- Rollback point: immutable v1.0.20 remains the last published release and exact-public
+  v1.0.19 remains the last phone-installed artifact until v1.0.21 publication/device
+  verification is recorded. Next action: publish the sanitized v1.0.21 source/APK,
+  verify an anonymous redownload hash, and install/test it if a device becomes visible.
