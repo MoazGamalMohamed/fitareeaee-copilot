@@ -3697,3 +3697,28 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   available as the immediately preceding rollback. Next action: commit/mirror/push
   this final documentation mapping, then record the 2:40 video and complete only the
   owner-required Devpost actions.
+
+## 2026-07-21 03:08 CDT / 2026-07-21 01:08 PDT — v1.0.16 documentation synchronization
+
+- Committed the final v1.0.16 release/device/submission mapping locally as private
+  documentation commit `ee16e46` and mechanically applied only that reviewed commit
+  to sanitized documentation commit `4afe623d75f793aa7db3e462d86f0c4d049f313b`.
+- Private and public documentation trees exactly matched at
+  `201c2d1eaa87148fa5ae35844189be08c40b7b18`; `git diff --check` passed and 23
+  relative Markdown links resolved with zero missing targets.
+- Repeated the reachable sanitized-history audit after the documentation commit:
+  126 revisions, 2,836 object/path lines, zero forbidden credential/config paths,
+  zero high-signal secret-hit files, zero rewrite refs, and a clean worktree.
+- Pushed without force. Remote branch
+  `agent/payment-gated-chat-trip-support` exactly matched sanitized documentation
+  head `4afe623d75f793aa7db3e462d86f0c4d049f313b` at read-back. The immutable v1.0.16
+  tag still peels locally/remotely to exact tested source
+  `a827e555f789f0913eb93c0ac34160f6b85d9218`.
+- Draft PR #1 remains OPEN, draft, unmerged, and cleanly mergeable. The public
+  v1.0.16 prerelease and exact 85,703,283-byte APK remain available at the URLs in
+  the preceding entry. No application source, APK, Firebase resource, production
+  data, billing/payment state, release tag, or fixture changed in this docs-only sync.
+- Technical build/device work is complete for v1.0.16. Remaining actions require the
+  owner: record/upload the public under-three-minute video, place fictional credentials
+  privately, run `/feedback`, review legal/eligibility statements, and click Devpost's
+  final submit action.
