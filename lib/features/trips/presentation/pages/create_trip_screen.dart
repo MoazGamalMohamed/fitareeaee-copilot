@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/user_path.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../copilot/domain/copilot_draft.dart';
 import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
@@ -97,14 +95,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(createTripProvider);
-    final account = ref.watch(currentUserProvider);
-    final accountPath = account.maybeWhen(
-      data: (user) => marketplacePathForRoles(user?.roles ?? const []),
-      orElse: () =>
-          _role == 'offer' ? MarketplacePath.driver : MarketplacePath.rider,
-    );
-    final effectiveRole = accountPath.isDriver ? 'offer' : 'request';
-    final offering = effectiveRole == 'offer';
+    final offering = _role == 'offer';
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final verificationAsync = userId == null
         ? const AsyncValue.data(null)
@@ -116,7 +107,11 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       orElse: () => false,
     );
     return Scaffold(
-      appBar: AppBar(title: Text(offering ? 'Offer a Ride' : 'Request a Trip')),
+      appBar: AppBar(
+        title: Text(
+          offering ? 'Offer a ride or delivery' : 'Request a ride or delivery',
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -137,8 +132,8 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                     Expanded(
                       child: Text(
                         offering
-                            ? 'You are the driver/courier and receive payment. Email, phone, ID, selfie, driver license, and vehicle verification are required.'
-                            : 'You are the rider/sender and paying side. Email, phone, ID, and selfie verification are required before publishing. A request does not confirm a booking.',
+                            ? 'You drive or deliver and receive payment after completion. Driver and vehicle verification is required.'
+                            : 'You ride or send a package. Payment is required only after you choose a match.',
                       ),
                     ),
                   ],
@@ -148,7 +143,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             if (!tripReady) ...[
               const SizedBox(height: 8),
               OutlinedButton.icon(
-                onPressed: () => context.push('/verification'),
+                onPressed: () => context.push(
+                  '/verification?role=${offering ? 'driver' : 'rider'}',
+                ),
                 icon: const Icon(Icons.verified_user_outlined),
                 label: Text(
                   offering
@@ -452,10 +449,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     }
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
-    final appUser = ref.read(currentUserProvider).asData?.value;
-    final role = marketplacePathForRoles(appUser?.roles ?? const []).isDriver
-        ? 'offer'
-        : 'request';
+    final role = _role;
     final now = DateTime.now();
     final trip = Trip(
       id: '',

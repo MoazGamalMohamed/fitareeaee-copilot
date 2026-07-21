@@ -208,10 +208,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // One account path keeps rider and driver responsibilities clear.
                 Text(
-                  'Choose your marketplace path',
+                  'How would you like to start?',
                   style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'You can request or offer later. Offering requires driver and vehicle verification.',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 12),
                 SegmentedButton<MarketplacePath>(

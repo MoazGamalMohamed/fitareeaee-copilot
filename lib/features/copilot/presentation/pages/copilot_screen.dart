@@ -14,8 +14,14 @@ import '../../domain/copilot_draft.dart';
 
 typedef CopilotPlanner = Future<CopilotPlanResult> Function(String request);
 
-String copilotIntentForRole(String? role) =>
-    role == 'driver' ? 'offer' : 'find';
+String? copilotIntentForRole(String? role) => switch (role) {
+  'driver' => 'offer',
+  'rider' => 'find',
+  _ => null,
+};
+
+String copilotIntentForDraft(String? role, String modelIntent) =>
+    copilotIntentForRole(role) ?? modelIntent;
 
 String copilotVoiceErrorMessage(String rawError) {
   final error = rawError.toLowerCase().replaceAll('-', '_');
@@ -89,9 +95,11 @@ class _CopilotScreenState extends State<CopilotScreen> {
   bool _templatesLoading = false;
 
   bool get _driverPath => widget.role == 'driver';
-  String get _pathIntent => copilotIntentForRole(widget.role);
-  List<String> get _visibleExamples =>
-      _driverPath ? [_examples[1]] : [_examples[0], _examples[2], _examples[3]];
+  bool get _requestPath => widget.role == 'rider';
+  bool get _neutralPath => !_driverPath && !_requestPath;
+  List<String> get _visibleExamples => _driverPath
+      ? [_examples[1]]
+      : (_requestPath ? [_examples[0], _examples[2], _examples[3]] : _examples);
 
   static const _examples = [
     'I need a ride from Dallas to Austin on August 10, 2026 at 9 AM for two people under \$40.',
@@ -172,7 +180,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
   }
 
   void _loadDraft(CopilotDraft draft) {
-    _intent = _pathIntent;
+    _intent = copilotIntentForDraft(widget.role, draft.intent);
     _tripType = draft.tripType;
     _origin.text = draft.origin ?? '';
     _destination.text = draft.destination ?? '';
@@ -248,24 +256,24 @@ class _CopilotScreenState extends State<CopilotScreen> {
         children: [
           _disclosure(),
           const SizedBox(height: 12),
-          Card(
-            color: _driverPath ? Colors.green.shade50 : Colors.blue.shade50,
-            child: ListTile(
-              leading: Icon(
-                _driverPath ? Icons.drive_eta : Icons.person_search,
-                color: _driverPath ? Colors.green.shade700 : Colors.blue,
-              ),
-              title: Text(
-                _driverPath ? 'Driver / Courier path' : 'Rider / Sender path',
-              ),
-              subtitle: Text(
-                _driverPath
-                    ? 'AI drafts an offer. This account cannot create rider requests.'
-                    : 'AI drafts a request. This account cannot create driver offers.',
+          if (!_neutralPath) ...[
+            Card(
+              color: _driverPath ? Colors.green.shade50 : Colors.blue.shade50,
+              child: ListTile(
+                leading: Icon(
+                  _driverPath ? Icons.drive_eta : Icons.person_search,
+                  color: _driverPath ? Colors.green.shade700 : Colors.blue,
+                ),
+                title: Text(_driverPath ? 'Offer mode' : 'Request mode'),
+                subtitle: Text(
+                  _driverPath
+                      ? 'Driver and vehicle verification is required before publishing.'
+                      : 'You review the request before it is published.',
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
+          ],
           TextField(
             controller: _request,
             focusNode: _requestFocus,
@@ -279,7 +287,9 @@ class _CopilotScreenState extends State<CopilotScreen> {
             decoration: InputDecoration(
               labelText: _driverPath
                   ? 'Describe your ride or delivery offer'
-                  : 'Describe your ride or delivery request',
+                  : (_requestPath
+                        ? 'Describe your ride or delivery request'
+                        : 'Describe the ride or delivery you need or can offer'),
               hintText:
                   'Where, when, how many people/seats, budget, and preferences…',
               alignLabelWithHint: true,
@@ -392,18 +402,42 @@ class _CopilotScreenState extends State<CopilotScreen> {
               _loading ? 'Creating a draft…' : 'Create GPT-5.6 draft',
             ),
           ),
-          TextButton(
-            onPressed: _loading
-                ? null
-                : () => context.push(
-                    '/trips/create?role=${_driverPath ? 'driver' : 'rider'}',
+          if (_neutralPath)
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _loading
+                        ? null
+                        : () => context.push('/trips/create?role=rider'),
+                    icon: const Icon(Icons.person_search_outlined),
+                    label: const Text('Request manually'),
                   ),
-            child: Text(
-              _driverPath
-                  ? 'Create an offer manually'
-                  : 'Create a request manually',
+                ),
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: _loading
+                        ? null
+                        : () => context.push('/trips/create?role=driver'),
+                    icon: const Icon(Icons.drive_eta_outlined),
+                    label: const Text('Offer manually'),
+                  ),
+                ),
+              ],
+            )
+          else
+            TextButton(
+              onPressed: _loading
+                  ? null
+                  : () => context.push(
+                      '/trips/create?role=${_driverPath ? 'driver' : 'rider'}',
+                    ),
+              child: Text(
+                _driverPath
+                    ? 'Create an offer manually'
+                    : 'Create a request manually',
+              ),
             ),
-          ),
           if (_error != null) ...[
             const SizedBox(height: 8),
             Semantics(
@@ -710,7 +744,7 @@ class _CopilotScreenState extends State<CopilotScreen> {
           children: [
             Expanded(
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Account path'),
+                decoration: const InputDecoration(labelText: 'Trip action'),
                 child: Text(_driverPath ? 'Offer' : 'Request'),
               ),
             ),

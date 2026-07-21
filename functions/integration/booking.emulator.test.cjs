@@ -136,21 +136,37 @@ after(async () => {
   await Promise.all(getApps().map((app) => deleteAdminApp(app)));
 });
 
-test("verified rider can publish only a request", async () => {
-  const published = await callable(
+test("request and offer are separate actions with action-specific verification", async () => {
+  const riderRequest = await callable(
     "createTrip",
     riderA.token,
     createTripPayload("request"),
   );
-  assert.equal(published.ok, true);
-  assert.equal(published.body.result.status, "pending");
+  assert.equal(riderRequest.ok, true);
+  assert.equal(riderRequest.body.result.status, "pending");
 
-  const flipped = await callable(
+  const riderWithoutDriverChecks = await callable(
     "createTrip",
     riderA.token,
     createTripPayload("offer"),
   );
-  assert.equal(flipped.ok, false);
+  assert.equal(riderWithoutDriverChecks.ok, false);
+
+  const driverOffer = await callable(
+    "createTrip",
+    driver.token,
+    createTripPayload("offer"),
+  );
+  assert.equal(driverOffer.ok, true);
+  assert.equal(driverOffer.body.result.status, "pending");
+
+  const driverRequest = await callable(
+    "createTrip",
+    driver.token,
+    createTripPayload("request"),
+  );
+  assert.equal(driverRequest.ok, true);
+  assert.equal(driverRequest.body.result.status, "pending");
 });
 
 test("unverified rider cannot publish a request", async () => {

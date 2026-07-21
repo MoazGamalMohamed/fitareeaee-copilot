@@ -146,13 +146,11 @@ export function accountCanCreateRole(
   data: Record<string, unknown>,
   requestedRole: "offer" | "request"
 ): boolean {
+  if (requestedRole !== "offer" && requestedRole !== "request") return false;
   if (!Array.isArray(data.roles) ||
       data.roles.some((role) => typeof role !== "string")) return false;
-  const roles = data.roles as string[];
-  const rider = roles.includes("rider") || roles.includes("sender");
-  const driver = roles.includes("driver") || roles.includes("courier");
-  if (rider === driver) return false;
-  return requestedRole === "request" ? rider : driver;
+  const marketplaceRoles = new Set(["rider", "sender", "driver", "courier"]);
+  return (data.roles as string[]).some((role) => marketplaceRoles.has(role));
 }
 
 export function routeDistanceKm(
@@ -186,7 +184,7 @@ export const createTrip = functions.https.onCall(async (rawData, context) => {
       !accountCanCreateRole(account.data() ?? {}, request.role)) {
     throw new functions.https.HttpsError(
       "permission-denied",
-      "This action does not match the Request or Offer path selected at signup."
+      "A valid marketplace account is required to publish a trip."
     );
   }
   const verificationData = verification.data() ?? {};

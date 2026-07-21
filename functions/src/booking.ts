@@ -1,10 +1,13 @@
 import {
-  DocumentSnapshot,
   getFirestore,
   Timestamp,
   Transaction,
 } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
+import {
+  driverVerificationComplete,
+  participantVerificationComplete,
+} from "./trip";
 
 export interface BookingRequest {
   schemaVersion: 1;
@@ -86,15 +89,12 @@ export function canSelfCancelBeforeDeparture(
   return departure !== null && departure.getTime() > nowMs;
 }
 
-function hasRequiredVerification(
-  snapshot: DocumentSnapshot
+export function bookingParticipantsVerified(
+  rider: Record<string, unknown>,
+  driver: Record<string, unknown>
 ): boolean {
-  if (!snapshot.exists) return false;
-  const data = snapshot.data();
-  return data?.emailVerified === true &&
-    data?.phoneVerified === true &&
-    data?.identityVerified === true &&
-    data?.selfieWithIdVerified === true;
+  return participantVerificationComplete(rider) &&
+    driverVerificationComplete(driver);
 }
 
 function rethrowCallableError(error: unknown, fallback: string): never {
@@ -210,12 +210,16 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       ]);
 
       if (
-        !hasRequiredVerification(riderVerification) ||
-        !hasRequiredVerification(driverVerification)
+        !riderVerification.exists ||
+        !driverVerification.exists ||
+        !bookingParticipantsVerified(
+          riderVerification.data() ?? {},
+          driverVerification.data() ?? {}
+        )
       ) {
         throw new functions.https.HttpsError(
           "failed-precondition",
-          "Both participants must complete email, phone, ID, and selfie verification."
+          "The rider must complete identity verification, and the driver must also complete driver and vehicle verification."
         );
       }
 

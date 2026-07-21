@@ -85,12 +85,14 @@ test("rider requests require contact, identity, and selfie checks", () => {
   }), false);
 });
 
-test("signup path cannot be flipped by callable input", () => {
+test("recognized marketplace accounts can request or offer with action-specific verification", () => {
   assert.equal(accountCanCreateRole({roles: ["rider", "sender"]}, "request"), true);
-  assert.equal(accountCanCreateRole({roles: ["rider", "sender"]}, "offer"), false);
+  assert.equal(accountCanCreateRole({roles: ["rider", "sender"]}, "offer"), true);
   assert.equal(accountCanCreateRole({roles: ["driver", "courier"]}, "offer"), true);
-  assert.equal(accountCanCreateRole({roles: ["driver", "courier"]}, "request"), false);
-  assert.equal(accountCanCreateRole({roles: ["rider", "driver"]}, "request"), false);
+  assert.equal(accountCanCreateRole({roles: ["driver", "courier"]}, "request"), true);
+  assert.equal(accountCanCreateRole({roles: ["rider", "driver"]}, "request"), true);
+  assert.equal(accountCanCreateRole({roles: ["admin"]}, "request"), false);
+  assert.equal(accountCanCreateRole({roles: []}, "offer"), false);
 });
 
 test("map coordinates produce a realistic route distance", () => {

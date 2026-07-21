@@ -16,11 +16,18 @@ void main() {
     );
   });
 
-  test('account role deterministically locks the Copilot intent', () {
-    expect(copilotIntentForRole('driver'), 'offer');
-    expect(copilotIntentForRole('rider'), 'find');
-    expect(copilotIntentForRole(null), 'find');
-  });
+  test(
+    'explicit planner mode locks intent while Home planner stays neutral',
+    () {
+      expect(copilotIntentForRole('driver'), 'offer');
+      expect(copilotIntentForRole('rider'), 'find');
+      expect(copilotIntentForRole(null), isNull);
+      expect(copilotIntentForDraft(null, 'offer'), 'offer');
+      expect(copilotIntentForDraft(null, 'find'), 'find');
+      expect(copilotIntentForDraft('driver', 'find'), 'offer');
+      expect(copilotIntentForDraft('rider', 'offer'), 'find');
+    },
+  );
 
   test('voice errors distinguish permission, silence, and busy states', () {
     expect(
@@ -70,7 +77,10 @@ void main() {
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     expect(find.text('GPT-5.6 Trip Planner'), findsOneWidget);
-    expect(find.text('Describe your ride or delivery request'), findsOneWidget);
+    expect(
+      find.text('Describe the ride or delivery you need or can offer'),
+      findsOneWidget,
+    );
     await tester.enterText(find.byType(TextField).first, 'Dallas to Austin');
     await tester.pump();
     await tester.tap(find.text('Create GPT-5.6 draft'));
@@ -82,7 +92,8 @@ void main() {
     expect(tester.getCenter(error).dy, inInclusiveRange(0, 1800));
     expect(find.textContaining('temporarily unavailable'), findsNothing);
     expect(find.text('Create GPT-5.6 draft'), findsOneWidget);
-    expect(find.text('Create a request manually'), findsOneWidget);
+    expect(find.text('Request manually'), findsOneWidget);
+    expect(find.text('Offer manually'), findsOneWidget);
   });
 
   testWidgets('AI output remains a draft until explicit confirmation', (
@@ -180,7 +191,7 @@ void main() {
     );
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    expect(find.text('Driver / Courier path'), findsOneWidget);
+    expect(find.text('Offer mode'), findsOneWidget);
     expect(find.text('Describe your ride or delivery offer'), findsOneWidget);
     expect(find.text('Create an offer manually'), findsOneWidget);
   });

@@ -201,11 +201,9 @@ class SettingsScreen extends ConsumerWidget {
           _section('Account'),
           ListTile(
             leading: const Icon(Icons.manage_accounts_outlined),
-            title: const Text('Profile, address, and marketplace path'),
+            title: const Text('Profile and address'),
             subtitle: profileAsync.maybeWhen(
-              data: (profile) => Text(
-                marketplacePathForRoles(profile?.roles ?? const []).title,
-              ),
+              data: (_) => const Text('Edit your personal and contact details'),
               orElse: () => const Text('Edit your account details'),
             ),
             trailing: const Icon(Icons.chevron_right),
@@ -221,7 +219,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              'Fitareeaee • OpenAI Build Week judge build',
+              'Fitareeaee • Rides and deliveries made simple',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ),

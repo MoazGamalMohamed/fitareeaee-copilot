@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   bookingDocumentId,
   bookingIsPaidAndConfirmed,
+  bookingParticipantsVerified,
   canSelfCancelBeforeDeparture,
   parseBookingRequest,
   validatedUnitPrice,
@@ -52,6 +53,38 @@ test("chat eligibility requires both confirmed status and verified payment", () 
   );
   assert.equal(
     bookingIsPaidAndConfirmed({status: "pending_payment", paymentStatus: "paid"}),
+    false
+  );
+});
+
+test("booking rechecks rider identity and driver vehicle eligibility", () => {
+  const participant = {
+    emailVerified: true,
+    phoneVerified: true,
+    identityVerified: true,
+    selfieWithIdVerified: true,
+  };
+  assert.equal(
+    bookingParticipantsVerified(participant, {
+      ...participant,
+      driverLicenseVerified: true,
+      vehicleVerified: true,
+    }),
+    true
+  );
+  assert.equal(
+    bookingParticipantsVerified(participant, {
+      ...participant,
+      driverLicenseVerified: true,
+      vehicleVerified: false,
+    }),
+    false
+  );
+  assert.equal(
+    bookingParticipantsVerified(
+      {...participant, phoneVerified: false},
+      {...participant, driverLicenseVerified: true, vehicleVerified: true}
+    ),
     false
   );
 });

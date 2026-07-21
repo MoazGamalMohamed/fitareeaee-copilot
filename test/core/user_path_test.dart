@@ -37,15 +37,15 @@ void main() {
   });
 
   test(
-    'account guidance explains why rider and driver creation stay separate',
+    'account guidance keeps request and offer available as separate actions',
     () {
       expect(
         MarketplacePath.rider.accountGuidance,
-        contains('separate driver account'),
+        contains('publish an offer'),
       );
       expect(
         MarketplacePath.driver.accountGuidance,
-        contains('Driver and vehicle verification'),
+        contains('create a request'),
       );
     },
   );

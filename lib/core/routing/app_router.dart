@@ -269,7 +269,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.verification,
         name: 'verification',
-        builder: (context, state) => const VerificationScreen(),
+        builder: (context, state) =>
+            VerificationScreen(role: state.uri.queryParameters['role']),
       ),
 
       // Admin Routes

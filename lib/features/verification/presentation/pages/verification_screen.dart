@@ -12,7 +12,9 @@ import '../providers/verification_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 class VerificationScreen extends ConsumerStatefulWidget {
-  const VerificationScreen({super.key});
+  const VerificationScreen({super.key, this.role});
+
+  final String? role;
 
   @override
   ConsumerState<VerificationScreen> createState() => _VerificationScreenState();
@@ -22,6 +24,29 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   final _picker = ImagePicker();
   String? _uploadingType;
   String? _verificationId; // For phone verification
+  bool? _driverMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _driverMode = switch (widget.role) {
+      'driver' => true,
+      'rider' => false,
+      _ => null,
+    };
+  }
+
+  @override
+  void didUpdateWidget(covariant VerificationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.role != widget.role) {
+      _driverMode = switch (widget.role) {
+        'driver' => true,
+        'rider' => false,
+        _ => null,
+      };
+    }
+  }
 
   Future<void> _uploadDocument(VerificationType type, String title) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -121,7 +146,8 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             error: (_, _) => _buildLoadError(userId: user.id),
             data: (verification) => _buildContent(
               verification,
-              isDriver: marketplacePathForRoles(user.roles).isDriver,
+              isDriver:
+                  _driverMode ?? marketplacePathForRoles(user.roles).isDriver,
             ),
           );
         },
@@ -191,6 +217,25 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        SegmentedButton<bool>(
+          segments: const [
+            ButtonSegment(
+              value: false,
+              icon: Icon(Icons.person_search_outlined),
+              label: Text('Request'),
+            ),
+            ButtonSegment(
+              value: true,
+              icon: Icon(Icons.drive_eta_outlined),
+              label: Text('Offer'),
+            ),
+          ],
+          selected: {isDriver},
+          onSelectionChanged: (selection) {
+            setState(() => _driverMode = selection.first);
+          },
+        ),
+        const SizedBox(height: 16),
         // Verification Level Card
         Card(
           child: Padding(

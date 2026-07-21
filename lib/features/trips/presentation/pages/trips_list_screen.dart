@@ -8,7 +8,6 @@ import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/user_path.dart';
 import '../../../ratings/presentation/providers/rating_provider.dart';
 
 String tripCardStatusLabel({
@@ -70,13 +69,6 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   Widget build(BuildContext context) {
     final availableTrips = ref.watch(availableTripsProvider);
     final currentUser = ref.watch(currentUserProvider);
-    final marketplacePath = currentUser.maybeWhen(
-      data: (user) => marketplacePathForRoles(user?.roles ?? const []),
-      orElse: () => widget.role == 'driver'
-          ? MarketplacePath.driver
-          : MarketplacePath.rider,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trips'),
@@ -259,12 +251,9 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () =>
-            context.push('/trips/create?role=${marketplacePath.routeRole}'),
-        icon: Icon(
-          marketplacePath.isDriver ? Icons.add_road : Icons.person_search,
-        ),
-        label: Text(marketplacePath.creationLabel),
+        onPressed: () => _showCreateTripActions(context),
+        icon: const Icon(Icons.add),
+        label: const Text('Create'),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
@@ -296,6 +285,48 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _showCreateTripActions(BuildContext context) async {
+    final role = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Create a trip',
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                leading: const CircleAvatar(
+                  child: Icon(Icons.person_search_outlined),
+                ),
+                title: const Text('Request a ride or delivery'),
+                subtitle: const Text('Ride or send a package.'),
+                onTap: () => Navigator.pop(sheetContext, 'rider'),
+              ),
+              ListTile(
+                leading: const CircleAvatar(
+                  child: Icon(Icons.drive_eta_outlined),
+                ),
+                title: const Text('Offer a ride or delivery'),
+                subtitle: const Text('Drive or deliver for another user.'),
+                onTap: () => Navigator.pop(sheetContext, 'driver'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (role != null && context.mounted) {
+      context.push('/trips/create?role=$role');
+    }
   }
 
   static int _tabIndex(String? value) {
