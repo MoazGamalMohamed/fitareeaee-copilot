@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -58,7 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Plan your next trip',
+                      context.tr('home_plan_title'),
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             color: Colors.white,
@@ -67,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Request a ride or delivery, or offer one to the community.',
+                      context.tr('home_plan_subtitle'),
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
@@ -83,7 +84,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 28),
 
               Text(
-                'What would you like to do?',
+                context.tr('home_question'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -94,9 +95,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 context,
                 key: const ValueKey('home-request-action'),
                 icon: Icons.person_search_outlined,
-                title: 'Request a ride or delivery',
-                subtitle:
-                    'Ride or send a package and pay after choosing a match.',
+                title: context.tr('home_request'),
+                subtitle: context.tr('home_request_subtitle'),
                 color: Colors.indigo,
                 onTap: () => _handleCreateTrip(
                   context,
@@ -109,9 +109,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 context,
                 key: const ValueKey('home-offer-action'),
                 icon: Icons.drive_eta_outlined,
-                title: 'Offer a ride or delivery',
-                subtitle:
-                    'Drive or deliver and receive payment after completion.',
+                title: context.tr('home_offer'),
+                subtitle: context.tr('home_offer_subtitle'),
                 color: Colors.teal,
                 onTap: () => _handleCreateTrip(
                   context,
@@ -123,8 +122,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildPrimaryActionCard(
                 context,
                 icon: Icons.explore_outlined,
-                title: 'Explore the marketplace',
-                subtitle: 'Browse available offers and open requests.',
+                title: context.tr('home_explore'),
+                subtitle: context.tr('home_explore_subtitle'),
                 color: AppColors.primary,
                 onTap: () => context.push('/trips'),
               ),
@@ -133,7 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
               // Quick Links
               Text(
-                'Quick Links',
+                context.tr('home_quick_links'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -145,7 +144,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.people,
-                      label: 'Matches',
+                      label: context.tr('home_matches'),
                       onTap: () => context.push('/trips?tab=matches'),
                     ),
                   ),
@@ -154,7 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.history,
-                      label: 'Past Trips',
+                      label: context.tr('home_past'),
                       onTap: () => context.push('/trips?tab=past'),
                     ),
                   ),
@@ -163,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.payments_outlined,
-                      label: 'Payments',
+                      label: context.tr('home_payments'),
                       onTap: () => context.push('/payments'),
                     ),
                   ),
@@ -172,7 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.support_agent_outlined,
-                      label: 'Support',
+                      label: context.tr('home_support'),
                       onTap: () => context.push('/support'),
                     ),
                   ),
@@ -202,18 +201,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           }
         },
         items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.route_outlined),
-            label: 'Trips',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: context.tr('home_nav_home'),
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Chat',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.route_outlined),
+            label: context.tr('home_nav_trips'),
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.message),
+            label: context.tr('home_nav_chat'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: context.tr('home_nav_profile'),
           ),
         ],
       ),
@@ -259,8 +261,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           size: 36,
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          'Plan with\nGPT-5.6',
+                        Text(
+                          context.tr('home_plan_ai'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,

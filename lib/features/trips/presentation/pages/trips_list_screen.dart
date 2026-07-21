@@ -9,6 +9,8 @@ import '../../../booking/domain/models/booking_model.dart';
 import '../../domain/entities/trip.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../ratings/presentation/providers/rating_provider.dart';
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 String tripCardStatusLabel({
   required String status,
@@ -368,6 +370,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   }
 
   Widget _buildTripCard(BuildContext context, dynamic trip) {
+    final settings = ref.watch(settingsProvider);
     final statusLabel = tripCardStatusLabel(
       status: trip.status as String,
       availableSeats: trip.availableSeats as int,
@@ -506,7 +509,11 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        trip.priceDisplay,
+                        CurrencyFormatter.formatUsd(
+                          trip.pricePerSeat,
+                          settings.currency,
+                          languageCode: settings.language,
+                        ),
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               color: AppColors.primary,
@@ -870,6 +877,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
   }
 
   Widget _buildBookingCard(BookingModel booking) {
+    final settings = ref.watch(settingsProvider);
     final encodedBookingId = Uri.encodeQueryComponent(booking.id);
     final detailsRoute = '/trips/${booking.tripId}?bookingId=$encodedBookingId';
     final userId = ref
@@ -930,7 +938,7 @@ class _TripsListScreenState extends ConsumerState<TripsListScreen>
                       : 'Status: ${booking.status} / ${booking.paymentStatus}',
                 ),
                 Text(
-                  'Seats: ${booking.seatsBooked} • \$${booking.totalPrice.toStringAsFixed(2)}',
+                  'Seats: ${booking.seatsBooked} • ${CurrencyFormatter.formatUsd(booking.totalPrice, settings.currency, languageCode: settings.language)}',
                 ),
               ],
             ),

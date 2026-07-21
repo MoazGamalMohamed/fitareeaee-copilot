@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import '../../../../core/currency/currency_formatter.dart';
 import '../providers/trip_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/trip.dart';
@@ -9,6 +10,7 @@ import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
 import '../../../ratings/presentation/providers/rating_provider.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
@@ -32,6 +34,7 @@ class TripDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tripAsync = ref.watch(tripDetailProvider(tripId));
     final bookingState = ref.watch(tripBookingProvider);
+    final settings = ref.watch(settingsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Trip Details'), centerTitle: true),
@@ -42,7 +45,12 @@ class TripDetailsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Trip Header Card
-              _buildHeaderCard(context, trip),
+              _buildHeaderCard(
+                context,
+                trip,
+                currency: settings.currency,
+                languageCode: settings.language,
+              ),
               const SizedBox(height: 24),
 
               // Route Information
@@ -54,7 +62,12 @@ class TripDetailsScreen extends ConsumerWidget {
               // Trip Details
               _buildSectionTitle(context, 'Trip Details'),
               const SizedBox(height: 12),
-              _buildDetailsGrid(context, trip),
+              _buildDetailsGrid(
+                context,
+                trip,
+                currency: settings.currency,
+                languageCode: settings.language,
+              ),
               const SizedBox(height: 24),
 
               _buildSectionTitle(context, 'Preferences'),
@@ -494,7 +507,12 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeaderCard(BuildContext context, dynamic trip) {
+  Widget _buildHeaderCard(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -549,7 +567,11 @@ class TripDetailsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            trip.priceDisplay,
+            CurrencyFormatter.formatUsd(
+              trip.pricePerSeat,
+              currency,
+              languageCode: languageCode,
+            ),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -681,7 +703,12 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailsGrid(BuildContext context, Trip trip) {
+  Widget _buildDetailsGrid(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     final seatsLabel = trip.isRequest ? 'Seats Needed' : 'Seats Available';
     final seatsValue = trip.isRequest
         ? '${trip.totalSeats}'
@@ -710,7 +737,11 @@ class TripDetailsScreen extends ConsumerWidget {
         _buildDetailItem(
           context,
           trip.isPackage ? 'Delivery Price' : 'Per Seat',
-          trip.priceDisplay,
+          CurrencyFormatter.formatUsd(
+            trip.pricePerSeat,
+            currency,
+            languageCode: languageCode,
+          ),
           Icons.paid,
         ),
       ],
@@ -1045,8 +1076,12 @@ class TripDetailsScreen extends ConsumerWidget {
     Trip trip,
     String userId,
   ) async {
+    final settings = ref.read(settingsProvider);
     final priceController = TextEditingController(
-      text: trip.pricePerSeat.toStringAsFixed(2),
+      text: CurrencyFormatter.fromUsd(
+        trip.pricePerSeat,
+        settings.currency,
+      ).toStringAsFixed(2),
     );
     final noteController = TextEditingController();
     final accepted = await showDialog<bool>(
@@ -1057,7 +1092,7 @@ class TripDetailsScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'The rider budget is up to \$${trip.pricePerSeat.toStringAsFixed(2)} per seat. No direct contact details or chat are shared yet.',
+              'The rider budget is up to ${CurrencyFormatter.formatUsd(trip.pricePerSeat, settings.currency, languageCode: settings.language)} per seat. No direct contact details or chat are shared yet.',
             ),
             const SizedBox(height: 12),
             TextField(
@@ -1065,9 +1100,9 @@ class TripDetailsScreen extends ConsumerWidget {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: const InputDecoration(
-                labelText: 'Your price per seat',
-                prefixText: '\$',
+              decoration: InputDecoration(
+                labelText: 'Your price per seat (${settings.currency})',
+                prefixText: '${CurrencyFormatter.symbols[settings.currency]} ',
               ),
             ),
             const SizedBox(height: 12),
@@ -1094,13 +1129,14 @@ class TripDetailsScreen extends ConsumerWidget {
       ),
     );
     if (accepted != true || !context.mounted) return;
-    final price = double.tryParse(priceController.text.trim());
-    if (price == null) {
+    final displayPrice = double.tryParse(priceController.text.trim());
+    if (displayPrice == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Enter a valid proposal price.')),
       );
       return;
     }
+    final price = CurrencyFormatter.toUsd(displayPrice, settings.currency);
     try {
       await FirebaseFunctions.instance
           .httpsCallable('proposeForTripRequest')

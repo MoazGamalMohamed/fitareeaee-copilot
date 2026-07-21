@@ -351,8 +351,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     setState(() {
       _latitude = result.latitude;
       _longitude = result.longitude;
-      if (_addressController.text.trim().isEmpty) {
-        _addressController.text = 'Map pin ${result.coordinateLabel}';
+      _addressController.text = result.address?.trim().isNotEmpty == true
+          ? result.address!.trim()
+          : 'Map pin ${result.coordinateLabel}';
+      if (result.city?.trim().isNotEmpty == true) {
+        _cityController.text = result.city!.trim();
+      }
+      if (result.country?.trim().isNotEmpty == true) {
+        _countryController.text = result.country!.trim();
       }
     });
   }

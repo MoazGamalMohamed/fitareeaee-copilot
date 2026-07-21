@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/config/firebase_config.dart';
+import 'core/localization/app_localizations.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/settings/presentation/providers/settings_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -109,20 +112,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: Consumer(
-        builder: (context, ref, _) {
-          final appRouter = ref.watch(goRouterProvider);
-          return MaterialApp.router(
-            title: 'Fitareeaee',
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: ThemeMode.light,
-            routerConfig: appRouter,
-            debugShowCheckedModeBanner: false,
-          );
-        },
-      ),
+    return const ProviderScope(child: _AppView());
+  }
+}
+
+class _AppView extends ConsumerWidget {
+  const _AppView();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appRouter = ref.watch(goRouterProvider);
+    final settings = ref.watch(settingsProvider);
+    return MaterialApp.router(
+      onGenerateTitle: (context) => context.tr('app_name'),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: settings.darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
+      locale: Locale(settings.language),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      routerConfig: appRouter,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

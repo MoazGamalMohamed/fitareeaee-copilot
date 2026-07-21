@@ -49,6 +49,9 @@ class SettingsState {
 
 // Settings notifier
 class SettingsNotifier extends StateNotifier<SettingsState> {
+  static const _supportedLanguages = {'en', 'ar'};
+  static const _supportedCurrencies = {'USD', 'AED', 'SAR'};
+
   SettingsNotifier() : super(const SettingsState()) {
     _loadSettings();
   }
@@ -58,10 +61,10 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     state = SettingsState(
       notificationsEnabled: prefs.getBool('notifications_enabled') ?? true,
       darkModeEnabled: prefs.getBool('dark_mode_enabled') ?? false,
-      language: prefs.getString('language') ?? 'en',
+      language: _normalizedLanguage(prefs.getString('language')),
       preferredLanguages:
           prefs.getStringList('preferred_languages') ?? const ['en'],
-      currency: prefs.getString('currency') ?? 'USD',
+      currency: _normalizedCurrency(prefs.getString('currency')),
       locationSharingEnabled: prefs.getBool('location_sharing_enabled') ?? true,
       soundEnabled: prefs.getBool('sound_enabled') ?? true,
       savePaymentMethod: prefs.getBool('save_payment_method') ?? false,
@@ -81,9 +84,10 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   }
 
   Future<void> setLanguage(String value) async {
+    final normalized = _normalizedLanguage(value);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('language', value);
-    state = state.copyWith(language: value);
+    await prefs.setString('language', normalized);
+    state = state.copyWith(language: normalized);
   }
 
   Future<void> togglePreferredLanguage(String value) async {
@@ -99,16 +103,14 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     ].where((language) => current.contains(language)).toList(growable: false);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('preferred_languages', ordered);
-    state = state.copyWith(
-      preferredLanguages: ordered,
-      language: ordered.first,
-    );
+    state = state.copyWith(preferredLanguages: ordered);
   }
 
   Future<void> setCurrency(String value) async {
+    final normalized = _normalizedCurrency(value);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('currency', value);
-    state = state.copyWith(currency: value);
+    await prefs.setString('currency', normalized);
+    state = state.copyWith(currency: normalized);
   }
 
   Future<void> setLocationSharingEnabled(bool value) async {
@@ -128,6 +130,12 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     await prefs.setBool('save_payment_method', value);
     state = state.copyWith(savePaymentMethod: value);
   }
+
+  static String _normalizedLanguage(String? value) =>
+      _supportedLanguages.contains(value) ? value! : 'en';
+
+  static String _normalizedCurrency(String? value) =>
+      _supportedCurrencies.contains(value) ? value! : 'USD';
 }
 
 // Provider

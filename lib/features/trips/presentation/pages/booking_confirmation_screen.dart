@@ -6,6 +6,8 @@ import '../providers/trip_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 class BookingConfirmationScreen extends ConsumerWidget {
   final String tripId;
@@ -28,6 +30,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
     final currentUserAsync = ref.watch(authStateProvider);
     final tripAsync = ref.watch(tripDetailProvider(tripId));
     final bookingState = ref.watch(tripBookingProvider);
+    final settings = ref.watch(settingsProvider);
 
     return tripAsync.when(
       loading: () =>
@@ -95,7 +98,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
 
                   // Price and payment-gated confirmation summary.
-                  _buildPriceSection(context, trip),
+                  _buildPriceSection(
+                    context,
+                    trip,
+                    currency: settings.currency,
+                    languageCode: settings.language,
+                  ),
                   const SizedBox(height: 12),
                   const Card(
                     color: Color(0xFFFFF8E1),
@@ -424,7 +432,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPriceSection(BuildContext context, Trip trip) {
+  Widget _buildPriceSection(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     final totalPrice = trip.pricePerSeat * requestedSeats;
 
     return Container(
@@ -451,7 +464,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Text(
-                '\$${trip.pricePerSeat.toStringAsFixed(2)}',
+                CurrencyFormatter.formatUsd(
+                  trip.pricePerSeat,
+                  currency,
+                  languageCode: languageCode,
+                ),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -480,7 +497,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
-                '\$${totalPrice.toStringAsFixed(2)}',
+                CurrencyFormatter.formatUsd(
+                  totalPrice,
+                  currency,
+                  languageCode: languageCode,
+                ),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.primary,

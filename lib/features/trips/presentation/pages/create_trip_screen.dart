@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../../copilot/domain/copilot_draft.dart';
 import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
@@ -14,6 +16,8 @@ String tripLocationLabelAfterMapPick(
   String currentLabel,
   TripLocationSelection selection,
 ) {
+  final resolvedAddress = selection.address?.trim() ?? '';
+  if (resolvedAddress.isNotEmpty) return resolvedAddress;
   final normalized = currentLabel.trim();
   if (normalized.isEmpty || normalized.startsWith('Map pin ')) {
     return 'Map pin ${selection.coordinateLabel}';
@@ -60,7 +64,13 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     _type = draft?.tripType == 'package' ? 'package' : 'person';
     _origin.text = draft?.origin ?? '';
     _destination.text = draft?.destination ?? '';
-    _price.text = draft?.maximumBudget?.toString() ?? '';
+    final currency = ref.read(settingsProvider).currency;
+    _price.text = draft?.maximumBudget == null
+        ? ''
+        : CurrencyFormatter.fromUsd(
+            draft!.maximumBudget!,
+            currency,
+          ).toStringAsFixed(2);
     _seats.text = (draft?.passengerOrSeatCount ?? 1).toString();
     _packageDescription.text = draft?.packageDetails ?? '';
     final preferences = (draft?.preferences ?? const <String>[])
@@ -95,6 +105,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(createTripProvider);
+    final settings = ref.watch(settingsProvider);
     final offering = _role == 'offer';
     final userId = FirebaseAuth.instance.currentUser?.uid;
     final verificationAsync = userId == null
@@ -217,8 +228,9 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                 Expanded(
                   child: _textField(
                     controller: _price,
-                    label: offering ? 'Price per seat' : 'Maximum budget',
-                    icon: Icons.attach_money,
+                    label:
+                        '${offering ? 'Price per seat' : 'Maximum budget'} (${settings.currency})',
+                    icon: Icons.currency_exchange,
                     number: true,
                     validator: _priceValidator,
                   ),
@@ -465,7 +477,10 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
       departureTime: departure,
       distance: 0,
       estimatedDuration: 0,
-      pricePerSeat: double.parse(_price.text),
+      pricePerSeat: CurrencyFormatter.toUsd(
+        double.parse(_price.text),
+        ref.read(settingsProvider).currency,
+      ),
       totalSeats: int.parse(_seats.text),
       availableSeats: int.parse(_seats.text),
       status: 'pending',

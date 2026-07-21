@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/copilot_draft.dart';
@@ -165,7 +167,13 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
                       ),
                     ),
                   ),
-                  Text(trip.priceDisplay),
+                  Text(
+                    CurrencyFormatter.formatUsd(
+                      trip.pricePerSeat,
+                      ref.watch(settingsProvider).currency,
+                      languageCode: ref.watch(settingsProvider).language,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),

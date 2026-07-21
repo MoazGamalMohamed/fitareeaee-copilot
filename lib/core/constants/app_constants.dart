@@ -2,7 +2,7 @@
 class AppConstants {
   // App metadata
   static const String appName = 'Fitareeaee';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = '1.0.19';
 
   // Timeouts
   static const Duration apiTimeout = Duration(seconds: 30);

@@ -22,6 +22,17 @@ void main() {
       tripLocationLabelAfterMapPick('Dallas, Texas', selection),
       'Dallas, Texas',
     );
+    expect(
+      tripLocationLabelAfterMapPick(
+        'Old label',
+        const TripLocationSelection(
+          latitude: 30.0444,
+          longitude: 31.2357,
+          address: 'Tahrir Square, Cairo, Egypt',
+        ),
+      ),
+      'Tahrir Square, Cairo, Egypt',
+    );
   });
 
   testWidgets('tapping From field opens the interactive map callback', (

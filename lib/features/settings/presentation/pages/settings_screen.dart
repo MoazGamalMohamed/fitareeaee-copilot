@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -32,7 +34,10 @@ class SettingsScreen extends ConsumerWidget {
     final isDriver = marketplacePathForRoles(user?.roles ?? const []).isDriver;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
+      appBar: AppBar(
+        title: Text(context.tr('settings_title')),
+        centerTitle: true,
+      ),
       body: ListView(
         children: [
           _section('Support'),
@@ -69,51 +74,95 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => _showBuildWeekTechnology(context),
           ),
           const Divider(),
-          _section('Preferences'),
+          _section(context.tr('settings_preferences')),
+          ListTile(
+            leading: const Icon(Icons.translate_outlined),
+            title: Text(context.tr('settings_app_language')),
+            subtitle: Text(context.tr('settings_app_language_help')),
+            trailing: DropdownButton<String>(
+              key: const ValueKey('app-language-selector'),
+              value: settings.language,
+              items: [
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text(context.tr('settings_english')),
+                ),
+                DropdownMenuItem(
+                  value: 'ar',
+                  child: Text(context.tr('settings_arabic')),
+                ),
+              ],
+              onChanged: (value) async {
+                if (value == null) return;
+                await _saveSetting(
+                  context,
+                  () => ref.read(settingsProvider.notifier).setLanguage(value),
+                  value == 'ar'
+                      ? 'تم تغيير لغة التطبيق.'
+                      : 'App language changed.',
+                );
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  avatar: const Icon(Icons.language, size: 18),
-                  label: const Text('English'),
-                  selected: settings.preferredLanguages.contains('en'),
-                  onSelected: (_) async => _saveSetting(
-                    context,
-                    () => ref
-                        .read(settingsProvider.notifier)
-                        .togglePreferredLanguage('en'),
-                    'Language preferences updated.',
-                  ),
+                Text(
+                  context.tr('settings_planning_languages'),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                FilterChip(
-                  avatar: const Icon(Icons.translate, size: 18),
-                  label: const Text('Arabic'),
-                  selected: settings.preferredLanguages.contains('ar'),
-                  onSelected: (_) async => _saveSetting(
-                    context,
-                    () => ref
-                        .read(settingsProvider.notifier)
-                        .togglePreferredLanguage('ar'),
-                    'Language preferences updated.',
-                  ),
+                Text(
+                  context.tr('settings_planning_languages_help'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilterChip(
+                      avatar: const Icon(Icons.language, size: 18),
+                      label: Text(context.tr('settings_english')),
+                      selected: settings.preferredLanguages.contains('en'),
+                      onSelected: (_) async => _saveSetting(
+                        context,
+                        () => ref
+                            .read(settingsProvider.notifier)
+                            .togglePreferredLanguage('en'),
+                        context.tr('common_saved'),
+                      ),
+                    ),
+                    FilterChip(
+                      avatar: const Icon(Icons.translate, size: 18),
+                      label: Text(context.tr('settings_arabic')),
+                      selected: settings.preferredLanguages.contains('ar'),
+                      onSelected: (_) async => _saveSetting(
+                        context,
+                        () => ref
+                            .read(settingsProvider.notifier)
+                            .togglePreferredLanguage('ar'),
+                        context.tr('common_saved'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           ListTile(
             leading: const Icon(Icons.attach_money),
-            title: const Text('Currency'),
-            subtitle: const Text('Display preference for prices'),
+            title: Text(context.tr('settings_currency')),
+            subtitle: Text(context.tr('settings_currency_help')),
             trailing: DropdownButton<String>(
+              key: const ValueKey('currency-selector'),
               value: settings.currency,
               items: AppConstants.supportedCurrencies
                   .map(
                     (currency) => DropdownMenuItem(
                       value: currency,
-                      child: Text(currency),
+                      child: Text(CurrencyFormatter.inputLabel(currency)),
                     ),
                   )
                   .toList(),
@@ -127,6 +176,13 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 }
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(72, 0, 20, 8),
+            child: Text(
+              context.tr('settings_currency_note'),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           SwitchListTile(
