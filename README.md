@@ -239,6 +239,21 @@ withdrawal/marketplace, paid-confirmed chat, and completed-only Past checks. It 
 a prerelease because the owner must still record the video and perform the legal
 Devpost submission; no real payment provider is claimed.
 
+The current
+[v1.0.18 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.18)
+makes **Request a ride or delivery** and **Offer a ride or delivery** two explicit,
+independent actions on Home, in Trips, and in the GPT-5.6 planner. A recognized
+marketplace account can use either action after completing its applicable checks:
+participant verification for Request, plus driver-licence and vehicle verification
+for Offer. Server-authoritative booking rechecks both sides. Its universal profile
+APK is 110,009,797 bytes with SHA-256
+`1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`.
+The public asset was anonymously downloaded, byte-matched, installed, and
+cold-launched on a Moto G Play (2024); both actions, both map-enabled forms, the
+two-choice Trips menu, and both GPT manual fallbacks passed with zero matched app
+errors. Payment remains a truthful pending-payment boundary; no live payment
+processor is claimed.
+
 ## Codex collaboration
 
 Codex audited the inherited repository, preserved an honest baseline, checked current official rules and OpenAI guidance, implemented the new vertical slice, wrote security contracts, repeatedly ran the complete gate, built and smoke-tested Android APK checkpoints, and maintained the append-only evidence record. Human decisions defined the problem, track, safety boundaries, product name, Firebase project, budget cap, release authority, and final legal submission.

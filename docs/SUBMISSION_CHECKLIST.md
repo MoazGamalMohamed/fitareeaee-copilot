@@ -213,6 +213,17 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
   version `1.0.17` / code `20260731`, 2.803-second cold launch, Driver/Offer Home,
   live review-required GPT-5.6 Offer draft, in-app Codex/GPT-5.6 disclosure, and zero
   matched app fatal/FirebaseFailure/unhandled/ANR errors.
+- [x] Publish v1.0.18 with separate Request and Offer actions on Home, Trips, and
+  the neutral GPT-5.6 planner, plus action-specific server verification.
+- [x] Pass v1.0.18 format 133/0, analysis 0 issues, Flutter 50/50, Functions 33/33,
+  rules 9/9, lifecycle integration 10/10, and both Android builds; deploy only
+  `createTrip` and `createBooking` to `fitareeaee` with 0 errors.
+- [x] Publish/tag sanitized source `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
+  without force; anonymously download and byte-match 110,009,797 bytes and SHA-256
+  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`.
+- [x] Install the exact public v1.0.18 download on the owner's Moto G Play and verify
+  both actions, both map forms, the two-choice Trips menu, both GPT manual actions,
+  and zero matched app fatal/FirebaseFailure/unhandled/ANR errors.
 
 ## Devpost materials
 
@@ -222,7 +233,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.17
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.18
   source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on

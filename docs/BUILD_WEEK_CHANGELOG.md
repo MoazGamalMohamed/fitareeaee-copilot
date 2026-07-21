@@ -14,6 +14,25 @@ The older marketplace, authentication, profiles, trip browsing/creation prototyp
 
 ## What changed during Build Week
 
+### Separate Request and Offer actions - v1.0.18
+
+- Replaced account-role-only creation with two clear Home actions: **Request a ride
+  or delivery** and **Offer a ride or delivery**.
+- Added the same two-choice creation menu to Trips and both manual fallbacks to the
+  neutral Home GPT-5.6 planner.
+- Kept action responsibilities explicit: Request is the paying rider/sender side;
+  Offer is the receiving driver/courier side.
+- Enforced participant verification for Request and additional driver-licence and
+  vehicle verification for Offer, with the eligibility rechecked during booking.
+- Deployed only the tested `createTrip` and `createBooking` callables to the confirmed
+  `fitareeaee` project: 2 deployed, 0 errors.
+- Passed format 133/0, analysis 0 issues, Flutter 50/50, Functions 33/33, rules 9/9,
+  callable lifecycle 10/10, both Android builds, and physical-phone navigation/log
+  smoke.
+- Published and anonymously byte-matched the 110,009,797-byte APK with SHA-256
+  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`, then
+  installed and cold-launched those exact public bytes on a Moto G Play (2024).
+
 ### Final Codex and GPT-5.6 contest identity — v1.0.17
 
 - Renamed the contest-facing product to **Fitareeaee — GPT-5.6 Ride & Delivery

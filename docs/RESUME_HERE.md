@@ -1,10 +1,10 @@
 # Resume Here
 
-Last updated: 2026-07-21 13:01 CDT / 2026-07-21 11:01 PDT
+Last updated: 2026-07-21 14:43 CDT / 2026-07-21 12:43 PDT
 
 ## Current objective
 
-Preserve the fully passing, published, and phone-tested v1.0.17 judge candidate:
+Preserve the fully passing, published, and phone-tested v1.0.18 judge candidate:
 **Fitareeaee — GPT-5.6 Ride & Delivery Planner**. The only submission-critical work
 left is owner-performed video recording/upload, `/status` Session ID placement,
 private judge-credential placement, eligibility/legal review, credential rotation,
@@ -23,27 +23,28 @@ and the final Devpost submit action.
   state, booking, inventory, chat access, trip lifecycle, and ratings.
 - Internal `copilot` file/class/callable identifiers remain for implementation
   stability. They are not the public product name.
-- Rider/sender accounts create **Requests** and are the paying side. Separately
-  verified driver/courier accounts create **Offers** and are the receiving side.
+- **Request** creates the paying rider/sender side. **Offer** creates the receiving
+  driver/courier side. Either recognized marketplace account may select either action,
+  but Offer requires additional driver-licence and vehicle verification.
 
 ## Source and GitHub state
 
 - Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Exact v1.0.17 application source:
-  `ddddea24124eb1b2f83e27eafd108533728c0a7c`
-- Private source tree: `14a741b721d39f1568b068f9a6a29b21750c7a5f`
+- Exact v1.0.18 application source:
+  `836a573ac269fcb1fd31421e55ba1dc285c0832f`
+- Private source tree: `63df0ffa2f0a582f8e7091ddc84021e47bddca95`
 - Sanitized publication clone:
   `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
 - Public branch: `agent/payment-gated-chat-trip-support`
-- Exact sanitized v1.0.17 source:
-  `05b2e2c998ddf67a3a61130c0982573f283bbb3d`
-- Public source tree: `14a741b721d39f1568b068f9a6a29b21750c7a5f`
+- Exact sanitized v1.0.18 source:
+  `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
+- Public source tree: `63df0ffa2f0a582f8e7091ddc84021e47bddca95`
 - Private/public application trees: **exact match**.
-- Tag: `fitareeaee-copilot-v1.0.17`; local and remote public tags peel to
-  `05b2e2c998ddf67a3a61130c0982573f283bbb3d`.
+- Tag: `fitareeaee-copilot-v1.0.18`; local and remote public tags peel to
+  `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`.
 - Draft PR #1: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1>
-  — OPEN, draft, unmerged, CLEAN; the immutable application tag is `05b2e2c9` and
+  — OPEN, draft, unmerged; the immutable application tag is `6a9b37d5` and
   later branch commits contain documentation evidence only.
 - Latest recorded reachable public-history audit before this snapshot: at least 129
   revisions and 2,898 object/path lines, with zero
@@ -52,19 +53,18 @@ and the final Devpost submit action.
 - Never add a remote to or push the private original repository. Publish only from
   the sanitized clone after the same history scan and tree comparison.
 
-## Passing v1.0.17 gates
+## Passing v1.0.18 gates
 
-- Dart format: 132 files, 0 changes.
+- Dart format: 133 files, 0 changes.
 - Flutter analysis: 0 issues.
-- Flutter tests: 49/49.
-- Functions TypeScript/contracts: 32/32.
+- Flutter tests: 50/50.
+- Functions TypeScript/contracts: 33/33.
 - Functions build: PASS.
 - Firestore/Storage authorization rules: 9/9.
 - Real Auth/Functions/Firestore lifecycle integration: 10/10.
 - Universal debug and optimized profile APK builds: PASS.
 - Confirmed Firebase project: `fitareeaee`.
-- Scoped live deployment: `planTripWithCopilot`, `contactSupport`, and
-  `sendSupportMessage` only; 3 deployed, 0 errors.
+- Scoped live deployment: `createTrip` and `createBooking` only; 2 deployed, 0 errors.
 - Live phone GPT-5.6 call: driver prompt returned a strict Dallas-to-Austin
   review-required **Offer** draft and stopped before trip/booking creation.
 - OpenAI end-user privacy: `store: false`, contact redaction, and a stable
@@ -72,23 +72,23 @@ and the final Devpost submit action.
 
 ## Final public Android artifact
 
-- Release: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.17>
-- Direct APK: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.17/app-profile.apk>
+- Release: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.18>
+- Direct APK: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.18/app-profile.apk>
 - Local path: `build/app/outputs/flutter-apk/app-profile.apk`
-- Anonymous public download: `build/published-download-v117/app-profile.apk`
+- Anonymous public download: `build/published-download-v118/app-profile.apk`
 - Type: universal AOT profile APK, debug-signed for contest sideloading.
-- Version: `1.0.17` / code `20260731`.
+- Version: `1.0.18` / code `20260732`.
 - Minimum/target Android: API 24 / API 36.
-- Size: 85,703,335 bytes.
+- Size: 110,009,797 bytes.
 - SHA-256:
-  `5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B`.
+  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`.
 - GitHub reports Android-package content type, the exact same size, and the exact
   same digest.
 - Anonymous re-download: exact byte/hash match.
 - Physical phone: exact public bytes update-installed on Moto G Play (2024), cold
-  launch PASS in 2.803 seconds, top-resumed `MainActivity`, Driver/Offer Home visible,
-  version/API metadata correct, and zero matched fatal/Flutter/FirebaseFailure/
-  unhandled/ANR errors.
+  launch PASS in 1.930 seconds, top-resumed `MainActivity`, separate Request/Offer,
+  both map forms, Trips/GPT two-choice paths visible, version/API metadata correct,
+  and zero matched fatal/Flutter/FirebaseFailure/unhandled/ANR errors.
 - On-phone disclosure PASS: **Built with Codex • Powered by GPT-5.6** accurately
   separates engineering and runtime roles.
 - Earlier exact-public v1.0.16 evidence retains the unchanged interactive map,
@@ -112,7 +112,7 @@ and the final Devpost submit action.
 
 1. Confirm personal/team eligibility, ownership, third-party rights, and acceptance
    of the Official Rules.
-2. Record the exact v1.0.17 build using `docs/DEMO_SCRIPT.md`; keep it at 2:40 and
+2. Record the exact v1.0.18 build using `docs/DEMO_SCRIPT.md`; keep it at 2:40 and
    under three minutes, in English, with audible narration, fictional data, no
    credentials/private documents, and no unauthorized music.
 3. Upload the video publicly to YouTube and verify playback while signed out.

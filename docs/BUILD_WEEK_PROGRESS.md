@@ -3825,3 +3825,70 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   require the owner: record/upload the public under-three-minute video, place fictional
   credentials privately, run `/status` for the Session ID, review eligibility/legal
   statements, confirm legacy credential rotation, and click Devpost's final submit action.
+
+## 2026-07-21 14:45 CDT / 2026-07-21 12:45 PDT — v1.0.18 separate Request and Offer release
+
+- Objective: replace the single role-derived creation action with two explicit,
+  professional, fully authorized **Request a ride or delivery** and **Offer a ride or
+  delivery** flows without weakening verification, payment, or chat boundaries.
+- Completed: Home now exposes both actions and a neutral circular GPT-5.6 planner;
+  Trips has a two-choice Create menu; GPT review labels the selected Trip action and
+  provides both manual fallbacks; verification can switch between Request and Offer
+  requirements; manual forms preserve the selected action; signup describes its
+  choice as a starting activity rather than an immutable account path.
+- Server behavior: any recognized marketplace account can choose Request or Offer.
+  Request creates the paying rider/sender side and requires participant verification.
+  Offer creates the receiving driver/courier side and additionally requires approved
+  driver-licence and vehicle records. `createBooking` rechecks rider and driver/vehicle
+  eligibility before writing.
+- Main files changed: Home, Trips list/create, GPT planner, verification, routing,
+  signup/settings copy, `functions/src/trip.ts`, `functions/src/booking.ts`, related
+  contracts/integration coverage, and a new Home widget test. Version is
+  `1.0.18+20260732`.
+- Exact gates: `dart format --output=none --set-exit-if-changed lib test` PASS — 133
+  files, 0 changes; `flutter analyze --no-pub` PASS — no issues; `flutter test
+  --no-pub` PASS — 50/50; `npm run test` in `functions/` PASS — TypeScript build and
+  33/33 contracts; Firestore/Storage emulator rules PASS — 9/9; real Auth/Functions/
+  Firestore callable lifecycle PASS — 10/10; `flutter build apk --debug` PASS;
+  `flutter build apk --profile` PASS.
+- Confirmed Firebase project `fitareeaee`; deployed only `createTrip` and
+  `createBooking`: 2 deployed, 0 errors, 0 aborted. Production versions became
+  createTrip v5 and createBooking v6.
+- Final local APK: `build/app/outputs/flutter-apk/app-profile.apk`; universal AOT
+  profile, debug-signed; 110,009,797 bytes; SHA-256
+  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`;
+  built 2026-07-21 14:20:30 CDT / 12:20:30 PDT; min API 24 / target API 36.
+- Physical phone: local exact bytes installed on Moto G Play (2024), device
+  `ZY22KQPKZS`. Separate Home Request/Offer, both map-enabled forms, Trips Create with
+  both actions, neutral GPT planner with both manual actions, and version metadata
+  passed. Process-specific fatal/FirebaseFailure/unhandled/ANR scan: zero matches.
+- Private exact application commit `836a573ac269fcb1fd31421e55ba1dc285c0832f`
+  and sanitized public commit `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
+  are tree-identical at `63df0ffa2f0a582f8e7091ddc84021e47bddca95`.
+  Annotated tag `fitareeaee-copilot-v1.0.18` identifies each corresponding commit.
+  Public branch and tag were pushed without force. The private repository remains
+  remote-free.
+- Pre-push staged scan: zero forbidden credential/config paths and zero high-signal
+  secret matches. Draft PR #1 remains draft and unmerged:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1`.
+- Public prerelease:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.18`.
+  Direct APK:
+  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.18/app-profile.apk`.
+- Anonymous public download to `build/published-download-v118/app-profile.apk` exactly
+  matched 110,009,797 bytes and the local SHA-256. Those exact public bytes installed
+  successfully, cold-launched in 1.930 seconds, rendered Request, Offer, Trips, and
+  GPT planning, and produced zero matched app errors.
+- Known boundaries: no live payment processor or private release signing; new
+  selections remain pending payment and do not unlock inventory/chat. Firebase warns
+  that the declared Node 20 runtime is deprecated. During targeted deployment, verbose
+  Firebase CLI diagnostics echoed inherited legacy runtime-config secret values into
+  the private tool transcript; the legacy email credential and Stripe test key must be
+  treated as exposed and rotated/revoked by the owner without pasting replacements in
+  chat. They were not added to source, Git history, docs, or the APK.
+- Rollback point: immutable v1.0.18 source/tag/APK above; v1.0.17 remains the prior
+  live-GPT evidence rollback and v1.0.16 retains the full map/chat/Past lifecycle
+  evidence. Next action: synchronize this documentation-only checkpoint to the
+  sanitized branch, verify links/tree equality/remote read-back, then the owner records
+  the 2:40 video, runs `/status`, places private judge credentials, completes legal
+  review and credential rotation, and performs the final Devpost submit action.
