@@ -4121,3 +4121,27 @@ Resume immediately after the owner follows `docs/OWNER_ACTIONS.md`; do not resta
   payment state, or billing setting changed. Physical camera/gallery submission remains
   pending a visible Android device and owner interaction; all non-device verification
   gates are passing.
+
+## 2026-07-21 19:01 CDT / 2026-07-21 17:01 PDT — v1.0.21 exact-public phone verification correction
+
+- The Motorola Moto G Play (2024), serial `ZY22KQPKZS`, reconnected. The exact
+  anonymously downloaded public v1.0.21 APK update-installed successfully and Android
+  reports version `1.0.21`, code `20260735`, min API 24, target API 36.
+- Cold launch succeeded. Home rendered separate Request and Offer actions and the
+  GPT-5.6 planner. Profile → Settings → Verification Center opened without a crash.
+  The live server-backed status correctly showed **5 of 6 submitted, 5 approved,
+  0 pending** rather than the previously reported zero: phone, identity document,
+  selfie with ID, driver licence, and vehicle registration are approved; email is the
+  sole missing requirement for this account.
+- The four image rows are already approved and therefore intentionally disabled. A
+  fresh capture chooser/upload was not forced by mutating production approval state.
+  Android confirms the CAMERA permission is declared; its runtime grant remains false
+  until an unverified image row invokes the Image Picker permission request. No real
+  identity image was viewed, copied, logged, or committed.
+- App-specific fatal/FirebaseFailure/unhandled/Flutter error scan after navigation:
+  zero matched lines. Temporary screenshots containing account information were
+  deleted after inspection and remain excluded from Git.
+- Final boundary: exact-public install, launch, verification loading/counts, existing
+  image approval state, manifest permission, picker/rules/callable contracts, and
+  error-free navigation pass. A brand-new camera capture and manual admin review still
+  require a new/unverified account plus owner interaction and are not falsely claimed.
