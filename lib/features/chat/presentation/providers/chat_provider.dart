@@ -79,36 +79,33 @@ class SendMessageNotifier extends StateNotifier<AsyncValue<void>> {
 }
 
 /// Provider for send message notifier
-final sendMessageProvider =
-    StateNotifierProvider.family<SendMessageNotifier, AsyncValue<void>, String>(
-      (ref, recipientId) {
-        final userId = ref
-            .watch(authStateProvider)
-            .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
-        final repository = ref.watch(chatRepositoryProvider);
-        return SendMessageNotifier(chatRepository: repository, userId: userId);
-      },
-    );
+final sendMessageProvider = StateNotifierProvider.autoDispose
+    .family<SendMessageNotifier, AsyncValue<void>, String>((ref, recipientId) {
+      final userId = ref
+          .watch(authStateProvider)
+          .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
+      final repository = ref.watch(chatRepositoryProvider);
+      return SendMessageNotifier(chatRepository: repository, userId: userId);
+    });
 
 /// Stream provider for a specific conversation
-final conversationMessagesProvider =
-    StreamProvider.family<List<Message>, String>((ref, conversationId) {
+final conversationMessagesProvider = StreamProvider.autoDispose
+    .family<List<Message>, String>((ref, conversationId) {
       final chatRepository = ref.watch(chatRepositoryProvider);
 
       // Stream messages with error handling
-      return chatRepository
-          .streamConversation(conversationId)
-          .asyncMap((result) {
-            return result.fold(
-              (failure) => <Message>[],
-              (messages) => messages,
-            );
-          })
-          .handleError((error, stackTrace) => <Message>[]);
+      return chatRepository.streamConversation(conversationId).asyncMap((
+        result,
+      ) {
+        return result.fold(
+          (failure) => throw Exception(failure.message),
+          (messages) => messages,
+        );
+      });
     });
 
 /// Stream provider for all conversations
-final conversationsProvider = StreamProvider<List<Message>>((ref) {
+final conversationsProvider = StreamProvider.autoDispose<List<Message>>((ref) {
   final userId = ref
       .watch(authStateProvider)
       .maybeWhen(data: (user) => user?.id ?? '', orElse: () => '');
@@ -120,57 +117,11 @@ final conversationsProvider = StreamProvider<List<Message>>((ref) {
   final chatRepository = ref.watch(chatRepositoryProvider);
   return chatRepository.streamConversations(userId).asyncMap((result) {
     return result.fold(
-      (_) => throw Exception(
-        'Messages are unavailable. Open chat from an active confirmed booking or retry later.',
-      ),
+      (failure) => throw Exception(failure.message),
       (messages) => messages,
     );
   });
 });
-
-/// Typing indicator stream for a conversation (true if other user typing)
-final typingStatusProvider = StreamProvider.family<bool, Map<String, String>>((
-  ref,
-  args,
-) {
-  // args: {'conversationId': 'a_b', 'userId': 'otherUserId'}
-  final conversationId = args['conversationId'] ?? '';
-  final userId = args['userId'] ?? '';
-  if (conversationId.isEmpty || userId.isEmpty) {
-    return Stream.value(false);
-  }
-
-  final docRef = FirebaseFirestore.instance
-      .collection('typing_status')
-      .doc(conversationId)
-      .collection('users')
-      .doc(userId);
-
-  return docRef.snapshots().map((snap) {
-    if (!snap.exists) return false;
-    final data = snap.data();
-    if (data == null) return false;
-    return data['isTyping'] as bool? ?? false;
-  });
-});
-
-/// Helper to set typing status for current user in a conversation
-Future<void> setTypingStatus(
-  String conversationId,
-  String userId,
-  bool isTyping,
-) async {
-  final docRef = FirebaseFirestore.instance
-      .collection('typing_status')
-      .doc(conversationId)
-      .collection('users')
-      .doc(userId);
-
-  await docRef.set({
-    'isTyping': isTyping,
-    'updatedAt': FieldValue.serverTimestamp(),
-  }, SetOptions(merge: true));
-}
 
 /// Model for conversation with metadata
 class ConversationUI {
@@ -212,7 +163,9 @@ class MarkAsReadNotifier extends StateNotifier<AsyncValue<void>> {
 
 /// Provider for mark as read notifier
 final markAsReadProvider =
-    StateNotifierProvider<MarkAsReadNotifier, AsyncValue<void>>((ref) {
+    StateNotifierProvider.autoDispose<MarkAsReadNotifier, AsyncValue<void>>((
+      ref,
+    ) {
       final repository = ref.watch(chatRepositoryProvider);
       return MarkAsReadNotifier(chatRepository: repository);
     });
@@ -238,7 +191,9 @@ class DeleteMessageNotifier extends StateNotifier<AsyncValue<void>> {
 
 /// Provider for delete message notifier
 final deleteMessageProvider =
-    StateNotifierProvider<DeleteMessageNotifier, AsyncValue<void>>((ref) {
+    StateNotifierProvider.autoDispose<DeleteMessageNotifier, AsyncValue<void>>((
+      ref,
+    ) {
       final repository = ref.watch(chatRepositoryProvider);
       return DeleteMessageNotifier(chatRepository: repository);
     });

@@ -1,15 +1,18 @@
 # Privacy, Safety, and Product Boundaries
 
-Fitareeaee Copilot helps a user express and review ride or package criteria. It is not a safety authority, identity verifier, emergency service, payment provider, or guarantee of availability.
+Fitareeaee's GPT-5.6 planner helps a user express and review ride or package criteria. It is not a safety authority, identity verifier, emergency service, payment provider, or guarantee of availability.
 
 ## Data sent to OpenAI
 
-The contest Copilot sends only the minimum needed to interpret the request:
+The contest GPT-5.6 planner sends only the minimum needed to interpret the request:
 
 - the user's natural-language ride or package request;
-- locale; and
-- timezone; and
-- a server-generated current date used to resolve relative dates.
+- locale;
+- timezone;
+- a server-generated current date used to resolve relative dates; and
+- a stable, app-scoped SHA-256 `safety_identifier` derived server-side from the
+  authenticated account. The raw Firebase UID cannot be recovered from or read
+  in this value.
 
 The request is sent from an authenticated Firebase callable Function to the official OpenAI Responses API. The Flutter client never calls OpenAI directly.
 
@@ -17,7 +20,7 @@ The implementation does not intentionally send:
 
 - identity documents or images;
 - email addresses or phone numbers;
-- Firebase/user IDs;
+- raw Firebase/user IDs;
 - profile records;
 - private chat messages;
 - verification evidence;
@@ -74,6 +77,14 @@ No rank score is a declaration of personal safety or endorsement of a participan
   Contact/profile PII is excluded and the collection cannot be listed.
 - The app reads server-maintained `public_trips`; exact coordinates, passenger
   IDs, package photos, descriptions, and arbitrary metadata remain private.
+- Manual origin/destination map pins are stored with the private trip. The public
+  trip projection exposes only coarsened coordinates needed for marketplace
+  proximity ordering; it does not expose the user's live device location.
+- The interactive picker requests only visible raster tiles from OpenStreetMap.
+  The tile service receives normal network metadata and viewport tile paths, but
+  the app sends it no Fitareeaee user ID, contact detail, chat content, or private
+  trip document. Permanent linked attribution and the OSM tile policy are recorded
+  in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 - A conversation can be created only after a booking or after the server checks
   a live request trip and the offerer's manual verification.
 - Verification images remain in owner/admin-scoped Firebase Storage and are
@@ -90,7 +101,7 @@ Users remain responsible for confirming trip details, participant identity conte
 
 ## Abuse and cost controls
 
-- Authentication is required for Copilot calls.
+- Authentication is required for GPT-5.6 planner calls.
 - Input is limited to 1,200 characters.
 - A per-user 8-second cooldown and 12-call-per-hour limit reduce automated abuse.
 - Model output is capped, the SDK timeout is 30 seconds, and the Function timeout is 45 seconds.
@@ -100,10 +111,13 @@ These are basic submission safeguards, not a complete production abuse-preventio
 
 ## Excluded prototypes and limitations
 
-Simulated payment, escrow, wallet, payout, AI identity-verification, destructive reset, and incomplete tracking/support paths are not part of the submitted judge flow. No real payments are processed.
+Simulated payment, escrow, wallet, payout, AI identity-verification, destructive
+reset, and turn-by-turn tracking are not part of the submitted judge flow. The
+interactive map is a trip-planning pin picker, not continuous live tracking. No
+real payments are processed.
 
 The current release process must still verify the deployed backend, judge accounts, retention/availability through judging, and the final APK. See [`TEST_MATRIX.md`](TEST_MATRIX.md) and [`SUBMISSION_CHECKLIST.md`](SUBMISSION_CHECKLIST.md).
 
 ## Emergency notice
 
-Fitareeaee is not an emergency service. Users should contact local emergency services when immediate help is needed and should not rely on Copilot output for urgent safety decisions.
+Fitareeaee is not an emergency service. Users should contact local emergency services when immediate help is needed and should not rely on GPT-5.6 output for urgent safety decisions.

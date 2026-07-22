@@ -95,12 +95,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messagesAsync = ref.watch(
       conversationMessagesProvider(conversationId),
     );
-    final typingAsync = ref.watch(
-      typingStatusProvider({
-        'conversationId': conversationId,
-        'userId': widget.recipientId,
-      }),
-    );
     final otherUserAsync = ref.watch(userByIdProvider(widget.recipientId));
 
     return Scaffold(
@@ -163,28 +157,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
                   );
                 }
-                final typingWidget = typingAsync.maybeWhen(
-                  data: (isTyping) => isTyping
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Typing...',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                  orElse: () => const SizedBox.shrink(),
-                );
-
                 return Column(
                   children: [
                     if (messages.isNotEmpty)
@@ -198,7 +170,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           ),
                         ),
                       ),
-                    typingWidget,
                     Expanded(
                       child: Scrollbar(
                         controller: _scrollController,
@@ -267,7 +238,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   children: [
                     Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
                     const SizedBox(height: 16),
-                    Text('Error loading messages'),
+                    const Text('Conversation could not be loaded'),
+                    const SizedBox(height: 8),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        'Confirm that payment is verified and the booking is active, then retry.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () => ref.invalidate(
+                        conversationMessagesProvider(conversationId),
+                      ),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
                   ],
                 ),
               ),

@@ -42,6 +42,33 @@ evidence to the sanitized publication history:
 | Judge-path roles/chat/support source | `21f49cabd8303dd7ab4019468cb1cfa71ce26f0c` | `eaa4378` |
 | Physical-device checkpoint evidence | `708fb6b` | `5ad4b94` |
 | Authorized Chat-list query correction | `832a543cd94c4f5a2a8c17163e73113da85aba24` | `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43` |
+| Payment-gated proposal source / v1.0.5 APK source | `4630703b5a69e151d07d6e6c9683deced6298302` | `6d67f306203886d3d1623f9966f36764589b9cfb` |
+| v1.0.5 physical-phone evidence | `a156c8fdef67b018f014d7cece9e5956da9ce4d2` | `b353facc46c3bd4b2918f91458df9d80aea9903d` |
+| v1.0.5 stable-release promotion | `dd1378a69bfa072c80542e86d79ab2f74ffbfc0c` | `ffb8a39bb81716b1873efd49efc969a53a607606` |
+| v1.0.6 mapped voice/lifecycle source | `47f49ce72504d90446058c9ea2dc3e3db845e3d4` | `9194066a38777d8fba9fd9b84810f688f5bc3a2e` |
+| v1.0.6 lifecycle evidence | `4ea1257b9bc3d2df9af34a7fdb965027ac1a5646` | `c5f6d60f0464483603026f52e73c2e2ab575ded2` |
+| v1.0.6 optimized APK evidence | `199fd6a0c33aff5f3af2223e826ac540a3ca0904` | `27c706c6cf81f90ba0976f463e95bd90ff57e9ae` |
+| v1.0.6 judge-document audit | `9d9705af510a0a00cb988670fe25ee6a39a13894` | `8510b07f4c441deeba808655b4b1f9334527d715` |
+| v1.0.6 release-audit evidence | `6f2e9c7d4f8d43593378f8045088eda1f59dac97` | `17b499ef24aac60a068be9a6ed4efceb4162ce84` |
+| v1.0.7 visible OSM-attribution source/tag | `96343be6eb348e3ef9dd407ff2b2d84c83d2e801` | `06195d02398c32783fa894f7e1bb5ab1d5fb4daf` |
+| v1.0.7 release evidence and credential hardening | `23f1ae0f85cd887307fcaaadae3de5c4b678eda3` | `329f5c656dec48cf86c9f9e8e7d4849bdd966d15` |
+| v1.0.8 voice/verification/lifecycle source and tag | `3817ed587bc141856c7c20eed126aa8c5508091e` | `54b1654cf42d716d47d56b1e649da139d6f9b097` |
+| v1.0.8 emulator release evidence | `eb78ecf81b9ce898c24c15ba076d2004ebe7eadc` | `d2e81d3f36d74a0cd0a70c02a601ac72bfcc8993` |
+| v1.0.8 public artifact evidence | `45452a4c968600438506b493c2939f1f4c4a8266` | `5f2819c574622accdaa420064751cdc9c1b5a827` |
+| v1.0.9 truthful owned-trip status source and tag | `ab792130938601370f5ccf87ef4af3ff0290076e` | `ef2eecb7cdc9a0e446c7a15d0d72b335820ffd56` |
+| v1.0.9 local release evidence | `d23cafdc83923e00aa16b678d63e893c11464445` | `7beb96fc5c9295e21caab4258d53d3ad4718008d` |
+| v1.0.9 public artifact and driver-smoke evidence | `54367090ee43ac93f7d41f8ce75a6662cfcc4258` | `a064e7aa69757a17d8ebf8341ff74c917d18cfcc` |
+| Final public-access and cold-launch integrity audit | `358a639daca99672d315009097433db4612e7a99` | `12e34a4e32bd9fd499b3c8ef1d136046d6a744b8` |
+| Complete current-source release-gate rerun | `f92f4e57369da413260be3eb3d923e62381d4232` | `e26b61dd245201f30761c27ee02f13dcfcc3c906` |
+| Read-only inherited Function inventory revalidation | `0a710d42a6b8fecaf70d123c79eedfcda21fc32b` | `c727ca376f43f0953cdf4da1d4ecb74d8485977e` |
+| v1.0.10 verification/map/action source | `9b92625f20912607d3c7ce32db9902fc76971eae` | `fe73ad5509ac348f120b025688eee1abd2c009d8` |
+| v1.0.10 verification gate evidence | `ffa6e34811e4682a7ea8ce01990a645bcecdc86f` | `25f2adf2178a624ea79e2ff3f4f8eb13ab67d8f2` |
+| v1.0.10 judge handoff and public-release evidence | `deecf6ec12144ae94e4509e1810fdbcff7b3005e` | `6ce1141d8d9283adffc79986cc835bf632e75be1` |
+| v1.0.11 role-path/voice/location source and tag | `b05c91fd2b6856952a028866ec57a83c57ac116e` | `4e1439b098c53c41bf9d95b9f82f3a607b0240bc` |
+| v1.0.11 judge release evidence | `4347f4a8da68594dca7845fd6f72d43fb628a66a` | `0f8a7ccb69efbdfd829919daa8cd818c37fa2d62` |
+| v1.0.13 complete verification/chat source and tag | `7a764178106bf38ece5151a2913aec35a752902f` | `ffb5929094b4d48e9991499f65839f75c4479125` |
+| v1.0.13 public artifact and judge handoff evidence | `d649fdf716bbfeca58de9abde0559281ae27ed4b` | `fc7d880fc877096f5ddc94a1ff34e0f57e721cc0` |
+| v1.0.13 fresh exact-public GPT-5.6 matrix | `e17c7f3` | `682e889de1f84f8ceb486847a60a382cbb32b596` |
 
 The annotated tag names are preserved:
 

@@ -3,11 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/domain/entities/user_profile.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
+import '../../../verification/domain/models/verification_model.dart';
+import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/pages/verification_screen.dart';
+import '../../../verification/presentation/providers/verification_provider.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -22,9 +28,16 @@ class SettingsScreen extends ConsumerWidget {
     final profileAsync = user == null
         ? const AsyncValue<UserProfile?>.data(null)
         : ref.watch(userProfileProvider(user.id));
+    final verificationAsync = user == null
+        ? const AsyncValue<UserVerification?>.data(null)
+        : ref.watch(userVerificationProvider(user.id));
+    final isDriver = marketplacePathForRoles(user?.roles ?? const []).isDriver;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
+      appBar: AppBar(
+        title: Text(context.tr('settings_title')),
+        centerTitle: true,
+      ),
       body: ListView(
         children: [
           _section('Support'),
@@ -39,17 +52,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           _section('Trust and safety'),
-          ListTile(
-            leading: const Icon(Icons.verified_user_outlined),
-            title: const Text('Manual identity verification'),
-            subtitle: const Text(
-              'Submit a selfie and ID for review by an authorized admin.',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const VerificationScreen()),
-            ),
+          _buildVerificationProgress(
+            context,
+            verificationAsync,
+            isDriver: isDriver,
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
@@ -58,52 +64,125 @@ class SettingsScreen extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showPrivacyAndSafety(context),
           ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome_outlined),
+            title: const Text('Built with Codex • Powered by GPT-5.6'),
+            subtitle: const Text(
+              'See the distinct Build Week role of each OpenAI technology',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showBuildWeekTechnology(context),
+          ),
           const Divider(),
-          _section('Preferences'),
+          _section(context.tr('settings_preferences')),
+          ListTile(
+            leading: const Icon(Icons.translate_outlined),
+            title: Text(context.tr('settings_app_language')),
+            subtitle: Text(context.tr('settings_app_language_help')),
+            trailing: DropdownButton<String>(
+              key: const ValueKey('app-language-selector'),
+              value: settings.language,
+              items: [
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text(context.tr('settings_english')),
+                ),
+                DropdownMenuItem(
+                  value: 'ar',
+                  child: Text(context.tr('settings_arabic')),
+                ),
+              ],
+              onChanged: (value) async {
+                if (value == null) return;
+                await _saveSetting(
+                  context,
+                  () => ref.read(settingsProvider.notifier).setLanguage(value),
+                  value == 'ar'
+                      ? 'تم تغيير لغة التطبيق.'
+                      : 'App language changed.',
+                );
+              },
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FilterChip(
-                  avatar: const Icon(Icons.language, size: 18),
-                  label: const Text('English'),
-                  selected: settings.preferredLanguages.contains('en'),
-                  onSelected: (_) => ref
-                      .read(settingsProvider.notifier)
-                      .togglePreferredLanguage('en'),
+                Text(
+                  context.tr('settings_planning_languages'),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-                FilterChip(
-                  avatar: const Icon(Icons.translate, size: 18),
-                  label: const Text('Arabic'),
-                  selected: settings.preferredLanguages.contains('ar'),
-                  onSelected: (_) => ref
-                      .read(settingsProvider.notifier)
-                      .togglePreferredLanguage('ar'),
+                Text(
+                  context.tr('settings_planning_languages_help'),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilterChip(
+                      avatar: const Icon(Icons.language, size: 18),
+                      label: Text(context.tr('settings_english')),
+                      selected: settings.preferredLanguages.contains('en'),
+                      onSelected: (_) async => _saveSetting(
+                        context,
+                        () => ref
+                            .read(settingsProvider.notifier)
+                            .togglePreferredLanguage('en'),
+                        context.tr('common_saved'),
+                      ),
+                    ),
+                    FilterChip(
+                      avatar: const Icon(Icons.translate, size: 18),
+                      label: Text(context.tr('settings_arabic')),
+                      selected: settings.preferredLanguages.contains('ar'),
+                      onSelected: (_) async => _saveSetting(
+                        context,
+                        () => ref
+                            .read(settingsProvider.notifier)
+                            .togglePreferredLanguage('ar'),
+                        context.tr('common_saved'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           ListTile(
             leading: const Icon(Icons.attach_money),
-            title: const Text('Currency'),
-            subtitle: const Text('Display preference for prices'),
+            title: Text(context.tr('settings_currency')),
+            subtitle: Text(context.tr('settings_currency_help')),
             trailing: DropdownButton<String>(
+              key: const ValueKey('currency-selector'),
               value: settings.currency,
               items: AppConstants.supportedCurrencies
                   .map(
                     (currency) => DropdownMenuItem(
                       value: currency,
-                      child: Text(currency),
+                      child: Text(CurrencyFormatter.inputLabel(currency)),
                     ),
                   )
                   .toList(),
-              onChanged: (value) {
+              onChanged: (value) async {
                 if (value != null) {
-                  ref.read(settingsProvider.notifier).setCurrency(value);
+                  await _saveSetting(
+                    context,
+                    () =>
+                        ref.read(settingsProvider.notifier).setCurrency(value),
+                    'Currency changed to $value.',
+                  );
                 }
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(72, 0, 20, 8),
+            child: Text(
+              context.tr('settings_currency_note'),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
           SwitchListTile(
@@ -111,9 +190,13 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Notifications'),
             subtitle: const Text('Booking, chat, support, and system updates'),
             value: settings.notificationsEnabled,
-            onChanged: ref
-                .read(settingsProvider.notifier)
-                .setNotificationsEnabled,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setNotificationsEnabled(value),
+              value ? 'App alerts enabled.' : 'App alerts disabled.',
+            ),
           ),
           SwitchListTile(
             secondary: const Icon(Icons.location_on_outlined),
@@ -122,9 +205,15 @@ class SettingsScreen extends ConsumerWidget {
               'Reserved for active confirmed trip tracking.',
             ),
             value: settings.locationSharingEnabled,
-            onChanged: ref
-                .read(settingsProvider.notifier)
-                .setLocationSharingEnabled,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setLocationSharingEnabled(value),
+              value
+                  ? 'Active-trip location sharing preference enabled.'
+                  : 'Active-trip location sharing preference disabled.',
+            ),
           ),
           const Divider(),
           _section('Payments'),
@@ -142,7 +231,15 @@ class SettingsScreen extends ConsumerWidget {
               'Preference only. No card details are collected in this judge build.',
             ),
             value: settings.savePaymentMethod,
-            onChanged: ref.read(settingsProvider.notifier).setSavePaymentMethod,
+            onChanged: (value) async => _saveSetting(
+              context,
+              () => ref
+                  .read(settingsProvider.notifier)
+                  .setSavePaymentMethod(value),
+              value
+                  ? 'Future payment-method saving preference enabled.'
+                  : 'Future payment-method saving preference disabled.',
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.receipt_long_outlined),
@@ -159,6 +256,18 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           _section('Account'),
           ListTile(
+            leading: const Icon(Icons.manage_accounts_outlined),
+            title: const Text('Profile and address'),
+            subtitle: profileAsync.maybeWhen(
+              data: (_) => const Text('Edit your personal and contact details'),
+              orElse: () => const Text('Edit your account details'),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: user == null
+                ? null
+                : () => context.push('/profile/edit', extra: user.id),
+          ),
+          ListTile(
             leading: Icon(Icons.logout, color: AppColors.error),
             title: Text('Sign Out', style: TextStyle(color: AppColors.error)),
             onTap: () => _showSignOutDialog(context, ref),
@@ -166,7 +275,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              'Fitareeaee Copilot - Build Week judge build',
+              'Fitareeaee • Rides and deliveries made simple',
               style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
             ),
           ),
@@ -226,6 +335,43 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildVerificationProgress(
+    BuildContext context,
+    AsyncValue<UserVerification?> verificationAsync, {
+    required bool isDriver,
+  }) {
+    final subtitle = verificationAsync.when(
+      loading: () => 'Loading live verification progress…',
+      error: (_, _) => 'Progress unavailable — tap to retry in Verification',
+      data: (verification) {
+        final total = tripVerificationTotalSteps(driver: isDriver);
+        final submitted = submittedTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        final approved = approvedTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        final pending = pendingTripVerificationStepCount(
+          verification,
+          driver: isDriver,
+        );
+        return '$submitted/$total submitted • $approved approved • $pending pending';
+      },
+    );
+    return ListTile(
+      leading: const Icon(Icons.verified_user_outlined),
+      title: const Text('Verification progress'),
+      subtitle: Text(subtitle),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VerificationScreen()),
+      ),
+    );
+  }
+
   double _driverPriorityScore(UserProfile? profile) {
     if (profile == null || profile.totalTrips < 50) return 0;
     final acceptanceRate = profile.metadata['acceptanceRate'];
@@ -236,6 +382,29 @@ class SettingsScreen extends ConsumerWidget {
     final acceptanceScore = acceptance.clamp(0, 1).toDouble() * 25;
     final completionScore = completion.clamp(0, 1).toDouble() * 15;
     return ratingScore + acceptanceScore + completionScore;
+  }
+
+  Future<void> _saveSetting(
+    BuildContext context,
+    Future<void> Function() action,
+    String successMessage,
+  ) async {
+    try {
+      await action();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(successMessage)));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('That setting could not be saved. Please retry.'),
+          ),
+        );
+    }
   }
 
   void _showPrivacyAndSafety(BuildContext context) {
@@ -254,7 +423,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Plan with AI sends only the natural-language trip request, locale, time-zone offset, and current date through an authenticated Firebase Function. Contact details are redacted before the request reaches OpenAI, and model responses are not stored by the API request.',
+                'Plan with GPT-5.6 sends only the natural-language trip request, locale, time-zone offset, and current date through an authenticated Firebase Function. Contact details are redacted before the request reaches OpenAI, and model responses are not stored by the API request.',
               ),
               const SizedBox(height: 12),
               const Text(
@@ -263,6 +432,44 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               const Text(
                 'Identity images remain in Firebase Storage for manual admin review and are removed after a review decision. Never use this prototype for emergencies.',
+              ),
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: const Text('Done'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showBuildWeekTechnology(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Built with Codex • Powered by GPT-5.6',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Codex was the primary engineering collaborator used during Build Week to audit the inherited app, implement and review Flutter and Firebase changes, harden authorization, write tests, run Android release gates, and preserve the evidence trail.',
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'GPT-5.6 is the runtime intelligence behind the trip planner and first-line support. It interprets English or Arabic into strict, validated drafts; deterministic application code—not the model—controls matching, verification, booking, payment state, and chat access.',
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'The developer made the product, scope, privacy, safety, architecture, and release decisions. Pre-existing work and the Build Week extension are documented separately in the public repository.',
               ),
               const SizedBox(height: 20),
               FilledButton(
@@ -295,7 +502,11 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(authRepositoryProvider).signOut();
-    if (context.mounted) context.go('/login');
+    final authRepository = ref.read(authRepositoryProvider);
+    // Dispose settings/profile streams while the old session still has read
+    // access, then let the auth-aware router move Home to Login after sign-out.
+    if (context.mounted) context.go('/home');
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await authRepository.signOut();
   }
 }

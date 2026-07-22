@@ -29,26 +29,28 @@ function safeErrorDetail(error) {
     .slice(0, 300);
 }
 
+function createPassword() {
+  return `${crypto.randomBytes(24).toString("base64url")}Aa1!`;
+}
+
 if (confirmation !== EXPECTED_PROJECT) {
   fail(`PROVISION_JUDGE_USERS must equal ${EXPECTED_PROJECT}.`);
 }
 
 function createCredentials() {
   const stamp = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
-  const password = () =>
-    `${crypto.randomBytes(24).toString("base64url")}Aa1!`;
   return {
     projectId: EXPECTED_PROJECT,
     createdAt: new Date().toISOString(),
     accounts: {
       driver: {
         email: `fitareeaee-judge-driver-${stamp}@example.test`,
-        password: password(),
+        password: createPassword(),
         uid: null,
       },
       rider: {
         email: `fitareeaee-judge-rider-${stamp}@example.test`,
-        password: password(),
+        password: createPassword(),
         uid: null,
       },
     },
@@ -137,6 +139,14 @@ async function ensureUser(auth, role, account) {
 
 async function main() {
   const credentials = loadOrCreateCredentials();
+  const rotatePasswords =
+    process.env.ROTATE_JUDGE_PASSWORDS === EXPECTED_PROJECT;
+  if (rotatePasswords) {
+    credentials.accounts.driver.password = createPassword();
+    credentials.accounts.rider.password = createPassword();
+    credentials.rotatedAt = new Date().toISOString();
+    saveCredentials(credentials);
+  }
   const accessToken = getOwnerAccessToken();
   // Firebase Admin adds this as x-goog-user-project for owner user credentials.
   // Without it, Identity Toolkit rejects an otherwise valid gcloud access token.
@@ -169,15 +179,17 @@ async function main() {
   process.env.GOOGLE_CLOUD_PROJECT = EXPECTED_PROJECT;
   process.env.JUDGE_DRIVER_UID = credentials.accounts.driver.uid;
   process.env.JUDGE_RIDER_UID = credentials.accounts.rider.uid;
-  const {seedJudgeData} = require("./seed-judge-data.cjs");
-  await seedJudgeData({
-    accessToken,
-    driverEmail: credentials.accounts.driver.email,
-    riderEmail: credentials.accounts.rider.email,
-  });
+  if (!rotatePasswords || process.env.RESET_JUDGE_DATA === EXPECTED_PROJECT) {
+    const {seedJudgeData} = require("./seed-judge-data.cjs");
+    await seedJudgeData({
+      accessToken,
+      driverEmail: credentials.accounts.driver.email,
+      riderEmail: credentials.accounts.rider.email,
+    });
+  }
 
   process.stdout.write(
-    `Provisioned fictional judge users and fixtures. Credentials remain only at ${credentialsPath}.\n`,
+    `${rotatePasswords ? "Rotated fictional judge passwords; existing fixtures were preserved" : "Provisioned fictional judge users and fixtures"}. Credentials remain only at ${credentialsPath}.\n`,
   );
 }
 

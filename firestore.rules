@@ -28,10 +28,9 @@ service cloud.firestore {
           ));
     }
 
-    function validSupportCategory(category) {
-      return category in [
-        'payment', 'trip', 'account', 'safety', 'technical', 'other'
-      ];
+    function validMarketplaceRoles() {
+      return request.resource.data.roles == ['rider', 'sender']
+        || request.resource.data.roles == ['driver', 'courier'];
     }
 
     function validSupportStatus(status) {
@@ -48,6 +47,27 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/support_tickets/$(ticketId)).data.userId;
     }
 
+    function maySendConversation(conversationId) {
+      let authorization = get(
+        /databases/$(database)/documents/conversation_authorizations/$(conversationId)
+      ).data;
+      return exists(
+          /databases/$(database)/documents/conversation_authorizations/$(conversationId)
+        )
+        && authorization.active == true
+        && authorization.source == 'booking'
+        && authorization.bookingId is string
+        && exists(
+          /databases/$(database)/documents/bookings/$(authorization.bookingId)
+        )
+        && get(
+          /databases/$(database)/documents/bookings/$(authorization.bookingId)
+        ).data.status in ['confirmed', 'in_progress']
+        && get(
+          /databases/$(database)/documents/bookings/$(authorization.bookingId)
+        ).data.paymentStatus == 'paid';
+    }
+
     match /admins/{uid} {
       allow read: if isOwner(uid) || isAdmin();
       allow write: if false;
@@ -62,7 +82,8 @@ service cloud.firestore {
         && request.resource.data.isPhoneVerified == false
         && request.resource.data.rating == 5
         && request.resource.data.totalRatings == 0
-        && request.resource.data.totalTrips == 0;
+        && request.resource.data.totalTrips == 0
+        && validMarketplaceRoles();
       allow update: if isOwner(uid)
         && request.resource.data.id == resource.data.id
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -97,6 +118,27 @@ service cloud.firestore {
         && (resource.data.passengerId == request.auth.uid
           || resource.data.driverId == request.auth.uid
           || isAdmin());
+      allow write: if false;
+    }
+
+    match /ratings/{ratingId} {
+      // A participant may check their deterministic one-rating document even
+      // before it exists. Existing ratings remain visible only to either
+      // participant or an administrator.
+      allow get: if signedIn()
+        && (ratingId.matches('^.+_' + request.auth.uid + '$')
+          || resource.data.ratedByUserId == request.auth.uid
+          || resource.data.ratedUserId == request.auth.uid
+          || isAdmin());
+      allow list: if signedIn()
+        && (resource.data.ratedByUserId == request.auth.uid
+          || resource.data.ratedUserId == request.auth.uid
+          || isAdmin());
+      allow write: if false;
+    }
+
+    match /admin_events/{eventId} {
+      allow read: if isAdmin();
       allow write: if false;
     }
 
@@ -153,8 +195,7 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id))
         && get(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id)).data.participant_ids
           == request.resource.data.participant_ids
-        && get(/databases/$(database)/documents/conversation_authorizations/$(request.resource.data.conversation_id)).data.active
-          == true
+        && maySendConversation(request.resource.data.conversation_id)
         && request.resource.data.is_read == false
         && request.resource.data.is_deleted == false;
       allow update: if signedIn()
@@ -202,22 +243,10 @@ service cloud.firestore {
     match /support_tickets/{ticketId} {
       allow read: if signedIn()
         && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if signedIn()
-        && request.resource.data.keys().hasOnly([
-          'userId', 'tripId', 'category', 'status', 'subject',
-          'description', 'createdAt', 'updatedAt'
-        ])
-        && request.resource.data.userId == request.auth.uid
-        && (request.resource.data.tripId == null
-          || request.resource.data.tripId is string)
-        && validSupportCategory(request.resource.data.category)
-        && request.resource.data.status == 'open'
-        && validSupportText(request.resource.data.subject, 120)
-        && validSupportText(request.resource.data.description, 2000)
-        && (request.resource.data.createdAt is string
-          || request.resource.data.createdAt is timestamp)
-        && (request.resource.data.updatedAt is string
-          || request.resource.data.updatedAt is timestamp);
+      // Ticket creation and customer messages go through authenticated callable
+      // functions so GPT guidance, redaction, throttling, and escalation are
+      // consistently applied. Staff may still reply from the admin console.
+      allow create: if false;
       allow update: if signedIn()
         && resource.data.userId == request.auth.uid
         && request.resource.data.userId == resource.data.userId
@@ -250,15 +279,9 @@ service cloud.firestore {
               && request.resource.data.attachments.size() == 0))
           && (request.resource.data.createdAt is string
             || request.resource.data.createdAt is timestamp)
-          && (
-            (ticketOwner(ticketId) == request.auth.uid
-              && request.resource.data.senderId == request.auth.uid
-              && request.resource.data.isStaff == false)
-            ||
-            (isAdmin()
-              && request.resource.data.senderId == request.auth.uid
-              && request.resource.data.isStaff == true)
-          );
+          && isAdmin()
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.isStaff == true;
         allow update, delete: if false;
       }
     }
@@ -288,6 +311,10 @@ service cloud.firestore {
     }
 
     match /copilot_rate_limits/{uid} {
+      allow read, write: if false;
+    }
+
+    match /support_ai_rate_limits/{uid} {
       allow read, write: if false;
     }
 

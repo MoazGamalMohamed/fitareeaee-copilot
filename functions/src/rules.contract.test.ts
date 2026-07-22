@@ -13,8 +13,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  limit,
-  orderBy,
   query,
   setDoc,
   updateDoc,
@@ -53,6 +51,7 @@ async function seed(path: string, data: Record<string, unknown>): Promise<void> 
 
 test("users cannot write another user's profile", async () => {
   const rider = environment.authenticatedContext("rider").firestore();
+  const mixed = environment.authenticatedContext("mixed").firestore();
   await assertSucceeds(
     setDoc(doc(rider, "users/rider"), {
       id: "rider",
@@ -63,6 +62,20 @@ test("users cannot write another user's profile", async () => {
       totalRatings: 0,
       totalTrips: 0,
       name: "Judge Rider",
+      roles: ["rider", "sender"],
+    })
+  );
+  await assertFails(
+    setDoc(doc(mixed, "users/mixed"), {
+      id: "mixed",
+      isVerified: false,
+      isEmailVerified: false,
+      isPhoneVerified: false,
+      rating: 5,
+      totalRatings: 0,
+      totalTrips: 0,
+      name: "Mixed Role",
+      roles: ["rider", "driver"],
     })
   );
   await assertFails(
@@ -186,7 +199,16 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     id: "trip-1__driver_rider",
     participant_ids: ["driver", "rider"],
     tripId: "trip-1",
+    bookingId: "booking-1",
+    source: "booking",
     active: true,
+  });
+  await seed("bookings/booking-1", {
+    passengerId: "rider",
+    driverId: "driver",
+    tripId: "trip-1",
+    status: "confirmed",
+    paymentStatus: "paid",
   });
   await seed("messages/legacy-mismatch", {
     ...message,
@@ -208,14 +230,14 @@ test("messages are participant-scoped and sender identity is enforced", async ()
     getDocs(
       query(
         collection(rider, "messages"),
-        where("conversation_id", "==", "trip-1__driver_rider"),
-        where("participant_ids", "array-contains", "rider"),
-        orderBy("created_at", "desc"),
-        limit(1)
+        where("participant_ids", "array-contains", "rider")
       )
     )
   );
-  assert.equal(listedConversation.size, 1);
+  // List queries expose only documents whose participant array contains the
+  // caller. The repository then cross-checks that array against the server-
+  // owned authorization so legacy malformed records cannot enter a chat.
+  assert.equal(listedConversation.size, 2);
   await assertFails(getDoc(doc(outsider, "messages/message-1")));
   await assertFails(getDoc(doc(rider, "messages/legacy-mismatch")));
   await assertFails(
@@ -256,6 +278,28 @@ test("messages are participant-scoped and sender identity is enforced", async ()
       conversation_id: "trip-old__driver_rider",
     })
   );
+  await seed("conversation_authorizations/trip-unpaid__driver_rider", {
+    id: "trip-unpaid__driver_rider",
+    participant_ids: ["driver", "rider"],
+    tripId: "trip-unpaid",
+    bookingId: "booking-unpaid",
+    source: "booking",
+    active: true,
+  });
+  await seed("bookings/booking-unpaid", {
+    passengerId: "rider",
+    driverId: "driver",
+    tripId: "trip-unpaid",
+    status: "pending_payment",
+    paymentStatus: "required",
+  });
+  await assertFails(
+    setDoc(doc(rider, "messages/unpaid"), {
+      ...message,
+      id: "unpaid",
+      conversation_id: "trip-unpaid__driver_rider",
+    })
+  );
 });
 
 test("support tickets are owner-scoped and users cannot spoof staff", async () => {
@@ -271,10 +315,11 @@ test("support tickets are owner-scoped and users cannot spoof staff", async () =
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  await assertSucceeds(setDoc(doc(rider, "support_tickets/ticket-1"), ticket));
+  await assertFails(setDoc(doc(rider, "support_tickets/forged"), ticket));
+  await seed("support_tickets/ticket-1", ticket);
   await assertSucceeds(getDoc(doc(rider, "support_tickets/ticket-1")));
   await assertFails(getDoc(doc(outsider, "support_tickets/ticket-1")));
-  await assertSucceeds(
+  await assertFails(
     setDoc(doc(rider, "support_tickets/ticket-1/messages/message-1"), {
       ticketId: "ticket-1",
       senderId: "rider",
@@ -294,6 +339,9 @@ test("support tickets are owner-scoped and users cannot spoof staff", async () =
       createdAt: new Date().toISOString(),
     })
   );
+  await assertFails(
+    setDoc(doc(rider, "support_ai_rate_limits/rider"), {count: 0})
+  );
 });
 
 test("payment and wallet writes are denied", async () => {
@@ -307,6 +355,42 @@ test("payment and wallet writes are denied", async () => {
   await assertFails(
     setDoc(doc(rider, "wallets/rider"), {userId: "rider", balance: 100})
   );
+});
+
+test("ratings are server-owned and urgent events are admin-only", async () => {
+  await seed("admins/admin", {isAdmin: true});
+  await seed("ratings/booking-1_rider", {
+    id: "booking-1_rider",
+    bookingId: "booking-1",
+    tripId: "trip-1",
+    ratedByUserId: "rider",
+    ratedUserId: "driver",
+    rating: 5,
+    createdAt: new Date(),
+  });
+  await seed("admin_events/event-1", {
+    type: "emergency_trip_cancellation",
+    tripId: "trip-1",
+    status: "open",
+    createdAt: new Date(),
+  });
+  const rider = environment.authenticatedContext("rider").firestore();
+  const outsider = environment.authenticatedContext("outsider").firestore();
+  const admin = environment.authenticatedContext("admin").firestore();
+  await assertSucceeds(
+    getDoc(doc(rider, "ratings/not-yet-rated-booking_rider"))
+  );
+  await assertSucceeds(getDoc(doc(rider, "ratings/booking-1_rider")));
+  await assertFails(getDoc(doc(outsider, "ratings/booking-1_rider")));
+  await assertFails(
+    setDoc(doc(rider, "ratings/forged"), {
+      ratedByUserId: "rider",
+      ratedUserId: "driver",
+      rating: 5,
+    })
+  );
+  await assertSucceeds(getDocs(collection(admin, "admin_events")));
+  await assertFails(getDocs(collection(rider, "admin_events")));
 });
 
 test("storage limits verification uploads to the owning user and images", async () => {

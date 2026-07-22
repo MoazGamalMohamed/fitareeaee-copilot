@@ -1,6 +1,6 @@
 # Submission Checklist
 
-Official deadline: **July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central**. Internal target: **3:00 PM Central**.
+Official deadline: **July 21, 2026 at 5:00 PM Pacific / 7:00 PM Central**. The project must show green **Submitted** before that cutoff.
 
 Authoritative live pages: [Official Rules](https://openai.devpost.com/rules),
 [FAQ](https://openai.devpost.com/details/faqs), and
@@ -11,7 +11,7 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 ## Eligibility and evidence
 
 - [x] Track selected: **Apps for Your Life**.
-- [x] Product name selected: **Fitareeaee Copilot — trusted, natural-language ride and package matching**.
+- [x] Final public product name selected: **Fitareeaee — GPT-5.6 Ride & Delivery Planner**; “Copilot” remains only an internal implementation identifier.
 - [x] Pre-existing application baseline explicitly documented.
 - [x] Baseline commit/tag preserved and not claimed as Build Week work.
 - [x] Meaningful Build Week extension described separately.
@@ -20,28 +20,46 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Re-check live official rules, FAQ, resources, and updates on July 19: deadline,
   public YouTube/audio, Codex explanation, GPT-5.6 evidence, repository/test access,
   pre-existing-work disclosure, and `/feedback` requirements remain unchanged.
-- [ ] Re-check official rules and Devpost updates on submission day.
-- [ ] Run `/feedback` in the primary Codex build thread and paste the Session ID into Devpost.
+- [x] Re-check live official rules and FAQ on July 20: July 21 5:00 PM Pacific
+  deadline, meaningful-extension evidence, English submission, public YouTube video
+  at or under three minutes with voiceover, public/licensed repository, free judge
+  access through the August 5 judging period, Codex/GPT-5.6 explanation, and primary
+  `/feedback` Session ID remain required.
+- [x] Re-check official rules, live FAQ, overview, judging criteria, and official GPT-5.6 guidance on July 21; record the requirement-to-evidence audit in `RULES_COMPLIANCE_MATRIX.md`.
+- [x] Re-check the latest organizer checklist on July 21: public or unlisted YouTube
+  is accepted, `/feedback` supplies the primary Session ID, and no edits are allowed
+  after the deadline.
+- [ ] Run `/feedback` in the primary Codex build thread and capture its Session ID; use `/status` only as the display fallback.
 
 ## Product and backend
 
-- [x] Home exposes **Plan with AI**.
+- [x] Home exposes **Plan with GPT-5.6** and keeps rider **Request** separate from verified-driver **Offer**.
 - [x] English/Arabic ride and package requests supported in code.
 - [x] Official OpenAI server SDK, Responses API, and `gpt-5.6` configured server-side.
 - [x] Strict structured output plus independent server validation.
 - [x] Editable, disclosed AI draft; confirmation required before search.
 - [x] Deterministic matching with transparent reasons and no fabricated trips.
+- [x] Editable account-scoped local trip templates; no payment, identity, booking,
+  contact, or chat data stored in templates.
 - [x] Authenticated transactional booking and server-controlled verification.
 - [x] Default-deny Firestore/Storage rules and participant-only chat contracts.
 - [x] Simulated financial/reset/AI-verification prototypes excluded from the submitted source and judge navigation.
 - [ ] Retire the inherited live prototype Functions after owner confirms the exact production deletion set.
-- [ ] Owner confirms provider-side revocation of the key exposed in the build conversation. A different valid key is privately installed as managed version 2; obsolete managed version 1 is destroyed.
+- [ ] Owner confirms provider-side revocation of exposed old keys; managed version 2
+  is enabled and was not read during verification.
 - [x] Deploy only to confirmed Firebase project `fitareeaee`.
 - [x] Deploy hardened booking, verification, chat, and public-projection Functions.
 - [x] Deploy Firestore and Storage rules.
 - [x] Add required Firestore indexes without deleting legacy indexes; verify both new indexes are `READY`.
-- [x] Deploy `planTripWithCopilot` with managed OpenAI secret version 2.
-- [x] Run capped live GPT-5.6 tests for English ride, package, and Arabic requests, including a post-retirement rerun.
+- [x] Confirm deployed `planTripWithCopilot` and enabled managed secret version 2
+  through metadata only; obsolete version 1 is destroyed.
+- [x] Run capped live GPT-5.6 tests through exact public v1.0.13 for English ride,
+  English package, and Arabic ride requests.
+- [x] Re-open exact-public v1.0.13 Contact Support: GPT-5.6 first answer, explicit
+  `Need a person?` handoff, Human queue state, staff confirmation, and clean logs.
+- [x] Run exact-public Settings/Payments UI smoke: Support, English/Arabic, USD,
+  no-card/no-escrow boundary, rider-pay/driver-receive activity, and the 50-trip
+  driver-priority threshold render truthfully.
 - [x] Confirm OpenAI test spend remains below USD $5.
 - [x] Create dedicated fictional judge accounts and fixed August 10 demo trips; keep passwords out of Git.
 - [ ] Verify backend/test access remains free and available through judging.
@@ -103,6 +121,131 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Download the public v1.0.3 APK, confirm 154,995,438 bytes and exact SHA-256 match, install/cold-launch it on the Motorola phone, and recheck Chat plus AndroidRuntime/Flutter error output.
 - [x] Anonymous HTTP checks return 200 for the public repository, v1.0.3 release page,
   and redirected direct APK asset.
+- [x] Fix remaining chat, pre-payment confirmation, unified GPT-5.6 support, and
+  manual request/offer creation defects; pass local, rules, and transactional gates;
+  deploy only the scoped backend/rule changes to `fitareeaee` (`a27c2d9`).
+- [x] Supersede the v1.0.4 corrective candidate with the fully tested v1.0.5
+  source/artifact, redownload it, compare its hash, and install that exact download.
+- [x] Publish the sanitized v1.0.4 source branch, draft PR, immutable tag, and
+  pre-release APK; redownload and verify the exact 83,181,715-byte SHA-256 match.
+- [x] Clean-install the public v1.0.4 download on the emulator and visibly confirm
+  Fitareeaee Login/top-resumed/process-alive with zero app-specific fatal log matches.
+- [x] Publish v1.0.5 source to draft PR #1, push the annotated source tag, and
+  publish the 83,378,603-byte profile APK as the latest stable judge release.
+- [x] Redownload v1.0.5 from GitHub and verify SHA-256
+  `0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`.
+- [x] Install the exact public v1.0.5 APK on the Motorola phone; cold launch,
+  authenticated Home, Chat empty state, manual Request form, and crash-log scan pass.
+- [x] Build and emulator-test the v1.0.6 lifecycle/map/voice profile candidate;
+  verify package/version/API metadata and its expected debug signature.
+- [x] Publish sanitized v1.0.6 source/tag/prerelease APK; anonymously redownload,
+  hash-match, clean-install, and cold-launch it on API 36.
+- [x] Publish the v1.0.7 attribution-compliant source/tag/prerelease APK;
+  anonymously redownload and exactly match 85,260,359 bytes and SHA-256
+  `CC8191D87DB2DEF700FC1D537807C8E43AC499727C2C0E1B53AB17D3729DAEC6`.
+- [x] Reinstall and cold-launch that public v1.0.7 download on API 36; verify
+  version `1.0.7` / code `20260721`, top-resumed process, and 0 app-specific
+  fatal/Flutter/Firebase/ANR matches.
+- [x] Publish v1.0.8 source/tag/prerelease; anonymously redownload and exactly
+  match 109,174,213 bytes and SHA-256
+  `333174AAFC5CC1BC12060FCB41F3A1372F51F5453C50792650AFF9A9721C2B18`.
+- [x] Fresh-install and authenticate that exact public v1.0.8 download on API 36;
+  verify Home, paid chat, Past, version `1.0.8` / code `20260722`, and 0
+  app-specific fatal/Flutter/Firebase/ANR matches.
+- [x] Publish v1.0.9 source/tag/prerelease; anonymously redownload and byte-match
+  85,276,819 bytes and SHA-256
+  `95B172EE6003D9A35D407033A8E88D272859A6147FA9AD1E30D647B43E0047C1`.
+- [x] Install that exact public v1.0.9 download on API 36; verify version
+  `1.0.9` / code `20260723`, Confirmed and Completed owned-trip labels, paid
+  driver lifecycle controls, confirmed chat, and 0 app-specific
+  fatal/Flutter/FirebaseFailure/ANR matches.
+- [x] Publish v1.0.10 source/tag/prerelease; anonymously redownload and byte-match
+  85,276,887 bytes and SHA-256
+  `F476B31F2097845DAF7159157166F2F940551F6838A9EC75BD493E21F884CE59`.
+- [x] Install that exact public v1.0.10 download on API 36; verify version
+  `1.0.10` / code `20260724`, Verification Center, both full-field map actions,
+  Trips tabs, paid chat, cancellation confirmation, Settings, Support, Payments,
+  Notifications, Copilot, microphone permission, and 0 app-specific fatal/Flutter/
+  FirebaseFailure/ANR matches.
+- [x] Publish v1.0.11 source/tag/prerelease; anonymously redownload and byte-match
+  109,583,813 bytes and SHA-256
+  `54E60FE42884A8EFB7FAB8C76DA21F9F43D2C4A2BA55A21C6DA3DACFBCC44EDD`.
+- [x] Install that exact public v1.0.11 download on API 36; verify version
+  `1.0.11` / code `20260725`, circular Copilot, role-specific Request, map,
+  profile suggestions, Settings, Support, microphone permission/audio, accurate
+  no-speech recovery, and 0 app-specific fatal/Flutter/FirebaseFailure/ANR matches.
+- [x] Publish v1.0.13 source/tag/prerelease; compare all 351 tracked source paths,
+  scan 115 reachable revisions/2,650 objects with 0 forbidden credential paths or
+  high-signal secret hits, then anonymously redownload and byte-match 109,583,813
+  bytes and SHA-256
+  `E51D34C5C5B0B0BDBA4F8180D2CCA149A495D03617F4968D2F50A9A304FA39BB`.
+- [x] Install that exact public v1.0.13 download on API 36; verify version
+  `1.0.13` / code `20260727`, complete rider verification gate, role-specific
+  creation, potential/paid boundary, confirmed real fixture chat, Past/rating, and
+  0 visible or matched chat-permission/fatal errors.
+- [x] Verify managed secret/callable metadata and pass authenticated English ride,
+  English package, and Arabic ride live calls through the exact public APK.
+- [x] Build and install v1.0.14 on API 36; verify reusable plans, accurate
+  submitted/approved progress, rider/driver routing, and a clean login/sign-out log.
+- [x] Install that exact public v1.0.14 download on the owner's phone; verify version,
+  cold launch, rider login, interactive map selection, microphone consent, and active
+  speech recognition with zero matching app errors.
+- [x] Build v1.0.16 from the passing 49-test source; verify the driver role card,
+  Offer navigation, complete driver verification disclosure, and refreshed labels
+  after interactive map repicks.
+- [x] Add authenticated transactional withdrawal for an owner's open unpaid trip;
+  pass 31/31 contracts and 10/10 real lifecycle integrations, then deploy only
+  `withdrawTrip` to `fitareeaee`.
+- [x] Publish v1.0.16 without force, anonymously re-download and byte-match
+  85,703,283 bytes and SHA-256
+  `FBDB24024908450DD8DF2686099A5F6A44A147B66E03B9B5CCDD51C25712415B`.
+- [x] Install the exact public v1.0.16 download on the owner's Moto G Play; verify
+  version `1.0.16` / code `20260730`, driver Home/Offer, live disposable-trip
+  withdrawal/marketplace removal, paid-confirmed chat, completed-only Past/rating,
+  and zero matched app errors.
+- [x] Publish v1.0.17 with the contest-facing GPT-5.6 product name, explicit
+  Codex-versus-runtime disclosure, hashed OpenAI safety identifier, and July 21 live
+  rules-to-evidence matrix.
+- [x] Pass v1.0.17 format 132/0, analysis 0 issues, Flutter 49/49, Functions 32/32,
+  rules 9/9, lifecycle integration 10/10, Functions build, and Android debug/profile
+  builds; deploy only the three tested GPT-5.6 callables to `fitareeaee`.
+- [x] Publish/tag sanitized source `05b2e2c998ddf67a3a61130c0982573f283bbb3d`
+  without force; anonymously download and byte-match 85,703,335 bytes and SHA-256
+  `5C7AA44027BEFA3CF097ABB0E57503799EEEC6370BFABC01070A572A5FC6AC9B`.
+- [x] Install the exact public v1.0.17 download on the owner's Moto G Play; confirm
+  version `1.0.17` / code `20260731`, 2.803-second cold launch, Driver/Offer Home,
+  live review-required GPT-5.6 Offer draft, in-app Codex/GPT-5.6 disclosure, and zero
+  matched app fatal/FirebaseFailure/unhandled/ANR errors.
+- [x] Publish v1.0.18 with separate Request and Offer actions on Home, Trips, and
+  the neutral GPT-5.6 planner, plus action-specific server verification.
+- [x] Pass v1.0.18 format 133/0, analysis 0 issues, Flutter 50/50, Functions 33/33,
+  rules 9/9, lifecycle integration 10/10, and both Android builds; deploy only
+  `createTrip` and `createBooking` to `fitareeaee` with 0 errors.
+- [x] Publish/tag sanitized source `6a9b37d55ac7c85206c0ad0a174a5c31f6532422`
+  without force; anonymously download and byte-match 110,009,797 bytes and SHA-256
+  `1F972D8F7E69025363F679827CE73EF854B524947EE5A010723A7A0E4FCDE48A`.
+- [x] Install the exact public v1.0.18 download on the owner's Moto G Play and verify
+  both actions, both map forms, the two-choice Trips menu, both GPT manual actions,
+  and zero matched app fatal/FirebaseFailure/unhandled/ANR errors.
+- [x] Publish v1.0.19 searchable address choices, reverse-geocoded pins, Android
+  current-location consent, English/Arabic locale/RTL, and canonical USD/AED/SAR
+  input/display handling.
+- [x] Pass v1.0.19 format 136/0, analysis 0 issues, Flutter 56/56, Functions build,
+  debug/profile Android builds, live phone location permission/reverse-address smoke,
+  and exact-public APK installation.
+- [x] Publish/tag sanitized source `9feaf5c07090f960585b59a7b34500b59b706b88`
+  without force; anonymously resume/download and byte-match 88,963,947 bytes and
+  SHA-256 `362DF8AE7968B85A382129105A6F02ED50C8E571C87237E465FF0BFC7746AB3A`.
+- [x] Fix v1.0.20 voice dictation so native partial/empty callbacks preserve all
+  pre-existing typed text; cover English, Arabic, whitespace, and reset cases.
+- [x] Pass v1.0.20 format 136/0, analysis 0 issues, Flutter 57/57, focused voice 8/8,
+  Functions 33/33 plus build, and universal debug/profile Android builds.
+- [x] Publish tree-equivalent sanitized source
+  `f3d6d88af2970790d9cc9bbd69a36a9370500441` and tag
+  `fitareeaee-copilot-v1.0.20` without force.
+- [ ] Reconnect the Motorola, install the exact v1.0.20 public bytes, and record the
+  version/cold-launch/log result. Keep the exact-public phone-tested v1.0.19 as rollback
+  if this owner-only reconnection does not happen before submission.
 
 ## Devpost materials
 
@@ -112,24 +255,32 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 - [x] Test matrix drafted with pending work clearly marked.
 - [x] 2:40 demo script drafted.
 - [x] Replace APK/repository/tag/hash fields with final verified values; video, Session ID, and private credential placement remain owner-only pending fields.
-- [x] Add final repository URL.
+- [x] Add final branch-specific repository URL so judges reach the unmerged v1.0.19
+  source directly; do not rely on the older default `main` branch.
 - [x] Add final stable APK URL and SHA-256.
 - [x] Preview the repository, release, APK, and English judge copy without relying on
   repository authentication. The still-missing YouTube/Devpost fields remain below.
 - [ ] Add judge credentials privately in the allowed Devpost testing field; never in the public repository/video.
-- [ ] Capture final screenshots with fictional data and no PII.
-- [ ] Audit final screenshots, icons/assets, packages, fixture data, and video/audio for ownership or authorized licenses; retain attribution where required.
+- [x] Capture and visually inspect representative screenshots from the exact public
+  v1.0.9 APK using fictional data and no credentials, real identity data, or private
+  notifications; add an editable architecture graphic. The v1.0.11 UI changes were
+  separately inspected during its exact-public emulator smoke.
+- [x] Audit repository packages and fictional fixture data; retain package notices
+  and permanent linked OpenStreetMap attribution.
+- [ ] Owner confirms authorization for launcher artwork and audits final screenshots
+  and video/audio; no copyrighted music, private data, credentials, or real identity
+  documents.
 - [ ] Record video from final deployed build with audible narration and no copyrighted music.
-- [ ] Verify YouTube video is public, under three minutes, and playable while signed out.
+- [ ] Verify YouTube video is public or unlisted, under three minutes, and playable while signed out.
 - [ ] Add YouTube URL.
-- [ ] Add primary Codex `/feedback` Session ID.
+- [ ] Run `/feedback` in the primary thread and add its Session ID; use `/status` only as the display fallback.
 - [ ] Preview every link and all English copy while signed out.
 
 ## Final manual submission
 
 - [ ] Owner reviews all legal/eligibility statements.
 - [ ] Owner performs the final legally binding Devpost submission action.
-- [ ] Submit by the internal 3:00 PM Central target.
+- [ ] Submit before the official July 21, 2026 7:00 PM Central / 5:00 PM Pacific deadline.
 - [ ] Save a screenshot/PDF/text copy of the final submission page.
 - [ ] Record submission time, final commit/tag, APK hash, and video URL in the append-only progress log.
 
@@ -138,7 +289,8 @@ Status key: `[x]` verified, `[ ]` still required. Do not check an item based onl
 Exact owner steps and the inherited Function set are recorded in
 [`OWNER_ACTIONS.md`](OWNER_ACTIONS.md).
 
-1. Owner confirms provider-side revocation of the exposed old OpenAI key; managed version 2 is deployed and passing.
+1. Owner confirms provider-side revocation of exposed old OpenAI keys; current
+   managed version 2 is enabled, deployed, and freshly live-tested.
 2. Owner provides a fresh explicit confirmation before deletion of the exact inherited 36-function set, or elects to preserve it, and urgently rotates the legacy Stripe test/email credentials exposed by Firebase CLI diagnostic output.
-3. Optional second fresh-install phone rerun, YouTube upload, `/feedback`, private
-   credential placement, legal confirmation, and final Devpost submit action.
+3. Complete YouTube upload, `/feedback` Session ID capture, private credential placement, legal
+   confirmation, and the final owner-performed Devpost submit action.

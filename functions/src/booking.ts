@@ -1,11 +1,13 @@
 import {
-  DocumentSnapshot,
   getFirestore,
   Timestamp,
   Transaction,
 } from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
-import {conversationDocumentId} from "./conversation";
+import {
+  driverVerificationComplete,
+  participantVerificationComplete,
+} from "./trip";
 
 export interface BookingRequest {
   schemaVersion: 1;
@@ -61,6 +63,15 @@ export function validatedUnitPrice(value: unknown): number {
   return value;
 }
 
+export function bookingIsPaidAndConfirmed(value: Record<string, unknown>): boolean {
+  return value.status === "confirmed" && value.paymentStatus === "paid";
+}
+
+export function bookingHasActivePaidTrip(value: Record<string, unknown>): boolean {
+  return value.paymentStatus === "paid" &&
+    (value.status === "confirmed" || value.status === "in_progress");
+}
+
 function departureDate(value: unknown): Date | null {
   if (value instanceof Timestamp) return value.toDate();
   if (typeof value === "string") {
@@ -78,12 +89,12 @@ export function canSelfCancelBeforeDeparture(
   return departure !== null && departure.getTime() > nowMs;
 }
 
-function hasRequiredVerification(
-  snapshot: DocumentSnapshot
+export function bookingParticipantsVerified(
+  rider: Record<string, unknown>,
+  driver: Record<string, unknown>
 ): boolean {
-  if (!snapshot.exists) return false;
-  const data = snapshot.data();
-  return data?.identityVerified === true && data?.selfieWithIdVerified === true;
+  return participantVerificationComplete(rider) &&
+    driverVerificationComplete(driver);
 }
 
 function rethrowCallableError(error: unknown, fallback: string): never {
@@ -148,34 +159,31 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       }
 
       const availableSeats = Number(trip.available_seats);
-      const conversationId = conversationDocumentId(
-        request.tripId,
-        passengerId,
-        driverId
-      );
-      const conversationRef = db
-        .collection("conversation_authorizations")
-        .doc(conversationId);
       if (existingBooking.exists) {
         const existing = existingBooking.data();
-        if (existing?.status === "confirmed") {
-          transaction.set(conversationRef, {
-            id: conversationId,
-            participant_ids: [passengerId, driverId].sort(),
-            source: "booking",
-            tripId: request.tripId,
-            active: true,
-            createdAt: existing.createdAt ?? Timestamp.now(),
-            updatedAt: Timestamp.now(),
-          }, {merge: true});
+        if (existing && bookingIsPaidAndConfirmed(existing)) {
           return {
             schemaVersion: 1,
             bookingId: bookingRef.id,
             status: "confirmed",
+            paymentStatus: "paid",
             seatsBooked: existing.seatsBooked ?? request.seats,
             totalPrice: existing.totalPrice ?? 0,
             availableSeats,
-            conversationId,
+            conversationId: existing.conversationId ?? null,
+            created: false,
+          };
+        }
+        if (existing?.status === "pending_payment") {
+          return {
+            schemaVersion: 1,
+            bookingId: bookingRef.id,
+            status: "pending_payment",
+            paymentStatus: existing.paymentStatus ?? "required",
+            seatsBooked: existing.seatsBooked ?? request.seats,
+            totalPrice: existing.totalPrice ?? 0,
+            availableSeats,
+            conversationId: null,
             created: false,
           };
         }
@@ -202,12 +210,16 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
       ]);
 
       if (
-        !hasRequiredVerification(riderVerification) ||
-        !hasRequiredVerification(driverVerification)
+        !riderVerification.exists ||
+        !driverVerification.exists ||
+        !bookingParticipantsVerified(
+          riderVerification.data() ?? {},
+          driverVerification.data() ?? {}
+        )
       ) {
         throw new functions.https.HttpsError(
           "failed-precondition",
-          "Both participants must complete ID and selfie verification."
+          "The rider must complete identity verification, and the driver must also complete driver and vehicle verification."
         );
       }
 
@@ -222,9 +234,9 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         driverId,
         seatsBooked: request.seats,
         totalPrice,
-        status: "confirmed",
-        paymentStatus: "disabled",
-        conversationId,
+        status: "pending_payment",
+        paymentStatus: "required",
+        conversationId: null,
         pickupLocation: trip.origin_address ?? null,
         dropoffLocation: trip.destination_address ?? null,
         pickupTime: trip.departure_time,
@@ -232,28 +244,15 @@ export const createBooking = functions.https.onCall(async (rawData, context) => 
         createdAt: now,
         updatedAt: now,
       });
-      transaction.update(tripRef, {
-        available_seats: availableSeats - request.seats,
-        updated_at: now,
-      });
-      transaction.set(conversationRef, {
-        id: conversationId,
-        participant_ids: [passengerId, driverId].sort(),
-        source: "booking",
-        tripId: request.tripId,
-        active: true,
-        createdAt: now,
-        updatedAt: now,
-      }, {merge: true});
-
       return {
         schemaVersion: 1,
         bookingId: bookingRef.id,
-        status: "confirmed",
+        status: "pending_payment",
+        paymentStatus: "required",
         seatsBooked: request.seats,
         totalPrice,
-        availableSeats: availableSeats - request.seats,
-        conversationId,
+        availableSeats,
+        conversationId: null,
         created: true,
       };
     });
@@ -297,7 +296,8 @@ export const cancelBooking = functions.https.onCall(async (rawData, context) => 
       if (booking.status === "cancelled") {
         return {schemaVersion: 1, bookingId: bookingRef.id, status: "cancelled"};
       }
-      if (booking.status !== "confirmed" || !tripSnapshot.exists) {
+      if ((booking.status !== "pending_payment" &&
+          !bookingIsPaidAndConfirmed(booking)) || !tripSnapshot.exists) {
         throw new functions.https.HttpsError(
           "failed-precondition",
           "This booking cannot be cancelled."
@@ -318,23 +318,27 @@ export const cancelBooking = functions.https.onCall(async (rawData, context) => 
       const availableSeats = Number(trip.available_seats) || 0;
       const bookedSeats = Number(booking.seatsBooked) || 1;
       const now = Timestamp.now();
+      const wasPaidAndConfirmed = bookingIsPaidAndConfirmed(booking);
       const conversationId = typeof booking.conversationId === "string" ?
-        booking.conversationId :
-        conversationDocumentId(request.tripId, passengerId, booking.driverId);
-      const conversationRef = db
-        .collection("conversation_authorizations")
-        .doc(conversationId);
+        booking.conversationId : "";
 
       transaction.update(bookingRef, {status: "cancelled", updatedAt: now});
-      transaction.update(tripRef, {
-        available_seats: Math.min(totalSeats, availableSeats + bookedSeats),
-        updated_at: now,
-      });
-      transaction.set(conversationRef, {
-        active: false,
-        status: "cancelled",
-        updatedAt: now,
-      }, {merge: true});
+      if (wasPaidAndConfirmed) {
+        transaction.update(tripRef, {
+          available_seats: Math.min(totalSeats, availableSeats + bookedSeats),
+          updated_at: now,
+        });
+      }
+      if (conversationId) {
+        const conversationRef = db
+          .collection("conversation_authorizations")
+          .doc(conversationId);
+        transaction.set(conversationRef, {
+          active: false,
+          status: "cancelled",
+          updatedAt: now,
+        }, {merge: true});
+      }
       return {schemaVersion: 1, bookingId: bookingRef.id, status: "cancelled"};
     });
   } catch (error) {

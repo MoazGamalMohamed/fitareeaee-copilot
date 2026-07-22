@@ -36,6 +36,11 @@ function fixedJudgeDate(hour, minute = 0) {
   return new Date(localUtc - offsetMinutes * 60_000);
 }
 
+function completedJudgeDate(hour, minute = 0) {
+  const localUtc = Date.UTC(2026, 6, 18, hour, minute);
+  return new Date(localUtc - offsetMinutes * 60_000);
+}
+
 function trip({id, owner, type, role = "offer", origin, destination, departure,
   price, seats, allowPets = false, allowSmoking = false,
   packageWeight = null, description}) {
@@ -67,6 +72,7 @@ function publicTrip(fixture) {
     destination_lat: 0,
     destination_lng: 0,
     passenger_ids: [],
+    selectedBookingId: null,
     description: null,
     amenities: [],
     metadata: {},
@@ -184,6 +190,26 @@ async function refuseDestructiveReseed(tripIds, accessToken) {
 }
 
 async function main({accessToken, driverEmail, riderEmail} = {}) {
+  const activeTrip = {
+    ...trip({id: "build_week_judge_active_confirmed", owner: driverUid,
+      type: "person", origin: "Dallas Love Field, Texas",
+      destination: "Downtown Fort Worth, Texas", departure: fixedJudgeDate(15),
+      price: 22, seats: 3, allowSmoking: false,
+      description: "Judge fixture: paid and confirmed ride with private chat."}),
+    status: "confirmed", available_seats: 1,
+    passenger_ids: [riderUid], selectedBookingId: "build_week_judge_active_booking",
+  };
+  const completedAt = completedJudgeDate(13, 30);
+  const completedTrip = {
+    ...trip({id: "build_week_judge_completed", owner: driverUid,
+      type: "person", origin: "Dallas, Texas", destination: "Waco, Texas",
+      departure: completedJudgeDate(11), price: 20, seats: 3,
+      allowSmoking: false,
+      description: "Judge fixture: completed ride available for one-time rating."}),
+    status: "completed", available_seats: 2,
+    passenger_ids: [riderUid], selectedBookingId: "build_week_judge_completed_booking",
+    completed_at: completedAt, updated_at: completedAt,
+  };
   const fixtures = [
     trip({id: "build_week_judge_dallas_austin_0900", owner: driverUid,
       type: "person", origin: "Dallas, Texas", destination: "Austin, Texas",
@@ -204,6 +230,8 @@ async function main({accessToken, driverEmail, riderEmail} = {}) {
       destination: "Houston, Texas", departure: fixedJudgeDate(18),
       price: 30, seats: 2, allowSmoking: false,
       description: "Judge fixture: evening ride request."}),
+    activeTrip,
+    completedTrip,
   ];
 
   await refuseDestructiveReseed(
@@ -217,8 +245,64 @@ async function main({accessToken, driverEmail, riderEmail} = {}) {
     documents.push({collection: "public_trips", id: fixture.id,
       value: publicTrip(fixture)});
   }
+  const participants = [driverUid, riderUid].sort();
+  const activeConversationId =
+    `${activeTrip.id}__${participants.join("_")}`;
+  const completedConversationId =
+    `${completedTrip.id}__${participants.join("_")}`;
+  const activeCreatedAt = new Date();
+  documents.push({collection: "bookings", id: "build_week_judge_active_booking",
+    value: {
+      id: "build_week_judge_active_booking", schemaVersion: 1,
+      tripId: activeTrip.id, passengerId: riderUid, driverId: driverUid,
+      seatsBooked: 2, totalPrice: 44, status: "confirmed",
+      paymentStatus: "paid", conversationId: activeConversationId,
+      pickupLocation: activeTrip.origin_address,
+      dropoffLocation: activeTrip.destination_address,
+      pickupTime: activeTrip.departure_time, dropoffTime: null,
+      createdAt: activeCreatedAt, updatedAt: activeCreatedAt,
+      buildWeekJudgeFixture: true,
+    }});
+  documents.push({collection: "conversation_authorizations",
+    id: activeConversationId, value: {
+      id: activeConversationId, participant_ids: participants,
+      source: "booking", bookingId: "build_week_judge_active_booking",
+      tripId: activeTrip.id, paymentStatus: "paid", status: "confirmed",
+      active: true, updatedAt: activeCreatedAt,
+      buildWeekJudgeFixture: true,
+    }});
+  documents.push({collection: "messages", id: "build_week_judge_active_message",
+    value: {
+      id: "build_week_judge_active_message", sender_id: driverUid,
+      recipient_id: riderUid, conversation_id: activeConversationId,
+      participant_ids: participants,
+      content: "Your paid booking is confirmed. This private trip chat is now open.",
+      attachments: [], created_at: activeCreatedAt, is_read: false,
+      read_at: null, is_deleted: false, buildWeekJudgeFixture: true,
+    }});
+  documents.push({collection: "bookings",
+    id: "build_week_judge_completed_booking", value: {
+      id: "build_week_judge_completed_booking", schemaVersion: 1,
+      tripId: completedTrip.id, passengerId: riderUid, driverId: driverUid,
+      seatsBooked: 1, totalPrice: 20, status: "completed",
+      paymentStatus: "paid", conversationId: completedConversationId,
+      pickupLocation: completedTrip.origin_address,
+      dropoffLocation: completedTrip.destination_address,
+      pickupTime: completedTrip.departure_time, dropoffTime: completedAt,
+      createdAt: completedTrip.departure_time, updatedAt: completedAt,
+      buildWeekJudgeFixture: true,
+    }});
+  documents.push({collection: "conversation_authorizations",
+    id: completedConversationId, value: {
+      id: completedConversationId, participant_ids: participants,
+      source: "booking", bookingId: "build_week_judge_completed_booking",
+      tripId: completedTrip.id, paymentStatus: "paid", status: "completed",
+      active: false, updatedAt: completedAt, buildWeekJudgeFixture: true,
+    }});
+  const verificationCreatedAt = new Date();
   const verified = {identityVerified: true, selfieWithIdVerified: true,
-    emailVerified: true, buildWeekJudgeFixture: true, updatedAt: new Date()};
+    emailVerified: true, phoneVerified: true, buildWeekJudgeFixture: true,
+    createdAt: verificationCreatedAt, updatedAt: verificationCreatedAt};
   documents.push({collection: "verifications", id: driverUid, value: {
     ...verified, userId: driverUid, driverLicenseVerified: true,
     vehicleVerified: true,

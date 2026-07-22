@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   bookingDocumentId,
+  bookingIsPaidAndConfirmed,
+  bookingParticipantsVerified,
   canSelfCancelBeforeDeparture,
   parseBookingRequest,
   validatedUnitPrice,
@@ -40,6 +42,53 @@ test("booking prices must be finite, nonnegative canonical numbers", () => {
   assert.throws(() => validatedUnitPrice(Number.POSITIVE_INFINITY));
 });
 
+test("chat eligibility requires both confirmed status and verified payment", () => {
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "confirmed", paymentStatus: "paid"}),
+    true
+  );
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "confirmed", paymentStatus: "required"}),
+    false
+  );
+  assert.equal(
+    bookingIsPaidAndConfirmed({status: "pending_payment", paymentStatus: "paid"}),
+    false
+  );
+});
+
+test("booking rechecks rider identity and driver vehicle eligibility", () => {
+  const participant = {
+    emailVerified: true,
+    phoneVerified: true,
+    identityVerified: true,
+    selfieWithIdVerified: true,
+  };
+  assert.equal(
+    bookingParticipantsVerified(participant, {
+      ...participant,
+      driverLicenseVerified: true,
+      vehicleVerified: true,
+    }),
+    true
+  );
+  assert.equal(
+    bookingParticipantsVerified(participant, {
+      ...participant,
+      driverLicenseVerified: true,
+      vehicleVerified: false,
+    }),
+    false
+  );
+  assert.equal(
+    bookingParticipantsVerified(
+      {...participant, phoneVerified: false},
+      {...participant, driverLicenseVerified: true, vehicleVerified: true}
+    ),
+    false
+  );
+});
+
 test("self-service cancellation closes at scheduled departure", () => {
   const now = Date.UTC(2026, 6, 18, 12);
   assert.equal(
@@ -66,7 +115,7 @@ test("conversation authorization IDs are deterministic and order independent", (
   );
 });
 
-test("public trip projection removes coordinates, passengers, photos, and metadata", () => {
+test("public trip projection rounds coordinates and removes passengers, photos, and metadata", () => {
   const projected = publicTripData({
     driverId: "driver",
     origin_lat: 32.7,
@@ -74,7 +123,7 @@ test("public trip projection removes coordinates, passengers, photos, and metada
     package_photo_urls: ["private.jpg"],
     metadata: {private: true},
   }, "trip-1");
-  assert.equal(projected.origin_lat, 0);
+  assert.equal(projected.origin_lat, 32.7);
   assert.deepEqual(projected.passenger_ids, []);
   assert.deepEqual(projected.package_photo_urls, []);
   assert.deepEqual(projected.metadata, {});

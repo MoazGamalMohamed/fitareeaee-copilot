@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Fitareeaee GPT-5.6 Build Week architecture</title>
+  <desc id="description">Flutter Android sends a minimal authenticated request to a secured Firebase callable, which uses the OpenAI Responses API with GPT-5.6 to return a validated draft. Deterministic Firestore logic ranks real trips and server-authoritative callables control booking and chat.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#140b2d"/>
+      <stop offset="1" stop-color="#071b32"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff6b35"/>
+      <stop offset="1" stop-color="#ff9f68"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#ff8a55"/>
+    </marker>
+    <style>
+      .title { font: 700 54px system-ui, sans-serif; fill: #ffffff; }
+      .subtitle { font: 400 25px system-ui, sans-serif; fill: #bdc8da; }
+      .box-title { font: 700 28px system-ui, sans-serif; fill: #ffffff; }
+      .box-text { font: 400 20px system-ui, sans-serif; fill: #d9e1ee; }
+      .step { font: 700 18px system-ui, sans-serif; fill: #160b2d; }
+      .lane-title { font: 700 27px system-ui, sans-serif; fill: #ffffff; }
+      .lane-text { font: 400 21px system-ui, sans-serif; fill: #d9e1ee; }
+      .note { font: 600 19px system-ui, sans-serif; fill: #ffbe9e; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#background)"/>
+  <circle cx="1430" cy="80" r="220" fill="#4c43c7" opacity="0.12"/>
+  <circle cx="100" cy="840" r="270" fill="#ff6b35" opacity="0.08"/>
+
+  <text x="80" y="92" class="title">Fitareeaee</text>
+  <text x="80" y="137" class="subtitle">Review-first AI interpretation. Deterministic matching. Server-authoritative lifecycle.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="80" y="220" width="320" height="310" rx="28" fill="#212c49" stroke="#536384" stroke-width="2"/>
+    <rect x="110" y="250" width="54" height="36" rx="18" fill="url(#accent)"/>
+    <text x="137" y="275" text-anchor="middle" class="step">1</text>
+    <text x="110" y="333" class="box-title">Flutter Android</text>
+    <text x="110" y="380" class="box-text">English / Arabic text</text>
+    <text x="110" y="414" class="box-text">Speech input + read-back</text>
+    <text x="110" y="448" class="box-text">Editable AI draft</text>
+    <text x="110" y="482" class="box-text">Explicit confirmation</text>
+
+    <rect x="470" y="220" width="320" height="310" rx="28" fill="#212c49" stroke="#536384" stroke-width="2"/>
+    <rect x="500" y="250" width="54" height="36" rx="18" fill="url(#accent)"/>
+    <text x="527" y="275" text-anchor="middle" class="step">2</text>
+    <text x="500" y="333" class="box-title">Firebase callable</text>
+    <text x="500" y="380" class="box-text">Authentication required</text>
+    <text x="500" y="414" class="box-text">PII/link redaction</text>
+    <text x="500" y="448" class="box-text">Throttle + input limits</text>
+    <text x="500" y="482" class="box-text">Managed server secret</text>
+
+    <rect x="860" y="220" width="320" height="310" rx="28" fill="#212c49" stroke="#536384" stroke-width="2"/>
+    <rect x="890" y="250" width="54" height="36" rx="18" fill="url(#accent)"/>
+    <text x="917" y="275" text-anchor="middle" class="step">3</text>
+    <text x="890" y="333" class="box-title">OpenAI Responses API</text>
+    <text x="890" y="380" class="box-text">GPT-5.6</text>
+    <text x="890" y="414" class="box-text">Strict JSON Schema</text>
+    <text x="890" y="448" class="box-text">Bounded output + timeout</text>
+    <text x="890" y="482" class="box-text">Draft only — never books</text>
+
+    <rect x="1250" y="220" width="270" height="310" rx="28" fill="#212c49" stroke="#536384" stroke-width="2"/>
+    <rect x="1280" y="250" width="54" height="36" rx="18" fill="url(#accent)"/>
+    <text x="1307" y="275" text-anchor="middle" class="step">4</text>
+    <text x="1280" y="333" class="box-title">Real trip ranking</text>
+    <text x="1280" y="380" class="box-text">Firestore trips only</text>
+    <text x="1280" y="414" class="box-text">Route + departure</text>
+    <text x="1280" y="448" class="box-text">Seats + price</text>
+    <text x="1280" y="482" class="box-text">Transparent reasons</text>
+  </g>
+
+  <path d="M405 375 H455" stroke="#ff8a55" stroke-width="8" marker-end="url(#arrow)"/>
+  <path d="M795 375 H845" stroke="#ff8a55" stroke-width="8" marker-end="url(#arrow)"/>
+  <path d="M1185 375 H1235" stroke="#ff8a55" stroke-width="8" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="80" y="610" width="1440" height="190" rx="30" fill="#16233d" stroke="#394c70" stroke-width="2"/>
+    <rect x="80" y="610" width="18" height="190" rx="9" fill="url(#accent)"/>
+    <text x="135" y="670" class="lane-title">Server-authoritative trip lifecycle</text>
+    <text x="135" y="716" class="lane-text">Potential match → payment required → paid + confirmed → private participant chat → start → complete → one-time rating</text>
+    <text x="135" y="763" class="note">Unpaid selections do not decrement seats or open chat. Completed trips close chat. GPT-5.6 never approves identity or declares a person safe.</text>
+  </g>
+
+  <text x="80" y="856" class="subtitle">Build Week extension • OpenAI key never ships in Dart, Git, logs, or the APK</text>
+</svg>

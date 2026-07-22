@@ -16,7 +16,7 @@ final tripRepositoryProvider = Provider((ref) {
 });
 
 // Stream Providers
-final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
+final availableTripsProvider = StreamProvider.autoDispose<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
   final currentUserAsync = ref.watch(authStateProvider);
 
@@ -34,21 +34,20 @@ final availableTripsProvider = StreamProvider<List<Trip>>((ref) {
   );
 });
 
-final userTripsProvider = StreamProvider.family<List<Trip>, String>((
-  ref,
-  String userId,
-) {
-  final repository = ref.watch(tripRepositoryProvider);
-  return repository.streamUserTrips(userId);
-});
+final userTripsProvider = StreamProvider.autoDispose.family<List<Trip>, String>(
+  (ref, String userId) {
+    final repository = ref.watch(tripRepositoryProvider);
+    return repository.streamUserTrips(userId);
+  },
+);
 
 // Future Providers
-final allTripsProvider = FutureProvider<List<Trip>>((ref) {
+final allTripsProvider = FutureProvider.autoDispose<List<Trip>>((ref) {
   final repository = ref.watch(tripRepositoryProvider);
   return repository.getAllTrips();
 });
 
-final tripDetailProvider = FutureProvider.family<Trip, String>((
+final tripDetailProvider = FutureProvider.autoDispose.family<Trip, String>((
   ref,
   String tripId,
 ) {
@@ -110,12 +109,16 @@ class TripBookingStateNotifier extends StateNotifier<AsyncValue<void>> {
   TripBookingStateNotifier(this._repository)
     : super(const AsyncValue.data(null));
 
-  Future<String> bookTrip(String tripId, String userId, int seats) async {
+  Future<repo.BookingStartResult> bookTrip(
+    String tripId,
+    String userId,
+    int seats,
+  ) async {
     state = const AsyncValue.loading();
     try {
-      final conversationId = await _repository.bookTrip(tripId, userId, seats);
+      final result = await _repository.bookTrip(tripId, userId, seats);
       state = const AsyncValue.data(null);
-      return conversationId;
+      return result;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       rethrow;

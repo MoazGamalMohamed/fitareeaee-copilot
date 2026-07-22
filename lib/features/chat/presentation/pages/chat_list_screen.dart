@@ -46,7 +46,7 @@ class ChatListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start a conversation with another user',
+                    'Paid, confirmed trip conversations appear here',
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
@@ -85,11 +85,17 @@ class ChatListScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Open chat from a confirmed trip, or retry after reconnecting.',
+                'Chat opens only for server-paid, confirmed trips. Retry if this booking is eligible.',
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => ref.invalidate(conversationsProvider),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
               ),
             ],
           ),

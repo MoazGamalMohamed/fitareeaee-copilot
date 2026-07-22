@@ -7,7 +7,7 @@ final adminRepositoryProvider = Provider<AdminRepository>((ref) {
 });
 
 // Stream provider that updates when auth state changes
-final isAdminProvider = StreamProvider<bool>((ref) {
+final isAdminProvider = StreamProvider.autoDispose<bool>((ref) {
   final adminRepository = ref.read(adminRepositoryProvider);
 
   // Listen to auth state changes

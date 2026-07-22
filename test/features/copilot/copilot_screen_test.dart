@@ -4,10 +4,66 @@ import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_s
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   test('Copilot preserves requested seat count in the details handoff', () {
     expect(copilotTripDetailsRoute('trip-1', _draft), '/trips/trip-1?seats=2');
+    expect(copilotCreationRoute(_draft), '/trips/create?role=rider');
+    expect(
+      copilotCreationRoute(_draft.copyWith(intent: 'offer')),
+      '/trips/create?role=driver',
+    );
+  });
+
+  test(
+    'explicit planner mode locks intent while Home planner stays neutral',
+    () {
+      expect(copilotIntentForRole('driver'), 'offer');
+      expect(copilotIntentForRole('rider'), 'find');
+      expect(copilotIntentForRole(null), isNull);
+      expect(copilotIntentForDraft(null, 'offer'), 'offer');
+      expect(copilotIntentForDraft(null, 'find'), 'find');
+      expect(copilotIntentForDraft('driver', 'find'), 'offer');
+      expect(copilotIntentForDraft('rider', 'offer'), 'find');
+    },
+  );
+
+  test('voice errors distinguish permission, silence, and busy states', () {
+    expect(
+      copilotVoiceErrorMessage('error_permission'),
+      contains('permission is off'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_speech_timeout'),
+      contains('No speech was heard'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_no_match'),
+      contains('No speech was heard'),
+    );
+    expect(
+      copilotVoiceErrorMessage('error_recognizer_busy'),
+      contains('recognition is busy'),
+    );
+  });
+
+  test('voice transcript preserves text and ignores an empty reset result', () {
+    const typed = 'I need an accessible ride';
+    final partial = mergeCopilotVoiceTranscript(typed, 'from Dallas');
+    expect(partial, 'I need an accessible ride from Dallas');
+
+    // Native recognizers may emit an empty callback after useful partial text.
+    // The screen retains the last non-empty transcript before calling merge.
+    expect(mergeCopilotVoiceTranscript(typed, ''), typed);
+    expect(
+      mergeCopilotVoiceTranscript('أحتاج رحلة', 'من دالاس إلى أوستن'),
+      'أحتاج رحلة من دالاس إلى أوستن',
+    );
+    expect(
+      mergeCopilotVoiceTranscript('Keep trailing space ', 'and add'),
+      'Keep trailing space and add',
+    );
   });
 
   testWidgets('Copilot failure keeps retry and manual fallback available', (
@@ -31,16 +87,21 @@ void main() {
           ),
         ),
         GoRoute(
-          path: '/trips',
+          path: '/trips/create',
           builder: (context, state) => const Scaffold(body: Text('Manual')),
         ),
       ],
     );
 
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    expect(find.text('GPT-5.6 Trip Planner'), findsOneWidget);
+    expect(
+      find.text('Describe the ride or delivery you need or can offer'),
+      findsOneWidget,
+    );
     await tester.enterText(find.byType(TextField).first, 'Dallas to Austin');
     await tester.pump();
-    await tester.tap(find.text('Create AI draft'));
+    await tester.tap(find.text('Create GPT-5.6 draft'));
     await tester.pumpAndSettle();
 
     expect(calls, 1);
@@ -48,8 +109,9 @@ void main() {
     expect(error, findsOneWidget);
     expect(tester.getCenter(error).dy, inInclusiveRange(0, 1800));
     expect(find.textContaining('temporarily unavailable'), findsNothing);
-    expect(find.text('Create AI draft'), findsOneWidget);
-    expect(find.text('Use manual trip search'), findsOneWidget);
+    expect(find.text('Create GPT-5.6 draft'), findsOneWidget);
+    expect(find.text('Request manually'), findsOneWidget);
+    expect(find.text('Offer manually'), findsOneWidget);
   });
 
   testWidgets('AI output remains a draft until explicit confirmation', (
@@ -85,7 +147,7 @@ void main() {
           },
         ),
         GoRoute(
-          path: '/trips',
+          path: '/trips/create',
           builder: (context, state) =>
               const Scaffold(body: Text('Manual search')),
         ),
@@ -98,7 +160,7 @@ void main() {
       'Dallas to Austin on July 20 at 9 AM for two people',
     );
     await tester.pump();
-    final createDraft = find.text('Create AI draft');
+    final createDraft = find.text('Create GPT-5.6 draft');
     await tester.tap(createDraft);
     await tester.pumpAndSettle();
 
@@ -119,6 +181,78 @@ void main() {
 
     expect(confirmedDraft, isNotNull);
     expect(find.text('Deterministic results'), findsOneWidget);
+  });
+
+  testWidgets('driver Copilot locks a returned draft to the offer path', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1000, 5000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final router = GoRouter(
+      initialLocation: '/copilot',
+      routes: [
+        GoRoute(
+          path: '/copilot',
+          builder: (context, state) => CopilotScreen(
+            role: 'driver',
+            planner: (_) async => throw UnimplementedError(),
+          ),
+        ),
+        GoRoute(
+          path: '/trips/create',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Manual offer')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+    expect(find.text('Offer mode'), findsOneWidget);
+    expect(find.text('Describe your ride or delivery offer'), findsOneWidget);
+    expect(find.text('Create an offer manually'), findsOneWidget);
+  });
+
+  testWidgets('signed-in user can save and reuse an editable local template', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    tester.view.physicalSize = const Size(1000, 3000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: CopilotScreen(templateOwnerId: 'fictional-rider'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    const request = 'I need a ride from Dallas to Austin every Monday at 9 AM.';
+    await tester.enterText(find.byType(TextField).first, request);
+    await tester.pump();
+    await tester.tap(find.text('Saved trip templates'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save current request as template'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Template name'),
+      'Monday commute',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Trip template saved.'), findsOneWidget);
+    expect(find.text('Monday commute'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).first, 'Temporary request');
+    await tester.tap(find.text('Monday commute'));
+    await tester.pump();
+    expect(
+      (tester.widget<TextField>(find.byType(TextField).first).controller?.text),
+      request,
+    );
   });
 }
 

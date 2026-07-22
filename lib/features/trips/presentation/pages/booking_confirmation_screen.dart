@@ -6,6 +6,8 @@ import '../providers/trip_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 class BookingConfirmationScreen extends ConsumerWidget {
   final String tripId;
@@ -28,12 +30,34 @@ class BookingConfirmationScreen extends ConsumerWidget {
     final currentUserAsync = ref.watch(authStateProvider);
     final tripAsync = ref.watch(tripDetailProvider(tripId));
     final bookingState = ref.watch(tripBookingProvider);
+    final settings = ref.watch(settingsProvider);
 
     return tripAsync.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, stack) =>
-          Scaffold(body: Center(child: Text('Error: $error'))),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(title: const Text('Review and Pay')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Trip details could not be loaded safely.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => ref.invalidate(tripDetailProvider(tripId)),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       data: (trip) => currentUserAsync.when(
         data: (currentUser) {
           if (currentUser == null) {
@@ -48,7 +72,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
           );
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Confirm Booking'),
+              title: const Text('Review and Pay'),
               centerTitle: true,
             ),
             body: SingleChildScrollView(
@@ -73,8 +97,32 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   _buildServerVerificationNotice(context),
                   const SizedBox(height: 24),
 
-                  // Price summary. Payments are intentionally out of scope.
-                  _buildPriceSection(context, trip),
+                  // Price and payment-gated confirmation summary.
+                  _buildPriceSection(
+                    context,
+                    trip,
+                    currency: settings.currency,
+                    languageCode: settings.language,
+                  ),
+                  const SizedBox(height: 12),
+                  const Card(
+                    color: Color(0xFFFFF8E1),
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.lock_outline),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'This creates a payment-required booking request only. The trip is not confirmed, seats are not deducted, and chat stays locked until a payment provider verifies payment on the server.',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Action Button
@@ -102,7 +150,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         child: const SizedBox(
                           width: double.infinity,
                           child: Text(
-                            'Confirm Booking',
+                            'Continue to payment requirement',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
@@ -187,7 +235,29 @@ class BookingConfirmationScreen extends ConsumerWidget {
         },
         loading: () =>
             const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
+        error: (e, st) => Scaffold(
+          appBar: AppBar(title: const Text('Review and Pay')),
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Your account could not be loaded. Check your connection and retry.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () => ref.invalidate(authStateProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -288,14 +358,15 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (!isVerified)
+              if (!isVerified && label == 'Your Identity')
                 TextButton(
-                  onPressed: () {
-                    if (label == 'Your Identity') {
-                      context.push('/verification');
-                    }
-                  },
+                  onPressed: () => context.push('/verification'),
                   child: const Text('Verify'),
+                )
+              else if (!isVerified)
+                const Chip(
+                  avatar: Icon(Icons.hourglass_top, size: 16),
+                  label: Text('Awaiting participant'),
                 ),
             ],
           ),
@@ -361,7 +432,12 @@ class BookingConfirmationScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPriceSection(BuildContext context, Trip trip) {
+  Widget _buildPriceSection(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     final totalPrice = trip.pricePerSeat * requestedSeats;
 
     return Container(
@@ -388,7 +464,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Text(
-                '\$${trip.pricePerSeat.toStringAsFixed(2)}',
+                CurrencyFormatter.formatUsd(
+                  trip.pricePerSeat,
+                  currency,
+                  languageCode: languageCode,
+                ),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -417,7 +497,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
-                '\$${totalPrice.toStringAsFixed(2)}',
+                CurrencyFormatter.formatUsd(
+                  totalPrice,
+                  currency,
+                  languageCode: languageCode,
+                ),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.primary,
@@ -434,19 +518,23 @@ class BookingConfirmationScreen extends ConsumerWidget {
     try {
       final userId = ref.read(authStateProvider).value?.id;
       if (userId == null) return;
-      final conversationId = await ref
+      final result = await ref
           .read(tripBookingProvider.notifier)
           .bookTrip(trip.id, userId, requestedSeats);
       ref.invalidate(tripDetailProvider(trip.id));
       ref.invalidate(availableTripsProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Booking confirmed! You can now message the driver.'),
+        SnackBar(
+          content: Text(
+            result.isConfirmedAndPaid
+                ? 'Payment is verified and the booking is confirmed.'
+                : 'Payment is required. This trip is not confirmed and chat remains locked.',
+          ),
         ),
       );
       context.go(
-        '/chat/${trip.driverId}?conversationId=${Uri.encodeQueryComponent(conversationId)}',
+        '/trips/${trip.id}?bookingId=${Uri.encodeQueryComponent(result.bookingId)}',
       );
     } catch (_) {
       if (!context.mounted) return;

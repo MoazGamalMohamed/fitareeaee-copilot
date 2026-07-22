@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/user_path.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../verification/domain/models/verification_model.dart';
+import '../../../verification/domain/verification_requirements.dart';
 import '../../../verification/presentation/providers/verification_provider.dart';
 
-/// Home screen showing only two primary options:
-/// - Find a ride (Rider flow)
-/// - Offer a ride (Driver flow)
+/// Home presents Request and Offer as distinct marketplace actions.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -17,8 +18,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     final user = ref
@@ -27,7 +26,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final verificationAsync = user == null
         ? const AsyncValue<UserVerification?>.data(null)
         : ref.watch(verificationStatusProvider(user.id));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fitareeaee'),
@@ -46,7 +44,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Welcome Section
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -62,7 +59,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Welcome to Fitareeaee!',
+                      context.tr('home_plan_title'),
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
                             color: Colors.white,
@@ -71,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Your trusted marketplace for rides and deliveries',
+                      context.tr('home_plan_subtitle'),
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
@@ -80,97 +77,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 24),
 
-              Material(
-                elevation: 3,
-                borderRadius: BorderRadius.circular(18),
-                child: InkWell(
-                  onTap: () => context.push('/copilot'),
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.deepPurple, Colors.indigo.shade500],
-                      ),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.white24,
-                          child: Icon(Icons.auto_awesome, color: Colors.white),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Plan with AI',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Describe a ride or package in English or Arabic',
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.arrow_forward, color: Colors.white),
-                      ],
-                    ),
-                  ),
+              _buildCircularPlannerAction(context),
+
+              const SizedBox(height: 28),
+
+              Text(
+                context.tr('home_question'),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+
+              _buildPrimaryActionCard(
+                context,
+                key: const ValueKey('home-request-action'),
+                icon: Icons.person_search_outlined,
+                title: context.tr('home_request'),
+                subtitle: context.tr('home_request_subtitle'),
+                color: Colors.indigo,
+                onTap: () => _handleCreateTrip(
+                  context,
+                  verificationAsync,
+                  MarketplacePath.rider,
                 ),
+              ),
+              const SizedBox(height: 12),
+              _buildPrimaryActionCard(
+                context,
+                key: const ValueKey('home-offer-action'),
+                icon: Icons.drive_eta_outlined,
+                title: context.tr('home_offer'),
+                subtitle: context.tr('home_offer_subtitle'),
+                color: Colors.teal,
+                onTap: () => _handleCreateTrip(
+                  context,
+                  verificationAsync,
+                  MarketplacePath.driver,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildPrimaryActionCard(
+                context,
+                icon: Icons.explore_outlined,
+                title: context.tr('home_explore'),
+                subtitle: context.tr('home_explore_subtitle'),
+                color: AppColors.primary,
+                onTap: () => context.push('/trips'),
               ),
 
               const SizedBox(height: 32),
 
-              // Main Actions - TWO PRIMARY OPTIONS ONLY
-              Text(
-                'What would you like to do?',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-
-              // Find a Ride - PRIMARY BUTTON
-              _buildPrimaryActionCard(
-                context,
-                icon: Icons.search,
-                title: 'Find a Ride',
-                subtitle: 'Search for rides or package delivery',
-                color: Colors.blue,
-                onTap: () {
-                  // Navigate to rider flow - search/browse trips
-                  context.push('/trips?role=rider');
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Offer a Ride - PRIMARY BUTTON
-              _buildPrimaryActionCard(
-                context,
-                icon: Icons.drive_eta,
-                title: 'Offer a Ride',
-                subtitle: 'Driver and vehicle verification required',
-                color: Colors.green,
-                onTap: () => _handleOfferRide(context, verificationAsync),
-              ),
-
-              const SizedBox(height: 40),
-
               // Quick Links
               Text(
-                'Quick Links',
+                context.tr('home_quick_links'),
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -182,7 +144,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.people,
-                      label: 'Matches',
+                      label: context.tr('home_matches'),
                       onTap: () => context.push('/trips?tab=matches'),
                     ),
                   ),
@@ -191,7 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.history,
-                      label: 'Past Trips',
+                      label: context.tr('home_past'),
                       onTap: () => context.push('/trips?tab=past'),
                     ),
                   ),
@@ -200,7 +162,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.payments_outlined,
-                      label: 'Payments',
+                      label: context.tr('home_payments'),
                       onTap: () => context.push('/payments'),
                     ),
                   ),
@@ -209,7 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: _buildQuickLink(
                       context,
                       icon: Icons.support_agent_outlined,
-                      label: 'Support',
+                      label: context.tr('home_support'),
                       onTap: () => context.push('/support'),
                     ),
                   ),
@@ -220,10 +182,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+        currentIndex: 0,
         type: BottomNavigationBarType.fixed,
         onTap: (index) {
-          setState(() => _selectedIndex = index);
           switch (index) {
             case 0:
               // Already on home
@@ -239,54 +200,120 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               break;
           }
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'Trips',
+            icon: const Icon(Icons.home),
+            label: context.tr('home_nav_home'),
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'Chat'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.route_outlined),
+            label: context.tr('home_nav_trips'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.message),
+            label: context.tr('home_nav_chat'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: context.tr('home_nav_profile'),
+          ),
         ],
       ),
     );
   }
 
-  void _handleOfferRide(
-    BuildContext context,
-    AsyncValue<UserVerification?> verificationAsync,
-  ) {
-    verificationAsync.when(
-      data: (verification) {
-        final canOffer =
-            (verification?.identityVerified ?? false) &&
-            (verification?.selfieWithIdVerified ?? false) &&
-            (verification?.driverLicenseVerified ?? false) &&
-            (verification?.vehicleVerified ?? false);
-        if (canOffer) {
-          context.push('/trips?role=driver&tab=available');
-          return;
-        }
-        _showDriverGate(context, verification);
-      },
-      loading: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Checking driver verification. Please wait.'),
+  Widget _buildCircularPlannerAction(BuildContext context) {
+    return Center(
+      child: Semantics(
+        button: true,
+        label: 'Plan a trip with GPT-5.6',
+        child: Material(
+          elevation: 10,
+          shadowColor: Colors.deepPurple.withValues(alpha: 0.45),
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: Ink(
+            width: 156,
+            height: 156,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.deepPurple, Colors.indigo.shade600],
+              ),
+            ),
+            child: InkWell(
+              key: const ValueKey('home-copilot-action'),
+              customBorder: const CircleBorder(),
+              onTap: () => context.push('/copilot'),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.auto_awesome,
+                          color: Colors.white,
+                          size: 36,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          context.tr('home_plan_ai'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
-        );
-      },
-      error: (_, _) => _showDriverGate(context, null),
+        ),
+      ),
     );
   }
 
-  void _showDriverGate(BuildContext context, UserVerification? verification) {
-    final missing = <String>[
-      if (!(verification?.identityVerified ?? false)) 'identity document',
-      if (!(verification?.selfieWithIdVerified ?? false)) 'selfie with ID',
-      if (!(verification?.driverLicenseVerified ?? false)) 'driver license',
-      if (!(verification?.vehicleVerified ?? false)) 'vehicle registration',
-    ];
+  void _handleCreateTrip(
+    BuildContext context,
+    AsyncValue<UserVerification?> verificationAsync,
+    MarketplacePath marketplacePath,
+  ) {
+    verificationAsync.when(
+      data: (verification) {
+        final ready = marketplacePath.isDriver
+            ? driverTripVerificationComplete(verification)
+            : participantTripVerificationComplete(verification);
+        if (ready) {
+          context.push('/trips/create?role=${marketplacePath.routeRole}');
+          return;
+        }
+        _showVerificationGate(context, verification, marketplacePath);
+      },
+      loading: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Checking verification. Please wait.')),
+        );
+      },
+      error: (_, _) => _showVerificationGate(context, null, marketplacePath),
+    );
+  }
+
+  void _showVerificationGate(
+    BuildContext context,
+    UserVerification? verification,
+    MarketplacePath marketplacePath,
+  ) {
+    final driver = marketplacePath.isDriver;
+    final missing = missingTripVerificationItems(verification, driver: driver);
     showModalBottomSheet(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -301,14 +328,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Icon(Icons.verified_user_outlined, color: AppColors.primary),
                   const SizedBox(width: 12),
                   Text(
-                    'Driver verification required',
+                    driver
+                        ? 'Driver verification required'
+                        : 'Trip verification required',
                     style: Theme.of(sheetContext).textTheme.titleLarge,
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               Text(
-                'Before offering rides, drivers must complete manual ID, selfie, driver license, and vehicle registration review.',
+                driver
+                    ? 'Before publishing offers, drivers must verify email and phone, then complete manual ID, selfie, driver licence, and vehicle review.'
+                    : 'Before publishing a ride or delivery request, riders and senders must verify email and phone, then complete manual ID and selfie review.',
                 style: Theme.of(sheetContext).textTheme.bodyMedium,
               ),
               if (missing.isNotEmpty) ...[
@@ -319,10 +350,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               FilledButton.icon(
                 onPressed: () {
                   Navigator.pop(sheetContext);
-                  context.push('/verification');
+                  context.push(
+                    '/verification?role=${driver ? 'driver' : 'rider'}',
+                  );
                 },
                 icon: const Icon(Icons.upload_file),
-                label: const Text('Open verification'),
+                label: const Text('Complete verification'),
               ),
             ],
           ),
@@ -333,6 +366,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildPrimaryActionCard(
     BuildContext context, {
+    Key? key,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -340,6 +374,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required VoidCallback onTap,
   }) {
     return Material(
+      key: key,
       elevation: 2,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(

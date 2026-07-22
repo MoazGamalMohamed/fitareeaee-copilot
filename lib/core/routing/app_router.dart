@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/forgot_password_screen.dart';
 import 'package:fitareeaee/features/auth/presentation/pages/login_screen.dart';
@@ -10,6 +13,7 @@ import 'package:fitareeaee/features/profile/presentation/pages/profile_screen.da
 import 'package:fitareeaee/features/profile/presentation/pages/edit_profile_screen.dart';
 import 'package:fitareeaee/features/settings/presentation/pages/settings_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/booking_confirmation_screen.dart';
+import 'package:fitareeaee/features/trips/presentation/pages/create_trip_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trip_details_screen.dart';
 import 'package:fitareeaee/features/trips/presentation/pages/trips_list_screen.dart';
 import 'package:fitareeaee/features/verification/presentation/pages/verification_screen.dart';
@@ -20,6 +24,7 @@ import 'package:fitareeaee/features/copilot/domain/copilot_draft.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_results_screen.dart';
 import 'package:fitareeaee/features/copilot/presentation/pages/copilot_screen.dart';
 import 'package:fitareeaee/features/support/presentation/pages/help_center_screen.dart';
+import 'package:fitareeaee/features/ratings/presentation/pages/rating_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,6 +36,7 @@ class AppRoutes {
   static const profile = '/profile';
   static const editProfile = '/profile/edit';
   static const trips = '/trips';
+  static const createTrip = '/trips/create';
   static const tripDetails = '/trips/:id';
   static const chat = '/chat';
   static const chatConversation = '/chat/:userId';
@@ -43,11 +49,33 @@ class AppRoutes {
   static const copilotResults = '/copilot/results';
 }
 
+/// Keeps one router instance alive while still refreshing redirects whenever
+/// Firebase restores, changes, or clears the authenticated session.
+class _AuthRefreshListenable extends ChangeNotifier {
+  _AuthRefreshListenable(this._firebaseAuth) {
+    _subscription = _firebaseAuth.authStateChanges().listen((_) {
+      notifyListeners();
+    });
+  }
+
+  final FirebaseAuth _firebaseAuth;
+  late final StreamSubscription<Object?> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authStateAsync = ref.watch(authStateProvider);
+  final firebaseAuth = ref.watch(firebaseAuthProvider);
+  final authRefresh = _AuthRefreshListenable(firebaseAuth);
+  ref.onDispose(authRefresh.dispose);
 
   return GoRouter(
     initialLocation: AppRoutes.login,
+    refreshListenable: authRefresh,
     routes: [
       // Auth Routes
       GoRoute(
@@ -75,7 +103,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.copilot,
         name: 'copilot',
-        builder: (context, state) => const CopilotScreen(),
+        builder: (context, state) => CopilotScreen(
+          role: state.uri.queryParameters['role'],
+          templateOwnerId: firebaseAuth.currentUser?.uid,
+        ),
       ),
       GoRoute(
         path: AppRoutes.copilotResults,
@@ -83,7 +114,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final draft = state.extra;
           if (draft is! CopilotDraft) {
-            return const CopilotScreen();
+            return CopilotScreen(
+              templateOwnerId: firebaseAuth.currentUser?.uid,
+            );
           }
           return CopilotResultsScreen(draft: draft);
         },
@@ -111,6 +144,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final role = state.uri.queryParameters['role'];
           final initialTab = state.uri.queryParameters['tab'];
           return TripsListScreen(role: role, initialTab: initialTab);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.createTrip,
+        name: 'create-trip',
+        builder: (context, state) {
+          final role = state.uri.queryParameters['role'];
+          final draft = state.extra is CopilotDraft
+              ? state.extra as CopilotDraft
+              : null;
+          return CreateTripScreen(role: role, initialDraft: draft);
         },
       ),
       GoRoute(
@@ -145,6 +189,26 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return BookingConfirmationScreen(
             tripId: tripId,
             requestedSeats: requestedSeats,
+          );
+        },
+      ),
+      GoRoute(
+        path: '${AppRoutes.trips}/:id/rate',
+        name: 'rate-trip',
+        builder: (context, state) {
+          final tripId = state.pathParameters['id'] ?? '';
+          final bookingId = state.uri.queryParameters['bookingId'] ?? '';
+          final ratedUserId = state.uri.queryParameters['ratedUserId'] ?? '';
+          if (tripId.isEmpty || bookingId.isEmpty || ratedUserId.isEmpty) {
+            return const Scaffold(
+              body: Center(child: Text('Rating details are incomplete.')),
+            );
+          }
+          return RatingScreen(
+            bookingId: bookingId,
+            tripId: tripId,
+            ratedUserId: ratedUserId,
+            ratedUserName: 'Trip partner',
           );
         },
       ),
@@ -205,7 +269,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.verification,
         name: 'verification',
-        builder: (context, state) => const VerificationScreen(),
+        builder: (context, state) =>
+            VerificationScreen(role: state.uri.queryParameters['role']),
       ),
 
       // Admin Routes
@@ -216,13 +281,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
     redirect: (context, state) {
-      if (authStateAsync.isLoading) return null;
-
-      final isAuthenticated = authStateAsync.when(
-        data: (user) => user != null,
-        loading: () => false,
-        error: (_, _) => false,
-      );
+      final isAuthenticated = firebaseAuth.currentUser != null;
 
       final publicRoutes = [
         AppRoutes.login,

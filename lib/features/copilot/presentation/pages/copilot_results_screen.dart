@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/currency/currency_formatter.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../../trips/domain/entities/trip.dart';
 import '../../../trips/presentation/providers/trip_provider.dart';
 import '../../domain/copilot_draft.dart';
@@ -11,6 +13,10 @@ String copilotTripDetailsRoute(String tripId, CopilotDraft draft) {
   final seats = (draft.passengerOrSeatCount ?? 1).clamp(1, 8);
   return '/trips/$tripId?seats=$seats';
 }
+
+String copilotCreationRoute(CopilotDraft draft) => draft.intent == 'offer'
+    ? '/trips/create?role=driver'
+    : '/trips/create?role=rider';
 
 class CopilotResultsScreen extends ConsumerStatefulWidget {
   final CopilotDraft draft;
@@ -60,6 +66,8 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
             children: [
               _explanation(),
               const SizedBox(height: 12),
+              _creationCard(),
+              const SizedBox(height: 12),
               Text(
                 '${matches.length} live ${matches.length == 1 ? 'match' : 'matches'}',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -69,6 +77,46 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _creationCard() {
+    final offering = widget.draft.intent == 'offer';
+    return Card(
+      color: offering ? Colors.green.shade50 : Colors.indigo.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              offering ? 'Ready to publish your offer?' : 'Post what you need',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              offering
+                  ? 'Review the manual form and publish this as a potential ride or delivery offer. Driver and vehicle verification is required.'
+                  : 'Review the manual form and publish this as a trip request so drivers can find it.',
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () => context.push(
+                copilotCreationRoute(widget.draft),
+                extra: widget.draft,
+              ),
+              icon: const Icon(Icons.add_road),
+              label: Text(
+                offering
+                    ? 'Create this trip offer'
+                    : 'Create this trip request',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -119,7 +167,13 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
                       ),
                     ),
                   ),
-                  Text(trip.priceDisplay),
+                  Text(
+                    CurrencyFormatter.formatUsd(
+                      trip.pricePerSeat,
+                      ref.watch(settingsProvider).currency,
+                      languageCode: ref.watch(settingsProvider).language,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -167,6 +221,19 @@ class _CopilotResultsScreenState extends ConsumerState<CopilotResultsScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: () => context.push(
+                copilotCreationRoute(widget.draft),
+                extra: widget.draft,
+              ),
+              icon: const Icon(Icons.add_road),
+              label: Text(
+                widget.draft.intent == 'offer'
+                    ? 'Create this trip offer'
+                    : 'Create this trip request',
+              ),
+            ),
+            const SizedBox(height: 8),
             FilledButton(
               onPressed: () => context.pop(),
               child: const Text('Adjust AI draft'),

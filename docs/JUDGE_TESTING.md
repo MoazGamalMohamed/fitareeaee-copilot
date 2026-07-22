@@ -1,33 +1,73 @@
 # Judge Testing Instructions
 
-Fitareeaee Copilot is an Android Flutter application. Testing is free; no payment card or OpenAI account is required by a judge.
+Fitareeaee is an Android Flutter application built with Codex and powered at runtime by GPT-5.6. Testing is free; no payment card or OpenAI account is required by a judge.
 
-> Release status: the hardened backend, rules, judge fixtures, authenticated
-> GPT-5.6 Copilot, and public Android artifact are deployed and verified. The
-> published APK was downloaded, hash-matched, installed on a Motorola phone,
-> and exercised through the live GPT-5.6, matching, details, booking, and chat path.
+> Release status: the hardened lifecycle backend, rules, fictional judge fixtures,
+> and v1.0.20 Android candidate are verified together. The prior v1.0.19 APK was anonymously
+> downloaded, hash-matched, and installed on a Moto G Play (2024).
+> The exact bytes passed separate Home Request and Offer actions, both map-enabled
+> forms, the two-choice Trips menu, both GPT manual paths, and clean app-log checks.
+> Exact-public v1.0.17 retains the live review-required GPT-5.6 draft evidence, while
+> v1.0.16 evidence retains secure owner withdrawal, paid-confirmed chat,
+> completed-only Past, interactive From/To map selection, and generated-label refresh.
+> Earlier exact-public v1.0.14 testing covers Android microphone consent and active
+> three-minute speech recognition.
 
-Final artifact: universal debug APK, 154,995,438 bytes, SHA-256 `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`, private release-gate source `832a543cd94c4f5a2a8c17163e73113da85aba24` and tree-equivalent sanitized source `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`. It reports version code `20260718`, cold-launched on a Motorola phone, and passed the authenticated judge path without matching AndroidRuntime/Flutter errors.
+> Current candidate: v1.0.20 retains the secure payment-gated lifecycle, complete
+> action-specific verification, and live GPT-5.6 path; it adds separate Request and
+> Offer actions for every recognized marketplace account while retaining editable local recurring
+> plans, truthful submitted/approved progress, reliable account switching, explicit
+> rider/driver guidance, correct labels after a map pin is re-picked, and secure
+> owner withdrawal for open unpaid trips. It also makes Codex and GPT-5.6 visibly
+> distinct and uses a hashed, app-scoped OpenAI safety identifier. It adds searchable
+> address choices, readable reverse-geocoded pins, Android location consent,
+> English/Arabic locale and RTL, canonical USD/AED/SAR conversion, and voice input
+> that cannot erase existing typed text. Its 57/57 Flutter tests and 33/33 Functions
+> contracts pass; unchanged authorization/lifecycle code retains the prior 9/9 rules,
+> 10/10 two-account integration, and API 36 authenticated UI evidence. The
+> [v1.0.20 prerelease](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.20)
+> is public; its 88,963,947-byte universal profile APK was independently downloaded
+> and SHA-256 matched to the local candidate.
 
-## Final release information
+Phone-tested rollback: universal profile APK, 83,378,603 bytes, SHA-256
+`0BFCB8E7712F0EA4CBEFBC6F9D7AB83A68B3CEDAB207D8EC158ECF6424D8DB64`,
+private release-gate source `4630703b5a69e151d07d6e6c9683deced6298302`
+and tree-equivalent sanitized source
+`6d67f306203886d3d1623f9966f36764589b9cfb`. It reports version
+`1.0.5` / code `20260719`, cold-launched on a Motorola phone, and produced zero
+matching Fitareeaee fatal, Flutter-error, or app-ANR log entries.
 
-- Repository: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
-- APK URL: [app-debug.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk)
-- Build type: universal debug-signed Android judge APK
-- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
-- Source tag/commit: `fitareeaee-copilot-v1.0.3` / sanitized `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`
+## Current judge candidate
+
+- Final source branch: [agent/payment-gated-chat-trip-support](https://github.com/MoazGamalMohamed/fitareeaee-copilot/tree/agent/payment-gated-chat-trip-support)
+- Repository root/support: [github.com/MoazGamalMohamed/fitareeaee-copilot](https://github.com/MoazGamalMohamed/fitareeaee-copilot)
+- APK URL: [app-profile.apk](https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.20/app-profile.apk)
+- Build type: universal AOT profile Android judge APK, debug-signed for sideloading
+- SHA-256: `F69F1187F7CD921BBB37FC67F5C36327ACD785C293C89A56F26D3A13B1BC7113`
+- Source tag/commit: `fitareeaee-copilot-v1.0.20` / sanitized `f3d6d88af2970790d9cc9bbd69a36a9370500441`
 - Minimum Android version: **Android 7.0 / API 24** (verified from the merged release-candidate manifest)
 - Judge account: **READY — provide the dedicated fictional rider credentials privately in Devpost testing instructions, never in Git**
 
-Live Copilot verification: **PASS** — authenticated English ride, English
-package, and Arabic ride requests returned validated drafts through the deployed
-Firebase callable after the obsolete secret version was retired.
+Live GPT-5.6 planner verification: **PASS** — managed secret version 2 is enabled, obsolete
+version 1 is destroyed, and `planTripWithCopilot` is deployed. On July 20 the exact
+public v1.0.13 APK returned validated `gpt-5.6` review drafts for an English ride, a
+5 kg English package, and an Arabic ride. No key was read or exposed.
 
-Physical judge path: **PASS** — the fixed English request returned a reviewable
-GPT-5.6 draft and one transparent live match; the match opened Trip Details and
-confirmed Chat. A separate fictional booking in the same test session completed
-through the server transaction and its test message rendered through the realtime
-conversation stream. No real payment or real identity is involved.
+Current physical-phone judge path: **PASS with scoped v1.0.19 evidence** — the exact
+public v1.0.19 APK is installed on the Moto G Play (2024) and reports version `1.0.19`
+/ code `20260733`. The identical local bytes opened Request creation, requested native
+location consent, and resolved the live pin to a readable address. Exact-public
+v1.0.18 evidence retains separate Request/Offer, Trips/GPT choices, clean cold launch,
+and the pending-payment boundary; lifecycle code is unchanged in v1.0.19.
+The in-app disclosure accurately separates Codex engineering from GPT-5.6 runtime
+planning. No matched fatal, Flutter, FirebaseFailure, unhandled, or ANR error appeared.
+The exact-public v1.0.17 live GPT check and v1.0.16 lifecycle checks described above remain applicable to the
+unchanged lifecycle implementation. No real payment or identity is used.
+
+New bookings in v1.0.20 are deliberately **not confirmed before payment**. Since
+the contest build has no real payment provider, selecting a trip or driver creates
+only a pending-payment record and does not decrement seats or unlock chat. Use the
+seeded paid/confirmed fixture to demonstrate Chat; do not enter a real card.
 
 ## Install
 
@@ -44,7 +84,7 @@ conversation stream. No real payment or real identity is involved.
    ```
 
 4. Open the APK and approve the Android installation prompt.
-5. Launch **Fitareeaee Copilot** and sign in with the dedicated judge credentials supplied privately through Devpost.
+5. Launch **Fitareeaee** and sign in with the dedicated judge credentials supplied privately through Devpost.
 
 The app is sideloaded for judging and is not a Google Play release.
 
@@ -52,11 +92,11 @@ The app is sideloaded for judging and is not a Google Play release.
 
 ### 1. Create an English AI draft
 
-From Home, tap **Plan with AI** and enter:
+From Home, tap **Plan with GPT-5.6** and enter:
 
 > I need a ride from Dallas to Austin on August 10, 2026 at 9:00 AM for two people under $40, no smoking.
 
-Tap **Create AI draft**. Verify that:
+Tap **Create GPT-5.6 draft**. Verify that:
 
 - the screen says **AI draft — review required**;
 - intent/type, route, date/time, people, budget, and preferences are structured;
@@ -85,20 +125,22 @@ Using the provided seeded trip/account:
 
 1. Open trip details.
 2. Review manual verification context.
-3. If **Book Trip** is shown, book once and verify the transaction succeeds. If the
-   shared fictional fixture is already booked, verify **Open Confirmed Chat** is shown
-   instead of another booking action.
-4. Open participant chat and send only a clearly fictional test message.
+3. If **Book Trip** is shown, select it once and verify the server creates a
+   **payment required** state without decrementing inventory or opening chat.
+4. Open the separately supplied seeded paid/confirmed fixture and verify
+   **Open Confirmed Chat** is shown instead of another booking action.
+5. Open participant chat and send only a clearly fictional test message.
 
 No real payment is requested or processed.
 
 For an **offer** prompt, the expected result is a compatible request listing.
-Opening it offers a server-authorized conversation with the requester; a request
-listing is not itself booked.
+The verified driver may submit only a bounded proposal. Direct participant chat
+stays closed until the rider selects the proposal and trusted payment confirmation
+makes the resulting booking paid/confirmed.
 
 ### 5. Try Arabic or a package
 
-Return to **Plan with AI** and try either:
+Return to **Plan with GPT-5.6** and try either:
 
 > أحتاج رحلة من دالاس إلى أوستن في 10 أغسطس 2026 الساعة التاسعة صباحًا لشخصين وبميزانية 40 دولارًا، بدون تدخين.
 
@@ -132,7 +174,9 @@ Flutter Android app
 ## Known limitations
 
 - The APK is distributed directly for judging, not through Google Play.
-- Location/map/autocomplete and broader Arabic UI are not required for the core Copilot path.
+- The v1.0.7 candidate includes an interactive map pin picker and English/Arabic
+  speech entry. It does not provide turn-by-turn navigation, address autocomplete,
+  full Arabic localization, or a routing-service ETA.
 - AI output may misunderstand language; the user must review the draft.
 - Matching depends on available Firestore trips and does not guarantee a result.
 - Verification is manual context, not an assurance that a person or trip is safe.

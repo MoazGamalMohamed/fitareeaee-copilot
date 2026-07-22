@@ -1,5 +1,6 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
+import {bookingHasActivePaidTrip} from "./booking";
 
 export function conversationDocumentId(
   tripId: string,
@@ -14,54 +15,16 @@ function validId(value: unknown): value is string {
     value.length <= 128 && !value.includes("/");
 }
 
-/** Authorizes a verified driver to contact the owner of a live ride request. */
+/** Legacy entry point retained as a deny-only boundary for older clients. */
 export const authorizeTripConversation = functions.https.onCall(
-  async (rawData, context) => {
+  async (_rawData, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError("unauthenticated", "Sign in before messaging.");
     }
-    const data = rawData as Record<string, unknown> | null;
-    const recipientId = data?.recipientId;
-    const tripId = data?.tripId;
-    if (!validId(recipientId) || !validId(tripId) || recipientId === context.auth.uid) {
-      throw new functions.https.HttpsError("invalid-argument", "A valid request trip is required.");
-    }
-
-    const db = getFirestore();
-    const [trip, verification] = await Promise.all([
-      db.collection("trips").doc(tripId).get(),
-      db.collection("verifications").doc(context.auth.uid).get(),
-    ]);
-    const tripData = trip.data();
-    const departure = tripData?.departure_time?.toDate?.();
-    if (!trip.exists || tripData?.driverId !== recipientId ||
-        tripData?.role !== "request" || tripData?.status !== "pending" ||
-        !(departure instanceof Date) || departure.getTime() <= Date.now()) {
-      throw new functions.https.HttpsError(
-        "failed-precondition",
-        "This ride request is no longer available for contact."
-      );
-    }
-    if (verification.data()?.identityVerified !== true ||
-        verification.data()?.selfieWithIdVerified !== true) {
-      throw new functions.https.HttpsError(
-        "failed-precondition",
-        "Complete manual identity verification before contacting a requester."
-      );
-    }
-
-    const participants = [context.auth.uid, recipientId].sort();
-    const id = conversationDocumentId(tripId, participants[0], participants[1]);
-    await db.collection("conversation_authorizations").doc(id).set({
-      id,
-      participant_ids: participants,
-      source: "trip_request",
-      tripId,
-      active: true,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-    }, {merge: true});
-    return {schemaVersion: 1, conversationId: id};
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "Direct user chat opens only after a paid, confirmed booking."
+    );
   }
 );
 
@@ -88,7 +51,6 @@ export const authorizeBookingConversation = functions.https.onCall(
     const passengerId = typeof booking.passengerId === "string" ? booking.passengerId : "";
     const driverId = typeof booking.driverId === "string" ? booking.driverId : "";
     const tripId = typeof booking.tripId === "string" ? booking.tripId : "";
-    const status = typeof booking.status === "string" ? booking.status : "";
     const requesterId = context.auth.uid;
     if (!passengerId || !driverId || !tripId ||
         (requesterId !== passengerId && requesterId !== driverId)) {
@@ -109,7 +71,7 @@ export const authorizeBookingConversation = functions.https.onCall(
 
     const tripSnapshot = await db.collection("trips").doc(tripId).get();
     const tripStatus = tripSnapshot.data()?.status;
-    if (status === "completed" || status === "cancelled" ||
+    if (booking.status === "completed" || booking.status === "cancelled" ||
         tripStatus === "completed" || tripStatus === "cancelled") {
       await conversationRef.set({
         active: false,
@@ -122,10 +84,15 @@ export const authorizeBookingConversation = functions.https.onCall(
       );
     }
 
-    if (status !== "confirmed" && status !== "paid") {
+    if (!bookingHasActivePaidTrip(booking)) {
+      await conversationRef.set({
+        active: false,
+        status: "payment_required",
+        updatedAt: Timestamp.now(),
+      }, {merge: true});
       throw new functions.https.HttpsError(
         "failed-precondition",
-        "Chat opens only after the booking is confirmed."
+        "Chat opens only after payment is verified and the booking is confirmed."
       );
     }
 
@@ -137,6 +104,8 @@ export const authorizeBookingConversation = functions.https.onCall(
         source: "booking",
         bookingId,
         tripId,
+        paymentStatus: "paid",
+        status: "confirmed",
         active: true,
         updatedAt: Timestamp.now(),
       }, {merge: true}),

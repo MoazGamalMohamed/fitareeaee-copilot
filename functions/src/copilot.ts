@@ -1,3 +1,4 @@
+import {createHash} from "node:crypto";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as functions from "firebase-functions/v1";
 import OpenAI from "openai";
@@ -104,6 +105,17 @@ export function authenticatedUid(auth: {uid?: unknown} | null | undefined): stri
     );
   }
   return auth.uid;
+}
+
+/**
+ * Produces the stable, app-scoped, privacy-preserving identifier recommended
+ * for requests made on behalf of individual end users. The Firebase UID is
+ * never sent to OpenAI.
+ */
+export function safetyIdentifierForUid(uid: string): string {
+  return createHash("sha256")
+    .update(`fitareeaee-openai-user:${uid}`, "utf8")
+    .digest("hex");
 }
 
 export function redactContactDetails(value: string): string {
@@ -303,6 +315,7 @@ export const planTripWithCopilot = functions
       const response = await client.responses.create({
         model: MODEL,
         store: false,
+        safety_identifier: safetyIdentifierForUid(uid),
         reasoning: {effort: "none"},
         max_output_tokens: 1200,
         instructions: [

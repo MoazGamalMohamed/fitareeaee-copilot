@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/currency/currency_formatter.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 class PaymentsScreen extends ConsumerWidget {
   const PaymentsScreen({super.key});
@@ -20,12 +22,19 @@ class PaymentsScreen extends ConsumerWidget {
     }
 
     final bookingsAsync = ref.watch(participantBookingsProvider(user.id));
+    final settings = ref.watch(settingsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Payments')),
       body: bookingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => _error(ref, user.id),
-        data: (bookings) => _content(context, user.id, bookings),
+        data: (bookings) => _content(
+          context,
+          user.id,
+          bookings,
+          currency: settings.currency,
+          languageCode: settings.language,
+        ),
       ),
     );
   }
@@ -33,13 +42,24 @@ class PaymentsScreen extends ConsumerWidget {
   Widget _content(
     BuildContext context,
     String userId,
-    List<BookingModel> bookings,
-  ) {
+    List<BookingModel> bookings, {
+    required String currency,
+    required String languageCode,
+  }) {
     final payable = bookings
-        .where((booking) => booking.passengerId == userId && booking.isActive)
+        .where(
+          (booking) =>
+              booking.passengerId == userId &&
+              booking.status == 'pending_payment',
+        )
         .fold<double>(0, (sum, booking) => sum + booking.totalPrice);
     final receivable = bookings
-        .where((booking) => booking.driverId == userId && booking.isActive)
+        .where(
+          (booking) =>
+              booking.driverId == userId &&
+              booking.status == 'confirmed' &&
+              booking.paymentStatus == 'paid',
+        )
         .fold<double>(0, (sum, booking) => sum + booking.totalPrice);
     final completed = bookings
         .where((booking) => booking.status == 'completed')
@@ -59,7 +79,7 @@ class PaymentsScreen extends ConsumerWidget {
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Contest build: no card is charged, no escrow is held, and no payout or refund is processed. Drivers are always the receiving side; riders and senders are the paying side when real payments are added later.',
+                    'No payment provider is configured in this contest build. New booking requests remain unconfirmed, do not deduct seats, and do not unlock chat. Drivers are always the receiving side; riders and senders are the paying side.',
                   ),
                 ),
               ],
@@ -76,6 +96,8 @@ class PaymentsScreen extends ConsumerWidget {
                 payable,
                 Icons.credit_card,
                 Colors.orange,
+                currency,
+                languageCode,
               ),
             ),
             const SizedBox(width: 12),
@@ -86,6 +108,8 @@ class PaymentsScreen extends ConsumerWidget {
                 receivable,
                 Icons.account_balance_wallet_outlined,
                 Colors.green,
+                currency,
+                languageCode,
               ),
             ),
           ],
@@ -97,6 +121,8 @@ class PaymentsScreen extends ConsumerWidget {
           completed,
           Icons.history,
           Colors.blueGrey,
+          currency,
+          languageCode,
         ),
         const SizedBox(height: 24),
         Text(
@@ -131,7 +157,11 @@ class PaymentsScreen extends ConsumerWidget {
                       '${booking.status} - ${booking.paymentStatus} - ${booking.seatsBooked} seat(s)',
                     ),
                     trailing: Text(
-                      '\$${booking.totalPrice.toStringAsFixed(2)}',
+                      CurrencyFormatter.formatUsd(
+                        booking.totalPrice,
+                        currency,
+                        languageCode: languageCode,
+                      ),
                     ),
                   ),
                 ),
@@ -146,6 +176,8 @@ class PaymentsScreen extends ConsumerWidget {
     double amount,
     IconData icon,
     Color color,
+    String currency,
+    String languageCode,
   ) {
     return Card(
       child: Padding(
@@ -158,7 +190,11 @@ class PaymentsScreen extends ConsumerWidget {
             Text(label, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 4),
             Text(
-              '\$${amount.toStringAsFixed(2)}',
+              CurrencyFormatter.formatUsd(
+                amount,
+                currency,
+                languageCode: languageCode,
+              ),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -191,8 +227,4 @@ class PaymentsScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-extension on BookingModel {
-  bool get isActive => status == 'confirmed' || status == 'paid';
 }

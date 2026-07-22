@@ -10,6 +10,9 @@ export function publicTripData(
   const createdAt = data.created_at ?? departureTime;
   const type = data.type === "package" || data.type === "both" ?
     data.type : "person";
+  const roundedCoordinate = (value: unknown): number =>
+    typeof value === "number" && Number.isFinite(value) ?
+      Math.round(value * 100) / 100 : 0;
 
   return {
     id: tripId,
@@ -21,10 +24,12 @@ export function publicTripData(
       data.origin_address : "Unknown",
     destination_address: typeof data.destination_address === "string" ?
       data.destination_address : "Unknown",
-    origin_lat: 0,
-    origin_lng: 0,
-    destination_lat: 0,
-    destination_lng: 0,
+    // Approximate route coordinates support useful matching without exposing
+    // an exact pickup or drop-off pin in the signed-in marketplace projection.
+    origin_lat: roundedCoordinate(data.origin_lat),
+    origin_lng: roundedCoordinate(data.origin_lng),
+    destination_lat: roundedCoordinate(data.destination_lat),
+    destination_lng: roundedCoordinate(data.destination_lng),
     departure_time: departureTime,
     distance: Number.isFinite(data.distance) ? data.distance : 0,
     estimated_duration: Number.isInteger(data.estimated_duration) ?

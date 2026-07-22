@@ -5,12 +5,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:country_picker/country_picker.dart';
+import '../../../../core/user_path.dart';
 import '../../domain/models/verification_model.dart';
+import '../../domain/verification_requirements.dart';
+import '../../domain/verification_upload_policy.dart';
 import '../providers/verification_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 
 class VerificationScreen extends ConsumerStatefulWidget {
-  const VerificationScreen({super.key});
+  const VerificationScreen({super.key, this.role});
+
+  final String? role;
 
   @override
   ConsumerState<VerificationScreen> createState() => _VerificationScreenState();
@@ -20,6 +25,29 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
   final _picker = ImagePicker();
   String? _uploadingType;
   String? _verificationId; // For phone verification
+  bool? _driverMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _driverMode = switch (widget.role) {
+      'driver' => true,
+      'rider' => false,
+      _ => null,
+    };
+  }
+
+  @override
+  void didUpdateWidget(covariant VerificationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.role != widget.role) {
+      _driverMode = switch (widget.role) {
+        'driver' => true,
+        'rider' => false,
+        _ => null,
+      };
+    }
+  }
 
   Future<void> _uploadDocument(VerificationType type, String title) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -45,18 +73,53 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
     if (source == null) return;
 
-    final pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
+    XFile? pickedFile;
+    try {
+      pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80,
+        maxWidth: verificationImageMaxDimension,
+        maxHeight: verificationImageMaxDimension,
+        preferredCameraDevice: type == VerificationType.selfieWithId
+            ? CameraDevice.front
+            : CameraDevice.rear,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Camera or gallery could not be opened. Allow access and try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
     if (pickedFile == null) return;
+
+    final file = File(pickedFile.path);
+    final fileSize = await file.length();
+    if (!isVerificationImageSizeAllowed(fileSize)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Use a readable image smaller than 5 MB, then try again.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() {
       _uploadingType = type.name;
     });
 
     try {
-      final file = File(pickedFile.path);
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) throw Exception('Not authenticated');
 
@@ -102,34 +165,113 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final verificationAsync = ref.watch(currentUserVerificationProvider);
     final userAsync = ref.watch(authStateProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Verification Center')),
-      body: verificationAsync.when(
+      body: userAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (verification) => userAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
-          data: (_) => _buildContent(verification),
+        error: (_, _) => _buildLoadError(),
+        data: (user) {
+          if (user == null) return _buildLoadError();
+          final verificationAsync = ref.watch(
+            userVerificationProvider(user.id),
+          );
+          return verificationAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, _) => _buildLoadError(userId: user.id),
+            data: (verification) => _buildContent(
+              verification,
+              isDriver:
+                  _driverMode ?? marketplacePathForRoles(user.roles).isDriver,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoadError({String? userId}) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_outlined, size: 52),
+            const SizedBox(height: 12),
+            const Text(
+              'Verification could not be loaded safely.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Check your connection and try again. Your uploaded documents are not removed.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () {
+                if (userId != null) {
+                  ref.invalidate(userVerificationProvider(userId));
+                } else {
+                  ref.invalidate(authStateProvider);
+                }
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry verification'),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildContent(UserVerification? verification) {
-    final level = verification?.verificationLevel ?? 0;
-    const totalSteps = 6;
-    final approvedSteps = _approvedStepCount(verification);
-    final pendingSteps = _pendingStepCount(verification);
-    final progressValue = ((approvedSteps + pendingSteps * 0.5) / totalSteps)
-        .clamp(0.0, 1.0);
+  Widget _buildContent(
+    UserVerification? verification, {
+    required bool isDriver,
+  }) {
+    final totalSteps = tripVerificationTotalSteps(driver: isDriver);
+    final approvedSteps = approvedTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
+    final pendingSteps = pendingTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
+    final submittedSteps = submittedTripVerificationStepCount(
+      verification,
+      driver: isDriver,
+    );
+    final allApproved = approvedSteps == totalSteps;
+    final statusColor = allApproved
+        ? Colors.green
+        : (pendingSteps > 0 ? Colors.orange : Colors.grey);
+    final progressValue = (submittedSteps / totalSteps).clamp(0.0, 1.0);
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        SegmentedButton<bool>(
+          segments: const [
+            ButtonSegment(
+              value: false,
+              icon: Icon(Icons.person_search_outlined),
+              label: Text('Request'),
+            ),
+            ButtonSegment(
+              value: true,
+              icon: Icon(Icons.drive_eta_outlined),
+              label: Text('Offer'),
+            ),
+          ],
+          selected: {isDriver},
+          onSelectionChanged: (selection) {
+            setState(() => _driverMode = selection.first);
+          },
+        ),
+        const SizedBox(height: 16),
         // Verification Level Card
         Card(
           child: Padding(
@@ -137,32 +279,42 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             child: Column(
               children: [
                 Icon(
-                  _getLevelIcon(level),
+                  allApproved
+                      ? Icons.verified_user
+                      : (pendingSteps > 0
+                            ? Icons.hourglass_top
+                            : Icons.shield_outlined),
                   size: 64,
-                  color: _getLevelColor(level),
+                  color: statusColor,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  verification?.badgeText ?? 'Unverified',
+                  allApproved
+                      ? '${isDriver ? 'Driver' : 'Rider'} verified'
+                      : (pendingSteps > 0
+                            ? 'Verification pending'
+                            : (approvedSteps > 0
+                                  ? 'Verification in progress'
+                                  : 'Unverified')),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: _getLevelColor(level),
+                    color: statusColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Verification Level $level/4',
+                  '$submittedSteps of $totalSteps requirements submitted',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
                   value: progressValue,
                   backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation(_getLevelColor(level)),
+                  valueColor: AlwaysStoppedAnimation(statusColor),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$approvedSteps approved, $pendingSteps pending of $totalSteps checks',
+                  '$approvedSteps approved • $pendingSteps awaiting manual review',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -209,58 +361,38 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           onTap: () =>
               _uploadDocument(VerificationType.selfieWithId, 'Selfie with ID'),
         ),
-        _buildVerificationItem(
-          title: 'Driver License',
-          subtitle: 'Required before offering rides',
-          icon: Icons.badge_outlined,
-          isVerified: verification?.driverLicenseVerified ?? false,
-          isUploading: _uploadingType == VerificationType.driverLicense.name,
-          isPending:
-              (verification?.driverLicenseUrl != null &&
-              !(verification?.driverLicenseVerified ?? false)),
-          onTap: () =>
-              _uploadDocument(VerificationType.driverLicense, 'Driver License'),
-        ),
-        _buildVerificationItem(
-          title: 'Vehicle Registration',
-          subtitle: 'Required before offering rides or deliveries',
-          icon: Icons.directions_car_filled_outlined,
-          isVerified: verification?.vehicleVerified ?? false,
-          isUploading: _uploadingType == VerificationType.vehicle.name,
-          isPending:
-              (verification?.vehicleRegistrationUrl != null &&
-              !(verification?.vehicleVerified ?? false)),
-          onTap: () =>
-              _uploadDocument(VerificationType.vehicle, 'Vehicle Registration'),
-        ),
+        if (isDriver) ...[
+          _buildVerificationItem(
+            title: 'Driver License',
+            subtitle: 'Required before offering rides',
+            icon: Icons.badge_outlined,
+            isVerified: verification?.driverLicenseVerified ?? false,
+            isUploading: _uploadingType == VerificationType.driverLicense.name,
+            isPending:
+                (verification?.driverLicenseUrl != null &&
+                !(verification?.driverLicenseVerified ?? false)),
+            onTap: () => _uploadDocument(
+              VerificationType.driverLicense,
+              'Driver License',
+            ),
+          ),
+          _buildVerificationItem(
+            title: 'Vehicle Registration',
+            subtitle: 'Required before offering rides or deliveries',
+            icon: Icons.directions_car_filled_outlined,
+            isVerified: verification?.vehicleVerified ?? false,
+            isUploading: _uploadingType == VerificationType.vehicle.name,
+            isPending:
+                (verification?.vehicleRegistrationUrl != null &&
+                !(verification?.vehicleVerified ?? false)),
+            onTap: () => _uploadDocument(
+              VerificationType.vehicle,
+              'Vehicle Registration',
+            ),
+          ),
+        ],
       ],
     );
-  }
-
-  int _approvedStepCount(UserVerification? verification) {
-    if (verification == null) return 0;
-    return [
-      verification.emailVerified,
-      verification.phoneVerified,
-      verification.identityVerified,
-      verification.selfieWithIdVerified,
-      verification.driverLicenseVerified,
-      verification.vehicleVerified,
-    ].where((isVerified) => isVerified).length;
-  }
-
-  int _pendingStepCount(UserVerification? verification) {
-    if (verification == null) return 0;
-    return [
-      verification.identityDocumentUrl != null &&
-          !verification.identityVerified,
-      verification.selfieWithIdUrl != null &&
-          !verification.selfieWithIdVerified,
-      verification.driverLicenseUrl != null &&
-          !verification.driverLicenseVerified,
-      verification.vehicleRegistrationUrl != null &&
-          !verification.vehicleVerified,
-    ].where((isPending) => isPending).length;
   }
 
   Widget _buildVerificationItem({
@@ -312,42 +444,9 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
                       onPressed: isUploading ? null : onTap,
                       child: Text(isUploading ? 'Uploading...' : 'Verify'),
                     )),
-        onTap: isVerified || isUploading ? null : onTap,
+        onTap: isVerified || isUploading || isPending ? null : onTap,
       ),
     );
-  }
-
-  IconData _getLevelIcon(int level) {
-    switch (level) {
-      case 0:
-        return Icons.shield_outlined;
-      case 1:
-        return Icons.verified_user_outlined;
-      case 2:
-        return Icons.verified_user;
-      case 3:
-        return Icons.verified;
-      case 4:
-        return Icons.workspace_premium;
-      default:
-        return Icons.shield_outlined;
-    }
-  }
-
-  Color _getLevelColor(int level) {
-    switch (level) {
-      case 0:
-        return Colors.grey;
-      case 1:
-        return Colors.blue;
-      case 2:
-        return Colors.orange;
-      case 3:
-      case 4:
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
   }
 
   Future<void> _sendEmailVerification() async {
@@ -393,10 +492,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Email verification could not be started. Try again shortly.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -429,7 +533,12 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
       // Use default
     }
 
-    Country selectedCountry = CountryParser.parseCountryCode(countryCode);
+    Country selectedCountry;
+    try {
+      selectedCountry = CountryParser.parseCountryCode(countryCode);
+    } catch (_) {
+      selectedCountry = CountryParser.parseCountryCode('US');
+    }
     final phoneController = TextEditingController();
 
     final phoneNumber = await showDialog<String>(
@@ -485,8 +594,19 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                final fullNumber =
-                    '+${selectedCountry.phoneCode}${phoneController.text.trim()}';
+                final localDigits = phoneController.text.replaceAll(
+                  RegExp(r'[^0-9]'),
+                  '',
+                );
+                final fullNumber = '+${selectedCountry.phoneCode}$localDigits';
+                if (localDigits.length < 6 || fullNumber.length > 16) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Enter a valid phone number.'),
+                    ),
+                  );
+                  return;
+                }
                 Navigator.pop(context, fullNumber);
               },
               child: const Text('Send Code'),
@@ -550,10 +670,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
         },
         timeout: const Duration(seconds: 60),
       );
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text(
+              'Phone verification could not be started. Check the number and connection.',
+            ),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -599,8 +724,12 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
     if (code == null || code.isEmpty) return;
 
     try {
+      final verificationId = _verificationId;
+      if (verificationId == null || verificationId.isEmpty) {
+        throw const FormatException('Verification session expired.');
+      }
       final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId!,
+        verificationId: verificationId,
         smsCode: code,
       );
 
@@ -615,11 +744,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Invalid code: $e'),
+          const SnackBar(
+            content: Text(
+              'The code is invalid or expired. Request a new code and try again.',
+            ),
             backgroundColor: Colors.red,
           ),
         );

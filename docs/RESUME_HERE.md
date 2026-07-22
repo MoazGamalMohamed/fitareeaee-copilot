@@ -1,120 +1,140 @@
 # Resume Here
 
-Last updated: 2026-07-19 15:34 CDT / 2026-07-19 13:34 PDT
+Last updated: 2026-07-21 18:05 CDT / 2026-07-21 16:05 PDT
 
 ## Current objective
 
-Finish credential rotation and the owner-only video, `/feedback`, legal review, and
-Devpost actions from the now-published and phone-tested v1.0.3 checkpoint.
+Preserve the fully passing and source-published v1.0.20 judge candidate:
+**Fitareeaee — GPT-5.6 Ride & Delivery Planner**. The only submission-critical work
+left is owner-performed phone reconnection, video recording/upload, `/feedback`
+Session ID placement, private judge-credential placement, eligibility/legal review,
+credential rotation, and the final Devpost submit action.
 
-## Source state
+## Product and contest positioning
 
-- Private repository: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
+- Public name: **Fitareeaee — GPT-5.6 Ride & Delivery Planner**.
+- Tagline: **Built with Codex. GPT-5.6 turns English or Arabic trip intent into
+  reviewable requests or offers and transparent matches.**
+- Codex is the documented Build Week engineering collaborator: repository audit,
+  implementation, security hardening, test construction, Android release gates,
+  documentation, and evidence continuity.
+- GPT-5.6 is runtime intelligence only: strict English/Arabic trip drafts and
+  first-line support. Deterministic code controls verification, matching, payment
+  state, booking, inventory, chat access, trip lifecycle, and ratings.
+- Internal `copilot` file/class/callable identifiers remain for implementation
+  stability. They are not the public product name.
+- **Request** creates the paying rider/sender side. **Offer** creates the receiving
+  driver/courier side. Either recognized marketplace account may select either action,
+  but Offer requires additional driver-licence and vehicle verification.
+
+## Source and GitHub state
+
+- Private workspace: `C:\Users\moaaz\New Project\project_backup\fitareeaee`
 - Private branch: `build-week/final`
-- Passing private source checkpoint: `832a543cd94c4f5a2a8c17163e73113da85aba24`.
-- Passing private submission-material/recovery checkpoint: `5cc6487`.
-- The Chat-list correction, rule contract, deployed Firestore rule, APK, phone flow,
-  live-rule audit, anonymous-link audit, and v1.0.3 submission-copy alignment are
-  complete and committed.
-- `pubspec.yaml` may appear modified, but `git diff -- pubspec.yaml` is empty. Do not
-  stage a line-ending-only phantom change.
-- Durable sanitized clone: `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
-- Published sanitized source checkpoint: `c42bc3f4c04d960b8ab09804b90c1a3d4ef50e43`;
-  the v1.0.3 tag peels to this exact source.
-- Published sanitized recovery checkpoint: `180673b`; both `main` and
-  `build-week/final` are confirmed at this commit.
-- Never add a remote to or push the private original repository.
+- Exact v1.0.20 application source:
+  `98e5e66b0787dc10d32af8ae9b0429e50d42a4b0`
+- Private source tree: `24589b8760f6432aa295448ee9b85866cdd0d20e`
+- Sanitized publication clone:
+  `C:\Users\moaaz\New Project\project_backup\fitareeaee-copilot-public`
+- Public branch: `agent/payment-gated-chat-trip-support`
+- Exact sanitized v1.0.20 source:
+  `f3d6d88af2970790d9cc9bbd69a36a9370500441`
+- Public source tree: `24589b8760f6432aa295448ee9b85866cdd0d20e`
+- Private/public application trees: **exact match**.
+- Tag: `fitareeaee-copilot-v1.0.20`; local and remote public tags peel to
+  `f3d6d88af2970790d9cc9bbd69a36a9370500441`.
+- Draft PR #1: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/pull/1>
+  — OPEN, draft, unmerged; the immutable v1.0.20 application tag object is
+  `a5fb79abd978c8c3c3e209c022bd7630f4af937c` and
+  later branch commits contain documentation evidence only.
+- Latest recorded reachable public-history audit before this snapshot: at least 129
+  revisions and 2,898 object/path lines, with zero
+  forbidden credential/config paths, zero high-signal secret-hit files, and zero
+  rewrite refs.
+- Never add a remote to or push the private original repository. Publish only from
+  the sanitized clone after the same history scan and tree comparison.
 
-## Deployed Firebase state
+## Passing v1.0.20 gates
 
-- Confirmed project: `fitareeaee`.
-- `authorizeBookingConversation` is deployed and `ACTIVE` in `us-central1`.
-- July 19 Firestore and Storage rules are deployed. The final Firestore rules update
-  supporting participant-scoped authorized conversation lists is live. The fresh
-  local emulator gate passes 8/8, including Chat query authorization,
-  support-ticket ownership, and blocked staff impersonation.
-- `planTripWithCopilot` is `ACTIVE` with managed `OPENAI_API_KEY` secret version 2;
-  previous English ride, English package, and Arabic ride GPT-5.6 live tests pass.
-- Fictional judge users and fixed August 10 fixtures remain provisioned. Credentials
-  stay only in ignored `.judge-credentials.local.json` and must not enter Git/logs.
-- The exact inherited prototype Function set remains live pending explicit owner
-  confirmation for retirement. The judge UI does not expose simulated payments.
-- Firebase CLI diagnostics exposed legacy Runtime Config credential values in terminal
-  output. No value was copied into source/docs; rotate/revoke the legacy email and
-  Stripe test credentials urgently. Keep `DEBUG` empty for all Firebase CLI commands.
-- The OpenAI key pasted into the build conversation must also be revoked provider-side;
-  do not reuse or copy it.
+- Dart format: 136 files, 0 changes.
+- Flutter analysis: 0 issues.
+- Flutter tests: 57/57; focused voice/Copilot suite: 8/8.
+- Functions contracts: 33/33; Functions build: PASS.
+- Firestore/Storage authorization rules: 9/9.
+- Prior real Auth/Functions/Firestore lifecycle integration: 10/10 on the unchanged
+  lifecycle source. The final fresh rerun timed out during slow emulator startup and
+  is not relabeled as a new pass.
+- Universal debug and optimized profile APK builds: PASS.
+- Confirmed Firebase project: `fitareeaee`.
+- Scoped live deployment: `createTrip` and `createBooking` only; 2 deployed, 0 errors.
+- Live phone GPT-5.6 call: driver prompt returned a strict Dallas-to-Austin
+  review-required **Offer** draft and stopped before trip/booking creation.
+- OpenAI end-user privacy: `store: false`, contact redaction, and a stable
+  app-scoped SHA-256 safety identifier; raw Firebase UID is not sent.
 
-## Last directly passing gates
+## Final public Android artifact
 
-- Dart format: PASS; full gate 113 files / 0 changes, then 2 final analyzer-fix files
-  formatted with 0 changes.
-- `flutter analyze --no-pub`: PASS; no issues.
-- `flutter test --no-pub`: PASS; 19/19.
-- `npm run build`: PASS.
-- Functions contracts: PASS; 19/19 using Node's supported
-  `--test-isolation=none` mode after the sandbox denied worker spawning with `EPERM`.
-- Firestore/Storage emulator rules: PASS; 8/8.
-- Targeted Firebase deploy: PASS for `authorizeBookingConversation`, Firestore rules,
-  and Storage rules; no production data was deleted.
-- Universal debug APK build: PASS after deleting only stale reproducible APK outputs;
-  the repeated-signing padding was removed.
+- Release: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/tag/fitareeaee-copilot-v1.0.20>
+- Direct APK: <https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.20/app-profile.apk>
+- Local path: `build/app/outputs/flutter-apk/app-profile.apk`
+- Anonymous public download: `build/published-download-v120/app-profile.apk`.
+- Type: universal AOT profile APK, debug-signed for contest sideloading.
+- Version: `1.0.20` / code `20260734`.
+- Minimum/target Android: API 24 / API 36.
+- Size: 88,963,947 bytes.
+- SHA-256:
+  `F69F1187F7CD921BBB37FC67F5C36327ACD785C293C89A56F26D3A13B1BC7113`.
+- GitHub reports 88,963,947 bytes and digest
+  `sha256:f69f1187f7cd921bbb37fc67f5c36327acd785c293c89a56f26d3a13b1bc7113`;
+  the anonymous download exactly matches both.
+- Physical phone: v1.0.19 remains the exact-public installed rollback. The Motorola
+  disconnected from ADB before v1.0.20 installation; reconnect and install before
+  claiming v1.0.20 phone evidence. Earlier local testing requested native location
+  consent and resolved a live pin to a readable address.
+  Automated UI navigation stopped when the owner switched to another foreground app;
+  language/currency behavior is covered by the passing suite and was not relabeled as
+  a separate physical-phone visual pass.
+- On-phone disclosure PASS: **Built with Codex • Powered by GPT-5.6** accurately
+  separates engineering and runtime roles.
+- Earlier exact-public v1.0.16 evidence retains the unchanged interactive map,
+  owner withdrawal, paid-confirmed chat, completed-only Past, and rating checks.
 
-## Latest APK
+## Product safety boundary
 
-- Path: `build/app/outputs/flutter-apk/app-debug.apk`
-- Type: universal debug-signed Android judge candidate
-- Size: `154,995,438` bytes (`147.82 MiB`)
-- SHA-256: `543B2FE7FFFEF43C831039A3A5557D005489BF7A451E3C3566B42A487AFD4EC0`
-- Build timestamp: 2026-07-19 13:51:01 CDT / 11:51:01 PDT
-- Android version code: `20260718`
-- Physical phone: exact local and downloaded-public candidates installed on Motorola
-  Moto G Play (2024). The public copy cold-launched in 3.693 seconds; authenticated
-  Trips -> Chat rendered `No conversations yet`, the prior Firestore failure was absent,
-  and AndroidRuntime/Flutter error-focused output was empty.
-- Emulator: the downloaded public v1.0.3 APK was clean-installed again on API 36.
-  Version code `20260718`, top-resumed `MainActivity`, Login markers, and an empty
-  AndroidRuntime/Flutter error-focused log all passed. A first slow activity wait timed
-  out before the direct relaunch and UI confirmation succeeded.
-- Public tag/release: `fitareeaee-copilot-v1.0.3`.
-- Direct APK URL:
-  `https://github.com/MoazGamalMohamed/fitareeaee-copilot/releases/download/fitareeaee-copilot-v1.0.3/app-debug.apk`.
-- Published-copy verification: downloaded size/hash match PASS; downloaded APK
-  installed and cold-launched on the Motorola phone in 3.693 seconds; Chat regression
-  and AndroidRuntime/Flutter error checks PASS.
+- New selections/bookings remain `pending_payment` / `required`; seats do not change
+  and private participant chat does not unlock before server-observed paid confirmation.
+- No real payment provider is enabled. The fixed paid/confirmed fixture is fictional
+  judge data and must never be described as a real charge.
+- Verification remains manual/admin-controlled. GPT-5.6 does not approve identity,
+  declare people safe, make emergency decisions, guarantee availability, or fabricate
+  trips.
+- Participant chat exists only for the paid-confirmed active lifecycle. Support uses
+  GPT-5.6 first and supports explicit/automatic staff escalation.
+- The inherited prototype Function set remains live pending an explicit owner
+  retirement decision. Never use an unscoped Functions deployment or wildcard delete.
 
-## Remaining blockers and owner actions
+## Official submission requirements still owned by the user
 
-- Rotate/revoke the exposed OpenAI key plus legacy Runtime Config email/Stripe test
-  credentials. No current credential value should be pasted into this thread.
-- Decide whether to retire the exact inherited Function set after reviewing
-  `docs/OWNER_ACTIONS.md`; do not use wildcard deletion.
-- The deliberate fictional phone path now passes: live GPT-5.6 reviewable draft, one
-  transparent match, match-to-details handoff, confirmed Chat, transactional booking,
-  and realtime fictional message rendering were directly observed. Verification was
-  already satisfied on the judge account and no real payment is claimed.
-- Fresh-install run #1 passed public-APK reinstall, 3.706-second cold launch, private
-  fictional sign-in, Home, GPT-5.6 draft, one match, and Trip Details. The phone then
-  disconnected before the final booking tap. The owner later reported reconnecting it,
-  but ADB and Windows still enumerate no Motorola/Android USB device. Fresh-install run
-  #2 remains optional and awaits USB data mode/debug authorization; the earlier full
-  authenticated v1.0.3 Motorola path already passed.
-- Keep the v1.0.3 repository/release/backend available through judging and verify links
-  signed out before final submission.
-- Add judge credentials privately in Devpost, record/upload the under-three-minute
-  YouTube demo, run `/feedback`, review eligibility/legal statements, and personally
-  perform the final Devpost submit action.
-- Google Play production remains separate: create a secure upload key, release-signed
-  AAB, Play App Signing setup, Data safety declarations, release testing, and policy
-  review. See `docs/PLAY_STORE_READINESS.md`.
+1. Confirm personal/team eligibility, ownership, third-party rights, and acceptance
+   of the Official Rules.
+2. Record the exact v1.0.20 build using `docs/DEMO_SCRIPT.md`; keep it at 2:40 and
+   under three minutes, in English, with audible narration, fictional data, no
+   credentials/private documents, and no unauthorized music.
+3. Upload the video publicly or unlisted to YouTube and verify playback while signed out.
+4. Run `/feedback` in this primary Codex build thread and copy its Session ID; use
+   `/status` only as the display fallback.
+5. Put the dedicated fictional judge credentials only in Devpost's private testing
+   instructions; never in Git, the video, or public documentation.
+6. Confirm provider-side rotation/revocation of the previously exposed legacy email,
+   Stripe test, and old OpenAI credentials. Never paste replacements into chat.
+7. Confirm free backend/test access remains available through the judging period.
+8. Review every public link and legal attestation, then personally click the final
+   Devpost submit action before July 21, 2026 at 5:00 PM Pacific.
 
 ## Exact next action
 
-Complete the credential rotations, then run:
-
-```text
-/feedback
-```
-
-Paste that Session ID into Devpost, record/upload the final demo, verify the new YouTube
-and Devpost-preview links signed out, then review and submit personally.
+Use `docs/DEVPOST_SUBMISSION.md` for copy, `docs/JUDGE_TESTING.md` for private testing
+instructions, `docs/DEMO_SCRIPT.md` for the 2:40 recording, and
+`docs/RULES_COMPLIANCE_MATRIX.md` for the final rules check. Add the YouTube URL and
+Session ID, place the fictional credentials privately, preview the public repo/release/
+video signed out, complete the owner confirmations above, and submit.

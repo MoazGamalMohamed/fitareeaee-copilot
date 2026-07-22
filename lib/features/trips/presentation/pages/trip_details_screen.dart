@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import '../../../../core/currency/currency_formatter.dart';
 import '../providers/trip_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/trip.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../booking/presentation/providers/booking_provider.dart';
 import '../../../booking/domain/models/booking_model.dart';
+import '../../../ratings/presentation/providers/rating_provider.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final String tripId;
@@ -31,6 +34,7 @@ class TripDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tripAsync = ref.watch(tripDetailProvider(tripId));
     final bookingState = ref.watch(tripBookingProvider);
+    final settings = ref.watch(settingsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Trip Details'), centerTitle: true),
@@ -41,7 +45,12 @@ class TripDetailsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Trip Header Card
-              _buildHeaderCard(context, trip),
+              _buildHeaderCard(
+                context,
+                trip,
+                currency: settings.currency,
+                languageCode: settings.language,
+              ),
               const SizedBox(height: 24),
 
               // Route Information
@@ -53,7 +62,12 @@ class TripDetailsScreen extends ConsumerWidget {
               // Trip Details
               _buildSectionTitle(context, 'Trip Details'),
               const SizedBox(height: 12),
-              _buildDetailsGrid(context, trip),
+              _buildDetailsGrid(
+                context,
+                trip,
+                currency: settings.currency,
+                languageCode: settings.language,
+              ),
               const SizedBox(height: 24),
 
               _buildSectionTitle(context, 'Preferences'),
@@ -126,7 +140,8 @@ class TripDetailsScreen extends ConsumerWidget {
                     (booking) =>
                         booking.tripId == trip.id &&
                         (booking.status == 'confirmed' ||
-                            booking.status == 'paid'),
+                            booking.status == 'in_progress') &&
+                        booking.paymentStatus == 'paid',
                   )
                   .toList();
               if (bookingId != null) {
@@ -140,12 +155,39 @@ class TripDetailsScreen extends ConsumerWidget {
           );
           final pendingBooking = participantBookingsAsync.maybeWhen(
             data: (bookings) {
-              for (final booking in bookings) {
-                if (booking.tripId == trip.id && booking.status == 'pending') {
-                  return booking;
+              final pending = bookings
+                  .where(
+                    (booking) =>
+                        booking.tripId == trip.id &&
+                        (booking.status == 'pending' ||
+                            booking.status == 'potential' ||
+                            booking.status == 'pending_payment'),
+                  )
+                  .toList();
+              if (bookingId != null) {
+                for (final booking in pending) {
+                  if (booking.id == bookingId) return booking;
                 }
               }
-              return null;
+              return pending.isEmpty ? null : pending.first;
+            },
+            orElse: () => null,
+          );
+          final completedBooking = participantBookingsAsync.maybeWhen(
+            data: (bookings) {
+              final completed = bookings
+                  .where(
+                    (booking) =>
+                        booking.tripId == trip.id &&
+                        booking.status == 'completed',
+                  )
+                  .toList();
+              if (bookingId != null) {
+                for (final booking in completed) {
+                  if (booking.id == bookingId) return booking;
+                }
+              }
+              return completed.isEmpty ? null : completed.first;
             },
             orElse: () => null,
           );
@@ -158,6 +200,29 @@ class TripDetailsScreen extends ConsumerWidget {
                 if (activeBooking != null)
                   Column(
                     children: [
+                      Card(
+                        color: activeBooking.status == 'in_progress'
+                            ? Colors.green.shade50
+                            : Colors.blue.shade50,
+                        child: ListTile(
+                          leading: Icon(
+                            activeBooking.status == 'in_progress'
+                                ? Icons.navigation_outlined
+                                : Icons.verified_outlined,
+                          ),
+                          title: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Trip in progress'
+                                : 'Paid and confirmed',
+                          ),
+                          subtitle: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Trip chat stays open until the driver completes or cancels the trip.'
+                                : 'The assigned driver can start the trip. Both participants can use chat.',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       ElevatedButton.icon(
                         onPressed: bookingState is AsyncLoading
                             ? null
@@ -173,7 +238,55 @@ class TripDetailsScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (activeBooking.passengerId == userId)
+                      if (activeBooking.driverId == userId) ...[
+                        FilledButton.icon(
+                          onPressed: bookingState is AsyncLoading
+                              ? null
+                              : () => _transitionTrip(
+                                  context,
+                                  ref,
+                                  trip,
+                                  activeBooking,
+                                  activeBooking.status == 'in_progress'
+                                      ? 'completeTrip'
+                                      : 'startTrip',
+                                  activeBooking.status == 'in_progress'
+                                      ? 'Trip completed. Chat is now closed and ratings are available.'
+                                      : 'Trip started. Live trip chat remains available.',
+                                ),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          icon: Icon(
+                            activeBooking.status == 'in_progress'
+                                ? Icons.flag_outlined
+                                : Icons.play_arrow,
+                          ),
+                          label: Text(
+                            activeBooking.status == 'in_progress'
+                                ? 'Complete trip'
+                                : 'Confirm trip start',
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: bookingState is AsyncLoading
+                              ? null
+                              : () => _cancelDriverTrip(
+                                  context,
+                                  ref,
+                                  trip,
+                                  activeBooking,
+                                ),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                            foregroundColor: Colors.red.shade700,
+                          ),
+                          icon: const Icon(Icons.emergency_outlined),
+                          label: const Text('Emergency cancel and alert admin'),
+                        ),
+                      ] else if (activeBooking.passengerId == userId &&
+                          activeBooking.status == 'confirmed')
                         OutlinedButton.icon(
                           onPressed: bookingState is AsyncLoading
                               ? null
@@ -197,33 +310,77 @@ class TripDetailsScreen extends ConsumerWidget {
                     ],
                   )
                 else if (pendingBooking != null)
-                  ElevatedButton.icon(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                    ),
-                    icon: const Icon(Icons.lock_clock_outlined),
-                    label: const Text(
-                      'Waiting for confirmation - chat is locked',
+                  _buildPendingMatchActions(
+                    context,
+                    ref,
+                    trip,
+                    pendingBooking,
+                    userId,
+                    bookingState is AsyncLoading,
+                  )
+                else if (completedBooking != null)
+                  _buildCompletedBookingActions(
+                    context,
+                    ref,
+                    completedBooking,
+                    userId,
+                  )
+                else if (trip.status == 'completed' ||
+                    trip.status == 'cancelled' ||
+                    trip.isPast)
+                  Card(
+                    child: ListTile(
+                      leading: Icon(
+                        trip.status == 'cancelled'
+                            ? Icons.cancel_outlined
+                            : Icons.flag_outlined,
+                      ),
+                      title: Text(
+                        trip.status == 'cancelled'
+                            ? 'Trip cancelled'
+                            : 'Trip closed',
+                      ),
+                      subtitle: const Text(
+                        'This trip no longer accepts bookings.',
+                      ),
+                      trailing: TextButton(
+                        onPressed: () => context.push('/support'),
+                        child: const Text('Support'),
+                      ),
                     ),
                   )
                 else if (isOwnTrip)
-                  ElevatedButton(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.grey[300],
-                    ),
-                    child: const Text('Your Own Trip'),
+                  Column(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () => _withdrawOwnTrip(context, ref, trip),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          foregroundColor: Colors.red.shade700,
+                        ),
+                        icon: const Icon(Icons.cancel_outlined),
+                        label: const Text('Withdraw this trip'),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => context.push('/support'),
+                        icon: const Icon(Icons.support_agent_outlined),
+                        label: const Text('Need help? Contact support'),
+                      ),
+                    ],
                   )
                 else if (trip.isRequest)
                   ElevatedButton.icon(
-                    onPressed: null,
+                    onPressed: bookingState is AsyncLoading
+                        ? null
+                        : () => _proposeForRequest(context, ref, trip, userId),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
-                    icon: const Icon(Icons.lock_outline),
-                    label: const Text('No direct chat before confirmation'),
+                    icon: const Icon(Icons.local_taxi_outlined),
+                    label: Text(
+                      trip.isPackage ? 'Offer to Deliver' : 'Offer to Drive',
+                    ),
                   )
                 else if (bookingState is AsyncLoading)
                   const SizedBox(
@@ -289,7 +446,73 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeaderCard(BuildContext context, dynamic trip) {
+  Widget _buildCompletedBookingActions(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) {
+    final ratedUserId = booking.passengerId == userId
+        ? booking.driverId
+        : booking.passengerId;
+    final ratingExists = ref.watch(
+      ratingExistsProvider((bookingId: booking.id, userId: userId)),
+    );
+    final ratingRoute =
+        '/trips/${booking.tripId}/rate'
+        '?bookingId=${Uri.encodeQueryComponent(booking.id)}'
+        '&ratedUserId=${Uri.encodeQueryComponent(ratedUserId)}';
+
+    return Column(
+      children: [
+        const Card(
+          child: ListTile(
+            leading: Icon(Icons.flag_outlined),
+            title: Text('Trip completed'),
+            subtitle: Text(
+              'Private trip chat is closed. Each participant may submit one rating.',
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ratingExists.when(
+          data: (exists) => FilledButton.icon(
+            onPressed: exists ? null : () => context.push(ratingRoute),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: Icon(exists ? Icons.check : Icons.star_outline),
+            label: Text(exists ? 'Rating submitted' : 'Rate this trip'),
+          ),
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => OutlinedButton.icon(
+            onPressed: () => context.push(ratingRoute),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: const Icon(Icons.star_outline),
+            label: const Text('Rate this trip'),
+          ),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => context.push('/support'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+          ),
+          icon: const Icon(Icons.support_agent_outlined),
+          label: const Text('Questions? Contact support'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderCard(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -344,7 +567,11 @@ class TripDetailsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            trip.priceDisplay,
+            CurrencyFormatter.formatUsd(
+              trip.pricePerSeat,
+              currency,
+              languageCode: languageCode,
+            ),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -476,7 +703,12 @@ class TripDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDetailsGrid(BuildContext context, Trip trip) {
+  Widget _buildDetailsGrid(
+    BuildContext context,
+    Trip trip, {
+    required String currency,
+    required String languageCode,
+  }) {
     final seatsLabel = trip.isRequest ? 'Seats Needed' : 'Seats Available';
     final seatsValue = trip.isRequest
         ? '${trip.totalSeats}'
@@ -505,7 +737,11 @@ class TripDetailsScreen extends ConsumerWidget {
         _buildDetailItem(
           context,
           trip.isPackage ? 'Delivery Price' : 'Per Seat',
-          trip.priceDisplay,
+          CurrencyFormatter.formatUsd(
+            trip.pricePerSeat,
+            currency,
+            languageCode: languageCode,
+          ),
           Icons.paid,
         ),
       ],
@@ -745,6 +981,241 @@ class TripDetailsScreen extends ConsumerWidget {
     context.push('/trips/${trip.id}/booking?seats=$requestedSeats');
   }
 
+  Widget _buildPendingMatchActions(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+    String userId,
+    bool loading,
+  ) {
+    if (booking.status == 'potential') {
+      final isDriver = booking.driverId == userId;
+      return Column(
+        children: [
+          FilledButton.icon(
+            onPressed: loading || isDriver
+                ? null
+                : () => _selectProposal(context, ref, booking, userId),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            icon: Icon(
+              isDriver ? Icons.hourglass_top : Icons.person_search_outlined,
+            ),
+            label: Text(
+              isDriver
+                  ? 'Waiting for rider selection'
+                  : 'Choose driver - continue to payment',
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (isDriver)
+            OutlinedButton.icon(
+              onPressed: loading
+                  ? null
+                  : () => _withdrawProposal(context, ref, booking, userId),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
+              icon: const Icon(Icons.undo),
+              label: const Text('Withdraw proposal'),
+            ),
+          const SizedBox(height: 6),
+          Text(
+            isDriver
+                ? 'Drivers never pay. The rider must choose this proposal and complete payment before confirmation or chat.'
+                : 'Selecting this driver creates a payment requirement only. Chat stays locked until server-verified payment.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      );
+    }
+
+    final isPassenger = booking.passengerId == userId;
+    return Column(
+      children: [
+        FilledButton.icon(
+          onPressed: isPassenger ? () => context.push('/payments') : null,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+          ),
+          icon: const Icon(Icons.payment_outlined),
+          label: Text(
+            isPassenger
+                ? 'Payment required - not confirmed'
+                : 'Waiting for rider payment',
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (isPassenger)
+          OutlinedButton.icon(
+            onPressed: loading
+                ? null
+                : () => _cancelBooking(context, ref, trip, userId),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancel payment request'),
+          ),
+        const SizedBox(height: 6),
+        const Text(
+          'Seats and chat unlock only after server-verified payment.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _proposeForRequest(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    String userId,
+  ) async {
+    final settings = ref.read(settingsProvider);
+    final priceController = TextEditingController(
+      text: CurrencyFormatter.fromUsd(
+        trip.pricePerSeat,
+        settings.currency,
+      ).toStringAsFixed(2),
+    );
+    final noteController = TextEditingController();
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(trip.isPackage ? 'Delivery proposal' : 'Driver proposal'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'The rider budget is up to ${CurrencyFormatter.formatUsd(trip.pricePerSeat, settings.currency, languageCode: settings.language)} per seat. No direct contact details or chat are shared yet.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: priceController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: 'Your price per seat (${settings.currency})',
+                prefixText: '${CurrencyFormatter.symbols[settings.currency]} ',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: noteController,
+              maxLength: 300,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Short proposal note (optional)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Send proposal'),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true || !context.mounted) return;
+    final displayPrice = double.tryParse(priceController.text.trim());
+    if (displayPrice == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid proposal price.')),
+      );
+      return;
+    }
+    final price = CurrencyFormatter.toUsd(displayPrice, settings.currency);
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('proposeForTripRequest')
+          .call({
+            'schemaVersion': 1,
+            'tripId': trip.id,
+            'proposedUnitPrice': price,
+            'message': noteController.text.trim(),
+          });
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Proposal sent. The rider must choose and pay next.'),
+        ),
+      );
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message ?? 'Proposal could not be sent.')),
+      );
+    }
+  }
+
+  Future<void> _selectProposal(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) async {
+    try {
+      await FirebaseFunctions.instance.httpsCallable('selectTripProposal').call(
+        {'schemaVersion': 1, 'bookingId': booking.id},
+      );
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Driver selected. Payment is required before confirmation.',
+          ),
+        ),
+      );
+      context.push('/payments');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Driver could not be selected.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _withdrawProposal(
+    BuildContext context,
+    WidgetRef ref,
+    BookingModel booking,
+    String userId,
+  ) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('withdrawTripProposal')
+          .call({'schemaVersion': 1, 'bookingId': booking.id});
+      ref.invalidate(participantBookingsProvider(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Proposal withdrawn.')));
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Proposal could not be withdrawn.'),
+        ),
+      );
+    }
+  }
+
   Future<void> _openBookedChat(
     BuildContext context,
     BookingModel booking,
@@ -818,6 +1289,135 @@ class TripDetailsScreen extends ConsumerWidget {
           content: Text(
             'This booking cannot be cancelled here. Contact support for help.',
           ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _transitionTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+    String callable,
+    String successMessage,
+  ) async {
+    try {
+      await FirebaseFunctions.instance.httpsCallable(callable).call({
+        'schemaVersion': 1,
+        'bookingId': booking.id,
+      });
+      ref.invalidate(participantBookingsProvider(booking.driverId));
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(userTripsProvider(trip.driverId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(successMessage)));
+      if (callable == 'completeTrip') context.go('/trips?tab=past');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip status could not be updated.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _cancelDriverTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+    BookingModel booking,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Emergency trip cancellation?'),
+        content: const Text(
+          'This closes participant chats, alerts administrators as urgent, and marks paid bookings for refund review. It does not issue an automatic refund.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep trip'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Cancel trip'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await FirebaseFunctions.instance.httpsCallable('cancelTrip').call({
+        'schemaVersion': 1,
+        'bookingId': booking.id,
+      });
+      ref.invalidate(participantBookingsProvider(booking.driverId));
+      ref.invalidate(tripDetailProvider(trip.id));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Trip cancelled. Admin refund review was opened.'),
+        ),
+      );
+      context.go('/trips?tab=my');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip could not be cancelled.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _withdrawOwnTrip(
+    BuildContext context,
+    WidgetRef ref,
+    Trip trip,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Withdraw this trip?'),
+        content: const Text(
+          'This removes the open trip from the marketplace and closes unpaid proposals. Paid or confirmed trips must use the cancellation and admin-review flow.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Keep trip'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Withdraw trip'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await FirebaseFunctions.instance.httpsCallable('withdrawTrip').call({
+        'schemaVersion': 1,
+        'tripId': trip.id,
+      });
+      ref.invalidate(tripDetailProvider(trip.id));
+      ref.invalidate(userTripsProvider(trip.driverId));
+      ref.invalidate(availableTripsProvider);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip withdrawn from the marketplace.')),
+      );
+      context.go('/trips?tab=my');
+    } on FirebaseFunctionsException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Trip could not be withdrawn.'),
         ),
       );
     }

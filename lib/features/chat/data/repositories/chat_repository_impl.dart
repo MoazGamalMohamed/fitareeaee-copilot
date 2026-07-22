@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -76,14 +77,12 @@ class ChatRepositoryImpl implements ChatRepository {
     }
   }
 
-  Query<Map<String, dynamic>> _conversationQuery(
-    String conversationId,
-    String userId,
-  ) {
-    return _messagesCollection
-        .where('conversation_id', isEqualTo: conversationId)
-        .where('participant_ids', arrayContains: userId)
-        .orderBy('created_at', descending: true);
+  Query<Map<String, dynamic>> _participantMessagesQuery(String userId) {
+    // Keep the server query to one security-relevant array constraint. This
+    // works with Firestore's built-in single-field index and avoids a runtime
+    // composite-index dependency. Conversation filtering and ordering happen
+    // locally after Firestore has returned only this user's messages.
+    return _messagesCollection.where('participant_ids', arrayContains: userId);
   }
 
   Query<Map<String, dynamic>> _userAuthorizationsQuery(String userId) {
@@ -93,27 +92,60 @@ class ChatRepositoryImpl implements ChatRepository {
     );
   }
 
-  List<String> _activeConversationIds(
+  Map<String, Set<String>> _activeConversationParticipants(
     Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> documents,
   ) {
-    return documents
-        .where((document) => document.data()['active'] == true)
-        .map((document) => document.id)
-        .toList(growable: false);
+    return {
+      for (final document in documents)
+        if (document.data()['active'] == true &&
+            document.data()['participant_ids'] is List)
+          document.id: (document.data()['participant_ids'] as List)
+              .whereType<String>()
+              .toSet(),
+    };
+  }
+
+  bool _hasExpectedParticipants(
+    QueryDocumentSnapshot<Map<String, dynamic>> document,
+    Set<String> expected,
+  ) {
+    final value = document.data()['participant_ids'];
+    if (value is! List) return false;
+    final actual = value.whereType<String>().toSet();
+    return actual.length == expected.length && actual.containsAll(expected);
+  }
+
+  List<Message> _messagesForConversation(
+    Iterable<QueryDocumentSnapshot<Map<String, dynamic>>> documents,
+    String conversationId,
+    Set<String> expectedParticipants,
+  ) {
+    final messages =
+        documents
+            .where(
+              (document) =>
+                  document.data()['conversation_id'] == conversationId &&
+                  _hasExpectedParticipants(document, expectedParticipants),
+            )
+            .map(_messageFromDocument)
+            .where((message) => !message.isDeleted)
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return messages;
   }
 
   Future<List<Message>> _loadLatestAuthorizedMessages(
-    Iterable<String> conversationIds,
+    Map<String, Set<String>> authorizedParticipants,
     String userId,
   ) async {
-    final snapshots = await Future.wait(
-      conversationIds.map(
-        (conversationId) =>
-            _conversationQuery(conversationId, userId).limit(1).get(),
-      ),
-    );
+    if (authorizedParticipants.isEmpty) return [];
+    final snapshot = await _participantMessagesQuery(userId).get();
     return _latestConversationMessages(
-      snapshots.expand((snapshot) => snapshot.docs),
+      snapshot.docs.where((document) {
+        final conversationId = document.data()['conversation_id'];
+        final expected = authorizedParticipants[conversationId];
+        return expected != null && _hasExpectedParticipants(document, expected);
+      }),
     );
   }
 
@@ -126,12 +158,25 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(FirebaseFailure(message: 'Sign in to view messages'));
     }
     try {
-      final snapshot = await _conversationQuery(conversationId, userId).get();
-      final messages = snapshot.docs
-          .map(_messageFromDocument)
-          .where((message) => !message.isDeleted)
-          .toList();
-      return Right(messages);
+      final authorization = await _authorizationsCollection
+          .doc(conversationId)
+          .get();
+      final authorizationData = authorization.data();
+      final participants = authorizationData?['participant_ids'];
+      if (!authorization.exists ||
+          authorizationData?['active'] != true ||
+          participants is! List ||
+          !participants.contains(userId)) {
+        return const Right([]);
+      }
+      final snapshot = await _participantMessagesQuery(userId).get();
+      return Right(
+        _messagesForConversation(
+          snapshot.docs,
+          conversationId,
+          participants.whereType<String>().toSet(),
+        ),
+      );
     } catch (error) {
       return Left(_failure(error, 'Failed to get conversation'));
     }
@@ -160,7 +205,7 @@ class ChatRepositoryImpl implements ChatRepository {
       final authorizations = await _userAuthorizationsQuery(userId).get();
       return Right(
         await _loadLatestAuthorizedMessages(
-          _activeConversationIds(authorizations.docs),
+          _activeConversationParticipants(authorizations.docs),
           userId,
         ),
       );
@@ -172,50 +217,135 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Stream<Either<Failure, List<Message>>> streamConversation(
     String conversationId,
-  ) async* {
+  ) {
     final userId = _currentUserId;
     if (userId == null) {
-      yield Left(FirebaseFailure(message: 'Sign in to view messages'));
-      return;
+      return Stream.value(
+        Left(FirebaseFailure(message: 'Sign in to view messages')),
+      );
     }
-    try {
-      await for (final snapshot in _conversationQuery(
-        conversationId,
-        userId,
-      ).snapshots()) {
-        final messages = snapshot.docs
-            .map(_messageFromDocument)
-            .where((message) => !message.isDeleted)
-            .toList();
-        yield Right(messages);
-      }
-    } catch (error) {
-      yield Left(_failure(error, 'Failed to stream conversation'));
+    final controller = StreamController<Either<Failure, List<Message>>>();
+    var expectedParticipants = <String>{};
+    var active = false;
+    var messageDocuments = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+    void publish() {
+      controller.add(
+        Right(
+          active
+              ? _messagesForConversation(
+                  messageDocuments,
+                  conversationId,
+                  expectedParticipants,
+                )
+              : const [],
+        ),
+      );
     }
+
+    late final StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>
+    authorizationSubscription;
+    late final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>
+    messageSubscription;
+    controller.onListen = () {
+      authorizationSubscription = _authorizationsCollection
+          .doc(conversationId)
+          .snapshots()
+          .listen(
+            (snapshot) {
+              final data = snapshot.data();
+              final participants = data?['participant_ids'];
+              expectedParticipants = participants is List
+                  ? participants.whereType<String>().toSet()
+                  : <String>{};
+              active =
+                  snapshot.exists &&
+                  data?['active'] == true &&
+                  expectedParticipants.contains(userId);
+              publish();
+            },
+            onError: (Object error, StackTrace stackTrace) => controller.add(
+              Left(_failure(error, 'Failed to load conversation access')),
+            ),
+          );
+      messageSubscription = _participantMessagesQuery(userId)
+          .snapshots()
+          .listen(
+            (snapshot) {
+              messageDocuments = snapshot.docs;
+              publish();
+            },
+            onError: (Object error, StackTrace stackTrace) => controller.add(
+              Left(_failure(error, 'Failed to stream conversation')),
+            ),
+          );
+    };
+    controller.onCancel = () async {
+      await authorizationSubscription.cancel();
+      await messageSubscription.cancel();
+    };
+    return controller.stream;
   }
 
   @override
-  Stream<Either<Failure, List<Message>>> streamConversations(
-    String userId,
-  ) async* {
+  Stream<Either<Failure, List<Message>>> streamConversations(String userId) {
     if (_currentUserId != userId) {
-      yield Left(FirebaseFailure(message: 'Not authorized'));
-      return;
+      return Stream.value(Left(FirebaseFailure(message: 'Not authorized')));
     }
-    try {
-      await for (final authorizations in _userAuthorizationsQuery(
-        userId,
-      ).snapshots()) {
-        yield Right(
-          await _loadLatestAuthorizedMessages(
-            _activeConversationIds(authorizations.docs),
-            userId,
+    final controller = StreamController<Either<Failure, List<Message>>>();
+    var activeParticipants = <String, Set<String>>{};
+    var messageDocuments = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+    void publish() {
+      controller.add(
+        Right(
+          _latestConversationMessages(
+            messageDocuments.where((document) {
+              final conversationId = document.data()['conversation_id'];
+              final expected = activeParticipants[conversationId];
+              return expected != null &&
+                  _hasExpectedParticipants(document, expected);
+            }),
           ),
-        );
-      }
-    } catch (error) {
-      yield Left(_failure(error, 'Failed to stream conversations'));
+        ),
+      );
     }
+
+    late final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>
+    authorizationSubscription;
+    late final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>
+    messageSubscription;
+    controller.onListen = () {
+      authorizationSubscription = _userAuthorizationsQuery(userId)
+          .snapshots()
+          .listen(
+            (snapshot) {
+              activeParticipants = _activeConversationParticipants(
+                snapshot.docs,
+              );
+              publish();
+            },
+            onError: (Object error, StackTrace stackTrace) => controller.add(
+              Left(_failure(error, 'Failed to load conversation access')),
+            ),
+          );
+      messageSubscription = _participantMessagesQuery(userId)
+          .snapshots()
+          .listen(
+            (snapshot) {
+              messageDocuments = snapshot.docs;
+              publish();
+            },
+            onError: (Object error, StackTrace stackTrace) => controller.add(
+              Left(_failure(error, 'Failed to load conversations')),
+            ),
+          );
+    };
+    controller.onCancel = () async {
+      await authorizationSubscription.cancel();
+      await messageSubscription.cancel();
+    };
+    return controller.stream;
   }
 
   @override

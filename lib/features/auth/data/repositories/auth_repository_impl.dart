@@ -70,8 +70,14 @@ class AuthRepositoryImpl {
         userData: appUser.toJson(),
       );
 
-      // Send verification email
-      await firebaseUser.sendEmailVerification();
+      // Account creation must remain successful if the email provider is
+      // temporarily unavailable. Verification Center provides a safe retry.
+      try {
+        await firebaseUser.sendEmailVerification();
+      } on firebase_auth.FirebaseAuthException {
+        // Best effort only; publishing remains protected by the complete
+        // role-specific verification gate.
+      }
 
       return appUser;
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -167,13 +173,24 @@ class AuthRepositoryImpl {
     return _firebaseAuth.authStateChanges().asyncMap((firebaseUser) async {
       if (firebaseUser == null) return null;
 
-      try {
+      // Auth may emit immediately before signup finishes writing users/{uid}.
+      // Retry the owner read briefly, then rely on dedicated profile providers
+      // for live edits. Keeping a global Firestore listener alive through
+      // sign-out causes a native permission warning before cancellation wins.
+      for (var attempt = 0; attempt < 6; attempt++) {
         final userDoc = await _userService.getUserById(firebaseUser.uid);
-        if (userDoc == null) return null;
-        return AppUser.fromJson(userDoc.data()!);
-      } catch (e) {
-        return null;
+        if (userDoc != null && userDoc.data() != null) {
+          try {
+            return AppUser.fromJson(userDoc.data()!);
+          } catch (_) {
+            return null;
+          }
+        }
+        if (attempt < 5) {
+          await Future<void>.delayed(const Duration(milliseconds: 200));
+        }
       }
+      return null;
     });
   }
 
